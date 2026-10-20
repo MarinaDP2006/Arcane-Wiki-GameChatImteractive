@@ -1,7 +1,7 @@
 {
   "name": "arcane-piltover-zaun",
   "productName": "Arcane Piltover y Zaun",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Juego de escritorio de Arcane: historia interactiva, chat con voz y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",

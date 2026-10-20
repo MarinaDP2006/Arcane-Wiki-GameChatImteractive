@@ -271,16 +271,20 @@
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
           el('h2', {}, `📚 Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
-          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('mapa', '🗺 Mapa interactivo')),
+          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('mapa', '🗺 Mapa')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
       box.append(panel);
       const body = $('#codex-body');
       if (sub === 'mapa') {
-        const url = window.App.settings.mapUrl || window.App.DEFAULT_MAP;
+        const url = window.App.mapUrl();
+        const pickMap = async (id) => { window.App.settings.mapSource = id; await store.setSettings({ mapSource: id }); openOverlay('codice', null, 'mapa'); };
+        const current = window.App.mapSources()[window.App.settings.mapSource] ? window.App.settings.mapSource : 'fandom';
         body.append(el('div', { class: 'neta-wrap' },
           el('div', { class: 'neta-bar' },
-            el('span', { class: 'muted small' }, 'Mapa interactivo de la ciudad (se carga desde internet, pedido en español).'),
+            el('div', { class: 'seg' }, Object.entries(window.App.mapSources()).map(([id, m]) =>
+              el('button', { class: id === current ? 'active' : '', onclick: () => pickMap(id) }, m.label))),
+            el('span', { class: 'muted small' }, 'Se carga desde internet.'),
             el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, '🔄 Recargar'),
             el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
           U.desktop
