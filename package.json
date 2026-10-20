@@ -78,7 +78,8 @@
       ],
       "category": "public.app-category.role-playing-games",
       "icon": "build/icon.png",
-      "identity": null
+      "identity": null,
+      "x64ArchFiles": "Contents/Resources/app.asar.unpacked/node_modules/sherpa-onnx-darwin-*/**"
     },
     "asarUnpack": [
       "node_modules/sherpa-onnx-*/**"
