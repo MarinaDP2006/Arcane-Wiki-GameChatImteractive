@@ -280,7 +280,7 @@
         const url = window.App.settings.mapUrl || window.App.DEFAULT_MAP;
         body.append(el('div', { class: 'neta-wrap' },
           el('div', { class: 'neta-bar' },
-            el('span', { class: 'muted small' }, 'Mapa interactivo de la ciudad (se carga desde internet, pedido en español).'),
+            el('span', { class: 'muted small' }, 'Mapas interactivos de la Arcane Wiki (se cargan desde internet).'),
             el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, '🔄 Recargar'),
             el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
           U.desktop

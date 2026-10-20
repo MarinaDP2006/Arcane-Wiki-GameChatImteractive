@@ -122,6 +122,23 @@
   // ---------- Arte personal ----------
   // Personajes de League of Legends en Data Dragon (id del juego -> id de campeón).
   const LOL_CHAMPS = { vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn', jayce: 'Jayce', viktor: 'Viktor', heimerdinger: 'Heimerdinger', ekko: 'Ekko', singed: 'Singed', ambessa: 'Ambessa', mel: 'Mel', warwick: 'Warwick' };
+  // Páginas de la Arcane Wiki (Fandom) de donde se saca la imagen principal. «busca:» usa el buscador de la wiki.
+  const FANDOM_PAGES = {
+    personajes: {
+      vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn Kiramman', jayce: 'Jayce Talis', viktor: 'Viktor', mel: 'Mel Medarda',
+      heimerdinger: 'Cecil B. Heimerdinger', silco: 'Silco', vander: 'Vander', ekko: 'Ekko', sevika: 'Sevika', singed: 'Singed',
+      ambessa: 'Ambessa Medarda', marcus: 'Marcus', cassandra: 'Cassandra Kiramman', mylo: 'Mylo', claggor: 'Claggor',
+      benzo: 'Benzo', scar: 'Scar', isha: 'Isha', sky: 'Sky Young', loris: 'Loris',
+    },
+    lugares: {
+      piltover: 'Piltover', zaun: 'Zaun', noxus: 'Noxus', 'ultima-gota': 'busca:The Last Drop', callejones: 'busca:The Lanes',
+      sumidero: 'busca:The Sump', academia: 'busca:Piltover Academy', consejo: 'busca:Council Chambers',
+      stillwater: 'busca:Stillwater Hold', hexpuertas: 'busca:Hexgate', puente: 'busca:Bridge of Progress',
+      'mansion-kiramman': 'busca:Kiramman Estate', ejecutores: 'busca:Enforcer headquarters', fabrica: 'busca:Shimmer factory',
+      foso: 'busca:Fight pit', 'escondite-jinx': "busca:Jinx's hideout", arbol: 'busca:Firelights hideout',
+      'taller-jayce': "busca:Jayce's laboratory", plaza: 'busca:Piltover plaza', mercado: 'busca:Zaun market',
+    },
+  };
 
   // Texto de la guía con todos los nombres de archivo que el juego reconoce.
   function artGuide() {
@@ -220,6 +237,33 @@
         },
       }, '⬇ Descargar retratos oficiales (Data Dragon)'),
       progress,
+      el('p', { class: 'muted small' }, 'Arcane Wiki: descarga de arcane.fandom.com la imagen de cada personaje y lugar que todavía no tenga imagen tuya. No toca las que ya has puesto. Se guardan solo en tu ordenador, para uso personal.'),
+      el('button', {
+        class: 'btn small',
+        onclick: async (ev) => {
+          const F = window.CustomArt.files;
+          const wanted = {
+            personajes: Object.fromEntries(Object.entries(FANDOM_PAGES.personajes).filter(([id]) => !F.personajes?.[id] && !F.caras?.[id])),
+            lugares: Object.fromEntries(Object.entries(FANDOM_PAGES.lugares).filter(([id]) => window.CustomArt.report.missing.includes(id))),
+          };
+          const n = Object.keys(wanted.personajes).length + Object.keys(wanted.lugares).length;
+          if (!n) { toast('No falta ninguna imagen de personaje ni de lugar.', 'good'); return; }
+          ev.target.disabled = true;
+          progress.classList.remove('hidden');
+          window.arcane.art.onFandom((d) => {
+            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
+            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `Descargando ${d.current.replace(/^busca:/, '')}…`;
+          });
+          try {
+            const r = await window.arcane.art.fandom(wanted);
+            await window.CustomArt.load();
+            toast(`Imágenes de la wiki: ${r.done.length}${r.failed.length ? ` · sin imagen: ${r.failed.join(', ')}` : ''}`, 'good');
+          } catch (err) {
+            toast(`No se pudieron descargar: ${err.message || err}`, 'warn');
+          }
+          renderSettings(root, onBack);
+        },
+      }, '⬇ Descargar lo que falte de la Arcane Wiki'),
       el('h3', {}, '🗺 Mapa interactivo del Códice'),
       el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K, o M para ir directo) en la pestaña «Mapa interactivo».'),
       el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),
@@ -227,7 +271,8 @@
       el('button', { class: 'btn small', onclick: () => App.openMap() }, '🗺 Abrir mapa interactivo'));
   }
 
-  const DEFAULT_MAP = 'https://neta.art/w/b2a0b258-f552-4a6d-9392-e1ff1557f298';
+  // Mapas interactivos de la Arcane Wiki (menú «Interactive Maps» de arcane.fandom.com).
+  const DEFAULT_MAP = 'https://arcane.fandom.com/wiki/Special:AllMaps';
   App.DEFAULT_MAP = DEFAULT_MAP;
   App.openMap = () => {
     const url = App.settings.mapUrl || DEFAULT_MAP;
