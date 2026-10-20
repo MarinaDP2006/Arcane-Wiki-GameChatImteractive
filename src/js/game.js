@@ -282,9 +282,7 @@
         const current = window.App.mapSources()[window.App.settings.mapSource] ? window.App.settings.mapSource : 'fandom';
         body.append(el('div', { class: 'neta-wrap' },
           el('div', { class: 'neta-bar' },
-            el('div', { class: 'seg' }, Object.entries(window.App.mapSources()).map(([id, m]) =>
-              el('button', { class: id === current ? 'active' : '', onclick: () => pickMap(id) }, m.label))),
-            el('span', { class: 'muted small' }, 'Se carga desde internet.'),
+            el('span', { class: 'muted small' }, 'Mapas interactivos de la Arcane Wiki (se cargan desde internet).'),
             el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, '🔄 Recargar'),
             el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
           U.desktop

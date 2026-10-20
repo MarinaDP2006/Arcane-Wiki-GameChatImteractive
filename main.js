@@ -26,7 +26,7 @@ function slotFile(slot) {
   return path.join(SAVE_DIR(), `ranura-${slot}.json`);
 }
 
-// El mapa de neta.art se pide en español.
+// Las páginas del mapa del Códice se piden en español cuando la web lo permite.
 function setupMapSession() {
   const ses = session.fromPartition('persist:mapa');
   ses.setUserAgent(`${ses.getUserAgent()} ArcanePiltoverZaun`);
@@ -213,6 +213,45 @@ ipcMain.handle('art:ddragon', async (e, champs) => {
   }
   send({ done: true, progress: 1 });
   return { ok: true, done, failed, version: v };
+});
+
+// Imágenes de la Arcane Wiki (Fandom): la ilustración principal de cada página de personaje o lugar.
+// Solo se piden las que faltan y se guardan solo en el ordenador de la jugadora.
+// ARCANE_FANDOM solo sirve para pruebas automáticas con un servidor local.
+const FANDOM = process.env.ARCANE_FANDOM || 'https://arcane.fandom.com';
+ipcMain.handle('art:fandom', async (e, wanted) => {
+  ensureArtDir();
+  const send = (d) => { if (!e.sender.isDestroyed()) e.sender.send('art:fandom-progress', d); };
+  const jobs = [];
+  for (const dir of ['personajes', 'lugares']) {
+    for (const [id, q] of Object.entries(wanted?.[dir] || {})) jobs.push({ dir, id: String(id).replace(/[^a-z0-9-]/gi, ''), q: String(q) });
+  }
+  const done = [];
+  const failed = [];
+  for (let i = 0; i < jobs.length; i++) {
+    const { dir, id, q } = jobs[i];
+    send({ current: q, progress: i / jobs.length });
+    try {
+      // «busca:» usa el buscador de la wiki; si no, es el título exacto de la página.
+      const params = q.startsWith('busca:')
+        ? `generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=${encodeURIComponent(q.slice(6))}`
+        : `redirects=1&titles=${encodeURIComponent(q)}`;
+      const api = `${FANDOM}/api.php?action=query&format=json&prop=pageimages&piprop=original&${params}`;
+      const data = await (await fetch(api, { headers: { 'User-Agent': 'ArcanePiltoverZaun (juego de fans)' } })).json();
+      const page = Object.values(data?.query?.pages || {})[0];
+      const src = page?.original?.source;
+      if (!src) throw new Error('sin imagen');
+      const ext = (src.match(/\.(png|jpe?g|webp|gif)(?=\/|\?|$)/i)?.[1] || 'jpg').toLowerCase();
+      const res = await fetch(src);
+      if (!res.ok) throw new Error(`${res.status}`);
+      fs.writeFileSync(path.join(artRoot(), dir, `${id}.${ext}`), Buffer.from(await res.arrayBuffer()));
+      done.push(id);
+    } catch {
+      failed.push(id);
+    }
+  }
+  send({ done: true, progress: 1 });
+  return { ok: true, done, failed };
 });
 
 // Mapa interactivo de la ciudad en una ventana del propio juego.

@@ -142,10 +142,14 @@ retrato sale de la galería `avatares/` o de tu foto.
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
 
-**Códice con mapa:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y 🗺 **Mapa** (M). El mapa
-se ve dentro del juego y puedes cambiar de fuente con los botones de arriba: **Arcane Wiki**
-(los mapas interactivos de arcane.fandom.com, por defecto), **neta.art** o la dirección que
-pongas en *Ajustes*. Necesita internet y la Arcane Wiki está en inglés.
+**Códice con mapa interactivo:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y
+🗺 **Mapa interactivo** (M), que abre los mapas interactivos de la
+[Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) dentro del juego. Necesita
+internet. La dirección se cambia en *Ajustes* (por ejemplo, para volver al mapa de neta.art).
+
+**Imágenes de la Arcane Wiki:** en *Ajustes → Arte personalizado*, el botón «Descargar lo que
+falte de la Arcane Wiki» baja la imagen principal de cada personaje y lugar que aún no tenga
+imagen tuya. No toca las que ya has puesto.
 
 **Tu propio arte:** en *Ajustes → Arte personalizado* abres cada carpeta. Al arrancar, el
 juego crea `GUIA-DE-ARTE.txt` con la lista exacta de nombres de archivo. La estructura es:
