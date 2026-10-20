@@ -19,12 +19,12 @@
       const skip = document.createElement('button');
       skip.className = 'cine-skip';
       skip.textContent = 'Saltar ⏩';
-      const done = () => { if (!box.isConnected) return; box.remove(); document.removeEventListener('keydown', key); resolve(); };
-      const key = (e) => { if (['Escape', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); done(); } };
+      const done = () => { if (!box.isConnected) return; box.remove(); window.removeEventListener('keydown', key, true); resolve(); };
+      const key = (e) => { e.stopPropagation(); if (['Escape', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); done(); } };
       v.onended = done;
       v.onerror = done;
       skip.onclick = done;
-      document.addEventListener('keydown', key);
+      window.addEventListener('keydown', key, true);
       box.append(v, skip);
       document.body.append(box);
     });
@@ -111,13 +111,14 @@
         active = null;
         portraitCtl?.stop();
         Audio2.stopSpeech();
-        document.removeEventListener('keydown', key);
+        window.removeEventListener('keydown', key, true);
         box.classList.add('out');
         setTimeout(() => box.remove(), 500);
         resolve();
       }
 
       const key = (e) => {
+        e.stopPropagation();
         if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); finish(); }
         if (e.key === ' ') { e.preventDefault(); next(); }
       };
@@ -127,7 +128,7 @@
       }
       skip.onclick = finish;
       box.addEventListener('click', (e) => { if (e.target !== skip) next(); });
-      document.addEventListener('keydown', key);
+      window.addEventListener('keydown', key, true);
 
       function frame(now) {
         if (!alive) return;

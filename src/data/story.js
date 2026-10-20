@@ -781,18 +781,285 @@ window.STORY = {
         final: { bg: 'consejo', ending: true },
       },
     },
+
+    // ======================= TEMPORADA 2 =======================
+    {
+      id: 't1', route: 't2', title: 'T2 · Capítulo 1 · Cenizas',
+      intro: 'El humo del ataque aún no se ha disipado. Piltover llora a sus consejeros y exige un culpable. Todas las miradas apuntan hacia abajo.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'consejo', lines: [
+          { s: 'narrador', t: 'La Sala del Consejo es un esqueleto de vigas y cristales rotos. Entre los escombros, Caitlyn da órdenes con una voz que ya no tiembla.' },
+          { s: 'caitlyn', t: '{name}. Necesito saber de qué lado estás. Vamos a bajar a por Jinx. Con todo.', cond: { notFlag: 's1_zaun_libre' } },
+          { s: 'caitlyn', t: '{name}. Sé lo que hiciste en el puente. Aun así… necesito a alguien que conozca Zaun. No me hagas arrepentirme.', cond: { flag: 's1_zaun_libre' } },
+          { s: 'vi', t: '(A su lado, con el uniforme de ejecutora.) Esto no es venganza, Cait. Dime que no lo es.' },
+        ], choices: [
+          { t: 'Unirte a la cacería de Caitlyn.', next: 'b_caza', fx: { aff: { caitlyn: 2, vi: 1, jinx: -2 }, rep: { piltover: 2, zaun: -2 }, flags: ['caza_jinx'] } },
+          { t: 'Avisar a Jinx en secreto.', next: 'b_aviso', fx: { aff: { jinx: 3, caitlyn: -3 }, rep: { zaun: 2 }, flags: ['protege_jinx'] } },
+          { t: 'Pedir que se escuche a Zaun antes de bajar (Carisma 3).', req: { stat: 'carisma', min: 3 }, next: 'b_media', fx: { aff: { caitlyn: 1, vi: 2 }, rep: { zaun: 1, piltover: 1 }, flags: ['mediador'] } },
+        ] },
+        b_caza: { bg: 'ejecutores', lines: [
+          { s: 'caitlyn', t: 'Bien. Cada puerta de Zaun se abrirá. Por las buenas o por las malas.' },
+          { s: 'vi', t: '(En voz baja.) Prométeme que, si la encontramos, me dejarás hablar con ella primero.' },
+        ], next: 'c' },
+        b_aviso: { bg: 'callejones', lines: [
+          { s: 'narrador', t: 'Esa noche dejas un mensaje garabateado en la pared del escondite: «Vienen a por ti. Todos».' },
+          { s: 'jinx', t: '(Desde las sombras, una risita.) Qué detalle. Nadie me había avisado antes de una fiesta.' },
+        ], next: 'c' },
+        b_media: { bg: 'consejo', lines: [
+          { s: 'yo', t: 'Si bajáis a romper puertas, cada niño de Zaun crecerá odiando el uniforme. Y la próxima bomba la pondrá él.' },
+          { s: 'caitlyn', t: '(Un largo silencio.) Tienes un día para encontrar a alguien con quien hablar allí abajo. Un día.' },
+        ], next: 'c' },
+        c: { bg: 'mansion-kiramman', lines: [
+          { s: 'ambessa', t: '(Apoyada en la balaustrada de la mansión Kiramman.) Una ciudad herida necesita un puño firme. Noxus puede prestárselo. Pregúntale a la joven Kiramman.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 't2', route: 't2', title: 'T2 · Capítulo 2 · La niña de las gafas',
+      intro: 'En los callejones, una niña muda con unas gafas enormes sigue a Jinx a todas partes. Los ejecutores ya la buscan también a ella.',
+      unlocks: ['isha'],
+      start: 'a',
+      nodes: {
+        a: { bg: 'escondite-jinx', lines: [
+          { s: 'jinx', t: 'Esta es Isha. No habla, pero me entiende mejor que nadie. Isha, saluda a {name}.' },
+          { s: 'isha', t: '(Te saluda con la mano y te enseña un dibujo de un cohete con cara sonriente.)' },
+          { s: 'narrador', t: 'Silbatos fuera. Botas. Los ejecutores han encontrado el escondite.' },
+          { s: 'jinx', t: '¡Hora de irse! {name}, llévatela por los tejados. Yo los entretengo.' },
+        ], choices: [
+          { t: 'Huir con Isha en aerotabla.', next: 'b_ok', game: { id: 'aerotabla', win: 'b_ok', lose: 'b_ko', winFx: { aff: { jinx: 3, isha: 4 }, flags: ['salva_isha'] } }, fx: {} },
+          { t: 'Entregar a Isha a Vi para que la proteja.', req: { aff: ['vi', 3] }, next: 'b_vi', fx: { aff: { vi: 3, jinx: -2, isha: 1 }, flags: ['isha_con_vi'] } },
+          { t: 'Esconderos en un conducto (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_ok', fx: { aff: { isha: 3, jinx: 2 }, flags: ['salva_isha'] } },
+        ] },
+        b_ok: { bg: 'arbol', lines: [
+          { s: 'narrador', t: 'Aterrizáis lejos, entre las luces del árbol de las Luciérnagas. Isha se ríe en silencio y te abraza la cintura.' },
+          { s: 'ekko', t: '¿Otra cría de Jinx? (Suspira.) Aquí estará a salvo. Por ahora.' },
+        ], next: 'c' },
+        b_vi: { bg: 'callejones', lines: [
+          { s: 'vi', t: 'La cuidaré. Te lo juro. (Mira a Isha.) Tranquila, peque. Yo también tuve una hermana pequeña.' },
+          { s: 'narrador', t: 'Isha mira hacia el escondite, donde suenan explosiones de colores. No suelta tu mano hasta el último segundo.' },
+        ], next: 'c' },
+        b_ko: { bg: 'callejones', lines: [
+          { s: 'narrador', t: 'Caéis en un callejón. Un ejecutor os acorrala… hasta que una granada de humo rosa lo cambia todo.' },
+          { s: 'jinx', t: '¡Nadie toca a mi equipo! Corred, pringados.' },
+        ], next: 'c' },
+        c: { bg: 'fabrica', lines: [
+          { s: 'narrador', t: 'Corre un rumor por Zaun: en la vieja fábrica hay un hombre que cura a los enfermos de Brillo con solo tocarlos. Lo llaman el Heraldo.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 't3', route: 't2', title: 'T2 · Capítulo 3 · El Heraldo',
+      intro: 'Una fila de zaunitas enfermos espera ante la fábrica. Salen caminando erguidos, con la mirada tranquila… demasiado tranquila.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'fabrica', lines: [
+          { s: 'viktor', t: '{name}. Ya no cojeo, ¿lo ves? El Hexcore me ha mostrado el camino. Puedo quitarle el dolor a Zaun. A todo Zaun.' },
+          { s: 'viktor', t: 'Ven. Deja que te muestre lo que es vivir sin miedo.' },
+        ], choices: [
+          { t: 'Aceptar su «curación».', next: 'b_acepta', fx: { aff: { viktor: 4 }, flags: ['evolucion_aceptada'] } },
+          { t: 'Estudiar el Hexcore antes de decidir.', next: 'b_estudia', game: { id: 'circuito', win: 'b_estudia', lose: 'b_niega', winFx: { stats: { ingenio: 1 }, flags: ['entiende_evolucion'] } }, fx: {} },
+          { t: '«Sin dolor tampoco hay alegría, Viktor.»', next: 'b_niega', fx: { aff: { viktor: -2 }, flags: ['rechaza_evolucion'] } },
+        ] },
+        b_acepta: { bg: 'fabrica', lines: [
+          { s: 'narrador', t: 'Un calor azul te recorre. Las cicatrices, el cansancio, los recuerdos que dolían… todo se vuelve suave. Lejano.' },
+          { s: 'viktor', t: 'Bienvenid{g:o|a|e} a la Evolución Gloriosa.' },
+        ], next: 'c' },
+        b_estudia: { bg: 'taller-jayce', lines: [
+          { s: 'narrador', t: 'Las runas del Hexcore no solo curan: reescriben. Cada persona curada pierde algo pequeño… una manía, una risa, una voluntad.' },
+          { s: 'yo', t: 'Viktor, esto no es curar. Es borrar.' },
+          { s: 'viktor', t: '(Sin emoción.) Es mejorar. Algún día lo entenderás.' },
+        ], next: 'c' },
+        b_niega: { bg: 'fabrica', lines: [
+          { s: 'viktor', t: 'Lástima. Volverás. Todos vuelven cuando el dolor es suficiente.' },
+        ], next: 'c' },
+        c: { bg: 'mansion-kiramman', lines: [
+          { s: 'narrador', t: 'En Piltover, Mel Medarda regresa de Noxus con malas noticias. Y Ambessa la recibe con una sonrisa que no llega a sus ojos.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 't4', route: 't2', title: 'T2 · Capítulo 4 · La loba y la rosa',
+      intro: 'Madre e hija frente a frente. Una ofrece ejércitos; la otra, una advertencia. Piltover tiene que elegir… y tú también.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'consejo', lines: [
+          { s: 'ambessa', t: 'Noxus protegerá Piltover. Sus fábricas, su hextec, su gente. A cambio, solo pido lealtad.' },
+          { s: 'mel', t: 'Mi madre no regala espadas, {name}. Y hay alguien más moviendo los hilos: una rosa negra que crece en la sombra de Noxus.' },
+          { s: 'mel', t: '(En voz baja, mostrándote una chispa dorada en la palma de la mano.) Y yo… he descubierto que no soy quien creía.' },
+        ], choices: [
+          { t: 'Negociar con Ambessa las condiciones de la alianza.', next: 'b_trato', game: { id: 'regateo', win: 'b_trato', lose: 'b_ambessa', winFx: { aff: { ambessa: 2, caitlyn: 1 }, rep: { piltover: 1 }, flags: ['trato_noxus'] } }, fx: {} },
+          { t: 'Confiar en Mel y su magia.', next: 'b_mel', fx: { aff: { mel: 4, ambessa: -3 }, flags: ['aliado_mel_s2'] } },
+          { t: 'Aceptar el ejército de Ambessa sin condiciones.', next: 'b_ambessa', fx: { aff: { ambessa: 3, mel: -2 }, rep: { piltover: 1, zaun: -2 }, flags: ['noxus_manda'] } },
+        ] },
+        b_trato: { bg: 'consejo', lines: [
+          { s: 'ambessa', t: '(Ríe.) Negocias como una noxiana. Está bien: Zaun no será tocado. Por ahora.' },
+        ], next: 'c' },
+        b_mel: { bg: 'mansion-kiramman', lines: [
+          { s: 'mel', t: 'Gracias. La magia que llevo dentro puede proteger a mucha gente. Pero necesito tiempo… y alguien que me cubra las espaldas.' },
+        ], next: 'c' },
+        b_ambessa: { bg: 'consejo', lines: [
+          { s: 'narrador', t: 'Soldados noxianos desfilan por el Puente del Progreso. Desde abajo, Zaun los mira con un odio nuevo.' },
+          { s: 'ambessa', t: 'Así se hacen las cosas, {name}. Rápido y con firmeza.' },
+        ], next: 'c' },
+        c: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Esa noche, algo enorme destroza un puesto de ejecutores en el Sumidero. Los supervivientes hablan de un lobo del tamaño de un carro.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 't5', route: 't2', title: 'T2 · Capítulo 5 · La bestia del Sumidero',
+      intro: 'Garras en el metal, aullidos en la niebla. La criatura de Singed anda suelta… y parece buscar a alguien.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Entre la niebla verde, unos ojos brillan. La bestia avanza hacia ti, jadeando, con un collar de metal roto al cuello.' },
+          { s: 'vi', t: '(Llega corriendo, con los guanteletes encendidos.) ¡{name}, atrás! Esa cosa ha matado a tres ejecutores.' },
+          { s: 'narrador', t: 'Pero la bestia se detiene. Mira a Vi. Y emite un sonido que se parece demasiado a una palabra.' },
+        ], choices: [
+          { t: 'Pelear para proteger a Vi.', next: 'b_pelea', game: { id: 'foso', win: 'b_pelea', lose: 'b_cae', winFx: { aff: { vi: 3 }, stats: { valor: 1 } } }, fx: {} },
+          { t: 'Decirle a Vi la verdad: es Vander.', req: { flag: 'sabe_warwick' }, next: 'b_verdad', fx: { aff: { vi: 4 }, flags: ['vi_sabe_vander'] } },
+          { t: 'Hablarle con calma a la bestia (Carisma 4).', req: { stat: 'carisma', min: 4 }, next: 'b_verdad', fx: { aff: { vi: 3, jinx: 2 }, flags: ['vi_sabe_vander'] } },
+        ] },
+        b_pelea: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'La bestia retrocede herida y desaparece en la niebla. En el suelo queda algo: un viejo guantelete, como los que Vander guardaba en su baúl.' },
+          { s: 'vi', t: '(Lo recoge temblando.) No. No puede ser…' },
+        ], next: 'c' },
+        b_cae: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Un zarpazo te lanza contra una tubería. Cuando abres los ojos, la bestia ya no está. Vi te sostiene la cabeza.' },
+          { s: 'vi', t: 'Eh, eh. Quédate conmigo. No pienso perder a nadie más esta semana.' },
+        ], next: 'c' },
+        b_verdad: { bg: 'sumidero', lines: [
+          { s: 'yo', t: 'Vi… es Vander. Singed lo trajo de vuelta. Así.' },
+          { s: 'vi', t: '(Baja los puños. La bestia baja la cabeza.) …¿Viejo?' },
+          { s: 'narrador', t: 'Por un instante, el monstruo y la chica se miran como un padre y una hija. Luego la bestia aúlla y huye hacia la oscuridad.' },
+        ], next: 'c' },
+        c: { bg: 'arbol', lines: [
+          { s: 'narrador', t: 'Ekko te espera en el árbol. Ha encontrado algo en el Z-Drive. Algo que no debería existir.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 't6', route: 't2', title: 'T2 · Capítulo 6 · Ecos del tiempo',
+      intro: 'Una chispa del Hexcore y del Z-Drive abre una grieta. Al otro lado: un Zaun donde nada de esto pasó.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'arbol', lines: [
+          { s: 'ekko', t: 'Lo he visto, {name}. Un mundo donde Powder nunca se convirtió en Jinx. Donde Vander sigue sirviendo cerveza. Donde todos están bien.' },
+          { s: 'ekko', t: 'Pero solo puedo traer de allí una cosa. Un recuerdo, una idea… algo que nos ayude aquí.' },
+        ], choices: [
+          { t: 'Viajar con Ekko a través de la grieta.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, heimerdinger: 2 }, flags: ['esperanza'] } }, fx: {} },
+          { t: 'Pedirle que no vaya: «Nuestro mundo nos necesita.»', next: 'b_queda', fx: { aff: { ekko: 1, scar: 2 } } },
+        ] },
+        b_ok: { bg: 'callejones', lines: [
+          { s: 'narrador', t: 'Al otro lado, Powder ríe en la barra de La Última Gota y Vi le revuelve el pelo. Es tan bonito que duele.' },
+          { s: 'ekko', t: 'Me traigo esto. (Te enseña un dibujo de Powder: dos hermanas y un mono de trapo.) Para recordarle a Jinx quién puede ser.' },
+        ], next: 'c' },
+        b_ko: { bg: 'arbol', lines: [
+          { s: 'narrador', t: 'La grieta se cierra de golpe con un estallido de luz. Ekko vuelve solo, temblando.' },
+          { s: 'ekko', t: 'Lo he perdido. Pero lo he visto. Y eso ya es algo.' },
+        ], next: 'c' },
+        b_queda: { bg: 'arbol', lines: [
+          { s: 'ekko', t: '(Guarda el Z-Drive.) Tienes razón. Los sueños no paran ejércitos.' },
+        ], next: 'c' },
+        c: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Al amanecer, las campanas de Piltover suenan a guerra. Noxus por el mar. El ejército del Heraldo desde abajo. Y las dos ciudades, en medio.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 'fin2', route: 't2', title: 'T2 · Final · La guerra por el puente',
+      intro: 'Todo converge en el Puente del Progreso: soldados de Noxus, ejecutores, zaunitas y los silenciosos ascendidos de Viktor.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'El cielo está rojo de fuego noxiano y azul de magia hextec. Jinx aparece en lo alto de una torre con Isha a su lado.', cond: { flag: 'salva_isha' } },
+          { s: 'narrador', t: 'El cielo está rojo de fuego noxiano y azul de magia hextec. Jinx aparece sola en lo alto de una torre.', cond: { notFlag: 'salva_isha' } },
+          { s: 'caitlyn', t: '{name}, es ahora o nunca. Si Piltover y Zaun no luchan juntas hoy, mañana no habrá ninguna de las dos.' },
+          { s: 'viktor', t: '(Su voz resuena desde todas partes.) No tiene por qué haber guerra. Uníos a mí y nadie volverá a sufrir.' },
+        ], choices: [
+          { t: 'Unir a las dos ciudades contra Noxus y el Heraldo (Carisma 3).', req: { stat: 'carisma', min: 3 }, next: 'b_union', fx: { flags: ['union'] } },
+          { t: 'Enseñarle a Jinx el dibujo del otro mundo.', req: { flag: 'esperanza' }, next: 'b_jinx', fx: { aff: { jinx: 3, vi: 2 }, flags: ['union', 'jinx_redimida'] } },
+          { t: 'Llamar a la bestia para que proteja a Vi.', req: { flag: 'vi_sabe_vander' }, next: 'b_lobo', fx: { flags: ['union'] } },
+          { t: 'Unirte a la Evolución Gloriosa.', req: { flag: 'evolucion_aceptada' }, next: 'b_evo', fx: { flags: ['elige_evolucion'] } },
+          { t: 'Luchar por tu cuenta.', next: 'b_solo' },
+        ] },
+        b_union: { bg: 'puente', lines: [
+          { s: 'yo', t: '¡Escuchadme! ¡Arriba y abajo da igual! ¡Hoy somos el mismo puente!' },
+          { s: 'narrador', t: 'Ejecutores y zaunitas se miran. Sevika levanta su brazo mecánico. Caitlyn asiente. Y cargan juntos.' },
+        ], next: 'final' },
+        b_jinx: { bg: 'puente', lines: [
+          { s: 'jinx', t: '(Mira el dibujo mucho rato.) …Powder. Hace mucho que nadie me llamaba así.' },
+          { s: 'jinx', t: 'Vale. Una última explosión. Pero esta vez, a favor del equipo bueno.' },
+        ], next: 'final' },
+        b_lobo: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Un aullido sube desde el Sumidero. La bestia salta al puente y se planta delante de Vi, gruñendo a los soldados noxianos.' },
+          { s: 'vi', t: 'Juntos, viejo. Como antes.' },
+        ], next: 'final' },
+        b_evo: { bg: 'fabrica', lines: [
+          { s: 'narrador', t: 'Das un paso hacia la luz azul. El ruido de la guerra se apaga. El miedo, también. Y algo más, que ya no recuerdas.' },
+        ], next: 'final' },
+        b_solo: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Luchas con todo lo que tienes. Pero el puente es demasiado grande para una sola persona.' },
+        ], next: 'final' },
+        final: { bg: 'puente', ending: true, endingSet: 'endings2' },
+      },
+    },
   ],
 
   // Orden de capítulos por ruta.
   routes: {
     zaun: ['z1', 'z2', 'z3', 'z4', 'z5', 'z6', 'z7', 'z8', 'fin'],
     piltover: ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'fin'],
+    t2: ['t1', 't2', 't3', 't4', 't5', 't6', 'fin2'],
   },
+
+  // Finales de la Temporada 2.
+  endings2: [
+    {
+      id: 't2_union', scene: 'puente', title: 'Final · Un solo puente',
+      test: (st) => st.flags.union && !st.flags.elige_evolucion,
+      lines: [
+        { s: 'narrador', t: 'Al caer la noche, las banderas de Noxus se retiran por el mar y la luz azul del Heraldo se apaga en la fábrica.' },
+        { s: 'caitlyn', t: 'Lo hemos hecho juntos. Arriba y abajo. Eso no lo había conseguido nadie.' },
+        { s: 'vi', t: '(Sentada en el borde del puente.) Vander estaría orgulloso. De todos nosotros.' },
+        { s: 'jinx', t: '(Con una sonrisa cansada.) ¿Y ahora qué? ¿Nos hacemos amigos y tal?', cond: { flag: 'jinx_redimida' } },
+        { s: 'ekko', t: 'Ahora, a reconstruir. Y esta vez, el puente será de todos.' },
+        { s: 'narrador', t: 'Años después, en el Puente del Progreso hay una placa con muchos nombres. Uno de ellos es el tuyo, {name}.' },
+      ],
+    },
+    {
+      id: 't2_evolucion', scene: 'fabrica', title: 'Final · La Evolución Gloriosa',
+      test: (st) => st.flags.elige_evolucion,
+      lines: [
+        { s: 'narrador', t: 'La luz azul se extiende por Zaun y sube por el puente hasta Piltover. Las armas caen. Los gritos callan.' },
+        { s: 'viktor', t: 'Ya no hay arriba ni abajo, {name}. Ya no hay dolor. Ni guerras. Ni nada.' },
+        { s: 'narrador', t: 'Es paz. Una paz perfecta, silenciosa y vacía. Y en algún lugar, muy dentro, una parte de ti sigue gritando.' },
+        { s: 'narrador', t: '(Hay otros finales. Quizá, la próxima vez, el dolor merezca la pena.)' },
+      ],
+    },
+    {
+      id: 't2_ruinas', scene: 'puente-zaun', title: 'Final · Ciudades en ruinas',
+      test: () => true,
+      lines: [
+        { s: 'narrador', t: 'La guerra termina porque ya no queda nada por lo que luchar. El puente cae al amanecer.' },
+        { s: 'vi', t: '(Entre los escombros.) Lo intentamos. Lo intentamos de verdad.' },
+        { s: 'narrador', t: 'Piltover y Zaun tendrán que empezar de cero. Quizá esta vez aprendan. Quizá.' },
+        { s: 'narrador', t: '(Consejo: mejora tu Carisma, conserva tus alianzas y busca la esperanza en el árbol de las Luciérnagas.)' },
+      ],
+    },
+  ],
 
   // Finales: se elige el primero cuya condición se cumple.
   endings: [
     {
-      id: 'paz', title: 'Final · El puente de los dos mundos',
+      id: 'paz', scene: 'puente', title: 'Final · El puente de los dos mundos',
       test: (st) => (st.flags.jinx_escucha || st.flags.cohete_saboteado) && (st.flags.pacto || st.flags.puente_hermanas || st.flags.alianza_luciernagas || (st.rep.zaun >= 3 && st.rep.piltover >= 1)),
       lines: [
         { s: 'narrador', t: 'El cohete nunca despega. En su lugar, Jinx baja del tejado de la mano de Vi.' },
@@ -803,7 +1070,7 @@ window.STORY = {
       ],
     },
     {
-      id: 'zaun_libre', title: 'Final · Zaun se levanta',
+      id: 'zaun_libre', scene: 'zaun', title: 'Final · Zaun se levanta',
       test: (st) => st.flags.deja_cohete && st.rep.zaun >= 3,
       lines: [
         { s: 'narrador', t: 'Una luz azul atraviesa el cielo. La Sala del Consejo estalla en mil cristales.' },
@@ -814,7 +1081,7 @@ window.STORY = {
       ],
     },
     {
-      id: 'orden', title: 'Final · El orden de Piltover',
+      id: 'orden', scene: 'consejo', title: 'Final · El orden de Piltover',
       test: (st) => st.flags.evacuacion || st.rep.piltover >= 3,
       lines: [
         { s: 'narrador', t: 'El cohete impacta, pero la sala está vacía. Nadie muere. Piltover te llama héroe.' },
@@ -825,7 +1092,7 @@ window.STORY = {
       ],
     },
     {
-      id: 'humo', title: 'Final · Solo humo',
+      id: 'humo', scene: 'puente-zaun', title: 'Final · Solo humo',
       test: () => true,
       lines: [
         { s: 'narrador', t: 'Una luz azul. Un silencio terrible. Después, sirenas.' },

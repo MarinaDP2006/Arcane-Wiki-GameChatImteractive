@@ -27,6 +27,11 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
    hablar con ellos por chat (con su propia voz) o en persona en su lugar del mapa.
    Conversar sube la afinidad, y la afinidad abre opciones en la historia.
 7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
+8. **Temporada 2** 🌙: al terminar la primera temporada se desbloquea la segunda, que continúa tu
+   partida con las consecuencias de lo que hiciste: la cacería de Jinx tras el ataque, Isha, el
+   Heraldo y su Evolución Gloriosa, Ambessa y Mel, la bestia del Sumidero, los ecos del tiempo de
+   Ekko y la guerra final por el puente, con 3 finales nuevos. Avisa antes de empezar porque
+   contiene spoilers de la segunda temporada de Arcane.
 
 ### Controles
 

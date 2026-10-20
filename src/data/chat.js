@@ -219,6 +219,18 @@ window.CHAT = {
     ],
     fallback: ['Oh, ¿en serio?', 'No había pensado en eso.', '(Sonríe con timidez.)'],
   },
+  isha: {
+    voice: { pitch: 1.7, rate: 1.1, gender: 'f' },
+    greet: { low: '(Te mira desde detrás de las gafas, desconfiada.)', mid: '(Te saluda con la mano y te enseña un dibujo nuevo.)', high: '(Corre hacia ti y te abraza las piernas. Luego te tira de la manga para enseñarte algo.)' },
+    topics: [
+      { label: 'Jinx', keys: ['jinx', 'powder', 'hermana'], replies: ['(Dibuja a Jinx con una corona y muchas explosiones alrededor. Sonríe.)', '(Se pone las manos en la cabeza imitando las trenzas de Jinx y hace «¡bum!» sin sonido.)'] },
+      { label: 'Dibujos', keys: ['dibujo', 'pintar', 'dibujar'], replies: ['(Te enseña un dibujo: tú, ella y Jinx encima de un cohete con cara de tiburón.)', '(Te regala un dibujo de un mono con gafas. Es para ti.)'] },
+      { label: 'Gafas', keys: ['gafas', 'ojos'], replies: ['(Se baja las gafas, te mira muy seria, y se las vuelve a subir. Secreto.)'] },
+      { label: 'Miedo', keys: ['miedo', 'ejecutores', 'peligro'], replies: ['(Se esconde detrás de ti y señala a lo lejos, hacia unos ejecutores.)', '(Te coge la mano muy fuerte y no la suelta.)'] },
+      { label: 'Juegos', keys: ['jugar', 'juego', 'cohete'], replies: ['(Te lanza una piedrecita y sale corriendo. Quiere que la persigas.)'] },
+    ],
+    fallback: ['(Ladea la cabeza, curiosa.)', '(Se encoge de hombros y sigue dibujando.)', '(Hace como que no te ha oído y te saca la lengua.)'],
+  },
   loris: {
     voice: { pitch: 0.8, rate: 1.0, gender: 'm' },
     greet: { low: 'Eh, ¿qué tal?', mid: '¡{name}! ¿Una cerveza?', high: '¡{name}! Mi colega favorit{g:o|a|e}. La primera ronda la pagas tú, ¿eh?' },

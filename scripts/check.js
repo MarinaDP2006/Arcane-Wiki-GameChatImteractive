@@ -51,7 +51,7 @@ for (const ch of STORY.chapters) {
   }
 }
 for (const [r, ids] of Object.entries(STORY.routes)) ids.forEach((id) => { if (!STORY.chapters.find((c) => c.id === id)) errors.push(`ruta ${r}: capítulo "${id}" no existe`); });
-STORY.endings.forEach((e) => e.lines.forEach((l) => { if (!speakers.has(l.s)) errors.push(`final ${e.id}: hablante "${l.s}"`); }));
+[...STORY.endings, ...(STORY.endings2 || [])].forEach((e) => e.lines.forEach((l) => { if (!speakers.has(l.s)) errors.push(`final ${e.id}: hablante "${l.s}"`); }));
 for (const p of WIKI.personajes) (p.relations || []).forEach((r) => { if (!allIds.has(r)) errors.push(`wiki ${p.id}: relación "${r}" no existe`); });
 for (const o of Object.values(CREATION.origins)) for (const f of o.families) Object.keys(f.aff || {}).forEach((id) => { if (!chars.has(id)) errors.push(`familia ${f.id}: "${id}" desconocido`); });
 
@@ -92,4 +92,4 @@ if (errors.length) {
   process.exit(1);
 }
 const nodes = STORY.chapters.reduce((a, c) => a + Object.keys(c.nodes).length, 0);
-console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con chat.`);
+console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con chat.`);

@@ -459,7 +459,7 @@
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
-        el('div', {}, el('small', { class: 'muted' }, G.progress.route === 'zaun' ? 'Ruta de Zaun' : 'Ruta de Piltover'), el('h2', {}, ch.title)),
+        el('div', {}, el('small', { class: 'muted' }, G.progress.season === 2 ? 'Temporada 2' : G.progress.route === 'zaun' ? 'Ruta de Zaun' : 'Ruta de Piltover'), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; Audio2.stopSpeech(); } }, '⏩ Saltar'),
           el('button', { class: 'btn ghost small', title: 'Activar o desactivar voces', onclick: toggleVoice }, window.App.settings.voice ? '🔊 Voz' : '🔇 Voz'))),
@@ -681,7 +681,8 @@
     box.innerHTML = '';
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
-        el('button', { class: 'btn primary', onclick: () => setTab('chats', G.unlocked[0]) }, '💬 Seguir chateando con los personajes'),
+        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, '🌙 Comenzar la Temporada 2') : null,
+        el('button', { class: 'btn', onclick: () => setTab('chats', G.unlocked[0]) }, '💬 Seguir chateando con los personajes'),
         el('button', { class: 'btn', onclick: () => setTab('ficha') }, '🪪 Ver mi ficha'),
         el('button', { class: 'btn ghost', onclick: replayRoute }, '↻ Rejugar la ruta con este personaje')));
       return;
@@ -761,8 +762,15 @@
     toast(`Nuevo objetivo: ve a ${objectiveName()}`, 'good');
   }
 
+  // Todos los finales de ambas temporadas.
+  function allEndings() {
+    return [...S().endings, ...(S().endings2 || [])];
+  }
+
   async function playEnding() {
-    const ending = S().endings.find((e) => e.test(G));
+    const ch = chapterById(G.progress.chapterId);
+    const set = ch.nodes[G.progress.node]?.endingSet === 'endings2' ? S().endings2 : S().endings;
+    const ending = set.find((e) => e.test(G));
     busy = true;
     skipping = false;
     pushLog('sistema', `— ${ending.title} —`);
@@ -786,22 +794,42 @@
     G.progress.finished = true;
     talk(false);
     await Cinematic.play([
-      { scene: ending.id === 'zaun_libre' ? 'zaun' : ending.id === 'orden' ? 'consejo' : ending.id === 'humo' ? 'puente-zaun' : 'puente', dur: 7, kicker: 'Fin', title: ending.title.replace('Final · ', ''), lines: ['Gracias por jugar. Tu historia queda escrita en las dos ciudades.'], zoom: [1.0, 1.2], align: 'center' },
+      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Temporada 2' : 'Fin de la Temporada 1', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
     ], { videoId: `fin-${ending.id}` });
-    const ch = chapterById('fin');
-    const fresh = ch.unlocks.filter((id) => !G.unlocked.includes(id));
+    const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id));
     G.unlocked.push(...fresh);
     if (fresh.length) {
       Audio2.sfx.unlock();
       pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${fresh.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     }
-    pushLog('sistema', `Has conseguido ${G.endings.length} de ${S().endings.length} finales. ¡Gracias por jugar!`);
+    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Temporada 2 te espera.'}`);
     $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     scrollLog();
     renderContacts();
     await persist();
     showChoices([]);
+  }
+
+  // Temporada 2: continúa la partida con las consecuencias de la primera.
+  async function startSeason2() {
+    if (!window.App.settings.spoilers && !confirm('La Temporada 2 contiene spoilers de la segunda temporada de Arcane. ¿Quieres continuar?')) return;
+    const route = S().routes.t2;
+    G.flags[`s1_${G.endings[G.endings.length - 1] || 'humo'}`] = true;
+    G.progress = { route: 't2', season: 2, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false };
+    G.log = [];
+    G.acts = {};
+    await persist();
+    closeOverlay();
+    await Cinematic.play([
+      { scene: 'puente-zaun', dur: 6, kicker: 'Arcane', title: 'Temporada 2', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
+      { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
+      { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
+      { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
+    ], { videoId: 'temporada-2' });
+    Audio2.playMusic('final');
+    toast(`Temporada 2 · Objetivo: ve a ${objectiveName()}`, 'good');
+    updateHud();
   }
 
   // Vuelve a empezar la ruta conservando ficha, finales y personajes desbloqueados.
@@ -810,7 +838,7 @@
     const route = S().routes[G.progress.route];
     G.flags = G.player.family !== 'ninguna' ? { familia_famosa: true } : {};
     G.rep = { zaun: G.player.origin === 'zaun' ? 1 : 0, piltover: G.player.origin === 'piltover' ? 1 : 0 };
-    G.progress = { route: G.progress.route, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: '', finished: false, started: false };
+    G.progress = { route: G.progress.route, season: G.progress.season, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: '', finished: false, started: false };
     G.log = [];
     G.acts = {};
     await persist();
@@ -978,8 +1006,8 @@
           el('span', {}, charName(id)), heart(affOf(id))))) : el('p', { class: 'muted' }, 'Todavía no conoces a nadie.'),
       el('h3', {}, 'Progreso'),
       el('p', {}, `${chapterById(G.progress.chapterId)?.title}${G.progress.finished ? ' (completado)' : ''}`),
-      el('p', {}, `Finales conseguidos: ${G.endings.length}/${S().endings.length}`,
-        G.endings.length ? ` — ${G.endings.map((e) => S().endings.find((x) => x.id === e).title.replace('Final · ', '')).join(', ')}` : '')));
+      el('p', {}, `Finales conseguidos: ${G.endings.length}/${allEndings().length}`,
+        G.endings.length ? ` — ${G.endings.map((e) => allEndings().find((x) => x.id === e)?.title.replace('Final · ', '')).join(', ')}` : '')));
   }
 
   function repBar(label, v, cls) {
