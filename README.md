@@ -142,10 +142,10 @@ retrato sale de la galería `avatares/` o de tu foto.
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
 
-**Códice con mapa interactivo:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y
-🗺 **Mapa interactivo** (M), que es el mapa de neta.art integrado dentro del juego. Necesita
-internet; se pide en español, pero solo sale en español si la web ofrece ese idioma. La
-dirección se cambia en *Ajustes*.
+**Códice con mapa:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y 🗺 **Mapa** (M). El mapa
+se ve dentro del juego y puedes cambiar de fuente con los botones de arriba: **Arcane Wiki**
+(los mapas interactivos de arcane.fandom.com, por defecto), **neta.art** o la dirección que
+pongas en *Ajustes*. Necesita internet y la Arcane Wiki está en inglés.
 
 **Tu propio arte:** en *Ajustes → Arte personalizado* abres cada carpeta. Al arrancar, el
 juego crea `GUIA-DE-ARTE.txt` con la lista exacta de nombres de archivo. La estructura es:
@@ -166,6 +166,11 @@ En `lugares/` no hace falta el nombre exacto: «La Última Gota.jpg», «the lan
 Arte personal* ves qué lugares tienen imagen, cuáles faltan y qué archivos no se reconocen. Si
 falta un lugar gemelo (los dos lados del puente, Stillwater y su muelle, Piltover y la plaza,
 Zaun y el mercado), usa la imagen del otro.
+
+El botón **⬇ Descargar lo que falta de la Arcane Wiki** baja de arcane.fandom.com la imagen
+principal de cada personaje (Silco, Vander, Sevika, Isha, Mylo, Claggor…), con la cara
+recortada, y de cada lugar que aún no tenga imagen. Solo descarga lo que falta: no toca tus
+archivos.
 
 El botón **⬇ Descargar retratos oficiales (Data Dragon)** baja de la web pública de Riot el
 cuerpo, la cara y la imagen del Códice de los campeones de LoL que salen en Arcane: Vi,
