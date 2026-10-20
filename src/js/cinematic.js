@@ -89,18 +89,16 @@
         portrait.innerHTML = '';
         portrait.classList.remove('in');
         if (s.portrait) {
-          const c = document.createElement('canvas');
-          c.width = c.height = 520;
-          portrait.append(c);
           const p = s.portrait;
-          portraitCtl = Painter.animate(c, p.look, { rim: p.rim, bg: p.bg });
+          if (p.photo) {
+            portrait.append(Object.assign(document.createElement('img'), { src: p.photo, alt: '' }));
+          } else {
+            const c = document.createElement('canvas');
+            c.width = c.height = 520;
+            portrait.append(c);
+            portraitCtl = Painter.animate(c, p.look, { rim: p.rim, bg: p.bg });
+          }
           requestAnimationFrame(() => portrait.classList.add('in'));
-        }
-        if (s.lines?.length && opts.narrate !== false) {
-          Audio2.stopSpeech();
-          const say = s.lines.join(' ');
-          if (portraitCtl) portraitCtl.talk(true);
-          Audio2.speak(say, s.voice || { pitch: 0.9, rate: 1, gender: 'm', narrator: true }).then(() => portraitCtl?.talk(false));
         }
         if (s.sfx) Audio2.sfx[s.sfx]?.();
       }
@@ -110,7 +108,6 @@
         alive = false;
         active = null;
         portraitCtl?.stop();
-        Audio2.stopSpeech();
         window.removeEventListener('keydown', key, true);
         box.classList.add('out');
         setTimeout(() => box.remove(), 500);

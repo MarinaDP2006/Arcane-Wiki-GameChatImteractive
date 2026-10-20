@@ -335,7 +335,7 @@
 
   const customImgs = new Map();
   function customBase(id) {
-    const url = window.CustomArt?.image('escenas', id);
+    const url = window.CustomArt?.image('lugares', id);
     if (!url) return null;
     if (!customImgs.has(url)) { const im = new Image(); im.src = url; customImgs.set(url, im); }
     const im = customImgs.get(url);

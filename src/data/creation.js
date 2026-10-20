@@ -65,6 +65,65 @@ window.CREATION = {
     { id: 'aerotabla', label: 'Aerotabla', stats: { valor: 1 } },
   ],
 
+  // ---------- Clase, habilidades y aptitudes (estilo League of Legends) ----------
+  // bonus: ventajas en los minijuegos (foso, tejados, aerotabla, tiro, circuito, runas, regateo).
+  classes: [
+    { id: 'luchador', label: 'Luchador{g:|a|e}', icon: '🥊', color: '#e0457b', stats: { valor: 2 }, role: 'Cuerpo a cuerpo',
+      desc: 'Puños, agallas y cero paciencia. Brillas en el foso y cuando hay que plantar cara.',
+      passive: { name: 'Puños de hierro', desc: 'Tus golpes en el foso hacen más daño.', bonus: { foso: 1 } } },
+    { id: 'tirador', label: 'Tirador{g:|a|e}', icon: '🎯', color: '#3a6fc4', stats: { valor: 1, sigilo: 1 }, role: 'A distancia',
+      desc: 'Ojo frío y pulso firme. Prefieres resolver los problemas desde lejos.',
+      passive: { name: 'Pulso firme', desc: 'Necesitas menos puntos en la galería de tiro.', bonus: { tiro: 1 } } },
+    { id: 'inventor', label: 'Invent{g:or|ora|ore} hextec', icon: '🔷', color: '#3fa9f5', stats: { ingenio: 2 }, role: 'Magia y tecnología',
+      desc: 'Runas, gemas y fórmulas. Donde otros ven chatarra, tú ves un prototipo.',
+      passive: { name: 'Mente brillante', desc: 'Más tiempo en los circuitos y una vida extra en las runas.', bonus: { circuito: 1, runas: 1 } } },
+    { id: 'asesino', label: 'Sombra', icon: '🗡️', color: '#8b3a8b', stats: { sigilo: 2 }, role: 'Sigilo',
+      desc: 'Nadie te ve llegar y nadie te ve marchar. Los tejados son tu casa.',
+      passive: { name: 'Sin rastro', desc: 'Las carreras por los tejados y en aerotabla duran menos.', bonus: { tejados: 1, aerotabla: 1 } } },
+    { id: 'protector', label: 'Protector{g:|a|e}', icon: '🛡️', color: '#c99a3b', stats: { valor: 1, carisma: 1 }, role: 'Defensa',
+      desc: 'Te pones delante cuando todo se rompe. La gente confía en ti.',
+      passive: { name: 'Aguante', desc: 'Aguantas más golpes en el foso.', bonus: { foso: 1 } } },
+    { id: 'lider', label: 'Líder', icon: '💬', color: '#3fbf9f', stats: { carisma: 2 }, role: 'Apoyo',
+      desc: 'Unes a la gente. Tus palabras abren más puertas que cualquier ganzúa.',
+      passive: { name: 'Don de gentes', desc: 'Regateas mejor y los personajes te cogen cariño antes.', bonus: { regateo: 1 }, chat: 1 } },
+  ],
+  abilities: {
+    Q: [
+      { id: 'golpe_atlas', name: 'Golpe Atlas', icon: '👊', desc: 'Un puñetazo cargado de energía. +1 Valor · ventaja en el foso.', stats: { valor: 1 }, bonus: { foso: 1 } },
+      { id: 'disparo', name: 'Disparo certero', icon: '🎯', desc: 'Nunca fallas a la primera. +1 Sigilo · ventaja en la galería de tiro.', stats: { sigilo: 1 }, bonus: { tiro: 1 } },
+      { id: 'chispa', name: 'Chispa hextec', icon: '⚡', desc: 'Un chispazo de gema que lo arregla (o lo rompe) todo. +1 Ingenio · ventaja en circuitos.', stats: { ingenio: 1 }, bonus: { circuito: 1 } },
+    ],
+    W: [
+      { id: 'tejado', name: 'Carrera de tejado', icon: '🏃', desc: 'Saltas de chimenea en chimenea. +1 Sigilo · ventaja en los tejados.', stats: { sigilo: 1 }, bonus: { tejados: 1 } },
+      { id: 'piloto', name: 'Piloto de aerotabla', icon: '🛹', desc: 'Vuelas como una Luciérnaga. +1 Valor · ventaja en aerotabla.', stats: { valor: 1 }, bonus: { aerotabla: 1 } },
+      { id: 'escudo', name: 'Escudo de chatarra', icon: '🛡️', desc: 'Una plancha de metal y mucha fe. +1 Valor · aguantas más en el foso.', stats: { valor: 1 }, bonus: { foso: 1 } },
+    ],
+    E: [
+      { id: 'memoria', name: 'Memoria arcana', icon: '🔷', desc: 'Recuerdas cada runa que ves. +1 Ingenio · vida extra en las runas.', stats: { ingenio: 1 }, bonus: { runas: 1 } },
+      { id: 'labia', name: 'Lengua de plata', icon: '💰', desc: 'Siempre consigues un precio mejor. +1 Carisma · ventaja al regatear.', stats: { carisma: 1 }, bonus: { regateo: 1 } },
+      { id: 'halcon', name: 'Ojo de halcón', icon: '👁️', desc: 'Ves lo que otros no ven. +1 Sigilo · ventaja en la galería de tiro.', stats: { sigilo: 1 }, bonus: { tiro: 1 } },
+    ],
+    R: [
+      { id: 'furia', name: 'Furia de Zaun', icon: '🔥', desc: 'DEFINITIVA · Cuando todo arde, tú ardes más. +1 Valor · gran ventaja en el foso.', stats: { valor: 1 }, bonus: { foso: 2 } },
+      { id: 'sobrecarga', name: 'Sobrecarga hextec', icon: '💠', desc: 'DEFINITIVA · Dominas la magia de las gemas. +1 Ingenio · ventaja en circuitos y runas.', stats: { ingenio: 1 }, bonus: { circuito: 1, runas: 1 } },
+      { id: 'corazon', name: 'Corazón del puente', icon: '🌉', desc: 'DEFINITIVA · Unes a arriba y abajo. +1 Carisma · ventaja al regatear y más afinidad.', stats: { carisma: 1 }, bonus: { regateo: 1 }, chat: 1 },
+      { id: 'humo', name: 'Sombra del humo', icon: '🌫️', desc: 'DEFINITIVA · Te desvaneces en la niebla. +1 Sigilo · gran ventaja en tejados y aerotabla.', stats: { sigilo: 1 }, bonus: { tejados: 2, aerotabla: 2 } },
+    ],
+  },
+  keystones: [
+    { id: 'encanto', name: 'Encanto', icon: '💖', desc: 'Cada tema nuevo de conversación sube el doble de afinidad.' },
+    { id: 'estudioso', name: 'Aprendiz incansable', icon: '📚', desc: 'Las actividades de cada lugar suben tus estadísticas el doble.' },
+    { id: 'pies', name: 'Pies ligeros', icon: '👟', desc: 'Te mueves un 30 % más rápido por el mapa.' },
+    { id: 'veterano', name: 'Veteran{g:o|a|e} de mil batallas', icon: '⭐', desc: 'Ventaja en todos los minijuegos.' },
+  ],
+  titles: [
+    'la Sombra de Zaun', 'el Orgullo de Piltover', 'quien Cruza el Puente', 'la Chispa Hextec', 'el Puño de los Callejones',
+    'la Voz de las Luciérnagas', '{g:el Prodigio|la Prodigio|le Prodigio} de la Academia', 'quien Baila con el Brillo',
+    'el Último Trago', '{g:el Heredero|la Heredera|le Heredere} del Humo',
+  ],
+  statPoints: 4,
+  maxStatPerAllocation: 3,
+
   maxHobbies: 3,
 
   // Opciones del retrato pintado (ver src/js/painter.js).

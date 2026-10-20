@@ -1,7 +1,7 @@
 # Arcane: Piltover y Zaun
 
 Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arcane*:
-**historia interactiva + chat con voz + mundo abierto** de Piltover y Zaun.
+**historia interactiva + chat + mundo abierto** de Piltover y Zaun.
 
 Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
 Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
@@ -62,16 +62,10 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 6. Abre el juego → **⚙ Ajustes → Conversaciones con IA**. Deberías ver **✅ Ollama conectado** y tu
    modelo. Pulsa **💬 Probar conversación** y Jinx te contestará.
 
-### Paso 4 · Descarga las voces humanas (recomendado)
-
-En el juego, ve a **⚙ Ajustes → Audio** y pulsa **⬇ Descargar voces humanas**. Tarda unos minutos
-(son unos 330 MB) y solo hay que hacerlo una vez. Después elige **🎙 Voces humanas**: los personajes
-dejarán de sonar robóticos.
-
-### Paso 5 · ¡A jugar!
+### Paso 4 · ¡A jugar!
 
 1. En el menú principal pulsa **✦ Nueva partida**.
-2. Elige **Zaun** o **Piltover**, crea tu personaje (nombre, aspecto, familia, aficiones…).
+2. Elige **Zaun** o **Piltover**, crea tu personaje (clase, habilidades, retrato, familia…).
 3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
 4. Pulsa **C** para chatear con los personajes que conozcas y **Esc** para el menú de pausa.
 
@@ -81,23 +75,36 @@ dejarán de sonar robóticos.
 
 ## Cómo se juega
 
-1. **Crea tu personaje**: nombre, género, edad, foto (o un retrato ilustrado que diseñas tú),
-   profesión, barrio, familia famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros,
-   Giopara, la de Vander…) y aficiones. Todo eso suma a tus estadísticas
-   (🧠 Ingenio, 💬 Carisma, 🔥 Valor, 🌑 Sigilo).
+1. **Crea tu campeón** (al estilo de League of Legends), en 8 pasos:
+   - **Origen e identidad**: ciudad, nombre, género, edad, profesión y barrio.
+   - **Clase**: Luchador, Tirador, Inventor, Asesino, Protector o Líder. Cada una tiene su
+     propia pasiva.
+   - **Habilidades Q, W, E y R**: eliges una por ranura. Dan estadísticas y ventajas en los
+     minijuegos o en el chat.
+   - **Aptitudes**: repartes 4 puntos (el radar los muestra), eliges una runa clave
+     (Encanto, Estudioso, Pies ligeros o Veterano) y un título.
+   - **Retrato**: eliges tu retrato de una galería (las imágenes que pongas en la carpeta
+     `avatares/`, mejor verticales y estilo Arcane) o subes tu foto.
+   - **Familia y aficiones**: familia
+     famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros, Giopara, la de Vander…).
+   - **Ficha final**: tu barra de habilidades P/Q/W/E/R.
+
+   El botón 🎲 Aleatorio lo rellena todo. Todo suma a tus estadísticas
+   (🧠 Ingenio, 💬 Carisma, 🔥 Valor, 🌑 Sigilo), y tu build da **ventaja** en los
+   minijuegos: más vida, más tiempo o menos objetivos.
 2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
    en el barrio que elegiste.
 3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
    visita lugares, habla con la gente y recoge los fragmentos del Códice (hexágonos azules).
 4. **Sigue la historia**: el objetivo ★ te dice adónde ir. Al llegar, la escena se juega como
-   un chat con voz. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
+   un chat. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
 5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
    vez por capítulo. Muchas son minijuegos: 🥊 pelea en el foso (reflejos), 🏃 carrera por los
    tejados, 🛹 vuelo en aerotabla, 🎯 galería de tiro, 🔧 circuito hextec (puzle), 🔷 runas de la
    Academia (memoria) y 💰 regateo en el mercado. Algunas decisiones de la historia también se
    resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
 6. **Chatea**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
-   hablar con ellos por chat (con su propia voz) o en persona en su lugar del mapa.
+   hablar con ellos por chat o en persona en su lugar del mapa.
    Conversar sube la afinidad, y la afinidad abre opciones en la historia.
 7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
 8. **Temporada 2** 🌙: al terminar la primera temporada se desbloquea la segunda, que continúa tu
@@ -117,6 +124,7 @@ dejarán de sonar robóticos.
 | C | Comunicador (chats) |
 | F | Ficha del personaje |
 | K | Códice |
+| M | Mapa interactivo del Códice |
 | Esc | Pausa / cerrar ventana |
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
@@ -126,29 +134,45 @@ dejarán de sonar robóticos.
 Todo el arte se genera dentro del juego con un estilo pictórico: retratos pintados que
 respiran, parpadean, mueven el pelo y vocalizan al hablar; escenarios animados (niebla de
 Zaun, neones que parpadean, polvo dorado de Piltover, portales hextec); cinemáticas de
-inicio, de capítulo y de final con movimiento de cámara y narración. En el creador puedes
-elegir cara, ojos, cejas, nariz, labios, maquillaje, peinado, ropa y detalles, o subir una
-foto que el juego convierte en retrato pintado.
+inicio, de capítulo y de final con movimiento de cámara y narración. En el creador tu
+retrato sale de la galería `avatares/` o de tu foto.
 
-**Tu propio arte:** en *Ajustes → Abrir carpeta de arte* puedes poner imágenes, concept art
-o vídeos (por ejemplo `personajes/jinx.png`, `escenas/ultima-gota.jpg`,
-`video/intro-zaun.mp4`). El juego los usa en lugar del arte generado. Esos archivos se quedan
-en tu ordenador y no se incluyen en el ejecutable.
+**Menús en 3D:** la pantalla de inicio, el menú, los ajustes y el creador tienen una escena
+3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
+del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
+fondo pintado en 2D.
 
-### Voces humanas 🎙 (gratis y sin internet)
+**Códice con mapa interactivo:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y
+🗺 **Mapa interactivo** (M), que es el mapa de neta.art integrado dentro del juego. Necesita
+internet; se pide en español, pero solo sale en español si la web ofrece ese idioma. La
+dirección se cambia en *Ajustes*.
 
-Por defecto Windows y macOS solo traen voces muy robóticas. El juego incluye un motor de
-**voces neuronales Piper** (código abierto) que suenan mucho más naturales, y cada personaje
-tiene su propia voz, tono y ritmo (Jinx, Vi, Silco, Heimerdinger…).
+**Tu propio arte:** en *Ajustes → Arte personalizado* abres cada carpeta. Al arrancar, el
+juego crea `GUIA-DE-ARTE.txt` con la lista exacta de nombres de archivo. La estructura es:
 
-1. Abre el juego → **⚙ Ajustes → Audio**.
-2. Pulsa **⬇ Descargar voces humanas** (unos 330 MB, solo la primera vez; luego funcionan sin
-   internet).
-3. Cuando termine, elige **🎙 Voces humanas** y prueba los botones **🔊 Narrador / Jinx / Vi /
-   Silco / Heimerdinger**.
+```
+arte/
+├─ avatares/     cualquier-nombre.png…           retratos para TU personaje (galería del creador)
+├─ personajes/   jinx.png, vi.jpg, silco.png…    retrato de cuerpo entero (vertical)
+├─ caras/        jinx.png…                       cara cuadrada para chats e iconos
+├─ lugares/      ultima-gota.jpg…                paisajes 16:9 de cada lugar
+├─ codice/       hextec.png, quimtec.png…        imágenes de entradas del Códice
+└─ video/        intro-zaun.mp4, intro-piltover.mp4, temporada-2.mp4,
+                 capitulo-<id>.mp4, fin-<id>.mp4  (mp4 o webm)
+```
 
-Las voces se guardan en la carpeta de datos del juego (`voces`). Si prefieres las voces de tu
-sistema, elige **🤖 Voces del sistema**.
+En `lugares/` no hace falta el nombre exacto: «La Última Gota.jpg», «the lanes.png» o
+«Puente del Progreso.jpg» también valen (da igual tildes, mayúsculas y espacios). En *Ajustes →
+Arte personal* ves qué lugares tienen imagen, cuáles faltan y qué archivos no se reconocen. Si
+falta un lugar gemelo (los dos lados del puente, Stillwater y su muelle, Piltover y la plaza,
+Zaun y el mercado), usa la imagen del otro.
+
+El botón **⬇ Descargar retratos oficiales (Data Dragon)** baja de la web pública de Riot el
+cuerpo, la cara y la imagen del Códice de los campeones de LoL que salen en Arcane: Vi,
+Jinx, Caitlyn, Jayce, Viktor, Heimerdinger, Ekko, Singed, Ambessa, Mel y Warwick. El juego
+elige el aspecto de Arcane cuando existe. Los personajes que no son campeones (Silco,
+Vander, Sevika…) los añades tú. Todos estos archivos se quedan en tu ordenador y no se
+incluyen en el ejecutable.
 
 ### Chat con IA: Ollama 🦙
 
@@ -249,11 +273,11 @@ src/index.html           Interfaz del juego
 src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
 src/js/game.js           Historia, comunicador, ficha, actividades y Códice
 src/js/creator.js        Creador de personaje
-src/js/audio.js          Voces (síntesis de voz) y música procedural
+src/js/audio.js          Música procedural y efectos de sonido
 src/js/portrait.js       Retratos ilustrados generados en SVG
 src/data/story.js        Capítulos, decisiones y finales
 src/data/world.js        Mapas de Piltover y Zaun, lugares, actividades, fragmentos
-src/data/chat.js         Voces y diálogos de cada personaje
+src/data/chat.js         Diálogos de cada personaje
 src/data/wiki.js         Entradas del Códice (personajes, lugares, criaturas, tecnología, mundo)
 src/data/creation.js     Opciones del creador de personaje
 scripts/check.js         Validador de datos
