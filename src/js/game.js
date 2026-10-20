@@ -1,7 +1,7 @@
-// Motor del juego: partidas, historia en formato chat, chat libre con
-// personajes desbloqueados (con o sin IA) y ficha del personaje.
+// Motor del juego: partidas, historia en formato chat, conversaciones con
+// opciones de diálogo con los personajes desbloqueados y ficha del personaje.
 (function () {
-  const { $, el, esc, tpl, store, toast, sleep, pick, norm } = U;
+  const { $, el, esc, tpl, store, toast, sleep, pick } = U;
   const S = () => window.STORY;
 
   let G = null; // estado de la partida en curso
@@ -451,7 +451,7 @@
         onclick: () => setTab('chats', id),
       },
       el('span', { class: 'avatar sm', html: Portrait.forCharacter(id) }),
-      el('span', { class: 'c-body' }, el('strong', {}, charName(id)), heart(a))));
+      el('span', { class: 'c-body' }, el('strong', {}, charName(id), window.CHAT[id] && freshTopics(id) ? el('em', { class: 'new', title: 'Temas nuevos' }, ' ✦') : null), heart(a))));
     }
   }
 
@@ -880,7 +880,70 @@
     toast(`Objetivo: ve a ${objectiveName()}`, 'good');
   }
 
-  // ---------------- Chat libre ----------------
+  // ---------------- Conversaciones con opciones ----------------
+  // Cada personaje tiene un árbol de diálogo (src/data/chat.js): eliges qué decir
+  // entre varias respuestas y su tono cambia la afinidad, tus estadísticas o la historia.
+  const TONES = { amable: '💗', broma: '😏', duro: '🔥', pregunta: '❓', coqueto: '💋', astuto: '🎭', serio: '🗡️', sigilo: '🌑' };
+  let talking = false;
+
+  function talkState() {
+    G.talk = G.talk || { at: {}, seen: {} };
+    return G.talk;
+  }
+
+  function dlgKey(id, node, o) {
+    return `${id}:${node}:${o.t}`;
+  }
+
+  // Requisitos de una opción. aff: n se refiere al personaje con el que hablas.
+  function dlgReq(req, id) {
+    if (!req) return true;
+    if (typeof req.aff === 'number') return affOf(id) >= req.aff;
+    if (req.season) return (G.progress.season || 1) >= req.season;
+    return reqMet(req);
+  }
+
+  function dlgHidden(req, id) {
+    if (!req) return false;
+    if (req.season) return !dlgReq(req, id);
+    return reqHidden(req);
+  }
+
+  function reqLabel(req) {
+    if (!req) return '';
+    if (req.stat) return `[${S().stats[req.stat].label} ${req.min}]`;
+    if (typeof req.aff === 'number') return `[Afinidad ${req.aff}]`;
+    if (req.aff) return `[Afinidad con ${charName(req.aff[0])} ${req.aff[1]}]`;
+    return '';
+  }
+
+  // Opciones visibles en un nodo de la conversación.
+  function dlgOptions(id) {
+    const data = window.CHAT[id];
+    const at = talkState().at[id] || 'hub';
+    if (at === 'bye') return [];
+    const base = at === 'hub' ? data.hub : data.nodes?.[at]?.opts || [];
+    const seen = talkState().seen;
+    const list = base.filter((o) => !dlgHidden(o.req, id) && !(o.once && seen[dlgKey(id, at, o)]))
+      .map((o) => ({ ...o, __node: at }));
+    if (at === 'hub') list.push({ t: 'Hasta luego.', tone: 'amable', go: 'bye', __node: at, __bye: true });
+    else if (!data.nodes[at].noBack) list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
+    return list;
+  }
+
+  // Temas que aún no has tocado con alguien (para el aviso en la cabecera).
+  function freshTopics(id) {
+    const data = window.CHAT[id];
+    const seen = talkState().seen;
+    return (data?.hub || []).filter((o) => !dlgHidden(o.req, id) && !seen[dlgKey(id, 'hub', o)]).length;
+  }
+
+  function headLine(id) {
+    const fresh = freshTopics(id);
+    const role = window.WIKI.personajes.find((p) => p.id === id)?.role || '';
+    return `${role} · Afinidad ${affOf(id)}/10${fresh ? ` · ✦ ${fresh} tema${fresh > 1 ? 's' : ''} por descubrir` : ''}`;
+  }
+
   function renderChat(main) {
     if (!G.unlocked.length) {
       main.append(el('div', { class: 'wiki-empty' }, el('h2', {}, 'Aún no conoces a nadie'), el('p', {}, 'Juega la historia para desbloquear personajes con los que hablar.')));
@@ -888,28 +951,129 @@
     }
     if (!contact || !G.unlocked.includes(contact)) contact = G.unlocked[0];
     const id = contact;
-    const data = window.CHAT[id];
-    const wikiEntry = window.WIKI.personajes.find((p) => p.id === id);
-    const ai = window.App.aiReady();
-    if (!G.chats[id]) G.chats[id] = [{ s: id, t: tpl(greeting(id), G.player) }];
+    if (!G.chats[id]) {
+      G.chats[id] = [{ s: id, t: tpl(greeting(id), G.player) }];
+      talkState().at[id] = 'hub';
+    }
     main.append(
       el('header', { class: 'scene-head' },
         el('div', { class: 'row gap' },
           el('span', { class: 'avatar', html: Portrait.forCharacter(id) }),
-          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, `${wikiEntry?.role || ''} · Afinidad ${affOf(id)}/10 · ${ai ? `✨ IA: ${window.App.aiLabel()}` : 'Modo clásico'}`))),
+          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, headLine(id)))),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, '📚 Códice'),
-          el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; persist(); renderMain(); } }, '🧹 Limpiar'))),
+          el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; talkState().at[id] = 'hub'; persist(); renderMain(); } }, '🧹 Limpiar'))),
       el('div', { id: 'chat-log', class: 'log' }),
-      el('div', { class: 'chips wrap topic-chips' }, (data?.topics || []).map((t) =>
-        el('button', { class: 'chip', onclick: () => sendChat(t.label) }, t.label))),
-      el('form', { class: 'chat-input', onsubmit: (e) => { e.preventDefault(); const inp = e.target.elements.msg; const v = inp.value.trim(); if (v) { inp.value = ''; sendChat(v); } } },
-        el('input', { name: 'msg', class: 'input', autocomplete: 'off', placeholder: `Escribe a ${charName(id)}…`, maxlength: 400 }),
-        el('button', { class: 'btn primary', type: 'submit' }, 'Enviar')));
+      el('div', { id: 'dlg-choices', class: 'choices' }));
     const log = $('#chat-log');
     for (const m of G.chats[id]) log.append(bubble(m.s, m.t, true));
+    showDialog(id);
     log.scrollTop = log.scrollHeight;
-    setTimeout(() => main.querySelector('input[name=msg]')?.focus(), 0);
+  }
+
+  function showDialog(id) {
+    const box = $('#dlg-choices');
+    if (!box) return;
+    box.innerHTML = '';
+    if (talking) return;
+    if (talkState().at[id] === 'bye') {
+      box.append(el('button', { class: 'choice', onclick: () => restartTalk(id) }, el('span', { class: 'num' }, 1), `💬 Volver a hablar con ${charName(id)}`));
+      return;
+    }
+    const seen = talkState().seen;
+    dlgOptions(id).forEach((o, i) => {
+      const ok = dlgReq(o.req, id);
+      const isNew = !o.__bye && !o.__back && !seen[dlgKey(id, o.__node, o)];
+      box.append(el('button', {
+        class: `choice${ok ? '' : ' locked'}${!isNew && !o.__bye && !o.__back ? ' seen' : ''}`,
+        disabled: !ok,
+        title: ok ? '' : 'No cumples el requisito',
+        onclick: () => sayOption(id, o),
+      }, el('span', { class: 'num' }, i + 1),
+      el('span', {},
+        o.__back ? '↩ ' : o.__bye ? '👋 ' : TONES[o.tone] ? `${TONES[o.tone]} ` : '',
+        tpl(o.t, G.player),
+        o.req && reqLabel(o.req) ? el('em', { class: 'req' }, ` ${reqLabel(o.req)}`) : null,
+        !ok ? el('em', {}, ' 🔒') : null,
+        isNew ? el('em', { class: 'new' }, ' ✦') : null)));
+    });
+  }
+
+  async function restartTalk(id) {
+    talkState().at[id] = 'hub';
+    await speak(id, [tpl(greeting(id), G.player)]);
+    showDialog(id);
+    persist();
+  }
+
+  // Dice una línea en el comunicador (con «escribiendo…» para los personajes).
+  async function speak(id, lines) {
+    const thread = G.chats[id];
+    for (const raw of lines) {
+      const line = typeof raw === 'string' ? { s: id, t: raw } : raw;
+      const text = tpl(line.t, G.player);
+      const log = contact === id && tab === 'chats' ? $('#chat-log') : null;
+      if (log && line.s !== 'narrador') {
+        const typing = el('div', { class: 'msg them typing' }, el('div', { class: 'bubble' }, el('i'), el('i'), el('i')));
+        log.append(typing);
+        log.scrollTop = log.scrollHeight;
+        await sleep(Math.min(1400, 350 + text.length * 12));
+        typing.remove();
+      }
+      thread.push({ s: line.s, t: text });
+      const log2 = contact === id && tab === 'chats' ? $('#chat-log') : null;
+      if (log2) {
+        log2.append(bubble(line.s, text));
+        log2.scrollTop = log2.scrollHeight;
+      }
+      if (line.s !== 'narrador') Audio2.sfx.message();
+    }
+    if (thread.length > 160) thread.splice(1, thread.length - 160);
+  }
+
+  async function sayOption(id, o) {
+    if (talking) return;
+    talking = true;
+    Audio2.sfx.choice();
+    const data = window.CHAT[id];
+    const thread = G.chats[id];
+    const text = tpl(o.t, G.player);
+    thread.push({ s: 'yo', t: text });
+    $('#chat-log')?.append(bubble('yo', text));
+    showDialog(id);
+
+    const key = dlgKey(id, o.__node, o);
+    const first = !o.__bye && !o.__back && !talkState().seen[key];
+    if (!o.__bye && !o.__back) talkState().seen[key] = true;
+    if (first && o.fx) applyTalkFx(id, o.fx);
+
+    const said = o.__bye ? [pick(data.bye || ['Nos vemos.'])] : [].concat(o.say || []);
+    await speak(id, said);
+    const go = o.go || (o.__node === 'hub' ? 'hub' : o.__node);
+    talkState().at[id] = go;
+    if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, [].concat(data.nodes[go].say));
+    talking = false;
+    if (tab === 'chats' && contact) {
+      const head = $('#play-main .scene-head small');
+      if (head) head.textContent = headLine(contact);
+      showDialog(contact);
+      const log = $('#chat-log');
+      if (log) log.scrollTop = log.scrollHeight;
+    }
+    renderContacts();
+    persist();
+  }
+
+  // Efectos de una respuesta: afinidad (número = con quien hablas), reputación, estadísticas y flags.
+  function applyTalkFx(id, fx) {
+    const aff = typeof fx.aff === 'number' ? { [id]: fx.aff } : fx.aff || {};
+    const scaled = {};
+    for (const [k, v] of Object.entries(aff)) scaled[k] = v > 0 ? Math.min(v + chatGain() - 1, v * 2) : v;
+    applyFx({ ...fx, aff: scaled });
+    for (const [k, v] of Object.entries(scaled)) {
+      if (v > 0) toast(`${charName(k)} aprecia lo que has dicho (+${v} afinidad)`, 'good');
+      else if (v < 0) toast(`A ${charName(k)} no le ha gustado (${v} afinidad)`, 'warn');
+    }
   }
 
   function greeting(id) {
@@ -917,96 +1081,6 @@
     if (!g) return 'Hola.';
     const a = affOf(id);
     return a < 0 ? g.low : a >= 5 ? g.high : g.mid;
-  }
-
-  async function sendChat(text) {
-    const id = contact;
-    const thread = G.chats[id];
-    thread.push({ s: 'yo', t: text });
-    const log = $('#chat-log');
-    log?.append(bubble('yo', text));
-    log && (log.scrollTop = log.scrollHeight);
-    Audio2.sfx.click();
-
-    const typing = el('div', { class: 'msg them typing' }, el('div', { class: 'bubble' }, el('i'), el('i'), el('i')));
-    log?.append(typing);
-    log && (log.scrollTop = log.scrollHeight);
-
-    let reply = null;
-    if (window.App.aiReady() && window.arcane?.ai) {
-      const res = await window.arcane.ai.chat({ system: personaPrompt(id), messages: toApiMessages(thread) });
-      if (res.ok && res.text) reply = res.text;
-      else toast(`${res.error || 'La IA no respondió'} · Uso el modo clásico.`, 'warn');
-    } else {
-      await sleep(500 + Math.random() * 700);
-    }
-    if (!reply) reply = classicReply(id, text);
-    typing.remove();
-    thread.push({ s: id, t: reply });
-    if (thread.length > 120) thread.splice(1, thread.length - 120);
-    if (contact === id && tab === 'chats') {
-      log?.append(bubble(id, reply));
-      log && (log.scrollTop = log.scrollHeight);
-    }
-    Audio2.sfx.message();
-    renderContacts();
-    persist();
-  }
-
-  // Respuestas sin IA: busca palabras clave; el primer tema tratado sube la afinidad.
-  function classicReply(id, text) {
-    const data = window.CHAT[id];
-    const q = norm(text);
-    G.flags.__topics = G.flags.__topics || {};
-    for (const t of data?.topics || []) {
-      if (norm(t.label) === q || t.keys.some((k) => q.includes(norm(k)))) {
-        const key = `${id}:${t.label}`;
-        if (!G.flags.__topics[key]) {
-          G.flags.__topics[key] = true;
-          const gain = chatGain();
-          G.aff[id] = Math.min(10, affOf(id) + gain);
-          toast(`${charName(id)} aprecia la conversación (+${gain} afinidad)`, 'good');
-        }
-        return tpl(pick(t.replies), G.player);
-      }
-    }
-    if (/\b(hola|buenas|hey|saludos)\b/.test(q)) return tpl(greeting(id), G.player);
-    const other = window.WIKI.personajes.find((p) => p.id !== id && q.includes(norm(p.name.split(' ')[0])));
-    if (other) return `¿${other.name}? ${pick(['Mejor pregúntale a esa persona directamente.', 'No es asunto mío. O quizá sí.', 'Hay mucho que contar… pero no hoy.'])}`;
-    return tpl(pick(data?.fallback || ['…']), G.player);
-  }
-
-  function toApiMessages(thread) {
-    // La API requiere alternancia usuario/asistente empezando por el usuario.
-    const msgs = [];
-    for (const m of thread.slice(-30)) {
-      const role = m.s === 'yo' ? 'user' : 'assistant';
-      if (!msgs.length && role === 'assistant') {
-        msgs.push({ role: 'user', content: '(Te acercas a saludar.)' });
-      }
-      const last = msgs[msgs.length - 1];
-      if (last && last.role === role) last.content += `\n${m.t}`;
-      else msgs.push({ role, content: m.t });
-    }
-    return msgs;
-  }
-
-  function personaPrompt(id) {
-    const c = window.WIKI.personajes.find((p) => p.id === id);
-    const p = G.player;
-    const spoilers = window.App.settings.spoilers;
-    const facts = [c.summary, ...(c.details || []), spoilers && c.spoiler ? c.spoiler : ''].filter(Boolean).join(' ');
-    const flags = Object.keys(G.flags).filter((f) => !f.startsWith('__')).join(', ') || 'ninguno';
-    return [
-      `Eres ${c.name}${c.alias ? ` (${c.alias})` : ''}, personaje de la serie Arcane. Hablas siempre en español, en primera persona y sin salir nunca del personaje.`,
-      `Lo que sabes de ti: ${facts}`,
-      `Habla como en la serie: ${window.CHAT[id]?.greet?.mid || ''} Ejemplos de tu tono: ${(window.CHAT[id]?.fallback || []).join(' / ')}`,
-      `Hablas con ${p.name}, ${tpl(p.jobLabel, p)} de ${p.origin === 'zaun' ? 'Zaun' : 'Piltover'} (${p.district}), ${p.age} años, género: ${p.gender}. Familia: ${tpl(p.familyLabel, p)}. Aficiones: ${p.hobbyLabels.join(', ')}. ${p.bio ? `Su historia: ${p.bio}` : ''}`,
-      `Tu afinidad con esta persona es ${affOf(id)} sobre 10 (negativa = desconfianza, alta = cariño). Ajusta tu trato.`,
-      `Momento de la historia: ${chapterById(G.progress.chapterId)?.title}. Decisiones tomadas por el jugador (claves internas): ${flags}.`,
-      spoilers ? '' : 'No reveles acontecimientos de la segunda temporada de Arcane.',
-      'Responde con 1 a 3 frases, con personalidad, humor propio del personaje y sin listas. Puedes describir gestos entre paréntesis. No digas que eres una IA.',
-    ].filter(Boolean).join('\n');
   }
 
   // ---------------- Ficha ----------------
@@ -1103,7 +1177,7 @@
     // Números: elegir opción de la historia o del menú de un lugar.
     const n = Number(e.key);
     if (n >= 1 && n <= 9) {
-      const all = [...document.querySelectorAll('#overlay #choices .choice, #overlay .action-menu .choice')];
+      const all = [...document.querySelectorAll('#overlay #choices .choice, #overlay #dlg-choices .choice, #overlay .action-menu .choice')];
       const b = all[n - 1];
       if (b && !b.disabled) b.click();
     }

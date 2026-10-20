@@ -1,7 +1,7 @@
 # Arcane: Piltover y Zaun
 
 Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arcane*:
-**historia interactiva + chat + mundo abierto** de Piltover y Zaun.
+**historia interactiva + conversaciones con opciones + mundo abierto** de Piltover y Zaun.
 
 Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
 Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
@@ -42,32 +42,13 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
    - Si dice que «está dañado»: abre **Terminal** y escribe
      `xattr -cr "/Applications/Arcane Piltover y Zaun.app"` y vuelve a abrirlo.
 
-### Paso 3 · Activa el chat con IA (Ollama, opcional pero recomendado)
-
-1. Descarga e instala **Ollama** desde https://ollama.com/download (Windows o Mac).
-2. Abre una terminal:
-   - Windows: pulsa la tecla **Windows**, escribe `cmd` y pulsa Intro.
-   - Mac: abre **Terminal** (Aplicaciones → Utilidades).
-3. Mira qué modelos tienes instalados con:
-   ```
-   ollama list
-   ```
-4. Si no tienes ninguno de chat, descarga uno (elige uno):
-   ```
-   ollama pull llama3.2
-   ```
-   (`llama3.2` es ligero y va bien en casi cualquier PC; si tu ordenador es potente, prueba
-   `ollama pull qwen3:8b` o `ollama pull mistral`.)
-5. Deja Ollama abierto (en Windows aparece un icono de llama junto al reloj).
-6. Abre el juego → **⚙ Ajustes → Conversaciones con IA**. Deberías ver **✅ Ollama conectado** y tu
-   modelo. Pulsa **💬 Probar conversación** y Jinx te contestará.
-
-### Paso 4 · ¡A jugar!
+### Paso 3 · ¡A jugar!
 
 1. En el menú principal pulsa **✦ Nueva partida**.
 2. Elige **Zaun** o **Piltover**, crea tu personaje (clase, habilidades, retrato, familia…).
 3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
-4. Pulsa **C** para chatear con los personajes que conozcas y **Esc** para el menú de pausa.
+4. Pulsa **C** para hablar con los personajes que conozcas y **Esc** para el menú de pausa.
+   No necesitas instalar nada más: el juego no usa IA ni Ollama.
 
 > ¿Prefieres ejecutarlo desde el código? Instala [Node.js](https://nodejs.org), descarga el proyecto
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
@@ -103,9 +84,13 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
    tejados, 🛹 vuelo en aerotabla, 🎯 galería de tiro, 🔧 circuito hextec (puzle), 🔷 runas de la
    Academia (memoria) y 💰 regateo en el mercado. Algunas decisiones de la historia también se
    resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
-6. **Chatea**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
-   hablar con ellos por chat o en persona en su lugar del mapa.
-   Conversar sube la afinidad, y la afinidad abre opciones en la historia.
+6. **Conversa**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
+   hablar con ellos por el comunicador o en persona en su lugar del mapa. Cada conversación es
+   un árbol de diálogo: eliges qué decir entre varias respuestas (💗 amable, 😏 broma, 🔥 dura,
+   ❓ pregunta, 💋 coqueta, 🎭 astuta, 🗡️ seria, 🌑 sigilosa) y el personaje reacciona.
+   Lo que dices sube o baja la afinidad, te da estadísticas y activa decisiones de la historia.
+   Algunas respuestas piden **Ingenio, Carisma, Valor, Sigilo o afinidad**, y otras solo aparecen
+   si tomaste ciertas decisiones antes (o en la Temporada 2). Los temas nuevos se marcan con ✦.
 7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
 8. **Temporada 2** 🌙: al terminar la primera temporada se desbloquea la segunda, que continúa tu
    partida con las consecuencias de lo que hiciste: la cacería de Jinx tras el ataque, Isha, el
@@ -183,22 +168,11 @@ elige el aspecto de Arcane cuando existe. Los personajes que no son campeones (S
 Vander, Sevika…) los añades tú. Todos estos archivos se quedan en tu ordenador y no se
 incluyen en el ejecutable.
 
-### Chat con IA: Ollama 🦙
+### Conversaciones sin IA
 
-Los personajes conversan libremente con **[Ollama](https://ollama.com)**, que funciona en tu
-propio ordenador: gratis, privado y sin conexión a internet.
-
-1. Instala Ollama desde https://ollama.com y ábrelo.
-2. Descarga un modelo de chat desde una terminal, por ejemplo:
-   `ollama pull llama3.2` (ligero) o `ollama pull qwen3:8b` / `ollama pull mistral` (más potentes).
-3. Abre el juego: **detecta automáticamente los modelos instalados en tu PC** y elige uno de
-   chat (descarta los de *embeddings*). En **Ajustes → Conversaciones con IA** verás cuáles tienes,
-   podrás cambiar de modelo, cambiar la dirección de Ollama (por defecto `http://127.0.0.1:11434`)
-   y pulsar **💬 Probar conversación**.
-
-En el comunicador, la cabecera de cada chat indica si estás en **✨ IA: Ollama · modelo** o en
-modo clásico (sin Ollama abierto, los personajes responden con diálogos escritos y temas).
-Opcionalmente, en el mismo menú se puede usar Claude con una clave de API de Anthropic.
+Desde la v1.5.0 el juego ya no usa Ollama ni ninguna IA: todas las conversaciones están
+escritas a mano en `src/data/chat.js`, con más de 280 respuestas posibles entre 22 personajes.
+Funciona sin internet y sin instalar nada aparte.
 
 ## Cómo instalarlo
 
@@ -277,7 +251,7 @@ Windows y Mac y añade los instaladores a esa Release automáticamente.
 ## Estructura
 
 ```
-main.js, preload.js      Proceso de Electron: ventana, partidas, ajustes, chat IA
+main.js, preload.js      Proceso de Electron: ventana, partidas y ajustes
 src/index.html           Interfaz del juego
 src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
 src/js/game.js           Historia, comunicador, ficha, actividades y Códice
@@ -286,7 +260,7 @@ src/js/audio.js          Música procedural y efectos de sonido
 src/js/portrait.js       Retratos ilustrados generados en SVG
 src/data/story.js        Capítulos, decisiones y finales
 src/data/world.js        Mapas de Piltover y Zaun, lugares, actividades, fragmentos
-src/data/chat.js         Diálogos de cada personaje
+src/data/chat.js         Árboles de diálogo de cada personaje
 src/data/wiki.js         Entradas del Códice (personajes, lugares, criaturas, tecnología, mundo)
 src/data/creation.js     Opciones del creador de personaje
 scripts/check.js         Validador de datos
