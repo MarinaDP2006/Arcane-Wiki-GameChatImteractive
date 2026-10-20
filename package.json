@@ -1,0 +1,52 @@
+{
+  "name": "arcane-piltover-zaun",
+  "productName": "Arcane Piltover y Zaun",
+  "version": "1.0.0",
+  "description": "Juego de escritorio de Arcane: historia interactiva, chat con voz y mundo abierto de Piltover y Zaun.",
+  "main": "main.js",
+  "author": "MarinaDP2006",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "check": "node scripts/check.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0"
+  },
+  "devDependencies": {
+    "electron": "^44.9.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.marinadp2006.arcanewikigame",
+    "productName": "Arcane Piltover y Zaun",
+    "files": ["main.js", "preload.js", "src/**/*", "build/icon.png", "package.json"],
+    "directories": { "output": "dist", "buildResources": "build" },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Arcane Piltover y Zaun"
+    },
+    "portable": { "artifactName": "${productName}-${version}-portable.${ext}" },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["universal"] },
+        { "target": "zip", "arch": ["universal"] }
+      ],
+      "category": "public.app-category.role-playing-games",
+      "icon": "build/icon.png",
+      "identity": null
+    }
+  }
+}
