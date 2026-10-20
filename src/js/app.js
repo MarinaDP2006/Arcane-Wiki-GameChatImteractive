@@ -11,11 +11,43 @@
       if (view !== 'game') { Audio2.stopSpeech(); window.World?.stop(); }
       if (view === 'home') renderTitle();
       if (view === 'game') Game.mount();
-      if (view === 'settings') App.renderSettings($('#view-settings'), () => App.go('home'));
+      if (view === 'settings') {
+        App.renderSettings($('#view-settings'), () => App.go('home'));
+        backdrop3d($('#view-settings'), 'settings');
+      }
     },
     renderSettings,
   };
   window.App = App;
+
+  // Fondo 3D detrás de una pantalla (ajustes, partidas, creador).
+  function backdrop3d(view, shot) {
+    let host = view.querySelector(':scope > .scene3d-backdrop');
+    if (!host) {
+      host = el('div', { class: 'scene3d-backdrop scene3d-host' });
+      view.prepend(host);
+    }
+    if (!window.Scene3D?.mount(host, shot)) host.remove();
+    tiltAll(view);
+  }
+  App.backdrop3d = backdrop3d;
+
+  // Inclinación 3D de los paneles siguiendo al ratón.
+  function tiltAll(root) {
+    root.querySelectorAll('.title-content, .slot, .creator-stage .portrait-frame').forEach((n) => {
+      if (n.dataset.tilt) return;
+      n.dataset.tilt = '1';
+      n.classList.add('tilt3d');
+      n.addEventListener('pointermove', (e) => {
+        const r = n.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        n.style.transform = `perspective(1100px) rotateY(${x * 6}deg) rotateX(${-y * 5}deg) translateZ(0)`;
+      });
+      n.addEventListener('pointerleave', () => { n.style.transform = ''; });
+    });
+  }
+  App.tiltAll = tiltAll;
 
   async function renderTitle() {
     const root = $('#view-home');
@@ -24,7 +56,7 @@
     const hasSave = slots.some((s) => !s.empty);
     const btn = (label, fn, cls = '') => el('button', { class: `title-btn ${cls}`, onclick: () => { Audio2.sfx.choice(); fn(); } }, label);
     root.append(el('div', { class: 'title-screen' },
-      el('canvas', { class: 'title-scene', id: 'title-scene' }),
+      el('div', { class: 'title-scene scene3d-host', id: 'title-scene' }),
       el('div', { class: 'title-hexes' }, ...Array.from({ length: 14 }, (_, i) => el('i', { style: `left:${(i * 37) % 100}%;animation-delay:${(i * 1.3) % 9}s;animation-duration:${9 + (i % 5) * 2}s` }))),
       el('div', { class: 'title-content' },
         el('p', { class: 'subtitle' }, 'Piltover · Zaun'),
@@ -38,8 +70,11 @@
           U.desktop ? btn('✕ Salir', () => window.arcane.quit()) : null),
         el('small', { class: 'muted title-foot' }, 'Proyecto de fans · Arcane y League of Legends son propiedad de Riot Games'))));
     Audio2.playMusic('wiki');
-    // Fondo pintado animado que va alternando entre las dos ciudades.
-    const ctl = Scenes.mount($('#title-scene'), 'puente', { cam: undefined });
+    // Fondo 3D en tiempo real; si el equipo no admite WebGL, fondo pintado 2D.
+    if (window.Scene3D?.mount($('#title-scene'), 'title')) { tiltAll(root); return; }
+    const cv = el('canvas', { class: 'title-scene' });
+    $('#title-scene').append(cv);
+    const ctl = Scenes.mount(cv, 'puente', { cam: undefined });
     const cycle = ['puente', 'piltover', 'hexpuertas', 'puente-zaun', 'zaun', 'callejones', 'arbol'];
     let k = 0;
     const timer = setInterval(() => {
@@ -67,10 +102,7 @@
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
       el('h3', {}, 'Pantalla'),
       U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, '⛶ Pantalla completa (F11)') : null,
-      U.desktop ? el('div', {},
-        el('h3', {}, 'Arte personal'),
-        el('p', { class: 'muted' }, 'Pon tus propias imágenes, concept art o vídeos en la carpeta de arte (por ejemplo personajes/jinx.png, escenas/ultima-gota.jpg o video/intro-zaun.mp4) y el juego los usará en lugar del arte pintado. Hay instrucciones en el archivo LEEME.txt de esa carpeta.'),
-        el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, '📁 Abrir carpeta de arte')) : null,
+      U.desktop ? artSettings(root, onBack) : null,
       el('h3', {}, 'Audio'),
       el('label', { class: 'field' }, el('span', {}, 'Volumen general'),
         el('input', { type: 'range', min: 0, max: 1, step: 0.05, value: s.volume, oninput: (e) => set({ volume: Number(e.target.value) }) })),
@@ -96,6 +128,119 @@
       el('h3', {}, 'Acerca de'),
       el('p', { class: 'muted small' }, 'Proyecto de fans sin ánimo de lucro. Arcane y League of Legends son propiedad de Riot Games. Los retratos y mapas se generan en la app y la música se sintetiza en tiempo real.')));
   }
+
+  // ---------- Arte personal ----------
+  // Personajes de League of Legends en Data Dragon (id del juego -> id de campeón).
+  const LOL_CHAMPS = { vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn', jayce: 'Jayce', viktor: 'Viktor', heimerdinger: 'Heimerdinger', ekko: 'Ekko', singed: 'Singed', ambessa: 'Ambessa', mel: 'Mel', warwick: 'Warwick' };
+
+  // Texto de la guía con todos los nombres de archivo que el juego reconoce.
+  function artGuide() {
+    const W = window.WIKI;
+    const line = (id, name) => `  ${id.padEnd(22)} ${name}`;
+    const chapters = window.STORY.chapters;
+    const endings = [...window.STORY.endings, ...(window.STORY.endings2 || [])];
+    const places = Object.keys(Scenes.THEMES).map((id) => {
+      const loc = Object.values(window.WORLD.maps).flatMap((m) => m.locations).find((l) => l.id === id);
+      const wiki = W.lugares.find((l) => l.id === id);
+      return line(id, loc?.name || wiki?.name || id);
+    });
+    return [
+      'GUÍA DE ARTE · Arcane: Piltover y Zaun',
+      '======================================',
+      '',
+      'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',
+      '(«La Última Gota.jpg», «Puente del Progreso.png») o en inglés («The Last Drop.jpg»); da igual tildes y mayúsculas.',
+      'En Ajustes → Arte personal verás qué lugares tienen imagen y cuáles faltan.',
+      'Formatos: imágenes .png .jpg .jpeg .webp · vídeos .mp4 .webm',
+      'Reinicia el juego después de añadir archivos.',
+      '',
+      'personajes/   CUERPO ENTERO (vertical, la cara en la parte de arriba): bustos de la historia y fichas del Códice',
+      ...W.personajes.map((p) => line(p.id, p.name)),
+      '',
+      'caras/        CARA (cuadrada, solo la cabeza): avatares del chat, contactos y mapa. Mismos nombres que personajes/',
+      '              Si solo pones el cuerpo, el juego lo usa también para la cara (y al revés).',
+      '',
+      'lugares/      Fondos de lugares, del menú, de la historia y de las cinemáticas (horizontales, 16:9)',
+      ...places,
+      '',
+      'codice/       Ilustraciones del Códice (criaturas, tecnología, mundo y lugares)',
+      ...['criaturas', 'tecnologia', 'mundo', 'lugares'].flatMap((c) => [`  -- ${W.categories.find((x) => x.id === c).label}`, ...W[c].map((e) => line(e.id, e.name))]),
+      '',
+      'video/        Cinemáticas (sustituyen a las animadas; se pueden saltar con Esc)',
+      line('intro-zaun', 'Intro al empezar en Zaun'),
+      line('intro-piltover', 'Intro al empezar en Piltover'),
+      line('temporada-2', 'Apertura de la Temporada 2'),
+      ...chapters.map((c) => line(`capitulo-${c.id}`, c.title)),
+      ...endings.map((e) => line(`fin-${e.id}`, e.title)),
+      '',
+      'Ejemplos: personajes/jinx.png · lugares/ultima-gota.jpg · codice/hextec.png · video/intro-zaun.mp4',
+    ].join('\n');
+  }
+
+  // Lista de lugares: cuáles tienen imagen, cuáles toman la de su gemelo y cuáles faltan.
+  function placesReport() {
+    const r = window.CustomArt.report;
+    const total = Object.keys(Scenes.THEMES).length;
+    const name = (id) => Object.values(window.WORLD.maps).flatMap((m) => m.locations).find((l) => l.id === id)?.name
+      || window.WIKI.lugares.find((l) => l.id === id)?.name || id;
+    const chip = (id, cls, title) => el('span', { class: `tag ${cls}`, title }, `${name(id)} · ${id}`);
+    return el('details', { class: 'places-report', open: r.missing.length || r.unknown.length ? true : null },
+      el('summary', {}, `🏙 Lugares con imagen: ${r.found.length + r.borrowed.length}/${total}${r.missing.length ? ` · faltan ${r.missing.length}` : ' · ¡completo!'}`),
+      r.found.length ? el('div', { class: 'chips' }, r.found.map((id) => chip(id, 'ok', 'Tu imagen'))) : null,
+      r.borrowed.length ? el('p', { class: 'muted small' }, 'Usan la imagen de su lugar gemelo (pon una propia si quieres):') : null,
+      r.borrowed.length ? el('div', { class: 'chips' }, r.borrowed.map((id) => chip(id, 'warn', 'Imagen prestada'))) : null,
+      r.missing.length ? el('p', { class: 'muted small' }, 'Faltan (se ve el fondo pintado del juego). Guarda la imagen con el nombre de la derecha:') : null,
+      r.missing.length ? el('div', { class: 'chips' }, r.missing.map((id) => chip(id, 'bad', `lugares/${id}.jpg`))) : null,
+      r.unknown.length ? el('p', { class: 'muted small' }, `No sé a qué lugar corresponden estos archivos (renómbralos con un nombre de la guía): ${r.unknown.join(', ')}`) : null);
+  }
+
+  function artSettings(root, onBack) {
+    const counts = ['personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
+    const progress = el('div', { class: 'tts-progress hidden' }, el('i'), el('span'));
+    return el('div', {},
+      el('h3', {}, '🖼 Arte personal'),
+      el('p', { class: 'muted' }, 'Pon tus imágenes y vídeos en la carpeta de arte y el juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
+      el('p', { class: 'small' }, `Archivos encontrados → ${counts}`),
+      placesReport(),
+      el('div', { class: 'row gap' },
+        el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, '📁 Abrir carpeta de arte'),
+        ...['personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `📂 ${d}`)),
+        el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, '🔄 Recargar arte')),
+      el('p', { class: 'muted small' }, 'Retratos oficiales (cara y cuerpo): el juego puede descargar a tu carpeta las ilustraciones de los campeones de League of Legends que aparecen en Arcane (Jinx, Vi, Caitlyn, Jayce, Viktor, Ekko, Heimerdinger, Singed, Ambessa, Mel y Warwick) desde Data Dragon, el servidor público de Riot. Si el campeón tiene apariencia de Arcane, se usa esa. Se guardan solo en tu ordenador, para uso personal.'),
+      el('button', {
+        class: 'btn primary small',
+        onclick: async (ev) => {
+          ev.target.disabled = true;
+          progress.classList.remove('hidden');
+          window.arcane.art.onDdragon((d) => {
+            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
+            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `Descargando ${d.current}…`;
+          });
+          try {
+            const r = await window.arcane.art.ddragon(LOL_CHAMPS);
+            await window.CustomArt.load();
+            toast(`Retratos descargados: ${r.done.length}${r.failed.length ? ` · no disponibles: ${r.failed.join(', ')}` : ''}`, 'good');
+          } catch (err) {
+            toast(`No se pudieron descargar: ${err.message || err}`, 'warn');
+          }
+          renderSettings(root, onBack);
+        },
+      }, '⬇ Descargar retratos oficiales (Data Dragon)'),
+      progress,
+      el('h3', {}, '🗺 Mapa interactivo del Códice'),
+      el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K o M) en la pestaña «Mapa interactivo», junto al Atlas propio del juego.'),
+      el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),
+        el('input', { class: 'input', value: App.settings.mapUrl || DEFAULT_MAP, onchange: async (e) => { App.settings.mapUrl = e.target.value.trim(); await store.setSettings({ mapUrl: App.settings.mapUrl }); } })),
+      el('button', { class: 'btn small', onclick: () => App.openMap() }, '🗺 Abrir mapa interactivo'));
+  }
+
+  const DEFAULT_MAP = 'https://neta.art/w/b2a0b258-f552-4a6d-9392-e1ff1557f298';
+  App.DEFAULT_MAP = DEFAULT_MAP;
+  App.openMap = () => {
+    const url = App.settings.mapUrl || DEFAULT_MAP;
+    if (window.arcane?.openMap) window.arcane.openMap(url);
+    else window.open(url, '_blank');
+  };
 
   // Ajustes de voz: voces humanas (Piper) o voces del sistema.
   function voiceSettings(s, set, root, onBack) {
@@ -234,6 +379,7 @@
   async function init() {
     App.settings = await store.getSettings();
     await window.CustomArt.load();
+    window.arcane?.art?.guide(artGuide());
     await Audio2.refreshNeural();
     if ((App.settings.aiProvider || 'ollama') === 'ollama') detectOllama();
     Audio2.configure(App.settings);

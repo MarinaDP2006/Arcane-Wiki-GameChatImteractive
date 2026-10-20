@@ -15,6 +15,8 @@
     return {
       origin: null, name: '', gender: 'mujer', age: 20, district: '', job: '', family: 'ninguna',
       hobbies: [], bio: '', photo: null,
+      cls: null, abilities: { Q: null, W: null, E: null, R: null }, keystone: null, title: '',
+      alloc: { ingenio: 0, carisma: 0, valor: 0, sigilo: 0 },
       look: { ...Painter.DEFAULTS, skin: '#e8b394', hair: '#2a1e18', style: 'long', eyeColor: '#5a7a9a', outfit: 'chaqueta', outfitColor: '#4a3a5a', accents: [] },
     };
   }
@@ -29,8 +31,13 @@
       add(o.families.find((f) => f.id === d.family)?.stats);
     }
     d.hobbies.forEach((h) => add(C().hobbies.find((x) => x.id === h)?.stats));
+    add(C().classes.find((c) => c.id === d.cls)?.stats);
+    for (const slot of ['Q', 'W', 'E', 'R']) add(C().abilities[slot].find((a) => a.id === d.abilities?.[slot])?.stats);
+    add(d.alloc);
     return s;
   }
+
+  const allocUsed = (d) => Object.values(d.alloc).reduce((a, b) => a + b, 0);
 
   function buildPlayer(d) {
     const o = C().origins[d.origin];
@@ -43,10 +50,11 @@
       family: fam.id, familyLabel: fam.label, familyName: fam.name || '', familyAff: fam.aff || {},
       hobbies: d.hobbies, hobbyLabels: hobbies.map((h) => h.label),
       bio: d.bio.trim(), photo: d.photo, look: { ...d.look },
+      cls: d.cls, abilities: { ...d.abilities }, keystone: d.keystone, title: d.title,
     };
   }
 
-  const STEPS = ['Origen', 'Identidad', 'Aspecto', 'Familia y aficiones', 'Ficha final'];
+  const STEPS = ['Origen', 'Identidad', 'Clase', 'Habilidades', 'Aptitudes', 'Aspecto', 'Familia y aficiones', 'Ficha final'];
 
   function header() {
     return el('ol', { class: 'steps' }, STEPS.map((s, i) =>
@@ -56,7 +64,10 @@
   function canNext() {
     if (step === 0) return Boolean(draft.origin);
     if (step === 1) return Boolean(draft.name.trim());
-    if (step === 3) return draft.hobbies.length > 0;
+    if (step === 2) return Boolean(draft.cls);
+    if (step === 3) return ['Q', 'W', 'E', 'R'].every((k) => draft.abilities[k]);
+    if (step === 4) return Boolean(draft.keystone) && allocUsed(draft) === C().statPoints;
+    if (step === 6) return draft.hobbies.length > 0;
     return true;
   }
 
@@ -105,7 +116,7 @@
     stopAnim();
     root.innerHTML = '';
     const bg = el('canvas', { class: 'creator-bg' });
-    const stage = el('canvas', { class: 'creator-portrait', width: 560, height: 560 });
+    const stage = el('canvas', { class: 'creator-portrait', width: 560, height: 560, title: '¡Haz clic para que te hable!', onclick: () => quip() });
     const side = el('div', { class: 'creator-stage' },
       el('div', { class: 'portrait-frame' }, stage, draft.photo ? el('img', { class: 'portrait-photo', src: draft.photo, alt: 'Tu foto' }) : null),
       el('div', { class: 'stage-info' },
@@ -114,17 +125,23 @@
       el('div', { class: 'row gap center' },
         el('button', { class: 'btn small', onclick: randomize }, '🎲 Aleatorio'),
         el('button', { class: 'btn small', onclick: sayHello }, '🗣 Probar voz')),
+      el('div', { id: 'stage-build' }, buildBar()),
       el('div', { id: 'stage-stats' }, statBars(computeStats(draft))));
     const body = el('div', { class: 'creator-body panel' });
     root.append(bg, el('div', { class: 'creator' }, header(), el('div', { class: 'creator-grid' }, body, side)));
-    bgScene = Scenes.mount(bg, draft.origin === 'piltover' ? 'piltover' : draft.origin === 'zaun' ? 'callejones' : 'puente');
+    // Fondo 3D con el cristal hextec; si no hay WebGL, escena pintada 2D.
+    const host3d = el('div', { class: 'creator-bg scene3d-host' });
+    if (window.Scene3D?.mount(host3d, 'creator')) {
+      bg.replaceWith(host3d);
+      window.App.tiltAll?.(root);
+    } else bgScene = Scenes.mount(bg, draft.origin === 'piltover' ? 'piltover' : draft.origin === 'zaun' ? 'callejones' : 'puente');
     preview = Painter.animate(stage, draft.look, lookOpts());
     return body;
   }
 
   function rerender() {
     const body = layout();
-    [stepOrigin, stepIdentity, stepLook, stepFamily, stepSummary][step](body);
+    [stepOrigin, stepIdentity, stepClass, stepAbilities, stepAptitudes, stepLook, stepFamily, stepSummary][step](body);
     body.classList.add('enter');
   }
 
@@ -132,6 +149,46 @@
     preview?.setLook({ ...draft.look }, lookOpts());
     const st = $('#stage-stats');
     if (st) { st.innerHTML = ''; st.append(statBars(computeStats(draft))); }
+    const b = $('#stage-build');
+    if (b) { b.innerHTML = ''; b.append(buildBar()); }
+  }
+
+  // Insignia de clase y barra de habilidades Q W E R bajo el retrato.
+  function buildBar() {
+    const cls = C().classes.find((c) => c.id === draft.cls);
+    const ks = C().keystones.find((k) => k.id === draft.keystone);
+    return el('div', { class: 'build-bar' },
+      el('div', { class: 'class-badge', style: cls ? `--c:${cls.color}` : '' }, cls ? `${cls.icon} ${tpl(cls.label, draft)}` : 'Sin clase', draft.title ? el('small', {}, tpl(draft.title, draft)) : null),
+      el('div', { class: 'ability-row' },
+        cls ? abilityHex({ icon: cls.icon, name: cls.passive.name, desc: cls.passive.desc }, 'P', true) : null,
+        ...['Q', 'W', 'E', 'R'].map((k) => abilityHex(C().abilities[k].find((a) => a.id === draft.abilities[k]), k)),
+        ks ? abilityHex({ icon: ks.icon, name: ks.name, desc: tpl(ks.desc, draft) }, '★', true) : null));
+  }
+
+  function abilityHex(a, key, small) {
+    return el('div', { class: `ability-hex${a ? '' : ' empty'}${small ? ' small' : ''}`, title: a ? `${a.name}: ${tpl(a.desc, draft)}` : `${key}: sin elegir` },
+      el('span', { class: 'ab-icon' }, a ? a.icon : '?'), el('kbd', {}, key));
+  }
+
+  // Gráfico de radar de las cuatro estadísticas.
+  function radar(stats, size = 220) {
+    const c = el('canvas', { class: 'radar', width: size, height: size });
+    const ctx = c.getContext('2d');
+    const keys = Object.keys(window.STORY.stats);
+    const cx = size / 2;
+    const cy = size / 2;
+    const R = size * 0.36;
+    const pt = (i, v) => { const a = -Math.PI / 2 + (i * Math.PI * 2) / keys.length; return [cx + Math.cos(a) * R * v, cy + Math.sin(a) * R * v]; };
+    ctx.strokeStyle = 'rgba(227,196,90,0.25)';
+    for (let r = 1; r <= 4; r++) { ctx.beginPath(); keys.forEach((_, i) => { const [x, y] = pt(i, r / 4); ctx[i ? 'lineTo' : 'moveTo'](x, y); }); ctx.closePath(); ctx.stroke(); }
+    ctx.beginPath();
+    keys.forEach((k, i) => { const [x, y] = pt(i, Math.min(1, stats[k] / 10)); ctx[i ? 'lineTo' : 'moveTo'](x, y); });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(63,169,245,0.35)'; ctx.fill();
+    ctx.strokeStyle = '#7fd0ff'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = '#f4efe6'; ctx.font = '12px system-ui'; ctx.textAlign = 'center';
+    keys.forEach((k, i) => { const [x, y] = pt(i, 1.25); ctx.fillText(`${window.STORY.stats[k].icon} ${stats[k]}`, x, y + 4); });
+    return c;
   }
 
   function go(n) {
@@ -149,6 +206,21 @@
       .then(() => preview?.talk(false));
   }
 
+  // Frases al hacer clic en el retrato.
+  function quip() {
+    const cls = C().classes.find((c) => c.id === draft.cls);
+    const lines = [
+      `¿Qué miras? Soy ${draft.name || 'yo'}${draft.title ? `, ${tpl(draft.title, draft)}` : ''}.`,
+      cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'piltover' ? 'Piltover' : 'Zaun'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
+      '¡Eh, que me despeinas!',
+      'Si me vuelves a pinchar, te lanzo una bomba de pintura.',
+      draft.origin === 'piltover' ? 'El progreso no espera, y yo tampoco.' : 'Aquí abajo nadie viene a salvarnos.',
+    ];
+    preview?.talk(true);
+    Audio2.stopSpeech();
+    Audio2.speak(pick(lines), { pitch: draft.gender === 'hombre' ? 0.9 : 1.1, rate: 1.05, gender: draft.gender === 'hombre' ? 'm' : 'f' }).then(() => preview?.talk(false));
+  }
+
   function randomize() {
     const L = C().look;
     draft.photo = null;
@@ -158,8 +230,18 @@
       outfit: pick(L.outfits).id, outfitColor: pick(L.outfitColors), makeup: pick(L.makeup).id,
       accents: L.accents.filter(() => Math.random() < 0.15).map((a) => a.id).slice(0, 3),
     };
+    // También la clase, las habilidades, el talento y los puntos.
+    const Cc = C();
+    draft.cls = pick(Cc.classes).id;
+    for (const k of ['Q', 'W', 'E', 'R']) draft.abilities[k] = pick(Cc.abilities[k]).id;
+    draft.keystone = pick(Cc.keystones).id;
+    draft.alloc = { ingenio: 0, carisma: 0, valor: 0, sigilo: 0 };
+    for (let i = 0; i < Cc.statPoints; i++) {
+      const k = pick(Object.keys(draft.alloc).filter((x) => draft.alloc[x] < Cc.maxStatPerAllocation));
+      draft.alloc[k]++;
+    }
     Audio2.sfx.choice();
-    if (step === 2) rerender(); else refreshPreview();
+    rerender();
   }
 
   // ----- Paso 1: Origen -----
@@ -211,7 +293,67 @@
     setTimeout(() => name.focus(), 0);
   }
 
-  // ----- Paso 3: Aspecto -----
+  // ----- Paso 3: Clase -----
+  function stepClass(body) {
+    body.append(el('h2', {}, 'Elige tu clase'),
+      el('p', { class: 'muted' }, 'Tu clase define tu estilo: suma estadísticas, te da una habilidad pasiva y te hace destacar en ciertos minijuegos.'));
+    body.append(el('div', { class: 'class-grid' }, C().classes.map((c) =>
+      el('button', {
+        class: `class-card${draft.cls === c.id ? ' active' : ''}`, style: `--c:${c.color}`,
+        onclick: () => { draft.cls = c.id; Audio2.sfx.choice(); rerender(); },
+      },
+      el('span', { class: 'class-icon' }, c.icon),
+      el('strong', {}, tpl(c.label, draft)),
+      el('small', { class: 'class-role' }, c.role),
+      el('p', {}, c.desc),
+      el('div', { class: 'class-passive' }, el('b', {}, `Pasiva · ${c.passive.name}`), el('span', {}, c.passive.desc)),
+      el('small', { class: 'gold' }, bonusText(c.stats))))));
+    body.append(nav());
+  }
+
+  // ----- Paso 4: Habilidades -----
+  const SLOT_INFO = { Q: 'Ataque', W: 'Movimiento', E: 'Utilidad', R: 'Definitiva' };
+  function stepAbilities(body) {
+    body.append(el('h2', {}, 'Habilidades'),
+      el('p', { class: 'muted' }, 'Elige una habilidad para cada tecla, como en la selección de campeón. Cada una suma una estadística y te da ventaja en un minijuego.'));
+    for (const k of ['Q', 'W', 'E', 'R']) {
+      body.append(el('div', { class: 'ability-slot' },
+        el('div', { class: 'slot-key' }, el('kbd', {}, k), el('small', {}, SLOT_INFO[k])),
+        el('div', { class: 'ability-options' }, C().abilities[k].map((a) =>
+          el('button', {
+            class: `ability-card${draft.abilities[k] === a.id ? ' active' : ''}${k === 'R' ? ' ult' : ''}`,
+            onclick: () => { draft.abilities[k] = a.id; Audio2.sfx.click(); rerender(); },
+          }, el('span', { class: 'ab-icon' }, a.icon), el('strong', {}, a.name), el('small', {}, a.desc))))));
+    }
+    body.append(nav());
+  }
+
+  // ----- Paso 5: Aptitudes -----
+  function stepAptitudes(body) {
+    const total = C().statPoints;
+    const left = total - allocUsed(draft);
+    const stats = computeStats(draft);
+    body.append(el('h2', {}, 'Aptitudes'),
+      el('p', { class: 'muted' }, `Reparte ${total} puntos de aptitud y elige tu talento clave. Las estadísticas abren opciones en la historia.`));
+    const rows = el('div', { class: 'alloc' }, Object.entries(window.STORY.stats).map(([k, m]) =>
+      el('div', { class: 'alloc-row' },
+        el('span', {}, `${m.icon} ${m.label}`),
+        el('button', { class: 'btn small', disabled: draft.alloc[k] <= 0, onclick: () => { draft.alloc[k]--; rerender(); } }, '−'),
+        el('b', {}, `${stats[k]}${draft.alloc[k] ? ` (+${draft.alloc[k]})` : ''}`),
+        el('button', { class: 'btn small', disabled: left <= 0 || draft.alloc[k] >= C().maxStatPerAllocation, onclick: () => { draft.alloc[k]++; Audio2.sfx.click(); rerender(); } }, '+'))));
+    body.append(el('div', { class: 'alloc-wrap' }, el('div', {}, el('p', { class: left ? 'gold' : 'muted' }, `Puntos por repartir: ${left}`), rows), radar(stats)));
+    body.append(el('h3', {}, 'Talento clave'),
+      el('div', { class: 'keystone-grid' }, C().keystones.map((k) =>
+        el('button', { class: `keystone${draft.keystone === k.id ? ' active' : ''}`, onclick: () => { draft.keystone = k.id; Audio2.sfx.choice(); rerender(); } },
+          el('span', { class: 'ks-icon' }, k.icon), el('strong', {}, tpl(k.name, draft)), el('small', {}, k.desc)))));
+    body.append(el('h3', {}, 'Título (opcional)'),
+      el('div', { class: 'chips wrap' },
+        el('button', { class: `chip${!draft.title ? ' active' : ''}`, onclick: () => { draft.title = ''; rerender(); } }, 'Sin título'),
+        ...C().titles.map((t) => el('button', { class: `chip${draft.title === t ? ' active' : ''}`, onclick: () => { draft.title = t; rerender(); } }, tpl(t, draft)))));
+    body.append(nav());
+  }
+
+  // ----- Paso 6: Aspecto -----
   const TABS = [['rostro', '🙂 Rostro'], ['ojos', '👁 Ojos'], ['boca', '👄 Nariz y boca'], ['pelo', '💇 Pelo'], ['ropa', '🧥 Ropa'], ['detalles', '✨ Detalles'], ['foto', '📷 Foto']];
 
   function stepLook(body) {
@@ -315,6 +457,12 @@
       ['Nombre', p.name], ['Género', C().genders.find((g) => g.id === p.gender)?.label], ['Edad', p.age],
       ['Ciudad', `${C().origins[p.origin].label} · ${p.district}`], ['Profesión', tpl(p.jobLabel, p)],
       ['Familia', tpl(p.familyLabel, p)], ['Aficiones', p.hobbyLabels.join(', ')],
+      ...(p.cls ? [
+        ['Clase', tpl(C().classes.find((c) => c.id === p.cls)?.label || '', p)],
+        ['Habilidades', ['Q', 'W', 'E', 'R'].map((k) => `${k}: ${C().abilities[k].find((a) => a.id === p.abilities?.[k])?.name || '—'}`).join(' · ')],
+        ['Talento clave', tpl(C().keystones.find((k) => k.id === p.keystone)?.name || '—', p)],
+      ] : []),
+      ...(p.title ? [['Título', tpl(p.title, p)]] : []),
     ];
     return el('dl', { class: 'sheet-list' }, rows.flatMap(([k, v]) => [el('dt', {}, k), el('dd', {}, String(v ?? ''))]));
   }

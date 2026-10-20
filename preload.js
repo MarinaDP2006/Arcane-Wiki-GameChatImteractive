@@ -15,8 +15,12 @@ contextBridge.exposeInMainWorld('arcane', {
   exportSheet: (data) => ipcRenderer.invoke('sheet:export', data),
   art: {
     list: () => ipcRenderer.invoke('art:list'),
-    open: () => ipcRenderer.invoke('art:open'),
+    open: (sub) => ipcRenderer.invoke('art:open', sub),
+    guide: (text) => ipcRenderer.invoke('art:guide', text),
+    ddragon: (champs) => ipcRenderer.invoke('art:ddragon', champs),
+    onDdragon: (cb) => ipcRenderer.on('art:ddragon-progress', (_e, d) => cb(d)),
   },
+  openMap: (url) => ipcRenderer.invoke('map:open', url),
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch) => ipcRenderer.invoke('settings:set', patch),

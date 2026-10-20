@@ -38,8 +38,14 @@
     return { look: LOOKS[id] || c?.look || {}, rim: RIM[c?.origin] || RIM.otro, bg: bgFor(c?.colors) };
   }
 
-  function charURL(id, size = 256) {
-    const custom = window.CustomArt?.image('personajes', id);
+  // Cara (avatares pequeños) o cuerpo entero (bustos y Códice) de la carpeta de arte.
+  function customChar(id, body) {
+    const A = window.CustomArt;
+    return body ? A?.image('personajes', id) || A?.image('caras', id) : A?.image('caras', id) || A?.image('personajes', id);
+  }
+
+  function charURL(id, size = 256, body = false) {
+    const custom = customChar(id, body);
     if (custom) return custom;
     const { look, rim, bg } = charLook(id);
     return Painter.toURL(look, { rim, bg, size });
@@ -56,11 +62,20 @@
     return Painter.toURL(player?.look || {}, { ...playerOpts(player), size });
   }
 
-  const img = (src, alt) => `<img class="portrait-img" src="${src}" alt="${U.esc(alt || '')}" draggable="false">`;
+  const img = (src, alt, extra = '') => `<img class="portrait-img ${extra}" src="${src}" alt="${U.esc(alt || '')}" draggable="false">`;
 
   function forCharacter(id) {
     const c = window.WIKI.personajes.find((p) => p.id === id);
-    return img(charURL(id), c?.name || id);
+    const custom = customChar(id, false);
+    const isFace = custom && custom === window.CustomArt?.image('caras', id);
+    return img(charURL(id), c?.name || id, custom && !isFace ? 'art-custom' : '');
+  }
+
+  // Retrato grande: cuerpo entero si la jugadora lo tiene en la carpeta de arte.
+  function bodyFor(id) {
+    const c = window.WIKI.personajes.find((p) => p.id === id);
+    const body = window.CustomArt?.image('personajes', id);
+    return body ? img(body, c?.name || id, 'art-body') : forCharacter(id);
   }
 
   function forPlayer(player) {
@@ -87,5 +102,5 @@
     </svg>`;
   }
 
-  window.Portrait = { forCharacter, forPlayer, svg, emblem, charURL, playerURL, charLook, playerOpts, LOOKS, RIM };
+  window.Portrait = { customChar, bodyFor, forCharacter, forPlayer, svg, emblem, charURL, playerURL, charLook, playerOpts, LOOKS, RIM };
 })();

@@ -126,13 +126,80 @@
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
+  // Nombre de archivo -> clave: sin tildes, minúsculas, guiones y sin artículo inicial.
+  const slug = (s) => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^(la|el|los|las|the)-/, '');
+
+  // Nombres alternativos (también en inglés) con los que se reconoce cada lugar.
+  const PLACE_ALIASES = {
+    'ultima-gota': ['last-drop', 'bar-ultima-gota', 'bar-de-vander'],
+    callejones: ['lanes', 'zaun-callejones'],
+    sumidero: ['sump', 'laboratorio-sumidero', 'laboratorio-de-singed', 'lab-singed'],
+    academia: ['academy', 'piltover-academy'],
+    consejo: ['council', 'council-chamber', 'sala-consejo'],
+    hexpuertas: ['hexgates', 'hexgate', 'hexpuerta'],
+    puente: ['bridge', 'bridge-of-progress', 'puente-progreso'],
+    arbol: ['firelights', 'firelight', 'arbol-luciernagas', 'luciernagas', 'firelight-tree'],
+    'escondite-jinx': ['jinx-hideout', 'guarida-jinx', 'guarida-de-jinx'],
+    fabrica: ['shimmer-factory', 'fabrica-brillo', 'fabrica-de-shimmer'],
+    ejecutores: ['enforcers', 'jefatura', 'comisaria'],
+    'mansion-kiramman': ['kiramman', 'kiramman-mansion', 'casa-kiramman'],
+    'taller-jayce': ['jayce-workshop', 'taller', 'laboratorio-jayce'],
+    stillwater: ['prision-stillwater', 'stillwater-prison', 'prision'],
+    'muelle-stillwater': ['muelle', 'stillwater-dock', 'muelles'],
+    mercado: ['mercado-tuberias', 'mercado-zaun', 'zaun-market'],
+    artesanos: ['mercado-artesanos', 'artisans', 'artisan-market'],
+    plaza: ['plaza-progreso', 'plaza-del-progreso', 'progress-plaza'],
+    'tienda-benzo': ['benzo', 'tienda-de-benzo', 'benzo-shop'],
+    tejados: ['rooftops', 'tejados-chimeneas', 'chimeneas'],
+    foso: ['pit', 'fight-pit', 'foso-peleas', 'foso-de-peleas'],
+  };
+  // Si falta un lugar, usa la imagen de su gemelo antes que el fondo pintado.
+  const PLACE_FALLBACK = { 'puente-zaun': 'puente', puente: 'puente-zaun', 'muelle-stillwater': 'stillwater', stillwater: 'muelle-stillwater', plaza: 'piltover', piltover: 'plaza', mercado: 'zaun', zaun: 'mercado' };
+
+  // Asigna los archivos de lugares/ a los ids del juego aunque el nombre no sea exacto.
+  function matchPlaces(raw) {
+    const ids = Object.keys(window.Scenes?.THEMES || {});
+    const names = {};
+    for (const m of Object.values(window.WORLD?.maps || {})) for (const l of m.locations) names[l.id] = l.name;
+    for (const l of window.WIKI?.lugares || []) names[l.id] = names[l.id] || l.name;
+    const keys = [];
+    for (const id of ids) {
+      for (const k of new Set([id, slug(id), names[id] && slug(names[id]), ...(PLACE_ALIASES[id] || [])].filter(Boolean))) keys.push([k, id]);
+    }
+    keys.sort((a, b) => b[0].length - a[0].length); // «puente-zaun» antes que «puente»
+    const out = {};
+    const unknown = [];
+    const files = Object.entries(raw).map(([f, url]) => [slug(f), f, url]);
+    for (const pass of ['exact', 'contains']) {
+      for (const [s, f, url] of files) {
+        if (Object.values(out).includes(url)) continue;
+        const hit = keys.find(([k, id]) => !out[id] && (pass === 'exact' ? s === k : s.includes(k)));
+        if (hit) out[hit[1]] = url;
+      }
+    }
+    for (const [, f, url] of files) if (!Object.values(out).includes(url)) unknown.push(f);
+    const direct = new Set(Object.keys(out));
+    for (const [id, alt] of Object.entries(PLACE_FALLBACK)) if (!out[id] && direct.has(alt)) out[id] = out[alt];
+    return { out, unknown, direct };
+  }
+
   // Arte personal de la jugadora (carpeta «arte» en escritorio).
   window.CustomArt = {
-    files: { personajes: {}, escenas: {}, codice: {}, video: {} },
+    files: { personajes: {}, caras: {}, lugares: {}, codice: {}, video: {} },
+    report: { found: [], missing: [], borrowed: [], unknown: [] },
     async load() {
       if (window.arcane?.art) {
         try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
       }
+      const { out, unknown, direct } = matchPlaces(this.files.lugares || {});
+      const ids = Object.keys(window.Scenes?.THEMES || {});
+      this.files.lugares = { ...this.files.lugares, ...out };
+      this.report = {
+        found: ids.filter((id) => direct.has(id)),
+        borrowed: ids.filter((id) => out[id] && !direct.has(id)),
+        missing: ids.filter((id) => !out[id]),
+        unknown,
+      };
     },
     image(cat, id) {
       const f = this.files[cat]?.[id];

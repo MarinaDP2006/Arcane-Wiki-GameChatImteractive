@@ -88,7 +88,7 @@
     const rel = (e.relations || []).map((id) => findAny(id)).filter(Boolean);
     box.append(
       el('div', { class: 'detail-head' },
-        el('div', { class: 'detail-art', html: art(e, cat) }),
+        el('div', { class: 'detail-art', html: cat === 'personajes' ? Portrait.bodyFor(e.id) : art(e, cat) }),
         el('div', {},
           el('h2', {}, e.name),
           e.alias ? el('p', { class: 'alias' }, e.alias) : null,

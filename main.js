@@ -1,5 +1,5 @@
 // Proceso principal de Electron: ventana, guardado de partidas y chat IA opcional.
-const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, nativeImage, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
@@ -26,6 +26,16 @@ function slotFile(slot) {
   return path.join(SAVE_DIR(), `ranura-${slot}.json`);
 }
 
+// El mapa de neta.art se pide en español.
+function setupMapSession() {
+  const ses = session.fromPartition('persist:mapa');
+  ses.setUserAgent(`${ses.getUserAgent()} ArcanePiltoverZaun`);
+  ses.webRequest.onBeforeSendHeaders((details, cb) => {
+    details.requestHeaders['Accept-Language'] = 'es-ES,es;q=0.9';
+    cb({ requestHeaders: details.requestHeaders });
+  });
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1360,
@@ -42,7 +52,16 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      webviewTag: true,
     },
+  });
+  // Las vistas web (mapa del Códice) se cargan aisladas y sin acceso al juego.
+  win.webContents.on('will-attach-webview', (_e, prefs, params) => {
+    delete prefs.preload;
+    prefs.nodeIntegration = false;
+    prefs.contextIsolation = true;
+    prefs.sandbox = true;
+    if (!/^https:\/\//.test(params.src)) _e.preventDefault();
   });
   win.loadFile(path.join(__dirname, 'src', 'index.html'));
   win.once('ready-to-show', () => {
@@ -66,47 +85,97 @@ function createWindow() {
 // ---------- Carpeta de arte personal ----------
 // La jugadora puede poner aquí sus propias imágenes y vídeos; el juego los usa
 // en lugar del arte pintado que genera. No se distribuye nada con el juego.
-const ART_DIRS = ['personajes', 'escenas', 'codice', 'video'];
+// «escenas» es el nombre antiguo de «lugares» y se sigue leyendo.
+const ART_DIRS = ['personajes', 'caras', 'lugares', 'codice', 'video'];
 const ART_EXT = /\.(png|jpe?g|webp|gif|mp4|webm)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
 function ensureArtDir() {
   for (const d of ART_DIRS) fs.mkdirSync(path.join(artRoot(), d), { recursive: true });
-  const readme = path.join(artRoot(), 'LEEME.txt');
-  if (!fs.existsSync(readme)) {
-    fs.writeFileSync(readme, [
-      'Carpeta de arte personal de Arcane: Piltover y Zaun',
-      '',
-      'Pon aquí tus imágenes (png, jpg, webp) y vídeos (mp4, webm). El nombre del archivo',
-      'debe ser el identificador de lo que sustituye:',
-      '',
-      '  personajes/vi.png, personajes/jinx.jpg ...  -> retratos de personajes',
-      '  escenas/ultima-gota.jpg, escenas/piltover.jpg ... -> fondos de escenas y del menú',
-      '  codice/hextec.png ...                        -> imágenes del Códice',
-      '  video/intro-zaun.mp4, video/intro-piltover.mp4, video/fin-paz.mp4 ... -> cinemáticas',
-      '',
-      'Identificadores: los de la lista del Códice (vi, jinx, caitlyn, jayce, viktor, mel, silco,',
-      'vander, ekko, piltover, zaun, puente, academia, consejo, callejones, arbol, ...).',
-      'Reinicia el juego tras añadir archivos.',
-    ].join('\n'));
+}
+
+function listDir(dir) {
+  const out = {};
+  if (!fs.existsSync(dir)) return out;
+  for (const f of fs.readdirSync(dir)) {
+    if (!ART_EXT.test(f)) continue;
+    out[f.replace(/\.[^.]+$/, '').toLowerCase()] = pathToFileURL(path.join(dir, f)).href;
   }
+  return out;
 }
 
 ipcMain.handle('art:list', () => {
   ensureArtDir();
   const out = {};
-  for (const d of ART_DIRS) {
-    out[d] = {};
-    for (const f of fs.readdirSync(path.join(artRoot(), d))) {
-      if (!ART_EXT.test(f)) continue;
-      out[d][f.replace(/\.[^.]+$/, '').toLowerCase()] = pathToFileURL(path.join(artRoot(), d, f)).href;
-    }
-  }
+  for (const d of ART_DIRS) out[d] = listDir(path.join(artRoot(), d));
+  out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
   return out;
 });
-ipcMain.handle('art:open', () => {
+ipcMain.handle('art:open', (_e, sub) => {
   ensureArtDir();
-  return shell.openPath(artRoot());
+  return shell.openPath(sub && ART_DIRS.includes(sub) ? path.join(artRoot(), sub) : artRoot());
+});
+// La interfaz genera la guía con todos los nombres de archivo que el juego reconoce.
+ipcMain.handle('art:guide', (_e, text) => {
+  ensureArtDir();
+  fs.writeFileSync(path.join(artRoot(), 'GUIA-DE-ARTE.txt'), String(text), 'utf8');
+  return true;
+});
+
+// Retratos oficiales de League of Legends desde Data Dragon, el servidor público de Riot.
+// Se guardan solo en el ordenador de la jugadora (política de proyectos de fans de Riot).
+// ARCANE_DDRAGON solo sirve para pruebas automáticas con un servidor local.
+const DDRAGON = process.env.ARCANE_DDRAGON || 'https://ddragon.leagueoflegends.com';
+ipcMain.handle('art:ddragon', async (e, champs) => {
+  ensureArtDir();
+  const send = (d) => { if (!e.sender.isDestroyed()) e.sender.send('art:ddragon-progress', d); };
+  const versions = await (await fetch(`${DDRAGON}/api/versions.json`)).json();
+  const v = versions[0];
+  const done = [];
+  const failed = [];
+  const entries = Object.entries(champs);
+  for (let i = 0; i < entries.length; i++) {
+    const [id, champ] = entries[i];
+    send({ current: champ, progress: i / entries.length });
+    try {
+      // Si el campeón tiene una apariencia de Arcane, se usa esa.
+      const info = await (await fetch(`${DDRAGON}/cdn/${v}/data/es_ES/champion/${champ}.json`)).json();
+      const skins = info.data[champ].skins || [];
+      const arcane = skins.find((s) => /arcane/i.test(s.name));
+      const num = arcane ? arcane.num : 0;
+      // Cuerpo entero (personajes), ilustración grande (codice) y cara recortada (caras).
+      for (const [kind, dir] of [['loading', 'personajes'], ['splash', 'codice']]) {
+        const res = await fetch(`${DDRAGON}/cdn/img/champion/${kind}/${champ}_${num}.jpg`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        fs.writeFileSync(path.join(artRoot(), dir, `${id}.jpg`), Buffer.from(await res.arrayBuffer()));
+      }
+      const body = nativeImage.createFromPath(path.join(artRoot(), 'personajes', `${id}.jpg`));
+      const { width, height } = body.getSize();
+      if (width && height) {
+        const side = Math.round(width * 0.72);
+        const face = body.crop({ x: Math.round((width - side) / 2), y: Math.round(height * 0.07), width: side, height: side }).resize({ width: 256, height: 256, quality: 'best' });
+        fs.writeFileSync(path.join(artRoot(), 'caras', `${id}.png`), face.toPNG());
+      }
+      done.push(id);
+    } catch {
+      failed.push(id);
+    }
+  }
+  send({ done: true, progress: 1 });
+  return { ok: true, done, failed, version: v };
+});
+
+// Mapa interactivo de la ciudad en una ventana del propio juego.
+ipcMain.handle('map:open', (e, url) => {
+  if (!/^https:\/\//.test(String(url))) return false;
+  const parent = BrowserWindow.fromWebContents(e.sender);
+  const win = new BrowserWindow({
+    parent, width: 1280, height: 800, title: 'Mapa interactivo · Piltover y Zaun', autoHideMenuBar: true,
+    backgroundColor: '#0d0b14', webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false, partition: 'persist:mapa' },
+  });
+  win.webContents.setWindowOpenHandler(({ url: u }) => { if (/^https:\/\//.test(u)) shell.openExternal(u); return { action: 'deny' }; });
+  win.loadURL(url);
+  return true;
 });
 
 // ---------- Ventana ----------
@@ -420,6 +489,7 @@ ipcMain.handle('ai:chat', async (_e, { system, messages }) => {
 });
 
 app.whenReady().then(() => {
+  setupMapSession();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

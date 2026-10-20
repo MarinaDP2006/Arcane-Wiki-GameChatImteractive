@@ -168,7 +168,7 @@
     }
     const len = Math.hypot(dx, dy);
     if (len) {
-      const sp = SPEED * (keys.has('shift') ? 1.7 : 1) * dt;
+      const sp = SPEED * (keys.has('shift') ? 1.7 : 1) * (G.player.keystone === 'pies' ? 1.3 : 1) * dt;
       const mx = (dx / len) * sp;
       const my = (dy / len) * sp;
       let moved = false;
@@ -629,7 +629,67 @@
     Audio2.playMusic(cb.music?.() || id);
   }
 
+  // Imagen de un mapa completo (para el Atlas del Códice), sin personajes ni efectos.
+  const snaps = {};
+  function snapshot(id, width) {
+    const key = `${id}:${width}`;
+    if (snaps[key]) return snaps[key];
+    const m = buildMap(id);
+    const k = width / m.w;
+    const c = document.createElement('canvas');
+    c.width = width;
+    c.height = Math.round(m.h * k);
+    const g = c.getContext('2d');
+    const P = m.def.palette;
+    const zaun = id === 'zaun';
+    g.scale(k, k);
+    g.fillStyle = P.ground;
+    g.fillRect(0, 0, m.w, m.h);
+    for (const d of m.def.districts) {
+      const [x, y, w, h] = d.rect;
+      g.fillStyle = d.tint;
+      g.fillRect(x, y, w, h);
+    }
+    g.strokeStyle = P.street;
+    g.lineWidth = m.STREET - 20;
+    g.beginPath();
+    for (let x = 0; x <= m.w; x += m.BLOCK) { g.moveTo(x, 0); g.lineTo(x, m.h); }
+    for (let y = 0; y <= m.h; y += m.BLOCK) { g.moveTo(0, y); g.lineTo(m.w, y); }
+    g.stroke();
+    if (zaun) {
+      g.strokeStyle = 'rgba(143,191,58,0.3)';
+      g.lineWidth = 12;
+      for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(0, 180 + i * 360); g.bezierCurveTo(800, 100 + i * 360, 2000, 300 + i * 360, m.w, 200 + i * 360); g.stroke(); }
+    }
+    for (const b of m.buildings) {
+      g.fillStyle = 'rgba(0,0,0,0.35)';
+      g.fillRect(b.x + 10, b.y + 12, b.w, b.h);
+      g.fillStyle = b.color;
+      g.fillRect(b.x, b.y, b.w, b.h);
+      g.fillStyle = b.roof;
+      g.globalAlpha = zaun ? 0.45 : 0.85;
+      g.fillRect(b.x + 6, b.y + 6, b.w - 12, b.h * 0.35);
+      g.globalAlpha = 1;
+      if (zaun && b.sign) { g.fillStyle = b.roof; g.fillRect(b.x + b.w * 0.2, b.y + b.h - 18, b.w * 0.6, 8); }
+    }
+    for (const d of m.def.districts) {
+      const [x, y, w, h] = d.rect;
+      g.fillStyle = zaun ? 'rgba(170,255,225,0.22)' : 'rgba(255,240,200,0.28)';
+      g.font = 'bold 64px Georgia, serif';
+      g.textAlign = 'center';
+      g.fillText(d.name.toUpperCase(), x + w / 2, y + h / 2);
+    }
+    const v = g.createRadialGradient(m.w / 2, m.h / 2, m.h * 0.3, m.w / 2, m.h / 2, m.w * 0.7);
+    v.addColorStop(0, 'rgba(0,0,0,0)');
+    v.addColorStop(1, zaun ? 'rgba(0,20,10,0.6)' : 'rgba(40,24,0,0.45)');
+    g.fillStyle = v;
+    g.fillRect(0, 0, m.w, m.h);
+    snaps[key] = c;
+    return c;
+  }
+
   window.World = {
+    snapshot,
     start(state, callbacks, el, miniEl) {
       G = state;
       cb = callbacks;

@@ -58,7 +58,7 @@
       }
 
       function intro() {
-        const c = card(`${def.icon} ${def.title}`, `<p>${def.desc}</p><p class="muted"><b>Controles:</b> ${def.controls}</p><p class="gold">Objetivo: ${def.goal}</p>`,
+        const c = card(`${def.icon} ${def.title}`, `<p>${def.desc}</p><p class="muted"><b>Controles:</b> ${def.controls}</p><p class="gold">Objetivo: ${def.goal}</p>${opts.bonus ? `<p class="mg-bonus">✨ Tus habilidades te dan ventaja +${opts.bonus} en este minijuego.</p>` : ''}`,
           [['¡Empezar!', 'primary hex-btn', () => { c.remove(); start(); }], ['Salir', 'ghost', () => close(false)]]);
       }
 
@@ -177,8 +177,9 @@
     create(w, h, o) {
       const map = { w: 'arrowup', s: 'arrowdown', a: 'arrowleft', d: 'arrowright' };
       const rival = paintedImg(o.rivalLook || { skin: '#c9a080', face: 'angular', eyes: 'rasgados', hair: '#5a4a5a', style: 'undercut', outfit: 'top', outfitColor: '#2a2a2a', accents: ['arm', 'scar'], browAngle: 3 }, '#e0457b', ['#5a1a1a', '#0a0202']);
+      const b = o.bonus || 0;
       const g = {
-        me: 100, foe: 100, prompt: null, wait: 0.8, flash: 0, shake: 0, hits: 0, msg: '', msgT: 0, speed: 1.35,
+        me: 100 + 25 * b, foe: 100, prompt: null, wait: 0.8, flash: 0, shake: 0, hits: 0, msg: '', msgT: 0, speed: 1.35 + 0.1 * b,
         result: null,
         next() { g.prompt = { key: pick(Object.keys(ARROWS)), t: 0, dur: g.speed }; },
         update(dt, inp) {
@@ -189,7 +190,7 @@
           if (keyHit) {
             if (keyHit === g.prompt.key) {
               const quality = 1 - g.prompt.t / g.prompt.dur;
-              g.foe -= 10 + Math.round(quality * 10); g.flash = 1; g.hits++; g.msg = quality > 0.6 ? '¡GOLPE PERFECTO!' : '¡Golpe!'; g.msgT = 0.7;
+              g.foe -= Math.round((10 + quality * 10) * (1 + 0.25 * b)); g.flash = 1; g.hits++; g.msg = quality > 0.6 ? '¡GOLPE PERFECTO!' : '¡Golpe!'; g.msgT = 0.7;
               Audio2.sfx.choice();
             } else { g.me -= 14; g.shake = 12; g.msg = '¡Te alcanza!'; g.msgT = 0.7; Audio2.sfx.locked(); }
             g.prompt = null; g.wait = 0.25 + Math.random() * 0.5; g.speed = Math.max(0.6, g.speed - 0.04);
@@ -224,7 +225,7 @@
           if (g.msgT > 0) glowText(ctx, g.msg, w / 2, h * 0.12, 34, '#ffe08a');
           ctx.restore();
         },
-        hud() { return bar('Tú', g.me, 100, '#3fbf9f') + bar('Rival', g.foe, 100, '#e0457b'); },
+        hud() { return bar('Tú', g.me, 100 + 25 * b, '#3fbf9f') + bar('Rival', g.foe, 100, '#e0457b') + (b ? `<span class="gold">Ventaja +${b}</span>` : ''); },
       };
       return g;
     },
@@ -242,8 +243,9 @@
       goal: 'Aguanta 25 segundos sin chocar.',
       winText: fly ? 'Aterrizas en el árbol entre aplausos de las Luciérnagas.' : 'Te pierdes entre las sombras. Nadie te ha visto.',
       loseText: '¡Crash! Te has dado un buen golpe. Otra vez.',
-      create(w, h) {
+      create(w, h, o = {}) {
         const ground = h * 0.8;
+        const goal = Math.max(13, 25 - 4 * (o.bonus || 0));
         const g = {
           t: 0, x: w * 0.2, y: fly ? h / 2 : ground, vy: 0, jumps: 0, speed: 320, obs: [], spawn: 1, result: null, trail: [],
           update(dt, inp) {
@@ -282,7 +284,7 @@
             g.obs = g.obs.filter((o) => o.x + o.w > -40);
             g.trail.push({ x: g.x, y: g.y });
             if (g.trail.length > 14) g.trail.shift();
-            if (g.t >= 25 && g.result == null) g.result = true;
+            if (g.t >= goal && g.result == null) g.result = true;
           },
           draw(ctx, t) {
             panelBg(ctx, w, h, 0.2);
@@ -316,7 +318,7 @@
             ctx.beginPath(); ctx.arc(0, -20, 14, Math.PI, 0); ctx.fill();
             ctx.restore();
           },
-          hud() { return bar('Tiempo', Math.min(25, g.t), 25, '#e3c45a') + `<span>${Math.max(0, 25 - g.t).toFixed(1)} s</span>`; },
+          hud() { return bar('Tiempo', Math.min(goal, g.t), goal, '#e3c45a') + `<span>${Math.max(0, goal - g.t).toFixed(1)} s</span>`; },
         };
         return g;
       },
@@ -331,7 +333,8 @@
     desc: 'Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no toques los muñecos de civiles.',
     controls: 'Ratón: apunta y haz clic para disparar.', goal: 'Consigue 15 puntos en 30 segundos.',
     winText: 'Caitlyn estaría orgullosa. Puntería de francotirador.', loseText: 'Demasiadas balas perdidas. Respira, apunta, exhala.',
-    create(w, h) {
+    create(w, h, o = {}) {
+      const need = Math.max(8, 15 - 2 * (o.bonus || 0));
       const g = {
         t: 0, score: 0, targets: [], spawn: 0.3, fx: [], result: null,
         update(dt, inp) {
@@ -351,7 +354,7 @@
           g.targets = g.targets.filter((tg) => tg.life > 0);
           g.fx.forEach((f) => { f.t -= dt; f.y -= 40 * dt; });
           g.fx = g.fx.filter((f) => f.t > 0);
-          if (g.score >= 15) g.result = true;
+          if (g.score >= need) g.result = true;
           else if (g.t >= 30) g.result = false;
         },
         draw(ctx, t) {
@@ -375,7 +378,7 @@
           ctx.strokeStyle = 'rgba(255,224,138,0.8)'; ctx.lineWidth = 2;
           if (m) { ctx.beginPath(); ctx.arc(m.x, m.y, 14, 0, 7); ctx.moveTo(m.x - 22, m.y); ctx.lineTo(m.x + 22, m.y); ctx.moveTo(m.x, m.y - 22); ctx.lineTo(m.x, m.y + 22); ctx.stroke(); }
         },
-        hud() { return bar('Puntos', Math.max(0, g.score), 15, '#3fa9f5') + `<span>${g.score}/15 · ${Math.max(0, 30 - g.t).toFixed(0)} s</span>`; },
+        hud() { return bar('Puntos', Math.max(0, g.score), need, '#3fa9f5') + `<span>${g.score}/${need} · ${Math.max(0, 30 - g.t).toFixed(0)} s</span>`; },
       };
       const origUpdate = g.update;
       g.update = (dt, inp) => { g.lastMouse = { x: inp.mouse.x, y: inp.mouse.y }; origUpdate(dt, inp); };
@@ -390,8 +393,9 @@
     desc: 'La energía tiene que ir de la gema (izquierda) al receptor (derecha). Gira las piezas para que el circuito quede conectado.',
     controls: 'Clic en una pieza para girarla.', goal: 'Conecta el circuito en menos de 75 segundos.',
     winText: 'La gema se ilumina y el circuito zumba. ¡Funciona!', loseText: 'Saltan chispas. El circuito no aguantó.',
-    create(w, h) {
+    create(w, h, o = {}) {
       const N = 5;
+      const limit = 75 + 15 * (o.bonus || 0);
       const dirs = [[0, -1], [1, 0], [0, 1], [-1, 0]];
       const grid = Array.from({ length: N }, () => Array.from({ length: N }, () => [0, 0, 0, 0]));
       const sr = Math.floor(Math.random() * N);
@@ -461,7 +465,7 @@
           Object.keys(g.spin).forEach((k) => { g.spin[k] -= dt * 6; if (g.spin[k] <= 0) delete g.spin[k]; });
           g.lit = g.flow();
           if (g.lit.has(`${N - 1},${er}`) && grid[er][N - 1][1]) g.result = true;
-          else if (g.t > 75) g.result = false;
+          else if (g.t > limit) g.result = false;
         },
         draw(ctx, t) {
           panelBg(ctx, w, h, 0.45);
@@ -487,7 +491,7 @@
           gem(ox - cell * 0.5, oy + sr * cell + cell / 2, '#7fd0ff');
           gem(ox + N * cell + cell * 0.5, oy + er * cell + cell / 2, g.lit.has(`${N - 1},${er}`) ? '#7fd0ff' : '#5a4a3a');
         },
-        hud() { return bar('Tiempo', Math.max(0, 75 - g.t), 75, '#e3c45a') + `<span>${Math.max(0, 75 - g.t).toFixed(0)} s</span>`; },
+        hud() { return bar('Tiempo', Math.max(0, limit - g.t), limit, '#e3c45a') + `<span>${Math.max(0, limit - g.t).toFixed(0)} s</span>`; },
       };
       return g;
     },
@@ -499,15 +503,16 @@
     desc: 'Heimerdinger te pone a prueba: las runas se encienden en un orden. Repite la secuencia, que cada vez será más larga.',
     controls: 'Clic en las runas (o teclas 1 a 6).', goal: 'Completa una secuencia de 7 runas. Tienes un fallo de margen.',
     winText: '«¡Fascinante! Memoria de yordle», aplaude Heimerdinger.', loseText: '«Hmm, hmm. La paciencia también es una ciencia», suspira el profesor.',
-    create(w, h) {
+    create(w, h, o = {}) {
       const n = 6;
+      const target = (o.bonus || 0) >= 2 ? 6 : 7;
       const cols = ['#3fa9f5', '#e3c45a', '#e0457b', '#3fbf9f', '#bf3abf', '#f0a040'];
       const cx = w / 2;
       const cy = h / 2;
       const R = Math.min(w, h) * 0.3;
       const pos = Array.from({ length: n }, (_, i) => [cx + Math.cos(-Math.PI / 2 + (i * Math.PI * 2) / n) * R, cy + Math.sin(-Math.PI / 2 + (i * Math.PI * 2) / n) * R]);
       const g = {
-        seq: [pick([0, 1, 2, 3, 4, 5])], input: 0, showing: true, showT: 0, lit: -1, litT: 0, lives: 2, result: null, msg: 'Observa…',
+        seq: [pick([0, 1, 2, 3, 4, 5])], input: 0, showing: true, showT: 0, lit: -1, litT: 0, lives: 2 + (o.bonus || 0), result: null, msg: 'Observa…',
         light(i) { g.lit = i; g.litT = 0.35; Audio2.sfx.message(); },
         update(dt, inp) {
           g.litT -= dt;
@@ -527,7 +532,7 @@
             if (p === g.seq[g.input]) {
               g.input++;
               if (g.input === g.seq.length) {
-                if (g.seq.length >= 7) { g.result = true; return; }
+                if (g.seq.length >= target) { g.result = true; return; }
                 g.seq.push(pick([0, 1, 2, 3, 4, 5]));
                 g.showing = true; g.showT = -0.6; g.msg = '¡Bien! Otra más…';
               }
@@ -555,7 +560,7 @@
           });
           glowText(ctx, g.msg, cx, cy, 26, '#ffe08a');
         },
-        hud() { return bar('Secuencia', g.seq.length, 7, '#3fa9f5') + `<span>${g.seq.length}/7 · Vidas: ${'❤'.repeat(g.lives)}</span>`; },
+        hud() { return bar('Secuencia', g.seq.length, target, '#3fa9f5') + `<span>${g.seq.length}/${target} · Vidas: ${'❤'.repeat(Math.max(0, g.lives))}</span>`; },
       };
       return g;
     },
@@ -567,20 +572,22 @@
     desc: 'La vendedora pide 100 monedas por un cachivache que vale mucho menos. Haz ofertas: si te pasas de lista se enfadará, si ofreces poco perderá la paciencia.',
     controls: 'Flechas ← → para ajustar tu oferta, Espacio o Intro para ofrecer.', goal: 'Cierra el trato por 60 monedas o menos.',
     winText: '«Trato hecho… me has desplumado», ríe la vendedora.', loseText: '«Fuera de mi puesto», te dice cruzándose de brazos.',
-    create(w, h) {
+    create(w, h, o = {}) {
       const min = 38 + Math.floor(Math.random() * 18);
+      const goal = 60 + 5 * (o.bonus || 0);
+      const maxPat = 4 + (o.bonus || 0);
       const g = {
-        offer: 40, ask: 100, patience: 4, msg: '¿Cuánto me das?', result: null, mood: 0,
+        offer: 40, ask: 100, patience: maxPat, msg: '¿Cuánto me das?', result: null, mood: 0,
         update(dt, inp) {
           for (const k of inp.pressed) {
             if (k === 'arrowleft' || k === 'a') g.offer = Math.max(10, g.offer - 2);
             if (k === 'arrowright' || k === 'd') g.offer = Math.min(100, g.offer + 2);
             if (k === ' ' || k === 'enter') {
               Audio2.sfx.click();
-              if (g.offer >= g.ask) { g.result = g.ask <= 60; g.msg = 'Hecho.'; return; }
+              if (g.offer >= g.ask) { g.result = g.ask <= goal; g.msg = 'Hecho.'; return; }
               if (g.offer >= min) {
                 g.ask = Math.max(g.offer, Math.round((g.ask + g.offer) / 2 - 2));
-                if (g.ask - g.offer <= 3) { g.result = g.offer <= 60; return; }
+                if (g.ask - g.offer <= 3) { g.result = g.offer <= goal; return; }
                 g.msg = `Hmm… ${g.ask}, y es mi última palabra. Bueno, casi.`;
                 g.mood = 1;
               } else {
@@ -607,7 +614,7 @@
           glowText(ctx, `Tu oferta: ◀ ${g.offer} 🪙 ▶`, w / 2, h * 0.78, 40, '#ffe08a');
           glowText(ctx, 'Pulsa Espacio para ofrecer', w / 2, h * 0.9, 18, '#a39cb3');
         },
-        hud() { return bar('Paciencia', g.patience, 4, '#e3c45a') + `<span>Meta: ≤ 60 🪙</span>`; },
+        hud() { return bar('Paciencia', g.patience, maxPat, '#e3c45a') + `<span>Meta: ≤ ${goal} 🪙</span>`; },
       };
       return g;
     },

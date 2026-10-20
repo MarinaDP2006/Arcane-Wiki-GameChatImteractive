@@ -41,6 +41,7 @@
     const root = $('#view-game');
     const slots = await store.listSlots();
     root.innerHTML = '';
+    setTimeout(() => window.App.backdrop3d?.(root, 'menu'), 0);
     root.append(el('div', { class: 'menu' },
       el('h1', { class: 'title-arcane' }, 'Partidas'),
       el('p', { class: 'muted' }, 'Elige una ranura. Cada partida guarda tu personaje, tu posición en el mapa, tus decisiones y tus conversaciones.'),
@@ -190,7 +191,7 @@
     if (a.game) {
       World.pause(true);
       Audio2.stopSpeech();
-      const win = await Minigames.play(a.game);
+      const win = await Minigames.play(a.game, { bonus: mgBonus(a.game) });
       World.pause(false);
       if (!win) {
         toast('Esta vez no ha salido. Puedes volver a intentarlo cuando quieras.', 'warn');
@@ -198,9 +199,10 @@
       }
     }
     G.acts[key] = true;
-    G.stats[a.stat] = Math.min(window.WORLD.maxStat, (G.stats[a.stat] || 0) + 1);
+    const gain = G.player.keystone === 'estudioso' ? 2 : 1;
+    G.stats[a.stat] = Math.min(window.WORLD.maxStat, (G.stats[a.stat] || 0) + gain);
     Audio2.sfx.unlock();
-    showNotice(`${loc.icon} ${a.label}`, `${a.text}\n\n${S().stats[a.stat].icon} ${S().stats[a.stat].label} +1 (ahora ${G.stats[a.stat]}).`);
+    showNotice(`${loc.icon} ${a.label}`, `${a.text}\n\n${S().stats[a.stat].icon} ${S().stats[a.stat].label} +${gain} (ahora ${G.stats[a.stat]}).`);
     updateHud();
     persist();
   }
@@ -267,12 +269,38 @@
     box.className = 'overlay show';
     box.innerHTML = '';
     if (kind === 'codice') {
+      const sub = arguments[2] || 'entradas';
+      const tab = (id, label) => el('button', { class: `tab${sub === id ? ' active' : ''}`, onclick: () => openOverlay('codice', null, id) }, label);
       const panel = el('div', { class: 'panel overlay-panel codex' },
-        el('header', { class: 'overlay-head' }, el('h2', {}, `📚 Códice de Runeterra · ${codexCount()}/${codexTotal()}`), closeBtn()),
+        el('header', { class: 'overlay-head' },
+          el('h2', {}, `📚 Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
+          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('atlas', '🗺 Atlas de Piltover y Zaun'), tab('neta', '🌐 Mapa interactivo')),
+          closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
       box.append(panel);
-      Wiki.mount($('#codex-body'), { known: codexKnown, onTalk: (id) => openOverlay('chats', id), canTalk: (id) => G.unlocked.includes(id) });
-      if (who) Wiki.open(who);
+      const body = $('#codex-body');
+      if (sub === 'atlas') {
+        Atlas.mount(body, {
+          visited: (id) => G.visited.includes(id),
+          objective: objectiveId,
+          present: (locId) => G.unlocked.filter((id) => window.WORLD.homes[id] === locId && !(window.WORLD.absent[id] || []).includes(G.progress.chapterId)),
+          onEntry: (id) => openOverlay('codice', id, 'entradas'),
+          onCharacter: (id) => openOverlay('chats', id),
+        });
+      } else if (sub === 'neta') {
+        const url = window.App.settings.mapUrl || window.App.DEFAULT_MAP;
+        body.append(el('div', { class: 'neta-wrap' },
+          el('div', { class: 'neta-bar' },
+            el('span', { class: 'muted small' }, 'Mapa interactivo de la ciudad (se carga desde internet, pedido en español).'),
+            el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, '🔄 Recargar'),
+            el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
+          U.desktop
+            ? el('webview', { class: 'neta-view', src: url, partition: 'persist:mapa', allowpopups: 'false' })
+            : el('iframe', { class: 'neta-view', src: url, referrerpolicy: 'no-referrer' })));
+      } else {
+        Wiki.mount(body, { known: codexKnown, onTalk: (id) => openOverlay('chats', id), canTalk: (id) => G.unlocked.includes(id) });
+        if (who) Wiki.open(who);
+      }
       return;
     }
     if (kind === 'menu') {
@@ -313,7 +341,7 @@
       el('h2', {}, '🎮 Salón de minijuegos'),
       el('p', { class: 'muted' }, 'Practica sin límite. Las recompensas de estadísticas se ganan en los lugares del mapa.'),
       el('div', { class: 'arcade-grid' }, Object.entries(Minigames.GAMES).map(([id, g]) =>
-        el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id); box.style.visibility = ''; } },
+        el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id, { bonus: mgBonus(id) }); box.style.visibility = ''; } },
           el('span', { class: 'arcade-icon' }, g.icon), el('strong', {}, g.title), el('small', { class: 'muted' }, g.goal)))),
       el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
   }
@@ -347,7 +375,7 @@
     showNotice('Controles', [
       'Moverse: WASD o flechas (Mayús para correr). También puedes hacer clic en el mapa.',
       'Interactuar / hablar / entrar: E o Intro.',
-      'H: historia · C: comunicador (chats) · F: ficha · K: Códice · Esc: pausa.',
+      'H: historia · C: comunicador (chats) · F: ficha · K: Códice · M: Atlas del Códice · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
   }
@@ -390,6 +418,7 @@
         hudBtn('📡 Comunicador', 'C', () => openOverlay('chats')),
         hudBtn('🪪 Ficha', 'F', () => openOverlay('ficha')),
         hudBtn('📚 Códice', 'K', () => openOverlay('codice')),
+        hudBtn('🗺 Atlas', 'M', () => openOverlay('codice', null, 'atlas')),
         hudBtn('☰ Pausa', 'Esc', () => openOverlay('menu'))),
       el('div', { id: 'overlay', class: 'overlay' })));
     World.start(G, worldCallbacks(), canvas, mini);
@@ -723,7 +752,7 @@
     if (c.game) {
       busy = true;
       Audio2.stopSpeech();
-      const win = await Minigames.play(c.game.id);
+      const win = await Minigames.play(c.game.id, { bonus: mgBonus(c.game.id) });
       busy = false;
       if (win) applyFx(c.game.winFx);
       pushLog('sistema', win ? '🏆 ¡Lo has conseguido!' : '💥 No ha salido como esperabas…');
@@ -760,6 +789,31 @@
     await persist();
     closeOverlay();
     toast(`Nuevo objetivo: ve a ${objectiveName()}`, 'good');
+  }
+
+  // ---------- Efectos de clase, habilidades y talento ----------
+  function buildParts() {
+    const C = window.CREATION;
+    const p = G.player;
+    const cls = C.classes?.find((c) => c.id === p.cls);
+    const abs = ['Q', 'W', 'E', 'R'].map((k) => C.abilities?.[k]?.find((a) => a.id === p.abilities?.[k])).filter(Boolean);
+    return { cls, abs };
+  }
+
+  // Ventaja en un minijuego según la clase, las habilidades y el talento «Veterano».
+  function mgBonus(id) {
+    const { cls, abs } = buildParts();
+    let b = (cls?.passive.bonus?.[id] || 0) + abs.reduce((a, x) => a + (x.bonus?.[id] || 0), 0);
+    if (G.player.keystone === 'veterano') b += 1;
+    return Math.min(4, b);
+  }
+
+  // Afinidad ganada con cada tema nuevo de conversación.
+  function chatGain() {
+    const { cls, abs } = buildParts();
+    let g = 1 + (cls?.passive.chat || 0) + abs.reduce((a, x) => a + (x.chat || 0), 0);
+    if (G.player.keystone === 'encanto') g *= 2;
+    return Math.min(4, g);
   }
 
   // Todos los finales de ambas temporadas.
@@ -930,8 +984,9 @@
         const key = `${id}:${t.label}`;
         if (!G.flags.__topics[key]) {
           G.flags.__topics[key] = true;
-          G.aff[id] = Math.min(10, affOf(id) + 1);
-          toast(`${charName(id)} aprecia la conversación (+1 afinidad)`, 'good');
+          const gain = chatGain();
+          G.aff[id] = Math.min(10, affOf(id) + gain);
+          toast(`${charName(id)} aprecia la conversación (+${gain} afinidad)`, 'good');
         }
         return tpl(pick(t.replies), G.player);
       }
@@ -1059,6 +1114,7 @@
       return;
     }
     if (k === ' ' && busy) { skipping = true; Audio2.stopSpeech(); e.preventDefault(); return; }
+    if (k === 'm' && !busy) { if (overlayKind === 'codice') closeOverlay(); else openOverlay('codice', null, 'atlas'); return; }
     const shortcuts = { h: 'historia', c: 'chats', f: 'ficha', k: 'codice' };
     if (shortcuts[k] && !busy) {
       if (overlayKind === shortcuts[k]) closeOverlay();

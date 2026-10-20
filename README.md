@@ -81,10 +81,21 @@ dejarán de sonar robóticos.
 
 ## Cómo se juega
 
-1. **Crea tu personaje**: nombre, género, edad, foto (o un retrato ilustrado que diseñas tú),
-   profesión, barrio, familia famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros,
-   Giopara, la de Vander…) y aficiones. Todo eso suma a tus estadísticas
-   (🧠 Ingenio, 💬 Carisma, 🔥 Valor, 🌑 Sigilo).
+1. **Crea tu campeón** (al estilo de League of Legends), en 8 pasos:
+   - **Origen e identidad**: ciudad, nombre, género, edad, profesión y barrio.
+   - **Clase**: Luchador, Tirador, Inventor, Asesino, Protector o Líder. Cada una tiene su
+     propia pasiva.
+   - **Habilidades Q, W, E y R**: eliges una por ranura. Dan estadísticas y ventajas en los
+     minijuegos o en el chat.
+   - **Aptitudes**: repartes 4 puntos (el radar los muestra), eliges una runa clave
+     (Encanto, Estudioso, Pies ligeros o Veterano) y un título.
+   - **Aspecto, familia y aficiones**: aspecto con decenas de opciones o tu foto; familia
+     famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros, Giopara, la de Vander…).
+   - **Ficha final**: tu barra de habilidades P/Q/W/E/R.
+
+   El botón 🎲 Aleatorio lo rellena todo. Todo suma a tus estadísticas
+   (🧠 Ingenio, 💬 Carisma, 🔥 Valor, 🌑 Sigilo), y tu build da **ventaja** en los
+   minijuegos: más vida, más tiempo o menos objetivos.
 2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
    en el barrio que elegiste.
 3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
@@ -117,6 +128,7 @@ dejarán de sonar robóticos.
 | C | Comunicador (chats) |
 | F | Ficha del personaje |
 | K | Códice |
+| M | Atlas del Códice (mapa de Piltover y Zaun) |
 | Esc | Pausa / cerrar ventana |
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
@@ -130,10 +142,44 @@ inicio, de capítulo y de final con movimiento de cámara y narración. En el cr
 elegir cara, ojos, cejas, nariz, labios, maquillaje, peinado, ropa y detalles, o subir una
 foto que el juego convierte en retrato pintado.
 
-**Tu propio arte:** en *Ajustes → Abrir carpeta de arte* puedes poner imágenes, concept art
-o vídeos (por ejemplo `personajes/jinx.png`, `escenas/ultima-gota.jpg`,
-`video/intro-zaun.mp4`). El juego los usa en lugar del arte generado. Esos archivos se quedan
-en tu ordenador y no se incluyen en el ejecutable.
+**Menús en 3D:** la pantalla de inicio, el menú, los ajustes y el creador tienen una escena
+3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
+del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
+fondo pintado en 2D.
+
+**Códice con Atlas y mapa interactivo:** el Códice (K) tiene tres pestañas:
+- 📖 **Entradas**.
+- 🗺 **Atlas de Piltover y Zaun** (M): mapa en español con zoom, los lugares que has
+  descubierto, quién está en cada uno, el objetivo ★ y la actividad de cada lugar.
+- 🌐 **Mapa interactivo**: el mapa de neta.art integrado dentro del juego. Se pide en
+  español, pero la web solo saldrá en español si ofrece ese idioma. La dirección se cambia
+  en *Ajustes*.
+
+**Tu propio arte:** en *Ajustes → Arte personalizado* abres cada carpeta. Al arrancar, el
+juego crea `GUIA-DE-ARTE.txt` con la lista exacta de nombres de archivo. La estructura es:
+
+```
+arte/
+├─ personajes/   jinx.png, vi.jpg, silco.png…    retrato de cuerpo entero (vertical)
+├─ caras/        jinx.png…                       cara cuadrada para chats e iconos
+├─ lugares/      ultima-gota.jpg…                paisajes 16:9 de cada lugar
+├─ codice/       hextec.png, quimtec.png…        imágenes de entradas del Códice
+└─ video/        intro-zaun.mp4, intro-piltover.mp4, temporada-2.mp4,
+                 capitulo-<id>.mp4, fin-<id>.mp4  (mp4 o webm)
+```
+
+En `lugares/` no hace falta el nombre exacto: «La Última Gota.jpg», «the lanes.png» o
+«Puente del Progreso.jpg» también valen (da igual tildes, mayúsculas y espacios). En *Ajustes →
+Arte personal* ves qué lugares tienen imagen, cuáles faltan y qué archivos no se reconocen. Si
+falta un lugar gemelo (los dos lados del puente, Stillwater y su muelle, Piltover y la plaza,
+Zaun y el mercado), usa la imagen del otro.
+
+El botón **⬇ Descargar retratos oficiales (Data Dragon)** baja de la web pública de Riot el
+cuerpo, la cara y la imagen del Códice de los campeones de LoL que salen en Arcane: Vi,
+Jinx, Caitlyn, Jayce, Viktor, Heimerdinger, Ekko, Singed, Ambessa, Mel y Warwick. El juego
+elige el aspecto de Arcane cuando existe. Los personajes que no son campeones (Silco,
+Vander, Sevika…) los añades tú. Todos estos archivos se quedan en tu ordenador y no se
+incluyen en el ejecutable.
 
 ### Voces humanas 🎙 (gratis y sin internet)
 
