@@ -271,12 +271,14 @@
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
           el('h2', {}, `📚 Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
-          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('mapa', '🗺 Mapa')),
+          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('atlas', '🧭 Atlas'), tab('mapa', '🌐 Mapas de la Wiki')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
       box.append(panel);
       const body = $('#codex-body');
-      if (sub === 'mapa') {
+      if (sub === 'atlas') {
+        renderAtlas(body, who);
+      } else if (sub === 'mapa') {
         const url = window.App.mapUrl();
         const pickMap = async (id) => { window.App.settings.mapSource = id; await store.setSettings({ mapSource: id }); openOverlay('codice', null, 'mapa'); };
         const current = window.App.mapSources()[window.App.settings.mapSource] ? window.App.settings.mapSource : 'fandom';
@@ -341,6 +343,87 @@
         el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id, { bonus: mgBonus(id) }); box.style.visibility = ''; } },
           el('span', { class: 'arcade-icon' }, g.icon), el('strong', {}, g.title), el('small', { class: 'muted' }, g.goal)))),
       el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
+  }
+
+  // ---------- Atlas de las Dos Ciudades (Códice) ----------
+  // Mapa ilustrado con los lugares de Arcane: al pulsar uno se abre su ficha, con
+  // puntos de interés, quién vive allí y un diario de los lugares explorados.
+  function renderAtlas(body, placeId) {
+    G.atlas = G.atlas || [];
+    const A = window.ATLAS;
+    const spoilers = window.App.settings.spoilers;
+    const detail = el('div', { class: 'atlas-detail hidden' });
+    const map = el('div', { class: 'atlas-map' },
+      el('img', { class: 'atlas-bg', src: 'img/atlas/mapa.webp', alt: 'Mapa de Piltover y Zaun', draggable: 'false' }),
+      A.places.map((p) => el('button', {
+        class: `atlas-loc${G.atlas.includes(p.id) ? ' explored' : ''}`,
+        style: `left:${p.x}%;top:${p.y}%`,
+        title: p.name,
+        onclick: () => showPlace(p),
+      }, el('img', { src: `img/atlas/${p.id}.webp`, alt: p.name, draggable: 'false' }), el('span', {}, p.name))));
+    const journalBtn = el('button', { class: 'btn small', onclick: showJournal }, `📔 Diario de viaje · ${G.atlas.length}/${A.places.length}`);
+    body.append(el('div', { class: 'atlas' },
+      el('div', { class: 'atlas-bar' },
+        el('span', { class: 'muted small' }, 'Pulsa un lugar para explorarlo.'),
+        journalBtn),
+      el('div', { class: 'atlas-stage' }, map, detail),
+      el('small', { class: 'muted atlas-credit' }, A.credit)));
+
+    function showPlace(p) {
+      Audio2.sfx.click();
+      const hidden = p.spoiler && !spoilers;
+      const people = p.people.filter((id) => G.unlocked.includes(id));
+      const unknown = p.people.length - people.length;
+      detail.innerHTML = '';
+      detail.append(
+        el('button', { class: 'btn ghost small atlas-back', onclick: () => detail.classList.add('hidden') }, '← Volver al mapa'),
+        el('div', { class: 'atlas-card' },
+          el('img', { class: 'atlas-art', src: `img/atlas/${p.id}.webp`, alt: p.name }),
+          el('div', { class: 'atlas-copy' },
+            el('h2', {}, p.name),
+            hidden
+              ? el('p', { class: 'muted' }, '⚠ Este lugar es un spoiler de la Temporada 2. Activa los spoilers en Ajustes para leerlo.')
+              : el('p', {}, p.intro),
+            hidden ? null : el('ul', { class: 'atlas-poi' }, p.poi.map(([t, d]) => el('li', {}, el('strong', {}, t), ` · ${d}`))),
+            p.people.length ? el('h3', {}, 'Aquí puedes encontrar a') : null,
+            p.people.length ? el('div', { class: 'row gap wrap' },
+              people.map((id) => el('button', { class: 'chip', onclick: () => openOverlay('chats', id) }, `💬 ${charName(id)}`)),
+              unknown ? el('span', { class: 'chip muted' }, `??? ×${unknown}`) : null) : null,
+            el('div', { class: 'row gap wrap atlas-actions' },
+              el('button', { class: `btn ${G.atlas.includes(p.id) ? '' : 'primary'} small`, onclick: () => explore(p) },
+                G.atlas.includes(p.id) ? '✓ Explorado' : '🧭 Explorar este lugar'),
+              p.codex ? el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', p.codex) }, codexKnown(p.codex) ? '📚 Ver en el Códice' : '📚 Códice (???)') : null))));
+      detail.classList.remove('hidden');
+    }
+
+    function explore(p) {
+      if (!G.atlas.includes(p.id)) {
+        G.atlas.push(p.id);
+        Audio2.sfx.unlock();
+        toast(`📔 ${p.name} añadido a tu diario de viaje (${G.atlas.length}/${A.places.length})`, 'good');
+        map.querySelectorAll('.atlas-loc')[A.places.indexOf(p)]?.classList.add('explored');
+        journalBtn.textContent = `📔 Diario de viaje · ${G.atlas.length}/${A.places.length}`;
+        persist();
+      }
+      showPlace(p);
+    }
+
+    function showJournal() {
+      const done = A.places.filter((p) => G.atlas.includes(p.id));
+      detail.innerHTML = '';
+      detail.append(
+        el('button', { class: 'btn ghost small atlas-back', onclick: () => detail.classList.add('hidden') }, '← Volver al mapa'),
+        el('div', { class: 'atlas-copy' },
+          el('h2', {}, `📔 Diario de viaje · ${done.length}/${A.places.length}`),
+          done.length
+            ? el('div', { class: 'atlas-journal' }, done.map((p) => el('button', { class: 'atlas-jitem', onclick: () => showPlace(p) },
+              el('img', { src: `img/atlas/${p.id}.webp`, alt: '' }), el('span', {}, p.name))))
+            : el('p', { class: 'muted' }, 'Aún no has explorado ningún lugar. Pulsa uno en el mapa para empezar tu viaje.')));
+      detail.classList.remove('hidden');
+    }
+
+    const start = A.places.find((p) => p.id === placeId);
+    if (start) showPlace(start);
   }
 
   function closeBtn() {
@@ -413,7 +496,7 @@
         hudBtn('📡 Comunicador', 'C', () => openOverlay('chats')),
         hudBtn('🪪 Ficha', 'F', () => openOverlay('ficha')),
         hudBtn('📚 Códice', 'K', () => openOverlay('codice')),
-        hudBtn('🗺 Mapa', 'M', () => openOverlay('codice', null, 'mapa')),
+        hudBtn('🧭 Atlas', 'M', () => openOverlay('codice', null, 'atlas')),
         hudBtn('☰ Pausa', 'Esc', () => openOverlay('menu'))),
       el('div', { id: 'overlay', class: 'overlay' })));
     World.start(G, worldCallbacks(), canvas, mini);
@@ -1167,7 +1250,7 @@
       return;
     }
     if (k === ' ' && busy) { skipping = true; e.preventDefault(); return; }
-    if (k === 'm' && !busy) { if (overlayKind === 'codice') closeOverlay(); else openOverlay('codice', null, 'mapa'); return; }
+    if (k === 'm' && !busy) { if (overlayKind === 'codice') closeOverlay(); else openOverlay('codice', null, 'atlas'); return; }
     const shortcuts = { h: 'historia', c: 'chats', f: 'ficha', k: 'codice' };
     if (shortcuts[k] && !busy) {
       if (overlayKind === shortcuts[k]) closeOverlay();

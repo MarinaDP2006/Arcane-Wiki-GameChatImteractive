@@ -6,10 +6,10 @@ const vm = require('vm');
 
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['wiki.js', 'creation.js', 'story.js', 'chat.js', 'world.js']) {
+for (const f of ['wiki.js', 'creation.js', 'story.js', 'chat.js', 'world.js', 'atlas.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', f), 'utf8'), ctx, { filename: f });
 }
-const { WIKI, STORY, CHAT, CREATION, WORLD } = ctx.window;
+const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS } = ctx.window;
 const errors = [];
 const chars = new Set(WIKI.personajes.map((p) => p.id));
 const allIds = new Set(WIKI.categories.flatMap((c) => WIKI[c.id].map((e) => e.id)));
@@ -121,9 +121,17 @@ for (const [id, d] of Object.entries(CHAT)) {
   }
 }
 
+// Atlas de las Dos Ciudades
+for (const p of ATLAS.places) {
+  if (p.codex && !allIds.has(p.codex)) errors.push(`atlas ${p.id}: entrada de Códice "${p.codex}" no existe`);
+  p.people.forEach((id) => { if (!chars.has(id)) errors.push(`atlas ${p.id}: personaje "${id}" no existe`); });
+  if (!fs.existsSync(path.join(__dirname, '..', 'src', 'img', 'atlas', `${p.id}.webp`))) errors.push(`atlas ${p.id}: falta la imagen`);
+  if (p.x < 0 || p.x > 100 || p.y < 0 || p.y > 100) errors.push(`atlas ${p.id}: fuera del mapa`);
+}
+
 if (errors.length) {
   console.error(`✗ ${errors.length} problema(s):\n - ${errors.join('\n - ')}`);
   process.exit(1);
 }
 const nodes = STORY.chapters.reduce((a, c) => a + Object.keys(c.nodes).length, 0);
-console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con ${dlgOpts} opciones de diálogo.`);
+console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con ${dlgOpts} opciones de diálogo y ${ATLAS.places.length} lugares en el Atlas.`);

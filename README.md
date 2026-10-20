@@ -109,7 +109,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | C | Comunicador (chats) |
 | F | Ficha del personaje |
 | K | Códice |
-| M | Mapa interactivo del Códice |
+| M | Atlas de las Dos Ciudades (Códice) |
 | Esc | Pausa / cerrar ventana |
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
@@ -127,10 +127,13 @@ retrato sale de la galería `avatares/` o de tu foto.
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
 
-**Códice con mapa interactivo:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y
-🗺 **Mapa interactivo** (M), que abre los mapas interactivos de la
-[Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) dentro del juego. Necesita
-internet. La dirección se cambia en *Ajustes* (por ejemplo, para volver al mapa de neta.art).
+**Códice con Atlas y mapas:** el Códice (K) tiene tres pestañas: 📖 **Entradas**,
+🧭 **Atlas** (M) y 🌐 **Mapas de la Wiki**. El Atlas es el mapa ilustrado de las Dos Ciudades
+(basado en el atlas de neta.art) y va dentro del juego, sin internet: 20 lugares de Piltover,
+Zaun y Noxus, cada uno con su ficha, sus puntos de interés, quién vive allí (con botón para
+hablar) y un 📔 diario de viaje con los lugares que has explorado. La pestaña de la Wiki abre los
+mapas interactivos de la [Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) (necesita
+internet; la dirección se cambia en *Ajustes*).
 
 **Imágenes de la Arcane Wiki:** en *Ajustes → Arte personalizado*, el botón «Descargar lo que
 falte de la Arcane Wiki» baja la imagen principal de cada personaje y lugar que aún no tenga
@@ -261,6 +264,7 @@ src/js/portrait.js       Retratos ilustrados generados en SVG
 src/data/story.js        Capítulos, decisiones y finales
 src/data/world.js        Mapas de Piltover y Zaun, lugares, actividades, fragmentos
 src/data/chat.js         Árboles de diálogo de cada personaje
+src/data/atlas.js        Lugares del Atlas de las Dos Ciudades (imágenes en src/img/atlas)
 src/data/wiki.js         Entradas del Códice (personajes, lugares, criaturas, tecnología, mundo)
 src/data/creation.js     Opciones del creador de personaje
 scripts/check.js         Validador de datos
