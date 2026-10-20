@@ -96,7 +96,6 @@
       el('span', {}, el('strong', {}, label), hint ? el('small', { class: 'muted' }, hint) : null),
       el('input', { type: 'checkbox', checked: Boolean(s[key]), onchange: (e) => set({ [key]: e.target.checked }) }));
 
-    const keyInput = el('input', { class: 'input', type: 'password', placeholder: s.hasApiKey ? '•••••••• (guardada)' : 'sk-ant-…', autocomplete: 'off' });
     root.append(el('div', { class: 'settings panel' },
       el('div', { class: 'row gap', style: 'justify-content:space-between' },
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
@@ -111,10 +110,7 @@
       el('label', { class: 'field' }, el('span', {}, 'Velocidad del texto'),
         el('select', { class: 'input', onchange: (e) => set({ textSpeed: e.target.value }) },
           [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido']].map(([v, l]) => el('option', { value: v, selected: s.textSpeed === v }, l)))),
-      toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones con IA.'),
-      el('h3', {}, 'Conversaciones con IA'),
-      el('p', { class: 'muted' }, 'Con IA, los personajes conversan libremente sin salir de su papel. Sin IA, responden con diálogos escritos y temas de conversación. Por defecto se usa Ollama, que funciona en tu propio ordenador, gratis y sin conexión.'),
-      U.desktop ? aiSettings(s, set, root, onBack) : el('p', { class: 'muted' }, 'Disponible en la versión de escritorio.'),
+      toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
       el('h3', {}, 'Acerca de'),
       el('p', { class: 'muted small' }, 'Proyecto de fans sin ánimo de lucro. Arcane y League of Legends son propiedad de Riot Games. Los retratos y mapas se generan en la app y la música se sintetiza en tiempo real.')));
   }
@@ -330,101 +326,10 @@
     else window.open(url, '_blank');
   };
 
-  // Ajustes de IA: Ollama (local) o Claude (clave de API).
-  function aiSettings(s, set, root, onBack) {
-    const provider = s.aiProvider || 'ollama';
-    const box = el('div', {},
-      toggle2('aiEnabled', 'Activar chat con IA', s, set),
-      el('label', { class: 'field' }, el('span', {}, 'Motor de IA'),
-        el('div', { class: 'seg' },
-          el('button', { class: provider === 'ollama' ? 'active' : '', onclick: async () => { await set({ aiProvider: 'ollama' }); await detectOllama(); renderSettings(root, onBack); } }, '🦙 Ollama (local)'),
-          el('button', { class: provider === 'claude' ? 'active' : '', onclick: async () => { await set({ aiProvider: 'claude' }); renderSettings(root, onBack); } }, '✨ Claude (API)'))));
-
-    if (provider === 'ollama') {
-      const o = App.ollama || {};
-      const urlInput = el('input', { class: 'input', value: s.ollamaUrl || 'http://127.0.0.1:11434', placeholder: 'http://127.0.0.1:11434' });
-      const status = o.ok
-        ? el('p', { class: 'ai-status ok' }, `✅ Ollama conectado · ${o.models.length} modelo(s) de chat instalado(s)${o.chosen ? ` · usando «${o.chosen}»` : ''}`)
-        : el('p', { class: 'ai-status ko' }, `⚠️ ${o.error || 'Aún no se ha comprobado Ollama.'}`);
-      box.append(
-        status,
-        o.ok && o.models.length ? el('label', { class: 'field' }, el('span', {}, 'Modelo de chat instalado en tu PC'),
-          el('select', { class: 'input', onchange: async (e) => { await set({ ollamaModel: e.target.value }); App.ollama.chosen = e.target.value; renderSettings(root, onBack); } },
-            o.models.map((m) => el('option', { value: m.name, selected: m.name === o.chosen }, `${m.name}${m.params ? ` · ${m.params}` : ''}${m.size ? ` · ${(m.size / 1e9).toFixed(1)} GB` : ''}`)))) : null,
-        o.ok && !o.models.length ? el('p', { class: 'muted' }, 'Ollama está abierto pero no tiene modelos de chat. Abre una terminal y escribe, por ejemplo: ollama pull llama3.2') : null,
-        el('label', { class: 'field' }, el('span', {}, 'Dirección de Ollama'), urlInput),
-        el('div', { class: 'row gap' },
-          el('button', { class: 'btn primary small', onclick: async () => { await set({ ollamaUrl: urlInput.value.trim() }); await detectOllama(); renderSettings(root, onBack); toast(App.ollama.ok ? 'Ollama detectado' : 'No se encuentra Ollama', App.ollama.ok ? 'good' : 'warn'); } }, '🔍 Detectar modelos instalados'),
-          o.ok && o.chosen ? el('button', { class: 'btn small', onclick: testAI }, '💬 Probar conversación') : null),
-        !o.ok ? el('p', { class: 'muted small' }, '¿No tienes Ollama? Descárgalo gratis en https://ollama.com, ábrelo, instala un modelo (por ejemplo «ollama pull llama3.2») y pulsa «Detectar modelos».') : null);
-    } else {
-      const keyInput = el('input', { class: 'input', type: 'password', placeholder: s.hasApiKey ? '•••••••• (guardada)' : 'sk-ant-…', autocomplete: 'off' });
-      box.append(
-        el('label', { class: 'field' }, el('span', {}, 'Clave de API de Anthropic'), keyInput),
-        el('label', { class: 'field' }, el('span', {}, 'Modelo'),
-          el('select', { class: 'input', onchange: (e) => set({ aiModel: e.target.value }) },
-            [['claude-opus-5-5', 'Claude Opus 5.5 (recomendado)'], ['claude-sonnet-5-5', 'Claude Sonnet 5.5 (más económico)'], ['claude-haiku-5-5', 'Claude Haiku 5.5 (el más rápido)']]
-              .map(([v, l]) => el('option', { value: v, selected: s.aiModel === v }, l)))),
-        el('div', { class: 'row gap' },
-          el('button', { class: 'btn primary small', onclick: async () => {
-            const v = keyInput.value.trim();
-            if (!v) return toast('Escribe una clave primero', 'warn');
-            await store.setSettings({ apiKey: v });
-            App.settings.hasApiKey = true;
-            toast('Clave guardada', 'good');
-            renderSettings(root, onBack);
-          } }, 'Guardar clave'),
-          s.hasApiKey ? el('button', { class: 'btn ghost small', onclick: async () => {
-            await store.setSettings({ apiKey: '' });
-            App.settings.hasApiKey = false;
-            toast('Clave eliminada');
-            renderSettings(root, onBack);
-          } }, 'Borrar clave') : null,
-          s.hasApiKey ? el('button', { class: 'btn small', onclick: testAI }, '💬 Probar conversación') : null));
-    }
-    return box;
-  }
-
-  function toggle2(key, label, s, set) {
-    return el('label', { class: 'switch-row' }, el('span', {}, el('strong', {}, label)),
-      el('input', { type: 'checkbox', checked: Boolean(s[key]), onchange: (e) => set({ [key]: e.target.checked }) }));
-  }
-
-  async function testAI() {
-    toast('Preguntando a Jinx…');
-    const res = await window.arcane.ai.chat({
-      system: 'Eres Jinx, de la serie Arcane. Responde en español, en una sola frase divertida y sin salir del personaje.',
-      messages: [{ role: 'user', content: '¡Hola! ¿Qué estás construyendo hoy?' }],
-    });
-    if (res.ok) {
-      toast(`Jinx: «${res.text.slice(0, 160)}»`, 'good');
-    } else toast(res.error, 'warn');
-  }
-
-  // Detecta Ollama y los modelos de chat instalados en este ordenador.
-  async function detectOllama() {
-    if (!window.arcane?.ai?.ollamaModels) return;
-    App.ollama = await window.arcane.ai.ollamaModels(App.settings.ollamaUrl);
-    if (App.ollama.ok && App.ollama.chosen && App.settings.ollamaModel !== App.ollama.chosen) {
-      App.settings.ollamaModel = App.ollama.chosen;
-      await store.setSettings({ ollamaModel: App.ollama.chosen });
-    }
-  }
-
-  // ¿Está lista la IA para conversar?
-  App.aiReady = () => {
-    const s = App.settings;
-    if (!s.aiEnabled || !U.desktop) return false;
-    if ((s.aiProvider || 'ollama') === 'claude') return Boolean(s.hasApiKey);
-    return Boolean(App.ollama?.ok && App.ollama.chosen);
-  };
-  App.aiLabel = () => ((App.settings.aiProvider || 'ollama') === 'claude' ? 'Claude' : `Ollama · ${App.ollama?.chosen || ''}`);
-
   async function init() {
     App.settings = await store.getSettings();
     await window.CustomArt.load();
     window.arcane?.art?.guide(artGuide());
-    if ((App.settings.aiProvider || 'ollama') === 'ollama') detectOllama();
     Audio2.configure(App.settings);
     // El audio web solo arranca tras un gesto del usuario.
     document.addEventListener('pointerdown', () => Audio2.ensureCtx(), { once: true });

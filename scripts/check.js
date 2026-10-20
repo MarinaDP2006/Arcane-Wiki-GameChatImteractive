@@ -6,10 +6,10 @@ const vm = require('vm');
 
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['wiki.js', 'creation.js', 'story.js', 'chat.js', 'world.js']) {
+for (const f of ['wiki.js', 'creation.js', 'story.js', 'chat.js', 'world.js', 'atlas.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', f), 'utf8'), ctx, { filename: f });
 }
-const { WIKI, STORY, CHAT, CREATION, WORLD } = ctx.window;
+const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS } = ctx.window;
 const errors = [];
 const chars = new Set(WIKI.personajes.map((p) => p.id));
 const allIds = new Set(WIKI.categories.flatMap((c) => WIKI[c.id].map((e) => e.id)));
@@ -87,9 +87,51 @@ const reachable = new Set([...Object.values(WORLD.maps).flatMap((m) => m.fragmen
 const unreachable = [...allIds].filter((id) => !reachable.has(id));
 if (unreachable.length) console.warn(`(aviso) entradas del Códice que no se pueden desbloquear jugando: ${unreachable.join(', ')}`);
 
+// Conversaciones con opciones de diálogo
+const TONES = ['amable', 'broma', 'duro', 'pregunta', 'coqueto', 'astuto', 'serio', 'sigilo'];
+for (const d of Object.values(CHAT)) for (const o of [...d.hub, ...Object.values(d.nodes || {}).flatMap((n) => n.opts)]) (o.fx?.flags || []).forEach((f) => FLAG_SET.add(f));
+let dlgOpts = 0;
+for (const [id, d] of Object.entries(CHAT)) {
+  if (!chars.has(id)) errors.push(`chat: personaje "${id}" no está en la wiki`);
+  if (!d.greet?.low || !d.greet?.mid || !d.greet?.high) errors.push(`chat ${id}: faltan saludos`);
+  if (!d.bye?.length) errors.push(`chat ${id}: falta despedida`);
+  if (!Array.isArray(d.hub) || !d.hub.length) errors.push(`chat ${id}: menú de temas vacío`);
+  const check = (where, n, o) => {
+    dlgOpts++;
+    if (!o.t) errors.push(`${where}: opción sin texto`);
+    if (o.tone && !TONES.includes(o.tone)) errors.push(`${where}: tono "${o.tone}" desconocido`);
+    if (o.go && o.go !== 'hub' && o.go !== 'bye' && !d.nodes?.[o.go]) errors.push(`${where}: «${o.t}» va a "${o.go}" que no existe`);
+    if (!o.say && !o.go) errors.push(`${where}: «${o.t}» no tiene respuesta ni destino`);
+    [].concat(o.say || []).forEach((l) => { if (typeof l === 'object' && !speakers.has(l.s)) errors.push(`${where}: hablante "${l.s}"`); });
+    const r = o.req || {};
+    if (r.stat && !STORY.stats[r.stat]) errors.push(`${where}: estadística "${r.stat}"`);
+    if (Array.isArray(r.aff) && !chars.has(r.aff[0])) errors.push(`${where}: afinidad con "${r.aff[0]}"`);
+    if ((r.flag || r.notFlag) && !FLAG_SET.has(r.flag || r.notFlag)) errors.push(`${where}: flag "${r.flag || r.notFlag}" que nunca se activa`);
+    const aff = o.fx?.aff;
+    if (aff && typeof aff === 'object') Object.keys(aff).forEach((k) => { if (!chars.has(k)) errors.push(`${where}: afinidad con "${k}"`); });
+    Object.keys(o.fx?.stats || {}).forEach((k) => { if (!STORY.stats[k]) errors.push(`${where}: estadística "${k}"`); });
+    Object.keys(o.fx || {}).forEach((k) => { if (!['aff', 'rep', 'stats', 'flags'].includes(k)) errors.push(`${where}: efecto "${k}" desconocido`); });
+  };
+  d.hub.forEach((o) => check(`chat ${id}.hub`, 'hub', o));
+  for (const [nid, n] of Object.entries(d.nodes || {})) {
+    if (!n.opts?.length) errors.push(`chat ${id}.${nid}: nodo sin opciones`);
+    (n.opts || []).forEach((o) => check(`chat ${id}.${nid}`, nid, o));
+    const reached = [...d.hub, ...Object.values(d.nodes).flatMap((x) => x.opts)].some((o) => o.go === nid);
+    if (!reached) errors.push(`chat ${id}.${nid}: ningún diálogo lleva a este nodo`);
+  }
+}
+
+// Atlas de las Dos Ciudades
+for (const p of ATLAS.places) {
+  if (p.codex && !allIds.has(p.codex)) errors.push(`atlas ${p.id}: entrada de Códice "${p.codex}" no existe`);
+  p.people.forEach((id) => { if (!chars.has(id)) errors.push(`atlas ${p.id}: personaje "${id}" no existe`); });
+  if (!fs.existsSync(path.join(__dirname, '..', 'src', 'img', 'atlas', `${p.id}.webp`))) errors.push(`atlas ${p.id}: falta la imagen`);
+  if (p.x < 0 || p.x > 100 || p.y < 0 || p.y > 100) errors.push(`atlas ${p.id}: fuera del mapa`);
+}
+
 if (errors.length) {
   console.error(`✗ ${errors.length} problema(s):\n - ${errors.join('\n - ')}`);
   process.exit(1);
 }
 const nodes = STORY.chapters.reduce((a, c) => a + Object.keys(c.nodes).length, 0);
-console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con chat.`);
+console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con ${dlgOpts} opciones de diálogo y ${ATLAS.places.length} lugares en el Atlas.`);

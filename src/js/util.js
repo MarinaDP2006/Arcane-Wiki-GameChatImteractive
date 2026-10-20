@@ -100,14 +100,13 @@
       return true;
     },
     async getSettings() {
-      const base = { volume: 0.6, music: true, textSpeed: 'normal', spoilers: false, aiEnabled: true, aiProvider: 'ollama', aiModel: 'claude-opus-5-5' };
+      const base = { volume: 0.6, music: true, textSpeed: 'normal', spoilers: false };
       if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
-      return { ...base, ...LS.get('arcane-settings', {}), hasApiKey: false };
+      return { ...base, ...LS.get('arcane-settings', {}) };
     },
     async setSettings(patch) {
       if (desktop) return window.arcane.settings.set(patch);
-      const { apiKey, ...rest } = patch;
-      LS.set('arcane-settings', { ...LS.get('arcane-settings', {}), ...rest });
+      LS.set('arcane-settings', { ...LS.get('arcane-settings', {}), ...patch });
       return true;
     },
   };

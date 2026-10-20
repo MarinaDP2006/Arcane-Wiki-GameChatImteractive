@@ -1,6 +1,6 @@
 # Arcane: Piltover y Zaun
 
-Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arcane*: **historia interactiva + chat + mundo abierto** de Piltover y Zaun. Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
+Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arcane*: **historia interactiva + conversaciones con opciones + mundo abierto** de Piltover y Zaun. Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
 Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 
 ##  Instalación paso a paso (guía rápida)
@@ -32,12 +32,13 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
    - Si no te deja: **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
    - Si dice que «está dañado»: abre **Terminal** y escribe
      `xattr -cr "/Applications/Arcane Piltover y Zaun.app"` y vuelve a abrirlo.
-     
+
 ### Paso 3 · ¡A jugar!
 1. En el menú principal pulsa **✦ Nueva partida**.
 2. Elige **Zaun** o **Piltover**, crea tu personaje (clase, habilidades, retrato, familia…).
 3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
-4. Pulsa **C** para chatear con los personajes que conozcas y **Esc** para el menú de pausa.
+4. Pulsa **C** para hablar con los personajes que conozcas y **Esc** para el menú de pausa.
+   No necesitas instalar nada más: el juego no usa IA ni Ollama.
 
 > ¿Prefieres ejecutarlo desde el código? Instala [Node.js](https://nodejs.org), descarga el proyecto
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
@@ -69,9 +70,13 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
    vez por capítulo. Muchas son minijuegos. Algunas decisiones de la historia también se
    resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
-6. **Chatea**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
-   hablar con ellos por chat o en persona en su lugar del mapa.
-   Conversar sube la afinidad, y la afinidad abre opciones en la historia.
+6. **Conversa**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
+   hablar con ellos por el comunicador o en persona en su lugar del mapa. Cada conversación es
+   un árbol de diálogo: eliges qué decir entre varias respuestas (💗 amable, 😏 broma, 🔥 dura,
+   ❓ pregunta, 💋 coqueta, 🎭 astuta, 🗡️ seria, 🌑 sigilosa) y el personaje reacciona.
+   Lo que dices sube o baja la afinidad, te da estadísticas y activa decisiones de la historia.
+   Algunas respuestas piden **Ingenio, Carisma, Valor, Sigilo o afinidad**, y otras solo aparecen
+   si tomaste ciertas decisiones antes (o en la Temporada 2). Los temas nuevos se marcan con ✦.
 7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
 8. **Temporada 2**: al terminar la primera temporada se desbloquea la segunda, que continúa tu
    partida con las consecuencias de lo que hiciste: la cacería de Jinx tras el ataque, Isha, el
@@ -89,7 +94,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | C | Comunicador (chats) |
 | F | Ficha del personaje |
 | K | Códice |
-| M | Mapa interactivo del Códice |
+| M | Atlas de las Dos Ciudades (Códice) |
 | Esc | Pausa / cerrar ventana |
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
@@ -107,10 +112,13 @@ retrato sale de la galería `avatares/` o de tu foto.
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
 
-**Códice con mapa interactivo:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y
-🗺 **Mapa interactivo** (M), que abre los mapas interactivos de la
-[Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) dentro del juego. Necesita
-internet. La dirección se cambia en *Ajustes* (por ejemplo, para volver al mapa de neta.art).
+**Códice con Atlas y mapas:** el Códice (K) tiene tres pestañas: 📖 **Entradas**,
+🧭 **Atlas** (M) y 🌐 **Mapas de la Wiki**. El Atlas es el mapa ilustrado de las Dos Ciudades
+(basado en el atlas de neta.art) y va dentro del juego, sin internet: 20 lugares de Piltover,
+Zaun y Noxus, cada uno con su ficha, sus puntos de interés, quién vive allí (con botón para
+hablar) y un 📔 diario de viaje con los lugares que has explorado. La pestaña de la Wiki abre los
+mapas interactivos de la [Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) (necesita
+internet; la dirección se cambia en *Ajustes*).
 
 **Imágenes de la Arcane Wiki:** en *Ajustes → Arte personalizado*, el botón «Descargar lo que
 falte de la Arcane Wiki» baja la imagen principal de cada personaje y lugar que aún no tenga
@@ -147,6 +155,12 @@ Jinx, Caitlyn, Jayce, Viktor, Heimerdinger, Ekko, Singed, Ambessa, Mel y Warwick
 elige el aspecto de Arcane cuando existe. Los personajes que no son campeones (Silco,
 Vander, Sevika…) los añades tú. Todos estos archivos se quedan en tu ordenador y no se
 incluyen en el ejecutable.
+
+### Conversaciones sin IA
+
+Desde la v1.5.0 el juego ya no usa Ollama ni ninguna IA: todas las conversaciones están
+escritas a mano en `src/data/chat.js`, con más de 280 respuestas posibles entre 22 personajes.
+Funciona sin internet y sin instalar nada aparte.
 
 ## Cómo instalarlo
 Hay dos formas: **descargar el juego ya compilado** (recomendado, no hace falta instalar nada más)
@@ -220,7 +234,7 @@ Windows y Mac y añade los instaladores a esa Release automáticamente.
 
 ## Estructura
 ```
-main.js, preload.js      Proceso de Electron: ventana, partidas, ajustes, chat IA
+main.js, preload.js      Proceso de Electron: ventana, partidas y ajustes
 src/index.html           Interfaz del juego
 src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
 src/js/game.js           Historia, comunicador, ficha, actividades y Códice
@@ -229,7 +243,8 @@ src/js/audio.js          Música procedural y efectos de sonido
 src/js/portrait.js       Retratos ilustrados generados en SVG
 src/data/story.js        Capítulos, decisiones y finales
 src/data/world.js        Mapas de Piltover y Zaun, lugares, actividades, fragmentos
-src/data/chat.js         Diálogos de cada personaje
+src/data/chat.js         Árboles de diálogo de cada personaje
+src/data/atlas.js        Lugares del Atlas de las Dos Ciudades (imágenes en src/img/atlas)
 src/data/wiki.js         Entradas del Códice (personajes, lugares, criaturas, tecnología, mundo)
 src/data/creation.js     Opciones del creador de personaje
 scripts/check.js         Validador de datos

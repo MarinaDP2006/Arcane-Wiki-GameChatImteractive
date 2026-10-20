@@ -1,8 +1,8 @@
 {
   "name": "arcane-piltover-zaun",
   "productName": "Arcane Piltover y Zaun",
-  "version": "1.4.2",
-  "description": "Juego de escritorio de Arcane: historia interactiva, chat con voz y mundo abierto de Piltover y Zaun.",
+  "version": "1.5.0",
+  "description": "Juego de escritorio de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
   "license": "MIT",
@@ -12,9 +12,6 @@
     "dist": "electron-builder",
     "dist:win": "electron-builder --win",
     "dist:mac": "electron-builder --mac"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.135.0"
   },
   "devDependencies": {
     "electron": "^44.9.1",
