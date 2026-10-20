@@ -69,45 +69,79 @@ Si pones una clave de API de Anthropic en **Ajustes → Conversaciones con IA**,
 libremente con Claude sin salir del personaje, teniendo en cuenta tu ficha, tu afinidad y
 tus decisiones. La clave se guarda solo en tu ordenador.
 
-## Descargar e instalar en tu PC
+## Cómo instalarlo
 
-### Opción A · Descargar el juego ya compilado (lo más fácil)
+Hay dos formas: **descargar el juego ya compilado** (recomendado, no hace falta instalar nada más)
+o **ejecutarlo desde el código**.
 
-1. Ve a la página de **Releases** del repositorio
-   (https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases) y abre la última versión.
-   Si aún no hay ninguna, entra en **Actions → Compilar ejecutables**, abre la última ejecución
-   en verde y baja a **Artifacts**.
-2. Descarga el archivo de tu sistema:
-   - **Windows**: `Arcane Piltover y Zaun Setup X.Y.Z.exe` (instalador, crea acceso directo) o
-     `Arcane Piltover y Zaun-X.Y.Z-portable.exe` (sin instalar: doble clic y a jugar).
-   - **macOS**: el `.dmg` (Intel y Apple Silicon). Ábrelo y arrastra el juego a *Aplicaciones*.
-3. La primera vez:
-   - En Windows, si aparece SmartScreen: *Más información → Ejecutar de todas formas*.
-   - En macOS: clic derecho sobre el juego → *Abrir* → *Abrir* (la app no está firmada).
+**Dónde se descarga el juego compilado:**
+- En **Releases** (https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases), si hay
+  alguna versión publicada.
+- O en **Actions → Compilar ejecutables**: abre la ejecución más reciente con ✅ y baja hasta
+  **Artifacts**. GitHub entrega los artifacts dentro de un `.zip`, así que primero hay que
+  descomprimirlo.
 
-### Opción B · Ejecutar desde el código
+### 🪟 En PC (Windows 10 / 11)
 
-1. Instala [Node.js](https://nodejs.org) (versión 20 o superior).
-2. Descarga el proyecto: botón verde **Code → Download ZIP** en GitHub y descomprímelo
-   (o `git clone https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive.git`).
-3. Haz doble clic en:
-   - **Windows**: `jugar-windows.bat`
-   - **macOS**: `jugar-mac.command` (si macOS lo bloquea: clic derecho → *Abrir*).
+**Opción 1 · Juego compilado**
+1. Descarga `arcane-windows` (en Artifacts) o el `.exe` de la Release y descomprímelo si es un `.zip`.
+2. Elige uno de los dos archivos:
+   - `Arcane Piltover y Zaun Setup X.Y.Z.exe` → **instalador**: doble clic, sigue los pasos y
+     tendrás un acceso directo en el escritorio y en el menú Inicio.
+   - `Arcane Piltover y Zaun-X.Y.Z-portable.exe` → **portable**: no se instala; doble clic y a jugar
+     (puedes llevarlo en un USB).
+3. Si Windows muestra **«Windows protegió su PC»** (SmartScreen), pulsa **Más información →
+   Ejecutar de todas formas**. Sale porque el juego no está firmado digitalmente.
+4. Para desinstalarlo: *Configuración → Aplicaciones → Arcane Piltover y Zaun → Desinstalar*
+   (la versión portable basta con borrarla).
 
-   La primera vez instala lo necesario y luego abre el juego.
+**Opción 2 · Desde el código**
+1. Instala [Node.js](https://nodejs.org) (versión LTS, 20 o superior) con las opciones por defecto.
+2. En GitHub pulsa **Code → Download ZIP** y descomprime la carpeta.
+3. Haz doble clic en **`jugar-windows.bat`**. La primera vez descarga lo necesario (unos minutos)
+   y después abre el juego. Las siguientes veces arranca directamente.
 
-### Compilar tus propios ejecutables
+Tus partidas se guardan en `%APPDATA%\Arcane Piltover y Zaun\partidas` y tu carpeta de arte en
+`%APPDATA%\Arcane Piltover y Zaun\arte`.
+
+### 🍎 En Mac (macOS 11 o superior, Intel y Apple Silicon)
+
+**Opción 1 · Juego compilado**
+1. Descarga `arcane-macos` (en Artifacts) o el `.dmg` de la Release y descomprímelo si es un `.zip`.
+2. Abre el `.dmg` y **arrastra «Arcane Piltover y Zaun» a la carpeta Aplicaciones**.
+3. La primera vez, como la app no está firmada por Apple:
+   - Haz **clic derecho (o Control + clic) sobre la app → Abrir → Abrir**.
+   - Si aun así no se abre, ve a **Ajustes del Sistema → Privacidad y seguridad**, baja hasta el
+     aviso de la app y pulsa **Abrir igualmente**.
+   - Si macOS dice que la app «está dañada», abre la app **Terminal** y escribe:
+     `xattr -cr "/Applications/Arcane Piltover y Zaun.app"`, y vuelve a abrirla.
+4. Para desinstalarlo, arrastra la app desde *Aplicaciones* a la Papelera.
+
+**Opción 2 · Desde el código**
+1. Instala [Node.js](https://nodejs.org) (versión LTS, 20 o superior).
+2. En GitHub pulsa **Code → Download ZIP** y descomprime la carpeta.
+3. Haz doble clic en **`jugar-mac.command`**. Si macOS lo bloquea: clic derecho → *Abrir*.
+   Si dice que no tiene permisos, abre **Terminal** dentro de la carpeta y escribe
+   `chmod +x jugar-mac.command`.
+
+Tus partidas se guardan en `~/Library/Application Support/Arcane Piltover y Zaun/partidas` y tu
+carpeta de arte en `~/Library/Application Support/Arcane Piltover y Zaun/arte`.
+
+### 🛠️ Compilar tus propios ejecutables
 
 ```bash
 npm install
 npm start          # jugar en modo desarrollo
 npm run check      # validar historia, mapas y diálogos
-npm run dist:win   # ejecutables de Windows (en Windows)
-npm run dist:mac   # .dmg de macOS (en un Mac)
+npm run dist:win   # ejecutables de Windows (hazlo en Windows)
+npm run dist:mac   # .dmg de macOS (hazlo en un Mac)
 ```
 
-Los ejecutables salen en la carpeta `dist/`. Las partidas se guardan en la carpeta de datos
-del usuario (3 ranuras con autoguardado).
+Los ejecutables salen en la carpeta `dist/`.
+
+**Publicar una versión con descarga directa:** en GitHub, ve a **Releases → Draft a new release**,
+escribe una etiqueta nueva (por ejemplo `v1.2.0`) y pulsa **Publish release**. El workflow compila
+Windows y Mac y añade los instaladores a esa Release automáticamente.
 
 ## Estructura
 
