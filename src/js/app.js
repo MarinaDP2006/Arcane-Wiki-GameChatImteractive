@@ -78,7 +78,13 @@
       toggle('voice', 'Voces de los personajes', 'Lee los diálogos en voz alta con las voces de tu sistema.'),
       el('label', { class: 'field' }, el('span', {}, 'Velocidad de la voz'),
         el('input', { type: 'range', min: 0.6, max: 1.6, step: 0.05, value: s.voiceRate, oninput: (e) => set({ voiceRate: Number(e.target.value) }) })),
-      el('button', { class: 'btn small', onclick: () => Audio2.speak('Bienvenido a Zaun. Aquí abajo, nadie viene a salvarnos.', { pitch: 1.1, rate: 1.05, gender: 'm' }) }, '🔊 Probar voz'),
+      U.desktop ? voiceSettings(s, set, root, onBack) : null,
+      el('div', { class: 'row gap' },
+        el('button', { class: 'btn small', onclick: () => { Audio2.stopSpeech(); Audio2.speak('Bienvenido a Zaun. Aquí abajo, nadie viene a salvarnos.', { pitch: 0.95, rate: 1.05, gender: 'm', narrator: true }); } }, '🔊 Probar narrador'),
+        el('button', { class: 'btn small', onclick: () => { Audio2.stopSpeech(); Audio2.speak('¿Quieres ver algo explotar? ¡Pues mira esto!', window.CHAT.jinx.voice); } }, '🔊 Jinx'),
+        el('button', { class: 'btn small', onclick: () => { Audio2.stopSpeech(); Audio2.speak('Si alguien toca a mi familia, que se prepare.', window.CHAT.vi.voice); } }, '🔊 Vi'),
+        el('button', { class: 'btn small', onclick: () => { Audio2.stopSpeech(); Audio2.speak('Zaun no necesita la caridad de Piltover. Necesita su miedo.', window.CHAT.silco.voice); } }, '🔊 Silco'),
+        el('button', { class: 'btn small', onclick: () => { Audio2.stopSpeech(); Audio2.speak('¡Fascinante! Un siglo de experiencia y aún me sorprende la gente.', window.CHAT.heimerdinger.voice); } }, '🔊 Heimerdinger')),
       el('h3', {}, 'Lectura'),
       el('label', { class: 'field' }, el('span', {}, 'Velocidad del texto (sin voz)'),
         el('select', { class: 'input', onchange: (e) => set({ textSpeed: e.target.value }) },
@@ -89,6 +95,49 @@
       U.desktop ? aiSettings(s, set, root, onBack) : el('p', { class: 'muted' }, 'Disponible en la versión de escritorio.'),
       el('h3', {}, 'Acerca de'),
       el('p', { class: 'muted small' }, 'Proyecto de fans sin ánimo de lucro. Arcane y League of Legends son propiedad de Riot Games. Los retratos y mapas se generan en la app y la música se sintetiza en tiempo real.')));
+  }
+
+  // Ajustes de voz: voces humanas (Piper) o voces del sistema.
+  function voiceSettings(s, set, root, onBack) {
+    const t = Audio2.tts;
+    const engine = s.voiceEngine || 'neural';
+    const totalMb = (t.pack || []).reduce((a, v) => a + v.mb, 0);
+    const installedAll = t.pack && t.installed.length === t.pack.length;
+    const progress = el('div', { class: 'tts-progress hidden' }, el('i'), el('span'));
+    const box = el('div', { class: 'tts-box' },
+      el('label', { class: 'field' }, el('span', {}, 'Tipo de voces'),
+        el('div', { class: 'seg' },
+          el('button', { class: engine === 'neural' ? 'active' : '', onclick: async () => { await set({ voiceEngine: 'neural' }); renderSettings(root, onBack); } }, '🎙 Voces humanas'),
+          el('button', { class: engine === 'system' ? 'active' : '', onclick: async () => { await set({ voiceEngine: 'system' }); renderSettings(root, onBack); } }, '🤖 Voces del sistema'))),
+      !t.available
+        ? el('p', { class: 'ai-status ko' }, '⚠️ El motor de voces humanas no está disponible en este ordenador. Se usan las voces del sistema.')
+        : t.installed.length
+          ? el('p', { class: 'ai-status ok' }, `✅ Voces humanas instaladas: ${t.pack.filter((v) => t.installed.includes(v.id)).map((v) => v.label).join(' · ')}`)
+          : el('p', { class: 'ai-status ko' }, `Las voces humanas (neuronales, gratis y sin internet) aún no están descargadas. Ocupan unos ${totalMb} MB.`),
+      t.available && !installedAll ? el('button', {
+        class: 'btn primary small',
+        onclick: async (ev) => {
+          ev.target.disabled = true;
+          progress.classList.remove('hidden');
+          window.arcane.tts.onProgress((d) => {
+            if (d.error) { progress.querySelector('span').textContent = `Error: ${d.error}`; return; }
+            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
+            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `${d.phase === 'extract' ? 'Instalando' : 'Descargando'} ${d.current} · ${Math.round((d.progress || 0) * 100)}%`;
+          });
+          const r = await window.arcane.tts.install();
+          await Audio2.refreshNeural();
+          if (r.ok) {
+            await set({ voiceEngine: 'neural' });
+            toast('Voces humanas instaladas 🎙', 'good');
+            Audio2.speak('¡Hola! Ahora sueno mucho más natural, ¿a que sí?', window.CHAT.jinx.voice);
+          } else toast(r.error, 'warn');
+          renderSettings(root, onBack);
+        },
+      }, `⬇ Descargar voces humanas (${totalMb} MB, una sola vez)`) : null,
+      progress,
+      el('p', { class: 'muted small' }, 'Voces Piper (código abierto): cada personaje tiene su propia voz, tono y ritmo. Solo hace falta internet para la descarga.'));
+    if (t.installing) progress.classList.remove('hidden');
+    return box;
   }
 
   // Ajustes de IA: Ollama (local) o Claude (clave de API).
@@ -185,6 +234,7 @@
   async function init() {
     App.settings = await store.getSettings();
     await window.CustomArt.load();
+    await Audio2.refreshNeural();
     if ((App.settings.aiProvider || 'ollama') === 'ollama') detectOllama();
     Audio2.configure(App.settings);
     // El audio web solo arranca tras un gesto del usuario.

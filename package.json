@@ -1,7 +1,7 @@
 {
   "name": "arcane-piltover-zaun",
   "productName": "Arcane Piltover y Zaun",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Juego de escritorio de Arcane: historia interactiva, chat con voz y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
@@ -14,7 +14,8 @@
     "dist:mac": "electron-builder --mac"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.135.0"
+    "@anthropic-ai/sdk": "^0.135.0",
+    "sherpa-onnx-node": "1.13.8"
   },
   "devDependencies": {
     "electron": "^44.9.1",
@@ -23,12 +24,31 @@
   "build": {
     "appId": "com.marinadp2006.arcanewikigame",
     "productName": "Arcane Piltover y Zaun",
-    "files": ["main.js", "preload.js", "src/**/*", "build/icon.png", "package.json"],
-    "directories": { "output": "dist", "buildResources": "build" },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
     "win": {
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "icon": "build/icon.png"
     },
@@ -38,15 +58,30 @@
       "createDesktopShortcut": true,
       "shortcutName": "Arcane Piltover y Zaun"
     },
-    "portable": { "artifactName": "${productName}-${version}-portable.${ext}" },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.${ext}"
+    },
     "mac": {
       "target": [
-        { "target": "dmg", "arch": ["universal"] },
-        { "target": "zip", "arch": ["universal"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
       ],
       "category": "public.app-category.role-playing-games",
       "icon": "build/icon.png",
       "identity": null
-    }
+    },
+    "asarUnpack": [
+      "node_modules/sherpa-onnx-*/**"
+    ]
   }
 }
