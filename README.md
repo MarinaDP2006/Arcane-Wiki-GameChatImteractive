@@ -62,7 +62,13 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 6. Abre el juego → **⚙ Ajustes → Conversaciones con IA**. Deberías ver **✅ Ollama conectado** y tu
    modelo. Pulsa **💬 Probar conversación** y Jinx te contestará.
 
-### Paso 4 · ¡A jugar!
+### Paso 4 · Descarga las voces humanas (recomendado)
+
+En el juego, ve a **⚙ Ajustes → Audio** y pulsa **⬇ Descargar voces humanas**. Tarda unos minutos
+(son unos 330 MB) y solo hay que hacerlo una vez. Después elige **🎙 Voces humanas**: los personajes
+dejarán de sonar robóticos.
+
+### Paso 5 · ¡A jugar!
 
 1. En el menú principal pulsa **✦ Nueva partida**.
 2. Elige **Zaun** o **Piltover**, crea tu personaje (nombre, aspecto, familia, aficiones…).
@@ -128,6 +134,21 @@ foto que el juego convierte en retrato pintado.
 o vídeos (por ejemplo `personajes/jinx.png`, `escenas/ultima-gota.jpg`,
 `video/intro-zaun.mp4`). El juego los usa en lugar del arte generado. Esos archivos se quedan
 en tu ordenador y no se incluyen en el ejecutable.
+
+### Voces humanas 🎙 (gratis y sin internet)
+
+Por defecto Windows y macOS solo traen voces muy robóticas. El juego incluye un motor de
+**voces neuronales Piper** (código abierto) que suenan mucho más naturales, y cada personaje
+tiene su propia voz, tono y ritmo (Jinx, Vi, Silco, Heimerdinger…).
+
+1. Abre el juego → **⚙ Ajustes → Audio**.
+2. Pulsa **⬇ Descargar voces humanas** (unos 330 MB, solo la primera vez; luego funcionan sin
+   internet).
+3. Cuando termine, elige **🎙 Voces humanas** y prueba los botones **🔊 Narrador / Jinx / Vi /
+   Silco / Heimerdinger**.
+
+Las voces se guardan en la carpeta de datos del juego (`voces`). Si prefieres las voces de tu
+sistema, elige **🤖 Voces del sistema**.
 
 ### Chat con IA: Ollama 🦙
 

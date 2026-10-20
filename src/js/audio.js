@@ -163,6 +163,11 @@
 
   // Lee una línea en voz alta. Devuelve una promesa que se resuelve al terminar.
   function speak(text, voice = {}) {
+    if (A.settings.voice && neuralReady()) {
+      const clean = cleanForSpeech(text);
+      if (!clean) return Promise.resolve();
+      return speakNeural(clean, voice).catch(() => {});
+    }
     return new Promise((resolve) => {
       if (!A.settings.voice || !('speechSynthesis' in window)) return resolve();
       const clean = cleanForSpeech(text);
@@ -180,9 +185,95 @@
     });
   }
 
+  // ---------- Voces humanas (Piper neuronal, en el proceso principal) ----------
+  // v: voz instalada · sid: hablante dentro del modelo · pitch: tono (velocidad de reproducción)
+  // speed: ritmo al hablar.
+  const NEURAL = {
+    narrador: { v: 'miro', sid: 0, pitch: 1, speed: 0.95 },
+    vi: { v: 'sharvard', sid: 1, pitch: 0.92, speed: 1.05 },
+    jinx: { v: 'daniela', sid: 0, pitch: 1.12, speed: 1.15 },
+    caitlyn: { v: 'sharvard', sid: 1, pitch: 1.0, speed: 0.98 },
+    mel: { v: 'daniela', sid: 0, pitch: 0.95, speed: 0.92 },
+    cassandra: { v: 'sharvard', sid: 1, pitch: 0.96, speed: 0.92 },
+    sevika: { v: 'sharvard', sid: 1, pitch: 0.85, speed: 0.95 },
+    ambessa: { v: 'daniela', sid: 0, pitch: 0.86, speed: 0.9 },
+    sky: { v: 'daniela', sid: 0, pitch: 1.06, speed: 1.0 },
+    isha: { v: 'daniela', sid: 0, pitch: 1.25, speed: 1.1 },
+    jayce: { v: 'davefx', sid: 0, pitch: 1.0, speed: 1.02 },
+    viktor: { v: 'miro', sid: 0, pitch: 0.97, speed: 0.92 },
+    heimerdinger: { v: 'davefx', sid: 0, pitch: 1.25, speed: 1.1 },
+    silco: { v: 'miro', sid: 0, pitch: 0.9, speed: 0.88 },
+    vander: { v: 'sharvard', sid: 0, pitch: 0.95, speed: 0.9 },
+    ekko: { v: 'davefx', sid: 0, pitch: 1.08, speed: 1.08 },
+    singed: { v: 'miro', sid: 0, pitch: 0.85, speed: 0.85 },
+    marcus: { v: 'sharvard', sid: 0, pitch: 1.0, speed: 0.95 },
+    mylo: { v: 'davefx', sid: 0, pitch: 1.12, speed: 1.12 },
+    claggor: { v: 'sharvard', sid: 0, pitch: 0.92, speed: 0.95 },
+    benzo: { v: 'miro', sid: 0, pitch: 0.9, speed: 0.9 },
+    scar: { v: 'davefx', sid: 0, pitch: 0.95, speed: 1.0 },
+    loris: { v: 'sharvard', sid: 0, pitch: 1.05, speed: 1.0 },
+  };
+  const tts = { installed: [], available: false };
+  let current = null; // fuente de audio sonando
+  let token = 0;
+
+  function neuralReady() {
+    return A.settings.voiceEngine !== 'system' && tts.available && tts.installed.length > 0 && window.arcane?.tts;
+  }
+
+  // Busca el personaje al que pertenece un objeto de voz de CHAT.
+  function voiceOwner(voice) {
+    if (!voice) return null;
+    if (voice.__id) return voice.__id;
+    for (const [id, c] of Object.entries(window.CHAT || {})) if (c.voice === voice) { voice.__id = id; return id; }
+    return null;
+  }
+
+  function neuralParams(voice) {
+    const id = voiceOwner(voice);
+    if (id && NEURAL[id]) return NEURAL[id];
+    if (voice?.narrator) return NEURAL.narrador;
+    // Habitantes y narrador: según el género y con un tono parecido al pedido.
+    const female = voice?.gender === 'f';
+    return { v: 'sharvard', sid: female ? 1 : 0, pitch: Math.max(0.8, Math.min(1.3, voice?.pitch ?? 1)), speed: voice?.rate ?? 1 };
+  }
+
+  async function speakNeural(clean, voice) {
+    const my = ++token;
+    const p = neuralParams(voice);
+    const v = tts.installed.includes(p.v) ? p.v : tts.installed.includes('sharvard') ? 'sharvard' : tts.installed[0];
+    const rate = A.settings.voiceRate || 1;
+    // La velocidad de reproducción cambia el tono; se compensa el ritmo al sintetizar.
+    const res = await window.arcane.tts.speak({ text: clean, voice: v, sid: v === p.v ? p.sid : (voice?.gender === 'f' ? 1 : 0), speed: (p.speed * rate) / p.pitch });
+    if (my !== token || !res.ok) return;
+    const ctx = ensureCtx();
+    if (!ctx) return;
+    const u8 = res.wav;
+    const buf = await ctx.decodeAudioData(u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength));
+    if (my !== token) return;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.playbackRate.value = p.pitch;
+    const g = ctx.createGain();
+    g.gain.value = Math.min(1.6, A.settings.volume * 1.6 + 0.2);
+    src.connect(g).connect(ctx.destination);
+    current = src;
+    await new Promise((resolve) => { src.onended = resolve; src.start(); });
+    if (current === src) current = null;
+  }
+
+  async function refreshNeural() {
+    if (!window.arcane?.tts) return tts;
+    try { Object.assign(tts, await window.arcane.tts.status()); } catch { /* sin motor */ }
+    return tts;
+  }
+
   function stopSpeech() {
+    token++;
+    try { current?.stop(); } catch { /* ya parado */ }
+    current = null;
     if ('speechSynthesis' in window) speechSynthesis.cancel();
   }
 
-  window.Audio2 = { configure, sfx, playMusic, stopMusic, speak, stopSpeech, ensureCtx };
+  window.Audio2 = { configure, sfx, playMusic, stopMusic, speak, stopSpeech, ensureCtx, refreshNeural, tts, NEURAL };
 })();

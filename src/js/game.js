@@ -97,7 +97,7 @@
   // Cinemática de inicio según la ciudad elegida.
   function playIntro(p) {
     const me = { look: p.look, ...Portrait.playerOpts(p) };
-    const nar = { pitch: 0.9, rate: 1, gender: 'm' };
+    const nar = { pitch: 0.9, rate: 1, gender: 'm', narrator: true };
     const shots = p.origin === 'zaun'
       ? [
         { scene: 'piltover', dur: 6, kicker: 'Runeterra', title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso brilla de oro y cristal.'], voice: nar, zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
@@ -213,7 +213,7 @@
     box.append(el('div', { class: 'panel action-menu' }, el('h2', {}, title),
       ...text.split('\n').filter(Boolean).map((p) => el('p', {}, p)),
       el('button', { class: 'btn primary', onclick: closeOverlay }, 'Continuar')));
-    Audio2.speak(text.split('\n')[0], { pitch: 0.95, rate: 1.05, gender: 'm' });
+    Audio2.speak(text.split('\n')[0], { pitch: 0.95, rate: 1.05, gender: 'm', narrator: true });
   }
 
   async function travel(t) {
@@ -615,7 +615,7 @@
         if (!skipping) Audio2.sfx.message();
       }
       if (!skipping && tab === 'historia') {
-        const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm' } : line.s === 'yo' ? null : window.CHAT[line.s]?.voice;
+        const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm', narrator: true } : line.s === 'yo' ? null : window.CHAT[line.s]?.voice;
         talk(line.s !== 'narrador');
         if (voice && window.App.settings.voice) await Promise.race([Audio2.speak(text, voice), skipWait(12000)]);
         else await skipWait(delayFor(text));
@@ -782,7 +782,7 @@
       $('#story-log')?.append(bubble(line.s, text, skipping));
       scrollLog();
       if (!skipping && tab === 'historia') {
-        const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm' } : window.CHAT[line.s]?.voice;
+        const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm', narrator: true } : window.CHAT[line.s]?.voice;
         talk(line.s !== 'narrador');
         if (voice && window.App.settings.voice) await Promise.race([Audio2.speak(text, voice), skipWait(12000)]);
         else await skipWait(delayFor(text));

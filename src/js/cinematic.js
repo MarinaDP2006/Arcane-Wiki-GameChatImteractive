@@ -100,7 +100,7 @@
           Audio2.stopSpeech();
           const say = s.lines.join(' ');
           if (portraitCtl) portraitCtl.talk(true);
-          Audio2.speak(say, s.voice || { pitch: 0.9, rate: 1, gender: 'm' }).then(() => portraitCtl?.talk(false));
+          Audio2.speak(say, s.voice || { pitch: 0.9, rate: 1, gender: 'm', narrator: true }).then(() => portraitCtl?.talk(false));
         }
         if (s.sfx) Audio2.sfx[s.sfx]?.();
       }

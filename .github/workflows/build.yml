@@ -37,6 +37,11 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # El .dmg es universal (Intel + Apple Silicon): incluye el motor de voz de ambas arquitecturas.
+      - name: Motor de voz para las dos arquitecturas de Mac
+        if: matrix.name == 'macos'
+        run: npm install --no-save --force sherpa-onnx-darwin-x64@1.13.8 sherpa-onnx-darwin-arm64@1.13.8
+
       - name: Validar datos del juego
         run: npm run check
 
