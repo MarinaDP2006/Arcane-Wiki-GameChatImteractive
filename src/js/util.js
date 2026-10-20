@@ -100,7 +100,7 @@
       return true;
     },
     async getSettings() {
-      const base = { volume: 0.6, music: true, voice: true, voiceRate: 1, textSpeed: 'normal', spoilers: false, aiEnabled: false, aiModel: 'claude-opus-5-5' };
+      const base = { volume: 0.6, music: true, voice: true, voiceRate: 1, textSpeed: 'normal', spoilers: false, aiEnabled: true, aiProvider: 'ollama', aiModel: 'claude-opus-5-5' };
       if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
       return { ...base, ...LS.get('arcane-settings', {}), hasApiKey: false };
     },

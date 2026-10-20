@@ -180,34 +180,113 @@ function getClient(apiKey) {
   return anthropicClient;
 }
 
+// ---------- Chat con IA: Ollama (local, por defecto) o Claude (opcional) ----------
+const OLLAMA_DEFAULT = 'http://127.0.0.1:11434';
+// Modelos de chat preferidos, por orden, si hay varios instalados.
+const OLLAMA_PREFERRED = ['llama3', 'llama', 'qwen', 'mistral', 'gemma', 'phi', 'deepseek', 'command-r', 'openchat', 'neural-chat', 'vicuna'];
+const isEmbedding = (m) => /embed|bge|minilm|nomic/i.test(m.name) || /bert/i.test(m.details?.family || '');
+
+async function ollamaFetch(base, pathName, body, timeoutMs) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${base.replace(/\/+$/, '')}${pathName}`, {
+      method: body ? 'POST' : 'GET',
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(`Ollama respondió ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Lista los modelos de chat instalados en Ollama y elige uno.
+async function ollamaModels(base) {
+  const data = await ollamaFetch(base, '/api/tags', null, 4000);
+  const models = (data.models || []).filter((m) => !isEmbedding(m)).map((m) => ({
+    name: m.name,
+    size: m.size,
+    family: m.details?.family || '',
+    params: m.details?.parameter_size || '',
+  }));
+  return models;
+}
+
+function pickOllamaModel(models, wanted) {
+  if (wanted && models.some((m) => m.name === wanted)) return wanted;
+  for (const pref of OLLAMA_PREFERRED) {
+    const m = models.find((x) => x.name.toLowerCase().startsWith(pref));
+    if (m) return m.name;
+  }
+  return models[0]?.name || null;
+}
+
+ipcMain.handle('ai:ollama-models', async (_e, url) => {
+  const settings = readJSON(SETTINGS_FILE(), {});
+  const base = url || settings.ollamaUrl || OLLAMA_DEFAULT;
+  try {
+    const models = await ollamaModels(base);
+    const chosen = pickOllamaModel(models, settings.ollamaModel);
+    return { ok: true, models, chosen, url: base };
+  } catch (err) {
+    return { ok: false, error: err.name === 'AbortError' ? 'Ollama no responde.' : `No se pudo conectar con Ollama (${err.message}).`, url: base };
+  }
+});
+
+async function chatOllama(settings, system, messages) {
+  const base = settings.ollamaUrl || OLLAMA_DEFAULT;
+  let model = settings.ollamaModel;
+  if (!model) {
+    model = pickOllamaModel(await ollamaModels(base));
+    if (!model) return { ok: false, error: 'Ollama no tiene ningún modelo de chat instalado. Prueba: ollama pull llama3.2' };
+  }
+  const data = await ollamaFetch(base, '/api/chat', {
+    model,
+    stream: false,
+    messages: [{ role: 'system', content: system }, ...messages],
+    options: { temperature: 0.8, num_predict: 400 },
+  }, 180000);
+  // Algunos modelos (qwen3, deepseek-r1…) incluyen su razonamiento entre etiquetas <think>.
+  const text = String(data.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+  return text ? { ok: true, text, model } : { ok: false, error: 'El modelo no ha respondido nada.' };
+}
+
+async function chatClaude(settings, system, messages) {
+  if (!settings.apiKey) return { ok: false, error: 'No hay clave de API configurada.' };
+  const response = await getClient(settings.apiKey).beta.messages.create({
+    model: settings.aiModel || 'claude-opus-5-5',
+    max_tokens: 2048,
+    output_config: { effort: 'low' },
+    betas: ['server-side-fallback-2026-07-01'],
+    fallbacks: 'default',
+    system,
+    messages,
+  });
+  if (response.stop_reason === 'refusal') {
+    return { ok: false, error: 'El personaje se queda en silencio… (la IA rechazó responder).' };
+  }
+  const text = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n').trim();
+  return { ok: true, text };
+}
+
 ipcMain.handle('ai:chat', async (_e, { system, messages }) => {
   const settings = readJSON(SETTINGS_FILE(), {});
-  if (!settings.apiKey) return { ok: false, error: 'No hay clave de API configurada.' };
-  const Anthropic = require('@anthropic-ai/sdk').default;
+  const provider = settings.aiProvider || 'ollama';
   try {
-    const response = await getClient(settings.apiKey).beta.messages.create({
-      model: settings.aiModel || 'claude-opus-5-5',
-      max_tokens: 2048,
-      output_config: { effort: 'low' },
-      betas: ['server-side-fallback-2026-07-01'],
-      fallbacks: 'default',
-      system,
-      messages,
-    });
-    if (response.stop_reason === 'refusal') {
-      return { ok: false, error: 'El personaje se queda en silencio… (la IA rechazó responder).' };
-    }
-    const text = response.content
-      .filter((b) => b.type === 'text')
-      .map((b) => b.text)
-      .join('\n')
-      .trim();
-    return { ok: true, text };
+    return provider === 'claude' ? await chatClaude(settings, system, messages) : await chatOllama(settings, system, messages);
   } catch (err) {
-    if (err instanceof Anthropic.AuthenticationError) return { ok: false, error: 'Clave de API no válida.' };
-    if (err instanceof Anthropic.RateLimitError) return { ok: false, error: 'Demasiadas peticiones; espera un momento.' };
-    if (err instanceof Anthropic.APIConnectionError) return { ok: false, error: 'Sin conexión con la API.' };
-    if (err instanceof Anthropic.APIError) return { ok: false, error: `Error de la API (${err.status}): ${err.message}` };
+    if (provider === 'claude') {
+      const Anthropic = require('@anthropic-ai/sdk').default;
+      if (err instanceof Anthropic.AuthenticationError) return { ok: false, error: 'Clave de API no válida.' };
+      if (err instanceof Anthropic.RateLimitError) return { ok: false, error: 'Demasiadas peticiones; espera un momento.' };
+      if (err instanceof Anthropic.APIConnectionError) return { ok: false, error: 'Sin conexión con la API.' };
+      if (err instanceof Anthropic.APIError) return { ok: false, error: `Error de la API (${err.status}): ${err.message}` };
+    }
+    if (err.name === 'AbortError') return { ok: false, error: 'Ollama ha tardado demasiado en responder.' };
+    if (/fetch failed|ECONNREFUSED/i.test(String(err.message))) return { ok: false, error: 'Ollama no está abierto. Inícialo y vuelve a intentarlo.' };
     return { ok: false, error: String(err?.message || err) };
   }
 });

@@ -856,13 +856,13 @@
     const id = contact;
     const data = window.CHAT[id];
     const wikiEntry = window.WIKI.personajes.find((p) => p.id === id);
-    const ai = window.App.settings.aiEnabled && window.App.settings.hasApiKey;
+    const ai = window.App.aiReady();
     if (!G.chats[id]) G.chats[id] = [{ s: id, t: tpl(greeting(id), G.player) }];
     main.append(
       el('header', { class: 'scene-head' },
         el('div', { class: 'row gap' },
           el('span', { class: 'avatar', html: Portrait.forCharacter(id) }),
-          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, `${wikiEntry?.role || ''} · Afinidad ${affOf(id)}/10 · ${ai ? '✨ Modo IA' : 'Modo clásico'}`))),
+          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, `${wikiEntry?.role || ''} · Afinidad ${affOf(id)}/10 · ${ai ? `✨ IA: ${window.App.aiLabel()}` : 'Modo clásico'}`))),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, '📚 Códice'),
           el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; persist(); renderMain(); } }, '🧹 Limpiar'))),
@@ -899,7 +899,7 @@
     log && (log.scrollTop = log.scrollHeight);
 
     let reply = null;
-    if (window.App.settings.aiEnabled && window.App.settings.hasApiKey && window.arcane?.ai) {
+    if (window.App.aiReady() && window.arcane?.ai) {
       const res = await window.arcane.ai.chat({ system: personaPrompt(id), messages: toApiMessages(thread) });
       if (res.ok && res.text) reply = res.text;
       else toast(`${res.error || 'La IA no respondió'} · Uso el modo clásico.`, 'warn');

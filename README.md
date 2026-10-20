@@ -62,12 +62,22 @@ o vídeos (por ejemplo `personajes/jinx.png`, `escenas/ultima-gota.jpg`,
 `video/intro-zaun.mp4`). El juego los usa en lugar del arte generado. Esos archivos se quedan
 en tu ordenador y no se incluyen en el ejecutable.
 
-### Chat con IA (opcional)
+### Chat con IA: Ollama 🦙
 
-Sin configurar nada, los personajes responden con diálogos escritos y temas de conversación.
-Si pones una clave de API de Anthropic en **Ajustes → Conversaciones con IA**, conversan
-libremente con Claude sin salir del personaje, teniendo en cuenta tu ficha, tu afinidad y
-tus decisiones. La clave se guarda solo en tu ordenador.
+Los personajes conversan libremente con **[Ollama](https://ollama.com)**, que funciona en tu
+propio ordenador: gratis, privado y sin conexión a internet.
+
+1. Instala Ollama desde https://ollama.com y ábrelo.
+2. Descarga un modelo de chat desde una terminal, por ejemplo:
+   `ollama pull llama3.2` (ligero) o `ollama pull qwen3:8b` / `ollama pull mistral` (más potentes).
+3. Abre el juego: **detecta automáticamente los modelos instalados en tu PC** y elige uno de
+   chat (descarta los de *embeddings*). En **Ajustes → Conversaciones con IA** verás cuáles tienes,
+   podrás cambiar de modelo, cambiar la dirección de Ollama (por defecto `http://127.0.0.1:11434`)
+   y pulsar **💬 Probar conversación**.
+
+En el comunicador, la cabecera de cada chat indica si estás en **✨ IA: Ollama · modelo** o en
+modo clásico (sin Ollama abierto, los personajes responden con diálogos escritos y temas).
+Opcionalmente, en el mismo menú se puede usar Claude con una clave de API de Anthropic.
 
 ## Cómo instalarlo
 

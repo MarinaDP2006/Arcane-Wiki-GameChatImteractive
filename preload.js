@@ -23,5 +23,6 @@ contextBridge.exposeInMainWorld('arcane', {
   },
   ai: {
     chat: (payload) => ipcRenderer.invoke('ai:chat', payload),
+    ollamaModels: (url) => ipcRenderer.invoke('ai:ollama-models', url),
   },
 });
