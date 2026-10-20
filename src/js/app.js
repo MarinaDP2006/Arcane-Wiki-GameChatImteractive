@@ -310,8 +310,8 @@
           renderSettings(root, onBack);
         },
       }, '⬇ Descargar lo que falte de la Arcane Wiki'),
-      el('h3', {}, '🗺 Mapa interactivo del Códice'),
-      el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K, o M para ir directo) en la pestaña «Mapa interactivo».'),
+      el('h3', {}, '🌐 Mapas de la Wiki en el Códice'),
+      el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K) en la pestaña «Mapas de la Wiki». El Atlas ilustrado (tecla M) no necesita internet.'),
       el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),
         el('input', { class: 'input', value: App.settings.mapUrl || DEFAULT_MAP, onchange: async (e) => { App.settings.mapUrl = e.target.value.trim(); await store.setSettings({ mapUrl: App.settings.mapUrl }); } })),
       el('button', { class: 'btn small', onclick: () => App.openMap() }, '🗺 Abrir mapa interactivo'));
@@ -320,6 +320,7 @@
   // Mapas interactivos de la Arcane Wiki (menú «Interactive Maps» de arcane.fandom.com).
   const DEFAULT_MAP = 'https://arcane.fandom.com/wiki/Special:AllMaps';
   App.DEFAULT_MAP = DEFAULT_MAP;
+  App.mapUrl = () => App.settings.mapUrl || DEFAULT_MAP;
   App.openMap = () => {
     const url = App.mapUrl();
     if (window.arcane?.openMap) window.arcane.openMap(url);

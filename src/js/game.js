@@ -280,8 +280,6 @@
         renderAtlas(body, who);
       } else if (sub === 'mapa') {
         const url = window.App.mapUrl();
-        const pickMap = async (id) => { window.App.settings.mapSource = id; await store.setSettings({ mapSource: id }); openOverlay('codice', null, 'mapa'); };
-        const current = window.App.mapSources()[window.App.settings.mapSource] ? window.App.settings.mapSource : 'fandom';
         body.append(el('div', { class: 'neta-wrap' },
           el('div', { class: 'neta-bar' },
             el('span', { class: 'muted small' }, 'Mapas interactivos de la Arcane Wiki (se cargan desde internet).'),
@@ -454,7 +452,7 @@
     showNotice('Controles', [
       'Moverse: WASD o flechas (Mayús para correr). También puedes hacer clic en el mapa.',
       'Interactuar / hablar / entrar: E o Intro.',
-      'H: historia · C: comunicador (chats) · F: ficha · K: Códice · M: mapa interactivo del Códice · Esc: pausa.',
+      'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
   }
