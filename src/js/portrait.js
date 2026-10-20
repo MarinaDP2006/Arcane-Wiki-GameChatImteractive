@@ -1,115 +1,91 @@
-// Retratos ilustrados en SVG generados a partir de unos pocos rasgos.
-// Se usan para los personajes de la serie y para el avatar del jugador.
+// Retratos del juego. Usa el motor pintado (Painter) y, si la jugadora ha puesto
+// su propio arte en la carpeta de arte, usa esas imágenes en su lugar.
 (function () {
-  function shade(hex, amt) {
-    const n = parseInt(hex.slice(1), 16);
-    const c = (v) => Math.max(0, Math.min(255, v + amt));
-    const r = c((n >> 16) & 255), g = c((n >> 8) & 255), b = c(n & 255);
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  const RIM = { zaun: '#3fbf9f', piltover: '#e3a94a', noxus: '#c0453a', otro: '#8a6ad9' };
+
+  // Rasgos pintados de cada personaje (ver Painter.DEFAULTS para el resto).
+  const LOOKS = {
+    vi: { skin: '#e8b394', face: 'angular', eyes: 'almendra', eyeColor: '#4a6a9a', brows: 'gruesas', hair: '#e0457b', style: 'undercut', outfit: 'chaqueta', outfitColor: '#8a2a3a', accents: ['tattoo', 'piercing'] },
+    jinx: { skin: '#f2d8cc', face: 'corazon', eyes: 'grandes', eyeColor: '#e0457b', brows: 'finas', hair: '#3fa9f5', style: 'braids', outfit: 'top', outfitColor: '#2a2a3a', accents: ['freckles'], makeup: 'sombra', makeupColor: '#7a3aa0' },
+    caitlyn: { skin: '#f3d6c2', face: 'oval', eyes: 'almendra', eyeColor: '#3a5ab0', brows: 'arqueadas', hair: '#1e1c30', style: 'long', outfit: 'uniforme', outfitColor: '#2f4a8a', accents: ['hat'] },
+    jayce: { skin: '#dcae8e', face: 'angular', eyes: 'almendra', eyeColor: '#6a4a2a', brows: 'gruesas', hair: '#3a2618', style: 'swept', outfit: 'abrigo', outfitColor: '#c4c0b8', accents: [] },
+    viktor: { skin: '#e2cbb8', face: 'largo', eyes: 'cansados', eyeColor: '#d9a830', brows: 'rectas', hair: '#3b2a24', style: 'swept', outfit: 'bata', outfitColor: '#6a4a3a', shirt: '#3a2a24', accents: ['collar'] },
+    mel: { skin: '#8a5a3c', face: 'oval', eyes: 'almendra', eyeColor: '#c48a2a', brows: 'arqueadas', hair: '#1a1210', style: 'bun', outfit: 'vestido', outfitColor: '#f0e6d0', accents: ['gold'], makeup: 'eyeliner' },
+    heimerdinger: { skin: '#e9c9a0', face: 'redondo', eyes: 'grandes', eyeColor: '#4a6a3a', brows: 'gruesas', hair: '#f2f2f2', style: 'wild', outfit: 'abrigo', outfitColor: '#7a5a3a', ears: 'yordle', accents: ['mustache'] },
+    silco: { skin: '#cfc0b5', face: 'largo', eyes: 'rasgados', eyeColor: '#c0302a', brows: 'rectas', hair: '#141414', style: 'slick', outfit: 'abrigo', outfitColor: '#3a2040', accents: ['scar'], browAngle: 3 },
+    vander: { skin: '#d8a888', face: 'redondo', eyes: 'cansados', eyeColor: '#5a4a3a', brows: 'gruesas', hair: '#c9c9c9', style: 'short', outfit: 'chaqueta', outfitColor: '#5a3a24', accents: ['beard'] },
+    ekko: { skin: '#5a3a28', face: 'oval', eyes: 'almendra', eyeColor: '#3a2a1a', brows: 'medias', hair: '#f2f2f2', style: 'mohawk', outfit: 'chaqueta', outfitColor: '#2a6a5a', accents: ['paint'] },
+    sevika: { skin: '#c9a080', face: 'angular', eyes: 'rasgados', eyeColor: '#5a3a3a', brows: 'gruesas', hair: '#5a4a5a', style: 'undercut', outfit: 'top', outfitColor: '#2a2a2a', accents: ['arm'], browAngle: 2 },
+    singed: { skin: '#c9c0a8', face: 'largo', eyes: 'cansados', eyeColor: '#8fbf3a', brows: 'finas', hair: '#d9d9d9', style: 'bald', outfit: 'bata', outfitColor: '#4a5a3a', accents: ['mask'] },
+    ambessa: { skin: '#6b4430', face: 'angular', eyes: 'rasgados', eyeColor: '#7a4a1a', brows: 'gruesas', hair: '#1a1010', style: 'braids', outfit: 'uniforme', outfitColor: '#6a1a1a', accents: ['gold', 'scar'] },
+    marcus: { skin: '#d8b498', face: 'largo', eyes: 'cansados', eyeColor: '#4a4a3a', brows: 'medias', hair: '#2a2a2a', style: 'short', outfit: 'uniforme', outfitColor: '#2f4a8a', accents: ['mustache'] },
+    cassandra: { skin: '#f0d0b8', face: 'oval', eyes: 'almendra', eyeColor: '#3a5ab0', brows: 'arqueadas', hair: '#3a2a2a', style: 'bun', outfit: 'vestido', outfitColor: '#2f4a8a', accents: ['gold'] },
+    mylo: { skin: '#d9b494', face: 'oval', eyes: 'almendra', eyeColor: '#4a3a2a', brows: 'medias', hair: '#3a2410', style: 'messy', outfit: 'chaqueta', outfitColor: '#6a5a3a', accents: [] },
+    claggor: { skin: '#a87a5a', face: 'redondo', eyes: 'almendra', eyeColor: '#3a2a1a', brows: 'gruesas', hair: '#1a1410', style: 'messy', outfit: 'mono', outfitColor: '#4a5a6a', accents: ['goggles'] },
+    benzo: { skin: '#6b4a34', face: 'redondo', eyes: 'cansados', eyeColor: '#3a2a1a', brows: 'gruesas', hair: '#d9d9d9', style: 'bald', outfit: 'mono', outfitColor: '#5a6a4a', accents: ['beard', 'glasses'] },
+    scar: { skin: '#b89070', face: 'angular', eyes: 'rasgados', eyeColor: '#2a3a2a', brows: 'gruesas', hair: '#2a2a2a', style: 'undercut', outfit: 'harapos', outfitColor: '#2a4a2a', shirt: '#2a5a3a', accents: ['scar', 'paint'] },
+    isha: { skin: '#c9946a', face: 'redondo', eyes: 'grandes', eyeColor: '#5a3a1a', brows: 'finas', hair: '#7a4a2a', style: 'pigtails', outfit: 'harapos', outfitColor: '#c4602a', accents: ['goggles', 'freckles'] },
+    sky: { skin: '#f0d0b8', face: 'oval', eyes: 'grandes', eyeColor: '#5a7a4a', brows: 'finas', hair: '#3a2a1a', style: 'bob', outfit: 'bata', outfitColor: '#d9d4c8', accents: ['glasses'] },
+    loris: { skin: '#d9b498', face: 'redondo', eyes: 'almendra', eyeColor: '#4a3a2a', brows: 'medias', hair: '#5a3a1a', style: 'short', outfit: 'uniforme', outfitColor: '#2f4a8a', accents: ['mustache'] },
+  };
+
+  function bgFor(colors) {
+    return [colors?.[0] || '#3a3050', colors?.[1] || '#0d0b14'];
   }
 
-  function hairBack(style, hair) {
-    switch (style) {
-      case 'long': return `<path d="M30 58 Q28 112 40 132 L80 132 L120 132 Q132 112 130 58 Q118 30 80 28 Q42 30 30 58Z" fill="${hair}"/>`;
-      case 'braids': return `<path d="M40 70 Q30 120 34 150 L44 150 Q42 110 50 80Z M120 70 Q130 120 126 150 L116 150 Q118 110 110 80Z" fill="${hair}"/>`;
-      case 'pigtails': return `<circle cx="34" cy="64" r="15" fill="${hair}"/><circle cx="126" cy="64" r="15" fill="${hair}"/>`;
-      case 'bun': return `<circle cx="80" cy="24" r="16" fill="${hair}"/>`;
-      default: return '';
-    }
+  function charLook(id) {
+    const c = window.WIKI.personajes.find((p) => p.id === id);
+    return { look: LOOKS[id] || c?.look || {}, rim: RIM[c?.origin] || RIM.otro, bg: bgFor(c?.colors) };
   }
 
-  function hairFront(style, hair) {
-    const d = shade(hair, -30);
-    switch (style) {
-      case 'bald': return '';
-      case 'mohawk': return `<path d="M70 22 Q80 4 90 22 L92 52 L68 52Z" fill="${hair}"/>`;
-      case 'undercut': return `<path d="M44 52 Q52 22 84 22 Q112 24 118 50 Q100 38 84 40 Q62 40 44 52Z" fill="${hair}"/><path d="M44 52 Q44 60 46 66" stroke="${d}" stroke-width="3" fill="none"/>`;
-      case 'messy': return `<path d="M40 60 Q36 26 70 22 Q76 12 88 20 Q124 22 120 60 Q112 44 104 48 Q98 36 86 44 Q76 34 66 46 Q54 40 40 60Z" fill="${hair}"/>`;
-      case 'swept': return `<path d="M42 56 Q42 22 82 20 Q118 22 118 54 Q108 36 80 36 Q60 36 42 56Z" fill="${hair}"/><path d="M58 30 Q80 24 108 36" stroke="${d}" stroke-width="2" fill="none"/>`;
-      case 'slick': return `<path d="M42 54 Q44 22 80 22 Q116 22 118 54 Q104 34 80 34 Q56 34 42 54Z" fill="${hair}"/>`;
-      case 'wild': return `<path d="M30 60 Q24 30 50 26 Q56 8 80 16 Q104 8 110 26 Q136 30 130 60 Q122 40 80 40 Q38 40 30 60Z" fill="${hair}"/>`;
-      case 'short': return `<path d="M42 58 Q40 22 80 20 Q120 22 118 58 Q114 40 100 36 Q80 44 60 36 Q46 40 42 58Z" fill="${hair}"/>`;
-      default: return `<path d="M40 62 Q38 22 80 20 Q122 22 120 62 Q116 38 80 36 Q44 38 40 62Z" fill="${hair}"/>`;
-    }
+  function charURL(id, size = 256) {
+    const custom = window.CustomArt?.image('personajes', id);
+    if (custom) return custom;
+    const { look, rim, bg } = charLook(id);
+    return Painter.toURL(look, { rim, bg, size });
   }
 
-  function accent(a, skin, colors) {
-    switch (a) {
-      case 'goggles': return `<rect x="50" y="38" width="60" height="12" rx="6" fill="#3a2a1a"/><circle cx="66" cy="44" r="8" fill="#9ad" stroke="#5a4a2a" stroke-width="3"/><circle cx="94" cy="44" r="8" fill="#9ad" stroke="#5a4a2a" stroke-width="3"/>`;
-      case 'scar': return `<path d="M92 50 L100 74" stroke="#a04a4a" stroke-width="3" stroke-linecap="round"/>`;
-      case 'tattoo': return `<text x="94" y="80" font-size="9" font-family="serif" font-weight="700" fill="#2a3a8a">VI</text>`;
-      case 'freckles': return `<g fill="${shade(skin, -50)}"><circle cx="62" cy="72" r="1.4"/><circle cx="67" cy="75" r="1.4"/><circle cx="93" cy="72" r="1.4"/><circle cx="98" cy="75" r="1.4"/></g>`;
-      case 'paint': return `<path d="M58 66 L70 70 M90 70 L102 66" stroke="#4fffc8" stroke-width="3" stroke-linecap="round"/>`;
-      case 'hat': return `<ellipse cx="80" cy="26" rx="46" ry="8" fill="#2a2a4a"/><rect x="56" y="2" width="48" height="24" rx="4" fill="#2a2a4a"/><rect x="56" y="18" width="48" height="5" fill="${colors[0]}"/>`;
-      case 'glasses': return `<g fill="none" stroke="#222" stroke-width="2.5"><circle cx="67" cy="60" r="8"/><circle cx="93" cy="60" r="8"/><path d="M75 60 L85 60"/></g>`;
-      case 'mask': return `<path d="M58 76 Q80 98 102 76 L98 70 Q80 78 62 70Z" fill="#4a5a3a"/><circle cx="80" cy="86" r="5" fill="#8fbf3a"/>`;
-      case 'gold': return `<circle cx="47" cy="72" r="3" fill="#e3c45a"/><circle cx="113" cy="72" r="3" fill="#e3c45a"/><path d="M60 110 Q80 122 100 110" stroke="#e3c45a" stroke-width="3" fill="none"/>`;
-      case 'beard': return `<path d="M52 72 Q56 104 80 106 Q104 104 108 72 Q100 92 80 92 Q60 92 52 72Z" fill="#cfcfcf" opacity=".9"/>`;
-      case 'mustache': return `<path d="M68 80 Q80 74 92 80 Q80 84 68 80Z" fill="#2a2a2a"/>`;
-      case 'arm': return `<rect x="118" y="120" width="26" height="40" rx="6" fill="#7a8a9a"/><circle cx="131" cy="132" r="5" fill="#bf3abf"/>`;
-      case 'collar': return `<path d="M50 124 L80 140 L110 124 L104 160 L56 160Z" fill="${shade(colors[0], -20)}"/>`;
-      case 'yordle': return `<path d="M36 50 L14 30 L40 46Z M124 50 L146 30 L120 46Z" fill="${skin}" stroke="${shade(skin, -40)}"/>`;
-      default: return '';
-    }
+  function playerOpts(player) {
+    return player?.origin === 'piltover'
+      ? { rim: RIM.piltover, bg: ['#7a5a2a', '#1a1208'] }
+      : { rim: RIM.zaun, bg: ['#1f4a44', '#060c0c'] };
   }
 
-  // look: { skin, hair, style, accent }  colors: [principal, fondo]
-  function svg(look = {}, colors = ['#7a5abf', '#140f24'], opts = {}) {
-    const skin = look.skin || '#e8b89a';
-    const hair = look.hair || '#2a2a2a';
-    const style = look.style || 'short';
-    const acc = look.accent || 'none';
-    const id = `g${Math.random().toString(36).slice(2, 8)}`;
-    const eye = opts.eye || (style === 'braids' ? '#e0457b' : '#2a2a3a');
-    return `<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" class="portrait-svg" role="img" aria-label="${U.esc(opts.label || 'Retrato')}">
-      <defs>
-        <radialGradient id="${id}" cx="50%" cy="35%" r="75%">
-          <stop offset="0%" stop-color="${colors[0]}" stop-opacity=".85"/>
-          <stop offset="100%" stop-color="${colors[1]}"/>
-        </radialGradient>
-      </defs>
-      <rect width="160" height="160" fill="url(#${id})"/>
-      <g opacity=".18" stroke="#fff" fill="none"><circle cx="80" cy="80" r="70"/><path d="M10 140 L150 20"/></g>
-      ${hairBack(style, hair)}
-      <path d="M30 160 Q34 118 80 114 Q126 118 130 160Z" fill="${shade(colors[0], -40)}"/>
-      <rect x="70" y="96" width="20" height="22" fill="${shade(skin, -18)}"/>
-      <ellipse cx="80" cy="64" rx="36" ry="42" fill="${skin}"/>
-      <ellipse cx="66" cy="62" rx="4.5" ry="5.5" fill="${eye}"/>
-      <ellipse cx="94" cy="62" rx="4.5" ry="5.5" fill="${eye}"/>
-      <circle cx="67.5" cy="60.5" r="1.4" fill="#fff"/><circle cx="95.5" cy="60.5" r="1.4" fill="#fff"/>
-      <path d="M60 52 Q66 49 72 52 M88 52 Q94 49 100 52" stroke="${shade(hair, -20)}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M80 64 Q78 74 82 76" stroke="${shade(skin, -45)}" stroke-width="2" fill="none"/>
-      <path d="M70 86 Q80 92 90 86" stroke="${shade(skin, -70)}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      ${hairFront(style, hair)}
-      ${accent(acc, skin, colors)}
-    </svg>`;
+  function playerURL(player, size = 256) {
+    if (player?.photo) return player.photo;
+    return Painter.toURL(player?.look || {}, { ...playerOpts(player), size });
   }
 
-  // Devuelve el HTML del retrato de un personaje de la wiki por id.
+  const img = (src, alt) => `<img class="portrait-img" src="${src}" alt="${U.esc(alt || '')}" draggable="false">`;
+
   function forCharacter(id) {
     const c = window.WIKI.personajes.find((p) => p.id === id);
-    if (!c) return svg({}, ['#555', '#111'], { label: id });
-    return svg(c.look, c.colors, { label: c.name });
+    return img(charURL(id), c?.name || id);
   }
 
-  // Retrato del jugador: foto subida o avatar generado.
   function forPlayer(player) {
-    if (player?.photo) return `<img class="portrait-img" src="${player.photo}" alt="${U.esc(player.name || 'Tu personaje')}">`;
-    const colors = player?.origin === 'piltover' ? ['#d4a73f', '#2a2010'] : ['#3fbf9f', '#0f1e1a'];
-    return svg(player?.look || {}, colors, { label: player?.name || 'Tu personaje' });
+    return img(playerURL(player), player?.name || 'Tu personaje');
   }
 
-  // Ilustración para entradas de la wiki que no son personas.
+  // Retrato genérico (habitantes del mapa).
+  function svg(look, colors, opts = {}) {
+    return img(Painter.toURL(look, { bg: bgFor(colors), rim: colors?.[0], size: 128 }), opts.label);
+  }
+
+  // Ilustración para entradas del Códice que no son personas: escena pintada o emblema.
   function emblem(entry, icon) {
+    const custom = entry.id && window.CustomArt?.image('codice', entry.id);
+    if (custom) return img(custom, entry.name);
+    if (entry.id && window.Scenes?.has(entry.id)) return img(Scenes.thumb(entry.id), entry.name);
     const [a, b] = entry.colors || ['#7a5abf', '#140f24'];
     const id = `e${Math.random().toString(36).slice(2, 8)}`;
     return `<svg viewBox="0 0 160 160" class="portrait-svg" role="img" aria-label="${U.esc(entry.name)}">
-      <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+      <defs><radialGradient id="${id}" cx="40%" cy="35%" r="80%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient></defs>
       <rect width="160" height="160" fill="url(#${id})"/>
-      <g fill="none" stroke="#fff" opacity=".22"><path d="M0 120 L40 90 L60 100 L90 60 L120 80 L160 40"/><circle cx="80" cy="80" r="56"/><circle cx="80" cy="80" r="36"/></g>
-      <text x="80" y="98" text-anchor="middle" font-size="54">${icon}</text>
+      <g fill="none" stroke="#fff" opacity=".2"><polygon points="80,18 134,49 134,111 80,142 26,111 26,49"/><polygon points="80,38 116,59 116,101 80,122 44,101 44,59"/></g>
+      <text x="80" y="98" text-anchor="middle" font-size="50">${icon}</text>
     </svg>`;
   }
 
-  window.Portrait = { svg, forCharacter, forPlayer, emblem };
+  window.Portrait = { forCharacter, forPlayer, svg, emblem, charURL, playerURL, charLook, playerOpts, LOOKS, RIM };
 })();

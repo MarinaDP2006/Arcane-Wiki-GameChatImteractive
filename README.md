@@ -40,6 +40,20 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
 
+### Arte pintado y animado
+
+Todo el arte se genera dentro del juego con un estilo pictórico: retratos pintados que
+respiran, parpadean, mueven el pelo y vocalizan al hablar; escenarios animados (niebla de
+Zaun, neones que parpadean, polvo dorado de Piltover, portales hextec); cinemáticas de
+inicio, de capítulo y de final con movimiento de cámara y narración. En el creador puedes
+elegir cara, ojos, cejas, nariz, labios, maquillaje, peinado, ropa y detalles, o subir una
+foto que el juego convierte en retrato pintado.
+
+**Tu propio arte:** en *Ajustes → Abrir carpeta de arte* puedes poner imágenes, concept art
+o vídeos (por ejemplo `personajes/jinx.png`, `escenas/ultima-gota.jpg`,
+`video/intro-zaun.mp4`). El juego los usa en lugar del arte generado. Esos archivos se quedan
+en tu ordenador y no se incluyen en el ejecutable.
+
 ### Chat con IA (opcional)
 
 Sin configurar nada, los personajes responden con diálogos escritos y temas de conversación.

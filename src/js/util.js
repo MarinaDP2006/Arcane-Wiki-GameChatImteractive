@@ -126,5 +126,23 @@
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
+  // Arte personal de la jugadora (carpeta «arte» en escritorio).
+  window.CustomArt = {
+    files: { personajes: {}, escenas: {}, codice: {}, video: {} },
+    async load() {
+      if (window.arcane?.art) {
+        try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
+      }
+    },
+    image(cat, id) {
+      const f = this.files[cat]?.[id];
+      return f && !/\.(mp4|webm)$/i.test(f) ? f : null;
+    },
+    video(id) {
+      const f = this.files.video?.[id];
+      return f && /\.(mp4|webm)$/i.test(f) ? f : null;
+    },
+  };
+
   window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, desktop };
 })();

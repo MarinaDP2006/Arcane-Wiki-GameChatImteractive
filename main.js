@@ -2,6 +2,7 @@
 const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { pathToFileURL } = require('url');
 
 const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
 const SETTINGS_FILE = () => path.join(app.getPath('userData'), 'ajustes.json');
@@ -61,6 +62,52 @@ function createWindow() {
     return { action: 'deny' };
   });
 }
+
+// ---------- Carpeta de arte personal ----------
+// La jugadora puede poner aquí sus propias imágenes y vídeos; el juego los usa
+// en lugar del arte pintado que genera. No se distribuye nada con el juego.
+const ART_DIRS = ['personajes', 'escenas', 'codice', 'video'];
+const ART_EXT = /\.(png|jpe?g|webp|gif|mp4|webm)$/i;
+const artRoot = () => path.join(app.getPath('userData'), 'arte');
+
+function ensureArtDir() {
+  for (const d of ART_DIRS) fs.mkdirSync(path.join(artRoot(), d), { recursive: true });
+  const readme = path.join(artRoot(), 'LEEME.txt');
+  if (!fs.existsSync(readme)) {
+    fs.writeFileSync(readme, [
+      'Carpeta de arte personal de Arcane: Piltover y Zaun',
+      '',
+      'Pon aquí tus imágenes (png, jpg, webp) y vídeos (mp4, webm). El nombre del archivo',
+      'debe ser el identificador de lo que sustituye:',
+      '',
+      '  personajes/vi.png, personajes/jinx.jpg ...  -> retratos de personajes',
+      '  escenas/ultima-gota.jpg, escenas/piltover.jpg ... -> fondos de escenas y del menú',
+      '  codice/hextec.png ...                        -> imágenes del Códice',
+      '  video/intro-zaun.mp4, video/intro-piltover.mp4, video/fin-paz.mp4 ... -> cinemáticas',
+      '',
+      'Identificadores: los de la lista del Códice (vi, jinx, caitlyn, jayce, viktor, mel, silco,',
+      'vander, ekko, piltover, zaun, puente, academia, consejo, callejones, arbol, ...).',
+      'Reinicia el juego tras añadir archivos.',
+    ].join('\n'));
+  }
+}
+
+ipcMain.handle('art:list', () => {
+  ensureArtDir();
+  const out = {};
+  for (const d of ART_DIRS) {
+    out[d] = {};
+    for (const f of fs.readdirSync(path.join(artRoot(), d))) {
+      if (!ART_EXT.test(f)) continue;
+      out[d][f.replace(/\.[^.]+$/, '').toLowerCase()] = pathToFileURL(path.join(artRoot(), d, f)).href;
+    }
+  }
+  return out;
+});
+ipcMain.handle('art:open', () => {
+  ensureArtDir();
+  return shell.openPath(artRoot());
+});
 
 // ---------- Ventana ----------
 ipcMain.handle('app:quit', () => app.quit());

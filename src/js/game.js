@@ -72,6 +72,7 @@
       tab = 'historia';
       contact = null;
       await persist();
+      await playIntro(player);
       window.App.go('game');
       toast(`Objetivo: ve a ${objectiveName()}`, 'good');
     });
@@ -91,6 +92,26 @@
     tab = 'historia';
     contact = null;
     window.App.go('game');
+  }
+
+  // Cinemática de inicio según la ciudad elegida.
+  function playIntro(p) {
+    const me = { look: p.look, ...Portrait.playerOpts(p) };
+    const nar = { pitch: 0.9, rate: 1, gender: 'm' };
+    const shots = p.origin === 'zaun'
+      ? [
+        { scene: 'piltover', dur: 6, kicker: 'Runeterra', title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso brilla de oro y cristal.'], voice: nar, zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
+        { scene: 'puente', dur: 6, lines: ['Un puente une dos mundos que no se miran a los ojos.'], voice: nar, zoom: [1.0, 1.18], pan: [[0.5, -0.3], [-0.2, 0.4]] },
+        { scene: 'zaun', dur: 7, title: 'Zaun', lines: ['Abajo, entre humo verde y neón, la gente sobrevive como puede.'], voice: nar, zoom: [1.15, 1.0], pan: [[0, 0.6], [0, -0.2]] },
+        { scene: 'callejones', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], voice: nar, portrait: me, zoom: [1.05, 1.15] },
+      ]
+      : [
+        { scene: 'zaun', dur: 6, kicker: 'Runeterra', title: 'Zaun', lines: ['Bajo tus pies, una ciudad respira humo y rabia.'], voice: nar, zoom: [1.2, 1.05], pan: [[0.5, 0.5], [-0.3, 0]] },
+        { scene: 'puente', dur: 6, lines: ['El Puente del Progreso separa a quien tiene de quien no.'], voice: nar, zoom: [1.0, 1.18], pan: [[-0.5, 0.3], [0.3, -0.3]] },
+        { scene: 'piltover', dur: 7, title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso vive su edad dorada.'], voice: nar, zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
+        { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], voice: nar, portrait: me, zoom: [1.05, 1.15] },
+      ];
+    return Cinematic.play(shots, { videoId: `intro-${p.origin}` });
   }
 
   // ---------------- Mundo abierto ----------------
@@ -417,9 +438,15 @@
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; Audio2.stopSpeech(); } }, '⏩ Saltar'),
           el('button', { class: 'btn ghost small', title: 'Activar o desactivar voces', onclick: toggleVoice }, window.App.settings.voice ? '🔊 Voz' : '🔇 Voz'))),
-      el('div', { id: 'scene-bg', class: `scene-bg bg-${G.progress.node ? ch.nodes[G.progress.node]?.bg || 'zaun' : 'zaun'}` }),
-      el('div', { id: 'story-log', class: 'log' }),
+      el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
+      el('div', { class: 'story-body' },
+        el('div', { id: 'speaker', class: 'speaker' }, el('div', { class: 'speaker-art' }), el('div', { class: 'speaker-name' })),
+        el('div', { id: 'story-log', class: 'log' })),
       el('div', { id: 'choices', class: 'choices' }));
+    sceneCtl?.stop();
+    sceneCtl = Scenes.mount($('#scene-bg'), currentBg());
+    const last = [...G.log].reverse().find((m) => m.s !== 'narrador' && m.s !== 'sistema');
+    setSpeaker(last?.s || null);
     const log = $('#story-log');
     for (const m of G.log) log.append(bubble(m.s, m.t, true));
     log.scrollTop = log.scrollHeight;
@@ -451,9 +478,54 @@
     if (log) log.scrollTop = log.scrollHeight;
   }
 
+  // ---------- Escena animada y busto del personaje que habla ----------
+  let sceneCtl = null;
+  let speakerCtl = null;
+  let speakerId = undefined;
+
+  function currentBg() {
+    const ch = chapterById(G.progress.chapterId);
+    return (G.progress.node && ch.nodes[G.progress.node]?.bg) || ch.nodes[ch.start]?.bg || G.player.origin;
+  }
+
   function setBg(bg) {
-    const box = $('#scene-bg');
-    if (box && bg) box.className = `scene-bg bg-${bg}`;
+    if (bg) sceneCtl?.set(bg);
+  }
+
+  function setSpeaker(s) {
+    const box = $('#speaker');
+    if (!box) return;
+    if (s === 'narrador' || s === 'sistema' || !s) {
+      box.classList.remove('show');
+      return;
+    }
+    box.classList.add('show');
+    if (speakerId === s && box.querySelector('canvas, img')?.isConnected) return;
+    speakerId = s;
+    speakerCtl?.stop();
+    speakerCtl = null;
+    const art = box.querySelector('.speaker-art');
+    art.innerHTML = '';
+    box.querySelector('.speaker-name').textContent = s === 'yo' ? G.player.name : charName(s);
+    const custom = s !== 'yo' && window.CustomArt?.image('personajes', s);
+    if (custom || (s === 'yo' && G.player.photo)) {
+      art.append(el('img', { src: custom || G.player.photo, alt: '' }));
+      return;
+    }
+    const cv = el('canvas', { width: 420, height: 420 });
+    art.append(cv);
+    if (s === 'yo') speakerCtl = Painter.animate(cv, G.player.look || {}, Portrait.playerOpts(G.player));
+    else {
+      const { look, rim, bg } = Portrait.charLook(s);
+      speakerCtl = Painter.animate(cv, look, { rim, bg });
+    }
+    box.classList.remove('swap');
+    void box.offsetWidth;
+    box.classList.add('swap');
+  }
+
+  function talk(v) {
+    speakerCtl?.talk(v);
   }
 
   function lineVisible(line) {
@@ -464,8 +536,11 @@
     return true;
   }
 
-  function startChapter() {
+  async function startChapter() {
     const ch = chapterById(G.progress.chapterId);
+    busy = true;
+    await Cinematic.chapterCard(ch, ch.nodes[ch.start]?.bg || G.player.origin);
+    busy = false;
     pushLog('sistema', `— ${ch.title} —`);
     pushLog('narrador', ch.intro);
     renderStoryIfVisible();
@@ -509,14 +584,17 @@
       }
       pushLog(line.s, text);
       if (tab === 'historia') {
+        setSpeaker(line.s);
         $('#story-log')?.append(bubble(line.s, text, skipping));
         scrollLog();
         if (!skipping) Audio2.sfx.message();
       }
       if (!skipping && tab === 'historia') {
         const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm' } : line.s === 'yo' ? null : window.CHAT[line.s]?.voice;
+        talk(line.s !== 'narrador');
         if (voice && window.App.settings.voice) await Promise.race([Audio2.speak(text, voice), skipWait(12000)]);
         else await skipWait(delayFor(text));
+        talk(false);
       }
     }
     busy = false;
@@ -657,17 +735,24 @@
     for (const line of ending.lines) {
       const text = tpl(line.t, G.player);
       pushLog(line.s, text);
+      setSpeaker(line.s);
       $('#story-log')?.append(bubble(line.s, text, skipping));
       scrollLog();
       if (!skipping && tab === 'historia') {
         const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm' } : window.CHAT[line.s]?.voice;
+        talk(line.s !== 'narrador');
         if (voice && window.App.settings.voice) await Promise.race([Audio2.speak(text, voice), skipWait(12000)]);
         else await skipWait(delayFor(text));
+        talk(false);
       }
     }
     busy = false;
     if (!G.endings.includes(ending.id)) G.endings.push(ending.id);
     G.progress.finished = true;
+    talk(false);
+    await Cinematic.play([
+      { scene: ending.id === 'zaun_libre' ? 'zaun' : ending.id === 'orden' ? 'consejo' : ending.id === 'humo' ? 'puente-zaun' : 'puente', dur: 7, kicker: 'Fin', title: ending.title.replace('Final · ', ''), lines: ['Gracias por jugar. Tu historia queda escrita en las dos ciudades.'], zoom: [1.0, 1.2], align: 'center' },
+    ], { videoId: `fin-${ending.id}` });
     const ch = chapterById('fin');
     const fresh = ch.unlocks.filter((id) => !G.unlocked.includes(id));
     G.unlocked.push(...fresh);

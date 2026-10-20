@@ -24,8 +24,8 @@
     const hasSave = slots.some((s) => !s.empty);
     const btn = (label, fn, cls = '') => el('button', { class: `title-btn ${cls}`, onclick: () => { Audio2.sfx.choice(); fn(); } }, label);
     root.append(el('div', { class: 'title-screen' },
-      el('div', { class: 'title-bg' },
-        el('div', { class: 'half piltover' }), el('div', { class: 'half zaun' })),
+      el('canvas', { class: 'title-scene', id: 'title-scene' }),
+      el('div', { class: 'title-hexes' }, ...Array.from({ length: 14 }, (_, i) => el('i', { style: `left:${(i * 37) % 100}%;animation-delay:${(i * 1.3) % 9}s;animation-duration:${9 + (i % 5) * 2}s` }))),
       el('div', { class: 'title-content' },
         el('p', { class: 'subtitle' }, 'Piltover · Zaun'),
         el('h1', { class: 'title-arcane' }, 'ARCANE'),
@@ -38,6 +38,15 @@
           U.desktop ? btn('✕ Salir', () => window.arcane.quit()) : null),
         el('small', { class: 'muted title-foot' }, 'Proyecto de fans · Arcane y League of Legends son propiedad de Riot Games'))));
     Audio2.playMusic('wiki');
+    // Fondo pintado animado que va alternando entre las dos ciudades.
+    const ctl = Scenes.mount($('#title-scene'), 'puente', { cam: undefined });
+    const cycle = ['puente', 'piltover', 'hexpuertas', 'puente-zaun', 'zaun', 'callejones', 'arbol'];
+    let k = 0;
+    const timer = setInterval(() => {
+      if (!$('#title-scene')) return clearInterval(timer);
+      k = (k + 1) % cycle.length;
+      ctl.set(cycle[k]);
+    }, 8000);
   }
 
   function renderSettings(root, onBack) {
@@ -58,6 +67,10 @@
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
       el('h3', {}, 'Pantalla'),
       U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, '⛶ Pantalla completa (F11)') : null,
+      U.desktop ? el('div', {},
+        el('h3', {}, 'Arte personal'),
+        el('p', { class: 'muted' }, 'Pon tus propias imágenes, concept art o vídeos en la carpeta de arte (por ejemplo personajes/jinx.png, escenas/ultima-gota.jpg o video/intro-zaun.mp4) y el juego los usará en lugar del arte pintado. Hay instrucciones en el archivo LEEME.txt de esa carpeta.'),
+        el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, '📁 Abrir carpeta de arte')) : null,
       el('h3', {}, 'Audio'),
       el('label', { class: 'field' }, el('span', {}, 'Volumen general'),
         el('input', { type: 'range', min: 0, max: 1, step: 0.05, value: s.volume, oninput: (e) => set({ volume: Number(e.target.value) }) })),
@@ -102,6 +115,7 @@
 
   async function init() {
     App.settings = await store.getSettings();
+    await window.CustomArt.load();
     Audio2.configure(App.settings);
     // El audio web solo arranca tras un gesto del usuario.
     document.addEventListener('pointerdown', () => Audio2.ensureCtx(), { once: true });
