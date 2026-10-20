@@ -108,10 +108,9 @@
       rel.length ? el('div', { class: 'relations' }, rel.map(({ entry: r, cat: rc }) =>
         el('button', { class: 'rel', onclick: () => { state.cat = rc; select(r.id); } },
           el('span', { class: 'rel-art', html: art(r, rc) }), opts.known(r.id) ? r.name : '???'))) : null);
-    if (cat === 'personajes' && window.CHAT[e.id]) {
+    if (cat === 'personajes' && window.CHAT[e.id] && opts.canTalk?.(e.id)) {
       box.append(el('div', { class: 'row gap' },
-        el('button', { class: 'btn ghost small', onclick: () => Audio2.speak(e.quote || e.summary, window.CHAT[e.id].voice) }, '🔊 Escuchar su voz'),
-        opts.canTalk?.(e.id) ? el('button', { class: 'btn small', onclick: () => opts.onTalk(e.id) }, '📡 Hablar por el comunicador') : null));
+        el('button', { class: 'btn small', onclick: () => opts.onTalk(e.id) }, '📡 Hablar por el comunicador')));
     }
   }
 

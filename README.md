@@ -1,7 +1,7 @@
 # Arcane: Piltover y Zaun
 
 Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arcane*:
-**historia interactiva + chat con voz + mundo abierto** de Piltover y Zaun.
+**historia interactiva + chat + mundo abierto** de Piltover y Zaun.
 
 Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
 Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
@@ -62,16 +62,10 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 6. Abre el juego → **⚙ Ajustes → Conversaciones con IA**. Deberías ver **✅ Ollama conectado** y tu
    modelo. Pulsa **💬 Probar conversación** y Jinx te contestará.
 
-### Paso 4 · Descarga las voces humanas (recomendado)
-
-En el juego, ve a **⚙ Ajustes → Audio** y pulsa **⬇ Descargar voces humanas**. Tarda unos minutos
-(son unos 330 MB) y solo hay que hacerlo una vez. Después elige **🎙 Voces humanas**: los personajes
-dejarán de sonar robóticos.
-
-### Paso 5 · ¡A jugar!
+### Paso 4 · ¡A jugar!
 
 1. En el menú principal pulsa **✦ Nueva partida**.
-2. Elige **Zaun** o **Piltover**, crea tu personaje (nombre, aspecto, familia, aficiones…).
+2. Elige **Zaun** o **Piltover**, crea tu personaje (clase, habilidades, retrato, familia…).
 3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
 4. Pulsa **C** para chatear con los personajes que conozcas y **Esc** para el menú de pausa.
 
@@ -103,14 +97,14 @@ dejarán de sonar robóticos.
 3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
    visita lugares, habla con la gente y recoge los fragmentos del Códice (hexágonos azules).
 4. **Sigue la historia**: el objetivo ★ te dice adónde ir. Al llegar, la escena se juega como
-   un chat con voz. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
+   un chat. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
 5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
    vez por capítulo. Muchas son minijuegos: 🥊 pelea en el foso (reflejos), 🏃 carrera por los
    tejados, 🛹 vuelo en aerotabla, 🎯 galería de tiro, 🔧 circuito hextec (puzle), 🔷 runas de la
    Academia (memoria) y 💰 regateo en el mercado. Algunas decisiones de la historia también se
    resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
 6. **Chatea**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
-   hablar con ellos por chat (con su propia voz) o en persona en su lugar del mapa.
+   hablar con ellos por chat o en persona en su lugar del mapa.
    Conversar sube la afinidad, y la afinidad abre opciones en la historia.
 7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
 8. **Temporada 2** 🌙: al terminar la primera temporada se desbloquea la segunda, que continúa tu
@@ -179,21 +173,6 @@ Jinx, Caitlyn, Jayce, Viktor, Heimerdinger, Ekko, Singed, Ambessa, Mel y Warwick
 elige el aspecto de Arcane cuando existe. Los personajes que no son campeones (Silco,
 Vander, Sevika…) los añades tú. Todos estos archivos se quedan en tu ordenador y no se
 incluyen en el ejecutable.
-
-### Voces humanas 🎙 (gratis y sin internet)
-
-Por defecto Windows y macOS solo traen voces muy robóticas. El juego incluye un motor de
-**voces neuronales Piper** (código abierto) que suenan mucho más naturales, y cada personaje
-tiene su propia voz, tono y ritmo (Jinx, Vi, Silco, Heimerdinger…).
-
-1. Abre el juego → **⚙ Ajustes → Audio**.
-2. Pulsa **⬇ Descargar voces humanas** (unos 330 MB, solo la primera vez; luego funcionan sin
-   internet).
-3. Cuando termine, elige **🎙 Voces humanas** y prueba los botones **🔊 Narrador / Jinx / Vi /
-   Silco / Heimerdinger**.
-
-Las voces se guardan en la carpeta de datos del juego (`voces`). Si prefieres las voces de tu
-sistema, elige **🤖 Voces del sistema**.
 
 ### Chat con IA: Ollama 🦙
 
@@ -294,11 +273,11 @@ src/index.html           Interfaz del juego
 src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
 src/js/game.js           Historia, comunicador, ficha, actividades y Códice
 src/js/creator.js        Creador de personaje
-src/js/audio.js          Voces (síntesis de voz) y música procedural
+src/js/audio.js          Música procedural y efectos de sonido
 src/js/portrait.js       Retratos ilustrados generados en SVG
 src/data/story.js        Capítulos, decisiones y finales
 src/data/world.js        Mapas de Piltover y Zaun, lugares, actividades, fragmentos
-src/data/chat.js         Voces y diálogos de cada personaje
+src/data/chat.js         Diálogos de cada personaje
 src/data/wiki.js         Entradas del Códice (personajes, lugares, criaturas, tecnología, mundo)
 src/data/creation.js     Opciones del creador de personaje
 scripts/check.js         Validador de datos

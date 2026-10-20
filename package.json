@@ -14,8 +14,7 @@
     "dist:mac": "electron-builder --mac"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.135.0",
-    "sherpa-onnx-node": "1.13.8"
+    "@anthropic-ai/sdk": "^0.135.0"
   },
   "devDependencies": {
     "electron": "^44.9.1",
@@ -78,11 +77,7 @@
       ],
       "category": "public.app-category.role-playing-games",
       "icon": "build/icon.png",
-      "identity": null,
-      "x64ArchFiles": "Contents/Resources/app.asar.unpacked/node_modules/sherpa-onnx-darwin-*/**"
-    },
-    "asarUnpack": [
-      "node_modules/sherpa-onnx-*/**"
-    ]
+      "identity": null
+    }
   }
 }

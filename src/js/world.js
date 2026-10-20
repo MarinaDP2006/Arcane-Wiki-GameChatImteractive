@@ -562,7 +562,6 @@
     else if (nearest.kind === 'ambient') {
       const line = U.tpl(U.pick(nearest.lines), G.player);
       speech = { text: line, x: nearest.x, y: nearest.y, until: performance.now() + 5000 };
-      Audio2.speak(line, { pitch: 0.9 + Math.random() * 0.4, rate: 1.05, gender: Math.random() < 0.5 ? 'm' : 'f' });
     } else if (nearest.kind === 'loc') cb.onLocation?.(nearest);
   }
 

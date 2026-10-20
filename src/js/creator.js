@@ -76,12 +76,7 @@
   }
 
   function cancel() {
-    stopAnim();
     window.App.go('game');
-  }
-
-  function stopAnim() {
-    Audio2.stopSpeech();
   }
 
   const avatars = () => Object.entries(window.CustomArt.files.avatares || {}).filter(([, f]) => !/\.(mp4|webm)$/i.test(f));
@@ -106,7 +101,7 @@
   // Retrato grande al estilo de la selección de campeón, con nombre, clase y título.
   function splash() {
     const cls = C().classes.find((c) => c.id === draft.cls);
-    return el('div', { class: `splash${draft.photo ? '' : ' empty'}`, id: 'splash', title: '¡Haz clic para que te hable!', onclick: () => quip() },
+    return el('div', { class: `splash${draft.photo ? '' : ' empty'}`, id: 'splash', title: '¡Haz clic!', onclick: () => quip() },
       draft.photo
         ? el('img', { src: draft.photo, alt: 'Tu retrato' })
         : el('div', { class: 'splash-empty' }, el('span', {}, '👤'), el('p', {}, step < 5 ? 'Tu retrato se elige en el paso «Retrato».' : 'Elige un retrato de la galería o sube tu foto.')),
@@ -118,7 +113,6 @@
 
   function layout() {
     const root = $('#view-creator');
-    stopAnim();
     root.innerHTML = '';
     const city = draft.origin === 'piltover' ? 'piltover' : draft.origin === 'zaun' ? 'zaun' : 'puente';
     const bgImg = window.CustomArt.image('lugares', city);
@@ -126,8 +120,7 @@
     const side = el('div', { class: 'creator-stage' },
       el('div', { id: 'stage-splash' }, splash()),
       el('div', { class: 'row gap center' },
-        el('button', { class: 'btn small', onclick: randomize }, '🎲 Aleatorio'),
-        el('button', { class: 'btn small', onclick: sayHello }, '🗣 Probar voz')),
+        el('button', { class: 'btn small', onclick: randomize }, '🎲 Aleatorio')),
       el('div', { id: 'stage-build' }, buildBar()),
       el('div', { id: 'stage-stats' }, statBars(computeStats(draft))));
     const body = el('div', { class: 'creator-body panel' });
@@ -194,13 +187,6 @@
     rerender();
   }
 
-  function sayHello() {
-    const line = draft.origin === 'piltover'
-      ? `Soy ${draft.name || 'alguien'}, de Piltover. El progreso no espera a nadie.`
-      : `Soy ${draft.name || 'alguien'}, de Zaun. Aquí abajo nos salvamos solos.`;
-    talking(Audio2.speak(line, { pitch: draft.gender === 'hombre' ? 0.85 : draft.gender === 'mujer' ? 1.15 : 1, rate: 1.02, gender: draft.gender === 'hombre' ? 'm' : 'f' }));
-  }
-
   // Frases al hacer clic en el retrato.
   function quip() {
     const cls = C().classes.find((c) => c.id === draft.cls);
@@ -211,14 +197,13 @@
       'Si me vuelves a pinchar, te lanzo una bomba de pintura.',
       draft.origin === 'piltover' ? 'El progreso no espera, y yo tampoco.' : 'Aquí abajo nadie viene a salvarnos.',
     ];
-    Audio2.stopSpeech();
-    talking(Audio2.speak(pick(lines), { pitch: draft.gender === 'hombre' ? 0.9 : 1.1, rate: 1.05, gender: draft.gender === 'hombre' ? 'm' : 'f' }));
-  }
-
-  // El retrato brilla mientras habla.
-  function talking(p) {
-    $('#splash')?.classList.add('talking');
-    Promise.resolve(p).finally(() => $('#splash')?.classList.remove('talking'));
+    const sp = $('#splash');
+    if (!sp) return;
+    sp.querySelector('.splash-quote')?.remove();
+    const q = el('div', { class: 'splash-quote' }, pick(lines));
+    sp.append(q);
+    Audio2.sfx.message();
+    setTimeout(() => q.remove(), 3200);
   }
 
   function randomize() {
@@ -443,7 +428,6 @@
 
   function finish() {
     const player = buildPlayer(draft);
-    stopAnim();
     Audio2.sfx.unlock();
     onDone(player, computeStats(draft));
   }

@@ -25,13 +25,6 @@ contextBridge.exposeInMainWorld('arcane', {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch) => ipcRenderer.invoke('settings:set', patch),
   },
-  tts: {
-    status: () => ipcRenderer.invoke('tts:status'),
-    install: () => ipcRenderer.invoke('tts:install'),
-    remove: () => ipcRenderer.invoke('tts:remove'),
-    speak: (req) => ipcRenderer.invoke('tts:speak', req),
-    onProgress: (cb) => ipcRenderer.on('tts:progress', (_e, data) => cb(data)),
-  },
   ai: {
     chat: (payload) => ipcRenderer.invoke('ai:chat', payload),
     ollamaModels: (url) => ipcRenderer.invoke('ai:ollama-models', url),

@@ -249,133 +249,10 @@ function getClient(apiKey) {
   return anthropicClient;
 }
 
-// ---------- Voces humanas (Piper neuronal, gratis y sin internet tras descargar) ----------
-// Se descargan una vez al ordenador de la jugadora desde los modelos públicos de Piper
-// (sherpa-onnx) y se sintetizan en local.
-const VOICE_PACK = [
-  { id: 'sharvard', name: 'es_ES-sharvard-medium', label: 'España · hombre y mujer', mb: 80 },
-  { id: 'daniela', name: 'es_AR-daniela-high', label: 'Argentina · mujer', mb: 115 },
-  { id: 'davefx', name: 'es_ES-davefx-medium', label: 'España · hombre', mb: 67 },
-  { id: 'miro', name: 'es_ES-miro-high', label: 'España · hombre (grave)', mb: 67 },
-];
-const VOICE_URL = (name) => `https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-${name}.tar.bz2`;
-const voicesDir = () => path.join(app.getPath('userData'), 'voces');
-const voiceDir = (v) => path.join(voicesDir(), `vits-piper-${v.name}`);
-let ttsInstall = null; // { progress, current } mientras se descarga
-const ttsEngines = new Map();
-
-function installedVoices() {
-  return VOICE_PACK.filter((v) => {
-    const d = voiceDir(v);
-    return fs.existsSync(path.join(d, 'tokens.txt')) && fs.existsSync(path.join(d, `${v.name}.onnx`));
-  }).map((v) => v.id);
+// Las voces se retiraron en la v1.4.1: borra las que se descargaron con versiones anteriores.
+function removeOldVoices() {
+  fs.rm(path.join(app.getPath('userData'), 'voces'), { recursive: true, force: true }, () => {});
 }
-
-function sherpa() {
-  return require('sherpa-onnx-node');
-}
-
-ipcMain.handle('tts:status', () => {
-  let available = true;
-  try { sherpa(); } catch { available = false; }
-  return { available, installed: installedVoices(), pack: VOICE_PACK, installing: ttsInstall };
-});
-
-async function downloadTo(url, file, onBytes) {
-  const res = await fetch(url);
-  if (!res.ok || !res.body) throw new Error(`Descarga fallida (${res.status})`);
-  const total = Number(res.headers.get('content-length')) || 0;
-  const out = fs.createWriteStream(file);
-  let got = 0;
-  for await (const chunk of res.body) {
-    got += chunk.length;
-    if (!out.write(chunk)) await new Promise((r) => out.once('drain', r));
-    onBytes(got, total);
-  }
-  await new Promise((r, j) => out.end((e) => (e ? j(e) : r())));
-}
-
-function extractTarBz2(file, dest) {
-  // Windows 10+ y macOS incluyen «tar» con soporte para .tar.bz2.
-  const { execFile } = require('child_process');
-  return new Promise((resolve, reject) => {
-    execFile('tar', ['-xjf', file, '-C', dest], { windowsHide: true }, (err) => (err ? reject(err) : resolve()));
-  });
-}
-
-ipcMain.handle('tts:install', async (e) => {
-  if (ttsInstall) return { ok: false, error: 'Ya se están descargando las voces.' };
-  const send = (data) => { if (!e.sender.isDestroyed()) e.sender.send('tts:progress', data); };
-  fs.mkdirSync(voicesDir(), { recursive: true });
-  const pending = VOICE_PACK.filter((v) => !installedVoices().includes(v.id));
-  const totalMb = pending.reduce((a, v) => a + v.mb, 0);
-  let doneMb = 0;
-  try {
-    for (const v of pending) {
-      ttsInstall = { current: v.label, progress: doneMb / totalMb };
-      const tmp = path.join(voicesDir(), `${v.name}.tar.bz2`);
-      await downloadTo(VOICE_URL(v.name), tmp, (got, total) => {
-        const frac = total ? got / total : 0;
-        ttsInstall = { current: v.label, progress: (doneMb + frac * v.mb) / totalMb };
-        send({ ...ttsInstall, phase: 'download' });
-      });
-      send({ ...ttsInstall, phase: 'extract' });
-      await extractTarBz2(tmp, voicesDir());
-      fs.rmSync(tmp, { force: true });
-      doneMb += v.mb;
-    }
-    ttsInstall = null;
-    send({ done: true, progress: 1, installed: installedVoices() });
-    return { ok: true, installed: installedVoices() };
-  } catch (err) {
-    ttsInstall = null;
-    send({ error: String(err.message || err) });
-    return { ok: false, error: `No se pudieron descargar las voces: ${err.message || err}` };
-  }
-});
-
-ipcMain.handle('tts:remove', () => {
-  ttsEngines.clear();
-  fs.rmSync(voicesDir(), { recursive: true, force: true });
-  return true;
-});
-
-function ttsEngine(id) {
-  if (ttsEngines.has(id)) return ttsEngines.get(id);
-  const v = VOICE_PACK.find((x) => x.id === id);
-  const d = voiceDir(v);
-  const engine = new (sherpa().OfflineTts)({
-    model: { vits: { model: path.join(d, `${v.name}.onnx`), tokens: path.join(d, 'tokens.txt'), dataDir: path.join(d, 'espeak-ng-data') }, numThreads: 2, provider: 'cpu' },
-    maxNumSentences: 2,
-  });
-  ttsEngines.set(id, engine);
-  return engine;
-}
-
-// Convierte las muestras en un WAV de 16 bits para reproducirlo en la interfaz.
-function toWav(samples, sampleRate) {
-  const buf = Buffer.alloc(44 + samples.length * 2);
-  buf.write('RIFF', 0); buf.writeUInt32LE(36 + samples.length * 2, 4); buf.write('WAVE', 8);
-  buf.write('fmt ', 12); buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22);
-  buf.writeUInt32LE(sampleRate, 24); buf.writeUInt32LE(sampleRate * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34);
-  buf.write('data', 36); buf.writeUInt32LE(samples.length * 2, 40);
-  for (let i = 0; i < samples.length; i++) buf.writeInt16LE(Math.max(-1, Math.min(1, samples[i])) * 32767 | 0, 44 + i * 2);
-  return buf;
-}
-
-ipcMain.handle('tts:speak', async (_e, { text, voice, sid = 0, speed = 1 }) => {
-  const installed = installedVoices();
-  const id = installed.includes(voice) ? voice : installed[0];
-  if (!id) return { ok: false, error: 'No hay voces instaladas.' };
-  try {
-    const engine = ttsEngine(id);
-    // Electron no admite buffers externos de complementos nativos: se pide una copia normal.
-    const audio = await engine.generateAsync({ text: String(text).slice(0, 600), sid: Math.min(sid, engine.numSpeakers - 1), speed, enableExternalBuffer: false });
-    return { ok: true, wav: toWav(audio.samples, audio.sampleRate) };
-  } catch (err) {
-    return { ok: false, error: String(err.message || err) };
-  }
-});
 
 // ---------- Chat con IA: Ollama (local, por defecto) o Claude (opcional) ----------
 const OLLAMA_DEFAULT = 'http://127.0.0.1:11434';
@@ -490,6 +367,7 @@ ipcMain.handle('ai:chat', async (_e, { system, messages }) => {
 
 app.whenReady().then(() => {
   setupMapSession();
+  removeOldVoices();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
