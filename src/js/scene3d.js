@@ -9,7 +9,6 @@
   const SHOTS = {
     title: { pos: [0, 26, 92], look: [0, 10, 0], orbit: 0.035, radius: 92 },
     menu: { pos: [-60, 40, 50], look: [0, 6, 0], orbit: 0.02, radius: 80 },
-    creator: { pos: [0, 30, 26], look: [0, 30, 0], orbit: 0.06, radius: 26 },
     settings: { pos: [40, 8, 40], look: [0, -2, 0], orbit: 0.015, radius: 60 },
   };
 

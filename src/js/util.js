@@ -185,7 +185,7 @@
 
   // Arte personal de la jugadora (carpeta «arte» en escritorio).
   window.CustomArt = {
-    files: { personajes: {}, caras: {}, lugares: {}, codice: {}, video: {} },
+    files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {}, video: {} },
     report: { found: [], missing: [], borrowed: [], unknown: [] },
     async load() {
       if (window.arcane?.art) {

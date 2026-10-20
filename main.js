@@ -86,7 +86,7 @@ function createWindow() {
 // La jugadora puede poner aquí sus propias imágenes y vídeos; el juego los usa
 // en lugar del arte pintado que genera. No se distribuye nada con el juego.
 // «escenas» es el nombre antiguo de «lugares» y se sigue leyendo.
-const ART_DIRS = ['personajes', 'caras', 'lugares', 'codice', 'video'];
+const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'];
 const ART_EXT = /\.(png|jpe?g|webp|gif|mp4|webm)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 

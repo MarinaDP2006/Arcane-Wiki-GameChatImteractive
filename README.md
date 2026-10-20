@@ -89,7 +89,9 @@ dejarán de sonar robóticos.
      minijuegos o en el chat.
    - **Aptitudes**: repartes 4 puntos (el radar los muestra), eliges una runa clave
      (Encanto, Estudioso, Pies ligeros o Veterano) y un título.
-   - **Aspecto, familia y aficiones**: aspecto con decenas de opciones o tu foto; familia
+   - **Retrato**: eliges tu retrato de una galería (las imágenes que pongas en la carpeta
+     `avatares/`, mejor verticales y estilo Arcane) o subes tu foto.
+   - **Familia y aficiones**: familia
      famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros, Giopara, la de Vander…).
    - **Ficha final**: tu barra de habilidades P/Q/W/E/R.
 
@@ -128,7 +130,7 @@ dejarán de sonar robóticos.
 | C | Comunicador (chats) |
 | F | Ficha del personaje |
 | K | Códice |
-| M | Atlas del Códice (mapa de Piltover y Zaun) |
+| M | Mapa interactivo del Códice |
 | Esc | Pausa / cerrar ventana |
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
@@ -138,28 +140,25 @@ dejarán de sonar robóticos.
 Todo el arte se genera dentro del juego con un estilo pictórico: retratos pintados que
 respiran, parpadean, mueven el pelo y vocalizan al hablar; escenarios animados (niebla de
 Zaun, neones que parpadean, polvo dorado de Piltover, portales hextec); cinemáticas de
-inicio, de capítulo y de final con movimiento de cámara y narración. En el creador puedes
-elegir cara, ojos, cejas, nariz, labios, maquillaje, peinado, ropa y detalles, o subir una
-foto que el juego convierte en retrato pintado.
+inicio, de capítulo y de final con movimiento de cámara y narración. En el creador tu
+retrato sale de la galería `avatares/` o de tu foto.
 
 **Menús en 3D:** la pantalla de inicio, el menú, los ajustes y el creador tienen una escena
 3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
 
-**Códice con Atlas y mapa interactivo:** el Códice (K) tiene tres pestañas:
-- 📖 **Entradas**.
-- 🗺 **Atlas de Piltover y Zaun** (M): mapa en español con zoom, los lugares que has
-  descubierto, quién está en cada uno, el objetivo ★ y la actividad de cada lugar.
-- 🌐 **Mapa interactivo**: el mapa de neta.art integrado dentro del juego. Se pide en
-  español, pero la web solo saldrá en español si ofrece ese idioma. La dirección se cambia
-  en *Ajustes*.
+**Códice con mapa interactivo:** el Códice (K) tiene dos pestañas: 📖 **Entradas** y
+🗺 **Mapa interactivo** (M), que es el mapa de neta.art integrado dentro del juego. Necesita
+internet; se pide en español, pero solo sale en español si la web ofrece ese idioma. La
+dirección se cambia en *Ajustes*.
 
 **Tu propio arte:** en *Ajustes → Arte personalizado* abres cada carpeta. Al arrancar, el
 juego crea `GUIA-DE-ARTE.txt` con la lista exacta de nombres de archivo. La estructura es:
 
 ```
 arte/
+├─ avatares/     cualquier-nombre.png…           retratos para TU personaje (galería del creador)
 ├─ personajes/   jinx.png, vi.jpg, silco.png…    retrato de cuerpo entero (vertical)
 ├─ caras/        jinx.png…                       cara cuadrada para chats e iconos
 ├─ lugares/      ultima-gota.jpg…                paisajes 16:9 de cada lugar

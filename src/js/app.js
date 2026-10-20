@@ -34,7 +34,7 @@
 
   // Inclinación 3D de los paneles siguiendo al ratón.
   function tiltAll(root) {
-    root.querySelectorAll('.title-content, .slot, .creator-stage .portrait-frame').forEach((n) => {
+    root.querySelectorAll('.title-content, .slot').forEach((n) => {
       if (n.dataset.tilt) return;
       n.dataset.tilt = '1';
       n.classList.add('tilt3d');
@@ -154,6 +154,9 @@
       'Formatos: imágenes .png .jpg .jpeg .webp · vídeos .mp4 .webm',
       'Reinicia el juego después de añadir archivos.',
       '',
+      'avatares/     RETRATOS PARA TU PERSONAJE (cualquier nombre de archivo). Aparecen en la galería del creador.',
+      '              Mejor verticales (3:4), estilo Arcane: concept art, fan art, capturas...',
+      '',
       'personajes/   CUERPO ENTERO (vertical, la cara en la parte de arriba): bustos de la historia y fichas del Códice',
       ...W.personajes.map((p) => line(p.id, p.name)),
       '',
@@ -195,7 +198,7 @@
   }
 
   function artSettings(root, onBack) {
-    const counts = ['personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
+    const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
     const progress = el('div', { class: 'tts-progress hidden' }, el('i'), el('span'));
     return el('div', {},
       el('h3', {}, '🖼 Arte personal'),
@@ -204,7 +207,7 @@
       placesReport(),
       el('div', { class: 'row gap' },
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, '📁 Abrir carpeta de arte'),
-        ...['personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `📂 ${d}`)),
+        ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `📂 ${d}`)),
         el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, '🔄 Recargar arte')),
       el('p', { class: 'muted small' }, 'Retratos oficiales (cara y cuerpo): el juego puede descargar a tu carpeta las ilustraciones de los campeones de League of Legends que aparecen en Arcane (Jinx, Vi, Caitlyn, Jayce, Viktor, Ekko, Heimerdinger, Singed, Ambessa, Mel y Warwick) desde Data Dragon, el servidor público de Riot. Si el campeón tiene apariencia de Arcane, se usa esa. Se guardan solo en tu ordenador, para uso personal.'),
       el('button', {
@@ -228,7 +231,7 @@
       }, '⬇ Descargar retratos oficiales (Data Dragon)'),
       progress,
       el('h3', {}, '🗺 Mapa interactivo del Códice'),
-      el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K o M) en la pestaña «Mapa interactivo», junto al Atlas propio del juego.'),
+      el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K, o M para ir directo) en la pestaña «Mapa interactivo».'),
       el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),
         el('input', { class: 'input', value: App.settings.mapUrl || DEFAULT_MAP, onchange: async (e) => { App.settings.mapUrl = e.target.value.trim(); await store.setSettings({ mapUrl: App.settings.mapUrl }); } })),
       el('button', { class: 'btn small', onclick: () => App.openMap() }, '🗺 Abrir mapa interactivo'));

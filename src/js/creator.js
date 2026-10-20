@@ -1,5 +1,5 @@
-// Creador de personaje: vista previa pintada y animada en tiempo real,
-// personalización completa del rostro, pelo y ropa, foto estilizada y ficha.
+// Creador de personaje estilo selección de campeón: clase, habilidades,
+// aptitudes, retrato elegido de la galería (carpeta «avatares») o foto propia, y ficha.
 (function () {
   const { $, el, tpl, pick } = U;
   const C = () => window.CREATION;
@@ -7,9 +7,6 @@
   let draft;
   let step;
   let onDone;
-  let preview = null; // controlador del retrato animado
-  let bgScene = null; // escena animada de fondo
-  let lookTab = 'rostro';
 
   function fresh() {
     return {
@@ -54,7 +51,7 @@
     };
   }
 
-  const STEPS = ['Origen', 'Identidad', 'Clase', 'Habilidades', 'Aptitudes', 'Aspecto', 'Familia y aficiones', 'Ficha final'];
+  const STEPS = ['Origen', 'Identidad', 'Clase', 'Habilidades', 'Aptitudes', 'Retrato', 'Familia y aficiones', 'Ficha final'];
 
   function header() {
     return el('ol', { class: 'steps' }, STEPS.map((s, i) =>
@@ -84,15 +81,10 @@
   }
 
   function stopAnim() {
-    preview?.stop();
-    bgScene?.stop();
-    preview = null;
-    bgScene = null;
+    Audio2.stopSpeech();
   }
 
-  function lookOpts() {
-    return Portrait.playerOpts({ origin: draft.origin || 'zaun' });
-  }
+  const avatars = () => Object.entries(window.CustomArt.files.avatares || {}).filter(([, f]) => !/\.(mp4|webm)$/i.test(f));
 
   function statBars(stats) {
     return el('div', { class: 'stat-bars' }, Object.entries(window.STORY.stats).map(([k, meta]) =>
@@ -111,17 +103,28 @@
   }
 
   // ---------- Estructura ----------
+  // Retrato grande al estilo de la selección de campeón, con nombre, clase y título.
+  function splash() {
+    const cls = C().classes.find((c) => c.id === draft.cls);
+    return el('div', { class: `splash${draft.photo ? '' : ' empty'}`, id: 'splash', title: '¡Haz clic para que te hable!', onclick: () => quip() },
+      draft.photo
+        ? el('img', { src: draft.photo, alt: 'Tu retrato' })
+        : el('div', { class: 'splash-empty' }, el('span', {}, '👤'), el('p', {}, step < 5 ? 'Tu retrato se elige en el paso «Retrato».' : 'Elige un retrato de la galería o sube tu foto.')),
+      el('div', { class: 'splash-plate' },
+        draft.title ? el('small', {}, tpl(draft.title, draft)) : null,
+        el('strong', { id: 'stage-name' }, draft.name || 'Sin nombre'),
+        el('span', {}, [cls ? `${cls.icon} ${tpl(cls.label, draft)}` : null, draft.origin ? C().origins[draft.origin].label : null].filter(Boolean).join(' · '))));
+  }
+
   function layout() {
     const root = $('#view-creator');
     stopAnim();
     root.innerHTML = '';
-    const bg = el('canvas', { class: 'creator-bg' });
-    const stage = el('canvas', { class: 'creator-portrait', width: 560, height: 560, title: '¡Haz clic para que te hable!', onclick: () => quip() });
+    const city = draft.origin === 'piltover' ? 'piltover' : draft.origin === 'zaun' ? 'zaun' : 'puente';
+    const bgImg = window.CustomArt.image('lugares', city);
+    const bg = el('div', { class: `creator-bg creator-bg-${draft.origin || 'none'}`, style: bgImg ? `background-image:url("${bgImg}")` : null });
     const side = el('div', { class: 'creator-stage' },
-      el('div', { class: 'portrait-frame' }, stage, draft.photo ? el('img', { class: 'portrait-photo', src: draft.photo, alt: 'Tu foto' }) : null),
-      el('div', { class: 'stage-info' },
-        el('strong', { id: 'stage-name' }, draft.name || 'Sin nombre'),
-        draft.origin ? el('span', { class: `tag origin-${draft.origin}` }, C().origins[draft.origin].label) : null),
+      el('div', { id: 'stage-splash' }, splash()),
       el('div', { class: 'row gap center' },
         el('button', { class: 'btn small', onclick: randomize }, '🎲 Aleatorio'),
         el('button', { class: 'btn small', onclick: sayHello }, '🗣 Probar voz')),
@@ -129,24 +132,18 @@
       el('div', { id: 'stage-stats' }, statBars(computeStats(draft))));
     const body = el('div', { class: 'creator-body panel' });
     root.append(bg, el('div', { class: 'creator' }, header(), el('div', { class: 'creator-grid' }, body, side)));
-    // Fondo 3D con el cristal hextec; si no hay WebGL, escena pintada 2D.
-    const host3d = el('div', { class: 'creator-bg scene3d-host' });
-    if (window.Scene3D?.mount(host3d, 'creator')) {
-      bg.replaceWith(host3d);
-      window.App.tiltAll?.(root);
-    } else bgScene = Scenes.mount(bg, draft.origin === 'piltover' ? 'piltover' : draft.origin === 'zaun' ? 'callejones' : 'puente');
-    preview = Painter.animate(stage, draft.look, lookOpts());
     return body;
   }
 
   function rerender() {
     const body = layout();
-    [stepOrigin, stepIdentity, stepClass, stepAbilities, stepAptitudes, stepLook, stepFamily, stepSummary][step](body);
+    [stepOrigin, stepIdentity, stepClass, stepAbilities, stepAptitudes, stepPortrait, stepFamily, stepSummary][step](body);
     body.classList.add('enter');
   }
 
   function refreshPreview() {
-    preview?.setLook({ ...draft.look }, lookOpts());
+    const sp = $('#stage-splash');
+    if (sp) { sp.innerHTML = ''; sp.append(splash()); }
     const st = $('#stage-stats');
     if (st) { st.innerHTML = ''; st.append(statBars(computeStats(draft))); }
     const b = $('#stage-build');
@@ -201,9 +198,7 @@
     const line = draft.origin === 'piltover'
       ? `Soy ${draft.name || 'alguien'}, de Piltover. El progreso no espera a nadie.`
       : `Soy ${draft.name || 'alguien'}, de Zaun. Aquí abajo nos salvamos solos.`;
-    preview?.talk(true);
-    Audio2.speak(line, { pitch: draft.gender === 'hombre' ? 0.85 : draft.gender === 'mujer' ? 1.15 : 1, rate: 1.02, gender: draft.gender === 'hombre' ? 'm' : 'f' })
-      .then(() => preview?.talk(false));
+    talking(Audio2.speak(line, { pitch: draft.gender === 'hombre' ? 0.85 : draft.gender === 'mujer' ? 1.15 : 1, rate: 1.02, gender: draft.gender === 'hombre' ? 'm' : 'f' }));
   }
 
   // Frases al hacer clic en el retrato.
@@ -212,25 +207,24 @@
     const lines = [
       `¿Qué miras? Soy ${draft.name || 'yo'}${draft.title ? `, ${tpl(draft.title, draft)}` : ''}.`,
       cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'piltover' ? 'Piltover' : 'Zaun'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
-      '¡Eh, que me despeinas!',
+      '¡Eh, sin tocar!',
       'Si me vuelves a pinchar, te lanzo una bomba de pintura.',
       draft.origin === 'piltover' ? 'El progreso no espera, y yo tampoco.' : 'Aquí abajo nadie viene a salvarnos.',
     ];
-    preview?.talk(true);
     Audio2.stopSpeech();
-    Audio2.speak(pick(lines), { pitch: draft.gender === 'hombre' ? 0.9 : 1.1, rate: 1.05, gender: draft.gender === 'hombre' ? 'm' : 'f' }).then(() => preview?.talk(false));
+    talking(Audio2.speak(pick(lines), { pitch: draft.gender === 'hombre' ? 0.9 : 1.1, rate: 1.05, gender: draft.gender === 'hombre' ? 'm' : 'f' }));
+  }
+
+  // El retrato brilla mientras habla.
+  function talking(p) {
+    $('#splash')?.classList.add('talking');
+    Promise.resolve(p).finally(() => $('#splash')?.classList.remove('talking'));
   }
 
   function randomize() {
-    const L = C().look;
-    draft.photo = null;
-    draft.look = {
-      skin: pick(L.skins), face: pick(L.faces).id, eyes: pick(L.eyes).id, eyeColor: pick(L.eyeColors), brows: pick(L.brows).id,
-      nose: pick(L.noses).id, lips: pick(L.lips).id, lipColor: pick(L.lipColors), hair: pick(L.hairs), style: pick(L.styles).id,
-      outfit: pick(L.outfits).id, outfitColor: pick(L.outfitColors), makeup: pick(L.makeup).id,
-      accents: L.accents.filter(() => Math.random() < 0.15).map((a) => a.id).slice(0, 3),
-    };
-    // También la clase, las habilidades, el talento y los puntos.
+    const gallery = avatars();
+    if (gallery.length) draft.photo = pick(gallery)[1];
+    // La clase, las habilidades, el talento y los puntos.
     const Cc = C();
     draft.cls = pick(Cc.classes).id;
     for (const k of ['Q', 'W', 'E', 'R']) draft.abilities[k] = pick(Cc.abilities[k]).id;
@@ -353,65 +347,45 @@
     body.append(nav());
   }
 
-  // ----- Paso 6: Aspecto -----
-  const TABS = [['rostro', '🙂 Rostro'], ['ojos', '👁 Ojos'], ['boca', '👄 Nariz y boca'], ['pelo', '💇 Pelo'], ['ropa', '🧥 Ropa'], ['detalles', '✨ Detalles'], ['foto', '📷 Foto']];
-
-  function stepLook(body) {
-    const L = C().look;
-    const set = (k, v) => { draft.look[k] = v; draft.photo = null; refreshPreview(); markActive(); };
-    const swatches = (list, key) => el('div', { class: 'swatches' }, list.map((c) =>
-      el('button', { class: `swatch${draft.look[key] === c ? ' active' : ''}`, 'data-k': key, 'data-v': c, style: `background:${c}`, 'aria-label': c, onclick: () => set(key, c) })));
-    const chips = (list, key) => el('div', { class: 'chips wrap' }, list.map((x) =>
-      el('button', { class: `chip${draft.look[key] === x.id ? ' active' : ''}`, 'data-k': key, 'data-v': x.id, onclick: () => set(key, x.id) }, x.label)));
-    const markActive = () => body.querySelectorAll('[data-k]').forEach((b) => {
-      const k = b.dataset.k;
-      const on = k === 'accents' ? draft.look.accents.includes(b.dataset.v) : draft.look[k] === b.dataset.v;
-      b.classList.toggle('active', on);
-    });
-
-    const tabBar = el('div', { class: 'look-tabs' }, TABS.map(([id, label]) =>
-      el('button', { class: `tab${lookTab === id ? ' active' : ''}`, onclick: () => { lookTab = id; rerender(); } }, label)));
-    const panel = el('div', { class: 'look-panel' });
-    switch (lookTab) {
-      case 'rostro': panel.append(field('Tono de piel', swatches(L.skins, 'skin')), field('Forma de la cara', chips(L.faces, 'face'))); break;
-      case 'ojos': panel.append(field('Forma de los ojos', chips(L.eyes, 'eyes')), field('Color de ojos', swatches(L.eyeColors, 'eyeColor')), field('Cejas', chips(L.brows, 'brows')), field('Maquillaje', chips(L.makeup, 'makeup'))); break;
-      case 'boca': panel.append(field('Nariz', chips(L.noses, 'nose')), field('Labios', chips(L.lips, 'lips')), field('Color de labios', swatches(L.lipColors, 'lipColor'))); break;
-      case 'pelo': panel.append(field('Peinado', chips(L.styles, 'style')), field('Color de pelo', swatches(L.hairs, 'hair'))); break;
-      case 'ropa': panel.append(field('Ropa', chips(L.outfits, 'outfit')), field('Color de la ropa', swatches(L.outfitColors, 'outfitColor'))); break;
-      case 'detalles':
-        panel.append(field('Detalles (puedes elegir varios)', el('div', { class: 'chips wrap' }, L.accents.map((a) =>
-          el('button', {
-            class: `chip${draft.look.accents.includes(a.id) ? ' active' : ''}`, 'data-k': 'accents', 'data-v': a.id,
-            onclick: () => {
-              const list = draft.look.accents;
-              draft.look.accents = list.includes(a.id) ? list.filter((x) => x !== a.id) : [...list, a.id];
-              draft.photo = null;
-              refreshPreview();
-              markActive();
-            },
-          }, a.label)))));
-        break;
-      case 'foto': {
-        const file = el('input', { type: 'file', accept: 'image/*', class: 'hidden', onchange: (e) => loadPhoto(e.target.files[0]) });
-        panel.append(el('p', {}, 'Sube una foto tuya y el juego la convertirá en un retrato con aspecto pintado, con la luz de tu ciudad.'),
-          el('div', { class: 'row gap' },
-            el('button', { class: 'btn primary', onclick: () => file.click() }, '📷 Elegir foto'),
-            draft.photo ? el('button', { class: 'btn ghost', onclick: () => { draft.photo = null; rerender(); } }, 'Volver al retrato pintado') : null, file),
-          draft.photo ? el('img', { class: 'photo-result', src: draft.photo, alt: 'Foto estilizada' }) : null);
-        break;
-      }
-      default: break;
+  // ----- Paso 6: Retrato -----
+  function stepPortrait(body) {
+    const gallery = avatars();
+    const file = el('input', { type: 'file', accept: 'image/*', class: 'hidden', onchange: (e) => loadPhoto(e.target.files[0]) });
+    const choose = (url) => { draft.photo = url; Audio2.sfx.choice(); rerender(); };
+    body.append(el('h2', {}, 'Tu retrato'),
+      el('p', { class: 'muted' }, 'Elige quién eres. Los retratos salen de la carpeta «avatares» de tu carpeta de arte: pon ahí las imágenes que quieras (mejor verticales, estilo Arcane).'),
+      el('div', { class: 'row gap' },
+        el('button', { class: 'btn primary', onclick: () => file.click() }, '📷 Subir mi foto'),
+        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: () => window.arcane.art.open('avatares') }, '📂 Abrir carpeta avatares') : null,
+        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: async () => { await window.CustomArt.load(); rerender(); } }, '🔄 Recargar') : null,
+        file));
+    if (!gallery.length) {
+      body.append(el('div', { class: 'gallery-empty' },
+        el('h3', {}, 'La galería está vacía'),
+        el('p', {}, 'Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) y pulsa 🔄 Recargar. También puedes subir tu foto.')));
+    } else {
+      body.append(el('div', { class: 'avatar-gallery' }, gallery.map(([name, url]) =>
+        el('button', { class: `avatar-card${draft.photo === url ? ' active' : ''}`, title: name, onclick: () => choose(url) },
+          el('img', { src: url, alt: name, loading: 'lazy' })))));
     }
-    body.append(el('h2', {}, 'Tu aspecto'), el('p', { class: 'muted' }, 'Todo se ve al instante en tu retrato. Pulsa 🎲 para inspirarte.'), tabBar, panel, nav());
+    body.append(nav());
   }
 
+  // Foto propia recortada en vertical (3:4) sin filtros.
   function loadPhoto(f) {
     if (!f) return;
     const reader = new FileReader();
     reader.onload = () => {
       const img = new Image();
       img.onload = () => {
-        draft.photo = Painter.stylizePhoto(img, 320, lookOpts().rim);
+        const W = 600;
+        const H = 800;
+        const k = Math.max(W / img.width, H / img.height);
+        const cv = document.createElement('canvas');
+        cv.width = W;
+        cv.height = H;
+        cv.getContext('2d').drawImage(img, (W - img.width * k) / 2, Math.min(0, (H - img.height * k) * 0.25), img.width * k, img.height * k);
+        draft.photo = cv.toDataURL('image/jpeg', 0.9);
         Audio2.sfx.unlock();
         rerender();
       };
@@ -477,7 +451,6 @@
   function start(cb) {
     draft = fresh();
     step = 0;
-    lookTab = 'rostro';
     onDone = cb;
     rerender();
   }

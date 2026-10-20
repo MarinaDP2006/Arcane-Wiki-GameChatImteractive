@@ -274,20 +274,12 @@
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
           el('h2', {}, `📚 Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
-          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('atlas', '🗺 Atlas de Piltover y Zaun'), tab('neta', '🌐 Mapa interactivo')),
+          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('mapa', '🗺 Mapa interactivo')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
       box.append(panel);
       const body = $('#codex-body');
-      if (sub === 'atlas') {
-        Atlas.mount(body, {
-          visited: (id) => G.visited.includes(id),
-          objective: objectiveId,
-          present: (locId) => G.unlocked.filter((id) => window.WORLD.homes[id] === locId && !(window.WORLD.absent[id] || []).includes(G.progress.chapterId)),
-          onEntry: (id) => openOverlay('codice', id, 'entradas'),
-          onCharacter: (id) => openOverlay('chats', id),
-        });
-      } else if (sub === 'neta') {
+      if (sub === 'mapa') {
         const url = window.App.settings.mapUrl || window.App.DEFAULT_MAP;
         body.append(el('div', { class: 'neta-wrap' },
           el('div', { class: 'neta-bar' },
@@ -296,7 +288,13 @@
             el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
           U.desktop
             ? el('webview', { class: 'neta-view', src: url, partition: 'persist:mapa', allowpopups: 'false' })
-            : el('iframe', { class: 'neta-view', src: url, referrerpolicy: 'no-referrer' })));
+            : el('iframe', { class: 'neta-view', src: url, referrerpolicy: 'no-referrer' }),
+          el('div', { class: 'neta-error hidden' },
+            el('h3', {}, '📡 No se pudo cargar el mapa'),
+            el('p', { class: 'muted' }, 'El mapa interactivo necesita internet. Comprueba tu conexión y pulsa Recargar, o ábrelo en una ventana aparte.'))));
+        const view = body.querySelector('webview');
+        view?.addEventListener('did-fail-load', (e) => { if (e.isMainFrame && e.errorCode !== -3) body.querySelector('.neta-error')?.classList.remove('hidden'); });
+        view?.addEventListener('did-start-loading', () => body.querySelector('.neta-error')?.classList.add('hidden'));
       } else {
         Wiki.mount(body, { known: codexKnown, onTalk: (id) => openOverlay('chats', id), canTalk: (id) => G.unlocked.includes(id) });
         if (who) Wiki.open(who);
@@ -375,7 +373,7 @@
     showNotice('Controles', [
       'Moverse: WASD o flechas (Mayús para correr). También puedes hacer clic en el mapa.',
       'Interactuar / hablar / entrar: E o Intro.',
-      'H: historia · C: comunicador (chats) · F: ficha · K: Códice · M: Atlas del Códice · Esc: pausa.',
+      'H: historia · C: comunicador (chats) · F: ficha · K: Códice · M: mapa interactivo del Códice · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
   }
@@ -418,7 +416,7 @@
         hudBtn('📡 Comunicador', 'C', () => openOverlay('chats')),
         hudBtn('🪪 Ficha', 'F', () => openOverlay('ficha')),
         hudBtn('📚 Códice', 'K', () => openOverlay('codice')),
-        hudBtn('🗺 Atlas', 'M', () => openOverlay('codice', null, 'atlas')),
+        hudBtn('🗺 Mapa', 'M', () => openOverlay('codice', null, 'mapa')),
         hudBtn('☰ Pausa', 'Esc', () => openOverlay('menu'))),
       el('div', { id: 'overlay', class: 'overlay' })));
     World.start(G, worldCallbacks(), canvas, mini);
@@ -1114,7 +1112,7 @@
       return;
     }
     if (k === ' ' && busy) { skipping = true; Audio2.stopSpeech(); e.preventDefault(); return; }
-    if (k === 'm' && !busy) { if (overlayKind === 'codice') closeOverlay(); else openOverlay('codice', null, 'atlas'); return; }
+    if (k === 'm' && !busy) { if (overlayKind === 'codice') closeOverlay(); else openOverlay('codice', null, 'mapa'); return; }
     const shortcuts = { h: 'historia', c: 'chats', f: 'ficha', k: 'codice' };
     if (shortcuts[k] && !busy) {
       if (overlayKind === shortcuts[k]) closeOverlay();
