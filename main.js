@@ -126,6 +126,62 @@ ipcMain.handle('art:guide', (_e, text) => {
 // Se guardan solo en el ordenador de la jugadora (política de proyectos de fans de Riot).
 // ARCANE_DDRAGON solo sirve para pruebas automáticas con un servidor local.
 const DDRAGON = process.env.ARCANE_DDRAGON || 'https://ddragon.leagueoflegends.com';
+// Recorta la cara (parte alta y centrada) de un retrato y la guarda en caras/<id>.png.
+function saveFace(file, id) {
+  const body = nativeImage.createFromPath(file);
+  const { width, height } = body.getSize();
+  if (!width || !height) return false;
+  const side = Math.round(Math.min(width * 0.72, height * 0.9));
+  const y = Math.min(Math.round(height * 0.07), height - side);
+  const face = body.crop({ x: Math.round((width - side) / 2), y, width: side, height: side }).resize({ width: 256, height: 256, quality: 'best' });
+  fs.writeFileSync(path.join(artRoot(), 'caras', `${id}.png`), face.toPNG());
+  return true;
+}
+
+const hasArt = (dir, id) => fs.existsSync(path.join(artRoot(), dir)) && fs.readdirSync(path.join(artRoot(), dir)).some((f) => ART_EXT.test(f) && f.replace(/\.[^.]+$/, '').toLowerCase() === id);
+
+// Imágenes de la Arcane Wiki (Fandom): la imagen principal de cada página, para los
+// personajes y lugares que aún no tienen archivo. items: [{ id, dir, titles, search }]
+const FANDOM = process.env.ARCANE_FANDOM || 'https://arcane.fandom.com';
+const FANDOM_HEADERS = { 'User-Agent': 'ArcanePiltoverZaun/1.4 (juego de fans, uso personal)' };
+
+async function fandomImage(params) {
+  const q = new URLSearchParams({ action: 'query', format: 'json', redirects: '1', prop: 'pageimages', piprop: 'original', ...params });
+  const res = await fetch(`${FANDOM}/api.php?${q}`, { headers: FANDOM_HEADERS });
+  if (!res.ok) throw new Error(`${res.status}`);
+  const pages = Object.values((await res.json()).query?.pages || {});
+  return pages.find((p) => p.original?.source)?.original.source || null;
+}
+
+ipcMain.handle('art:fandom', async (e, items) => {
+  ensureArtDir();
+  const send = (d) => { if (!e.sender.isDestroyed()) e.sender.send('art:fandom-progress', d); };
+  const done = [];
+  const failed = [];
+  const todo = items.filter((it) => ['personajes', 'lugares', 'codice'].includes(it.dir) && /^[a-z0-9-]+$/.test(it.id) && !hasArt(it.dir, it.id));
+  for (let i = 0; i < todo.length; i++) {
+    const it = todo[i];
+    send({ current: it.titles[0] || it.id, progress: i / todo.length });
+    try {
+      let src = null;
+      for (const t of it.titles) { src = await fandomImage({ titles: t }); if (src) break; }
+      if (!src && it.search) src = await fandomImage({ generator: 'search', gsrsearch: it.search, gsrlimit: '1' });
+      if (!src || !(/^https:\/\//.test(src) || src.startsWith(FANDOM))) throw new Error('sin imagen');
+      const img = await fetch(src, { headers: FANDOM_HEADERS });
+      if (!img.ok) throw new Error(`${img.status}`);
+      const ext = (src.match(/\.(png|jpe?g|webp)(?:\/|\?|$)/i)?.[1] || 'jpg').toLowerCase().replace('jpeg', 'jpg');
+      const file = path.join(artRoot(), it.dir, `${it.id}.${ext}`);
+      fs.writeFileSync(file, Buffer.from(await img.arrayBuffer()));
+      if (it.dir === 'personajes' && !hasArt('caras', it.id)) saveFace(file, it.id);
+      done.push(it.id);
+    } catch {
+      failed.push(it.id);
+    }
+  }
+  send({ done: true, progress: 1 });
+  return { ok: true, done, failed, skipped: items.length - todo.length };
+});
+
 ipcMain.handle('art:ddragon', async (e, champs) => {
   ensureArtDir();
   const send = (d) => { if (!e.sender.isDestroyed()) e.sender.send('art:ddragon-progress', d); };
@@ -149,13 +205,7 @@ ipcMain.handle('art:ddragon', async (e, champs) => {
         if (!res.ok) throw new Error(`${res.status}`);
         fs.writeFileSync(path.join(artRoot(), dir, `${id}.jpg`), Buffer.from(await res.arrayBuffer()));
       }
-      const body = nativeImage.createFromPath(path.join(artRoot(), 'personajes', `${id}.jpg`));
-      const { width, height } = body.getSize();
-      if (width && height) {
-        const side = Math.round(width * 0.72);
-        const face = body.crop({ x: Math.round((width - side) / 2), y: Math.round(height * 0.07), width: side, height: side }).resize({ width: 256, height: 256, quality: 'best' });
-        fs.writeFileSync(path.join(artRoot(), 'caras', `${id}.png`), face.toPNG());
-      }
+      saveFace(path.join(artRoot(), 'personajes', `${id}.jpg`), id);
       done.push(id);
     } catch {
       failed.push(id);

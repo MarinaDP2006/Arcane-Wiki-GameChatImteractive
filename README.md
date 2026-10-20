@@ -171,6 +171,11 @@ Arte personal* ves qué lugares tienen imagen, cuáles faltan y qué archivos no
 falta un lugar gemelo (los dos lados del puente, Stillwater y su muelle, Piltover y la plaza,
 Zaun y el mercado), usa la imagen del otro.
 
+El botón **⬇ Descargar lo que falta de la Arcane Wiki** baja de arcane.fandom.com la imagen
+principal de cada personaje (Silco, Vander, Sevika, Isha, Mylo, Claggor…), con la cara
+recortada, y de cada lugar que aún no tenga imagen. Solo descarga lo que falta: no toca tus
+archivos.
+
 El botón **⬇ Descargar retratos oficiales (Data Dragon)** baja de la web pública de Riot el
 cuerpo, la cara y la imagen del Códice de los campeones de LoL que salen en Arcane: Vi,
 Jinx, Caitlyn, Jayce, Viktor, Heimerdinger, Ekko, Singed, Ambessa, Mel y Warwick. El juego

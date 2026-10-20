@@ -140,6 +140,35 @@
     },
   };
 
+  // Páginas de la Arcane Wiki (Fandom, en inglés) de cada personaje y lugar del juego.
+  const FANDOM_CHARS = {
+    vi: ['Vi'], jinx: ['Jinx'], caitlyn: ['Caitlyn Kiramman'], jayce: ['Jayce Talis'], viktor: ['Viktor'], mel: ['Mel Medarda'],
+    heimerdinger: ['Cecil B. Heimerdinger', 'Heimerdinger'], silco: ['Silco'], vander: ['Vander'], ekko: ['Ekko'], sevika: ['Sevika'],
+    singed: ['Singed'], ambessa: ['Ambessa Medarda'], marcus: ['Marcus'], cassandra: ['Cassandra Kiramman'], mylo: ['Mylo'],
+    claggor: ['Claggor'], benzo: ['Benzo'], scar: ['Scar'], isha: ['Isha'], sky: ['Sky Young'], loris: ['Loris'],
+  };
+  const FANDOM_PLACES = {
+    piltover: ['Piltover'], zaun: ['Zaun', 'The Undercity'], puente: ['Bridge of Progress', 'The Bridge of Progress'],
+    'ultima-gota': ['The Last Drop', 'Last Drop'], callejones: ['The Lanes', 'Lanes'], sumidero: ['The Sump', 'Sump'],
+    academia: ['Piltover Academy', 'Academy'], consejo: ['Council Chambers', 'Piltover Council', 'Council'],
+    stillwater: ['Stillwater Hold', 'Stillwater'], arbol: ['Firelights Hideout', 'The Firelights', 'Firelights'],
+    'taller-jayce': ["Jayce's Laboratory", "Jayce's Lab", "Jayce's Workshop"], 'mansion-kiramman': ['Kiramman Estate', 'Kiramman Manor', 'House Kiramman'],
+    hexpuertas: ['Hexgates', 'Hexgate'], noxus: ['Noxus'], ejecutores: ['Enforcers', 'Piltover Enforcers'],
+    fabrica: ['Shimmer Factory', 'Shimmer'], foso: ['Fight Pit', 'Fighting Pit'], 'escondite-jinx': ["Jinx's Hideout", "Jinx's Lair"],
+    'tienda-benzo': ["Benzo's Shop", 'Benzo'], mercado: ['Zaun Market', 'Undercity Market'], plaza: ['Progress Day', 'Progress Plaza'],
+  };
+
+  // Personajes y lugares que aún no tienen imagen propia en la carpeta de arte.
+  function fandomItems() {
+    const F = window.CustomArt.files;
+    const r = window.CustomArt.report;
+    const lack = new Set([...r.missing, ...r.borrowed]);
+    return [
+      ...Object.entries(FANDOM_CHARS).filter(([id]) => !F.personajes[id]).map(([id, titles]) => ({ id, dir: 'personajes', titles, search: titles[0] })),
+      ...Object.entries(FANDOM_PLACES).filter(([id]) => lack.has(id)).map(([id, titles]) => ({ id, dir: 'lugares', titles })),
+    ];
+  }
+
   // Texto de la guía con todos los nombres de archivo que el juego reconoce.
   function artGuide() {
     const W = window.WIKI;
@@ -236,6 +265,27 @@
           renderSettings(root, onBack);
         },
       }, '⬇ Descargar retratos oficiales (Data Dragon)'),
+      el('p', { class: 'muted small' }, `Arcane Wiki (Fandom): descarga la imagen principal de la página de cada personaje (cuerpo y cara) y de cada lugar que aún te falte. Solo baja lo que no tienes, no toca tus archivos. Ahora faltan: ${fandomItems().length}.`),
+      el('button', {
+        class: 'btn primary small',
+        disabled: !fandomItems().length,
+        onclick: async (ev) => {
+          ev.target.disabled = true;
+          progress.classList.remove('hidden');
+          window.arcane.art.onFandom((d) => {
+            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
+            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `Arcane Wiki: ${d.current}…`;
+          });
+          try {
+            const r = await window.arcane.art.fandom(fandomItems());
+            await window.CustomArt.load();
+            toast(`Imágenes de la Arcane Wiki: ${r.done.length}${r.failed.length ? ` · sin imagen: ${r.failed.join(', ')}` : ''}`, r.done.length ? 'good' : 'warn');
+          } catch (err) {
+            toast(`No se pudo conectar con la Arcane Wiki: ${err.message || err}`, 'warn');
+          }
+          renderSettings(root, onBack);
+        },
+      }, '⬇ Descargar lo que falta de la Arcane Wiki'),
       progress,
       el('p', { class: 'muted small' }, 'Arcane Wiki: descarga de arcane.fandom.com la imagen de cada personaje y lugar que todavía no tenga imagen tuya. No toca las que ya has puesto. Se guardan solo en tu ordenador, para uso personal.'),
       el('button', {
@@ -275,7 +325,7 @@
   const DEFAULT_MAP = 'https://arcane.fandom.com/wiki/Special:AllMaps';
   App.DEFAULT_MAP = DEFAULT_MAP;
   App.openMap = () => {
-    const url = App.settings.mapUrl || DEFAULT_MAP;
+    const url = App.mapUrl();
     if (window.arcane?.openMap) window.arcane.openMap(url);
     else window.open(url, '_blank');
   };
