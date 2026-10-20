@@ -12,14 +12,17 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
    profesión, barrio, familia famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros,
    Giopara, la de Vander…) y aficiones. Todo eso suma a tus estadísticas
    (🧠 Ingenio, 💬 Carisma, 🔥 Valor, 🌑 Sigilo).
-2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 5 capítulos y empiezas
+2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
    en el barrio que elegiste.
 3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
    visita lugares, habla con la gente y recoge los fragmentos del Códice (hexágonos azules).
 4. **Sigue la historia**: el objetivo ★ te dice adónde ir. Al llegar, la escena se juega como
    un chat con voz. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
-5. **Entrena**: cada lugar tiene una actividad (pelear en el foso, estudiar en la Academia,
-   atender la barra de La Última Gota…) que sube una estadística, una vez por capítulo.
+5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
+   vez por capítulo. Muchas son minijuegos: 🥊 pelea en el foso (reflejos), 🏃 carrera por los
+   tejados, 🛹 vuelo en aerotabla, 🎯 galería de tiro, 🔧 circuito hextec (puzle), 🔷 runas de la
+   Academia (memoria) y 💰 regateo en el mercado. Algunas decisiones de la historia también se
+   resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
 6. **Chatea**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
    hablar con ellos por chat (con su propia voz) o en persona en su lugar del mapa.
    Conversar sube la afinidad, y la afinidad abre opciones en la historia.
@@ -61,24 +64,34 @@ Si pones una clave de API de Anthropic en **Ajustes → Conversaciones con IA**,
 libremente con Claude sin salir del personaje, teniendo en cuenta tu ficha, tu afinidad y
 tus decisiones. La clave se guarda solo en tu ordenador.
 
-## Descargar el juego
+## Descargar e instalar en tu PC
 
-Cada push compila los ejecutables en GitHub Actions (workflow **Compilar ejecutables**):
+### Opción A · Descargar el juego ya compilado (lo más fácil)
 
-- **Windows**: `Arcane Piltover y Zaun Setup 1.0.0.exe` (instalador) y
-  `Arcane Piltover y Zaun-1.0.0-portable.exe` (sin instalar, doble clic y a jugar).
-- **macOS**: `.dmg` y `.zip` universales (Intel y Apple Silicon).
+1. Ve a la página de **Releases** del repositorio
+   (https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases) y abre la última versión.
+   Si aún no hay ninguna, entra en **Actions → Compilar ejecutables**, abre la última ejecución
+   en verde y baja a **Artifacts**.
+2. Descarga el archivo de tu sistema:
+   - **Windows**: `Arcane Piltover y Zaun Setup X.Y.Z.exe` (instalador, crea acceso directo) o
+     `Arcane Piltover y Zaun-X.Y.Z-portable.exe` (sin instalar: doble clic y a jugar).
+   - **macOS**: el `.dmg` (Intel y Apple Silicon). Ábrelo y arrastra el juego a *Aplicaciones*.
+3. La primera vez:
+   - En Windows, si aparece SmartScreen: *Más información → Ejecutar de todas formas*.
+   - En macOS: clic derecho sobre el juego → *Abrir* → *Abrir* (la app no está firmada).
 
-Descárgalos desde la pestaña **Actions** → última ejecución → *Artifacts*.
-Para publicar una versión con descarga directa, crea una etiqueta:
-`git tag v1.0.0 && git push origin v1.0.0` y aparecerá en **Releases**.
+### Opción B · Ejecutar desde el código
 
-> En macOS, como la app no está firmada, la primera vez abre el juego con clic derecho → *Abrir*.
-> En Windows, si SmartScreen avisa, pulsa *Más información → Ejecutar de todas formas*.
+1. Instala [Node.js](https://nodejs.org) (versión 20 o superior).
+2. Descarga el proyecto: botón verde **Code → Download ZIP** en GitHub y descomprímelo
+   (o `git clone https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive.git`).
+3. Haz doble clic en:
+   - **Windows**: `jugar-windows.bat`
+   - **macOS**: `jugar-mac.command` (si macOS lo bloquea: clic derecho → *Abrir*).
 
-## Compilar en tu ordenador
+   La primera vez instala lo necesario y luego abre el juego.
 
-Necesitas [Node.js](https://nodejs.org) 20 o superior.
+### Compilar tus propios ejecutables
 
 ```bash
 npm install

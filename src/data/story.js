@@ -548,6 +548,196 @@ window.STORY = {
       },
     },
 
+    {
+      id: 'z6', route: 'zaun', title: 'Capítulo 6 · El foso de Sevika',
+      intro: 'Silco prepara algo grande. Sevika sabe qué es, pero en Zaun la información se gana a puñetazos.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'foso', lines: [
+          { s: 'narrador', t: 'El foso huele a sudor y a Brillo. La multitud golpea las rejas cuando entras.' },
+          { s: 'sevika', t: '¿Quieres saber qué trama Silco, {name}? Gánatelo. Aquí abajo, la palabra vale lo que valen tus puños.' },
+        ], choices: [
+          { t: 'Saltar al foso y pelear.', next: 'b_gana', game: { id: 'foso', win: 'b_gana', lose: 'b_pierde', winFx: { aff: { sevika: 3 }, rep: { zaun: 1 }, flags: ['sabe_cohete'] } }, fx: {} },
+          { t: 'Convencerla con palabras (Carisma 3).', req: { stat: 'carisma', min: 3 }, next: 'b_labia', fx: { aff: { sevika: 1 }, flags: ['sabe_cohete'] } },
+          { t: '«No peleo para entretener a nadie.»', next: 'b_pierde', fx: { aff: { sevika: -1 } } },
+        ] },
+        b_gana: { bg: 'foso', lines: [
+          { s: 'sevika', t: '(Escupe sangre y se ríe.) Vale, vale. Tienes agallas. Te lo diré: Jinx ha construido un cohete con la gema que robó.' },
+          { s: 'sevika', t: 'Silco quiere usarlo para obligar al Consejo a reconocer Zaun. Jinx… quiere otra cosa. Y eso me preocupa.' },
+        ], next: 'c' },
+        b_labia: { bg: 'foso', lines: [
+          { s: 'yo', t: 'Si lo que planea Silco sale mal, el foso será lo primero que arda. Y tú lo sabes.' },
+          { s: 'sevika', t: '(Silencio.) …Un cohete. Con la gema de Piltover. Que nadie diga que te lo conté yo.' },
+        ], next: 'c' },
+        b_pierde: { bg: 'foso', lines: [
+          { s: 'narrador', t: 'Acabas en el suelo del foso con la cara llena de serrín. Sevika te mira desde arriba.' },
+          { s: 'sevika', t: 'Vuelve cuando aprendas a pelear. O no vuelvas.' },
+        ], next: 'c' },
+        c: { bg: 'callejones', lines: [
+          { s: 'narrador', t: 'Al salir, ves ejecutores en cada esquina. El sheriff Marcus ha ordenado una redada en los callejones.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 'z7', route: 'zaun', title: 'Capítulo 7 · Persecución en los tejados',
+      intro: 'Los ejecutores barren Zaun puerta por puerta. Ekko necesita que alguien lleve un aviso al árbol… atravesando la ciudad por arriba.',
+      unlocks: ['marcus'],
+      start: 'a',
+      nodes: {
+        a: { bg: 'tejados', lines: [
+          { s: 'ekko', t: '(Por un tubo de mensajes.) {name}, los ejecutores van hacia el árbol. Alguien les ha dado la ruta. Tienes que avisar a Scar antes que ellos.' },
+          { s: 'marcus', t: '(Abajo, con un megáfono.) ¡Que nadie se mueva! ¡Por orden del Consejo!' },
+        ], choices: [
+          { t: 'Correr por los tejados.', next: 'b_llega', game: { id: 'tejados', win: 'b_llega', lose: 'b_atrapado', winFx: { aff: { ekko: 2, scar: 2 }, rep: { zaun: 1 }, flags: ['aviso_luciernagas'] } }, fx: {} },
+          { t: 'Distraer a Marcus para ganar tiempo (Valor 3).', req: { stat: 'valor', min: 3 }, next: 'b_distrae', fx: { aff: { ekko: 1, marcus: -1 }, flags: ['aviso_luciernagas'] } },
+          { t: 'Sobornar a un ejecutor (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'b_soborno', fx: { aff: { marcus: 1 }, rep: { piltover: 1 } } },
+        ] },
+        b_llega: { bg: 'arbol', lines: [
+          { s: 'narrador', t: 'Saltas el último hueco y aterrizas en una rama del árbol. Scar ya está dando la alarma.' },
+          { s: 'scar', t: 'Lo has conseguido. Movemos a los críos ahora. Te debemos una, {name}.' },
+        ], next: 'c' },
+        b_distrae: { bg: 'callejones', lines: [
+          { s: 'yo', t: '¡Eh, sheriff! ¿Busca a alguien de Zaun? ¡Pues aquí tiene a una persona de Zaun!' },
+          { s: 'marcus', t: '¡A por {g:él|ella|elle}!' },
+          { s: 'narrador', t: 'Media patrulla te persigue en dirección contraria al árbol. Ekko tiene su oportunidad.' },
+        ], next: 'c' },
+        b_soborno: { bg: 'callejones', lines: [
+          { s: 'narrador', t: 'Unas monedas en el bolsillo correcto y el ejecutor «se equivoca» de calle. Marcus no se entera de nada.' },
+          { s: 'marcus', t: '(Más tarde, en voz baja.) Sé lo que has hecho. Y, entre tú y yo… gracias. No quiero más sangre en mis manos.' },
+        ], next: 'c' },
+        b_atrapado: { bg: 'callejones', lines: [
+          { s: 'narrador', t: 'Un tejado cede bajo tus pies. Caes justo delante de dos ejecutores.' },
+          { s: 'caitlyn', t: '(Llega corriendo.) Esta persona está conmigo. Soltadla. Ahora.' },
+          { s: 'narrador', t: 'Te salvas, pero el árbol de las Luciérnagas no recibe el aviso a tiempo.' },
+        ], next: 'c' },
+        c: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Esa noche, un grito inhumano sube desde el Sumidero. Algo ha escapado del laboratorio de Singed.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 'z8', route: 'zaun', title: 'Capítulo 8 · Lo que oculta Singed',
+      intro: 'El laboratorio del Sumidero está abierto y vacío. Las máquinas siguen zumbando. Y en las paredes, alguien ha escrito un nombre: Vander.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Cristales rotos, jaulas abiertas y marcas de garras en el metal.' },
+          { s: 'singed', t: '(Aparece entre el vapor.) Mi paciente se ha marchado antes de terminar el tratamiento. Una pena. Estaba tan cerca…' },
+        ], choices: [
+          { t: 'Sabotear sus máquinas de Brillo.', next: 'b_sabotaje', game: { id: 'circuito', win: 'b_sabotaje', lose: 'b_falla', winFx: { rep: { zaun: 2 }, flags: ['sabotaje_singed'] } }, fx: {} },
+          { t: 'Preguntarle quién era el paciente.', req: { flag: 'vio_bestia' }, next: 'b_verdad', fx: { aff: { singed: 1 }, flags: ['sabe_warwick'] } },
+          { t: 'Robar sus notas sobre la gema (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_notas', fx: { flags: ['sabe_gema'] } },
+          { t: 'Salir de allí cuanto antes.', next: 'c' },
+        ] },
+        b_sabotaje: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Reconectas los tubos al revés. Las cubas de Brillo se cuajan en una pasta inerte. Meses de producción, perdidos.' },
+          { s: 'singed', t: 'Ingenioso. Silco no estará contento. Yo, en cambio… estoy impresionado.' },
+        ], next: 'c' },
+        b_falla: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Saltan chispas y una nube violeta te obliga a retroceder tosiendo.' },
+          { s: 'singed', t: 'La química no perdona la impaciencia. Vuelve cuando sepas lo que haces.' },
+        ], next: 'c' },
+        b_verdad: { bg: 'sumidero', lines: [
+          { s: 'singed', t: '¿Mi paciente? Alguien que lo dio todo por sus hijos. Le devolví la fuerza. No la memoria.' },
+          { s: 'narrador', t: 'Un escalofrío. Sabes de quién habla. Y Vi no puede enterarse así.' },
+        ], next: 'c' },
+        b_notas: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Entre fórmulas encuentras un diagrama de la gema hextec de Jinx… y del punto exacto donde se desestabiliza.' },
+        ], next: 'c' },
+        c: { bg: 'ultima-gota', lines: [
+          { s: 'narrador', t: 'Mañana es el día. El Consejo vota, Jinx carga su cohete y Zaun contiene el aliento.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 'p6', route: 'piltover', title: 'Capítulo 6 · Prueba de puntería',
+      intro: 'Antes de volver a bajar a Zaun, Caitlyn quiere asegurarse de que sabes defenderte.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'ejecutores', lines: [
+          { s: 'caitlyn', t: 'Si Jinx tiene lo que creo, la próxima vez no habrá segundas oportunidades. Enséñame cómo disparas, {name}.' },
+          { s: 'loris', t: '(Con un bocadillo en la mano.) Yo apuesto por ti. Bueno, apuesto medio bocadillo.' },
+        ], choices: [
+          { t: 'Coger el rifle y entrar en la galería.', next: 'b_bien', game: { id: 'tiro', win: 'b_bien', lose: 'b_mal', winFx: { aff: { caitlyn: 3, loris: 2 }, rep: { piltover: 1 }, flags: ['tirador'] } }, fx: {} },
+          { t: '«Prefiero la estrategia a las balas.» (Ingenio 3)', req: { stat: 'ingenio', min: 3 }, next: 'b_plan', fx: { aff: { caitlyn: 2 }, flags: ['plan_caitlyn'] } },
+        ] },
+        b_bien: { bg: 'ejecutores', lines: [
+          { s: 'caitlyn', t: '(Baja los prismáticos.) Impresionante. Puede que hasta me hagas sombra.' },
+          { s: 'loris', t: '¡Medio bocadillo ganado! Bueno, me lo como yo, que tú estás ocupad{g:o|a|e}.' },
+        ], next: 'c' },
+        b_mal: { bg: 'ejecutores', lines: [
+          { s: 'caitlyn', t: 'Bueno… al menos no has dado a ningún civil. Mucho. Quédate a mi espalda cuando bajemos.' },
+        ], next: 'c' },
+        b_plan: { bg: 'ejecutores', lines: [
+          { s: 'yo', t: 'Si Jinx usa la gema, no hay que dispararle a ella. Hay que llegar a la gema.' },
+          { s: 'caitlyn', t: '(Sonríe por primera vez en días.) Eso es lo más sensato que he oído en esta jefatura.' },
+        ], next: 'c' },
+        c: { bg: 'academia', lines: [
+          { s: 'narrador', t: 'Un mensaje de la Academia: Heimerdinger quiere verte. Dice que ha encontrado algo sobre la gema robada.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 'p7', route: 'piltover', title: 'Capítulo 7 · Las runas de Heimerdinger',
+      intro: 'Entre libros polvorientos, el viejo yordle por fin tiene respuestas. Y miedo.',
+      unlocks: [],
+      start: 'a',
+      nodes: {
+        a: { bg: 'academia', lines: [
+          { s: 'heimerdinger', t: '¡Ah, {name}! La gema que robó esa muchacha no es estable. Las runas grabadas en ella siguen una secuencia… y si alguien la recuerda, podría apagarla.' },
+          { s: 'viktor', t: 'O hacerla estallar. Depende de quién la toque.' },
+        ], choices: [
+          { t: 'Memorizar la secuencia de runas.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { heimerdinger: 3 }, flags: ['sabe_gema'] } }, fx: {} },
+          { t: 'Pedir a Viktor que la anote por ti.', req: { aff: ['viktor', 4] }, next: 'b_viktor', fx: { aff: { viktor: 2 }, flags: ['sabe_gema'] } },
+          { t: '«No hay tiempo para clases, profesor.»', next: 'b_ko', fx: { aff: { heimerdinger: -2 } } },
+        ] },
+        b_ok: { bg: 'academia', lines: [
+          { s: 'heimerdinger', t: '¡Extraordinario! Con esa secuencia, la gema se dormirá como un gatito. Un gatito muy peligroso, eso sí.' },
+        ], next: 'c' },
+        b_viktor: { bg: 'academia', lines: [
+          { s: 'viktor', t: '(Te pasa un papel arrugado.) No lo pierdas. Y no se lo enseñes a Jayce: querría «mejorarlo».' },
+        ], next: 'c' },
+        b_ko: { bg: 'academia', lines: [
+          { s: 'heimerdinger', t: 'Hmm, hmm. Bueno. Confiemos en la suerte, entonces. Odio confiar en la suerte.' },
+        ], next: 'c' },
+        c: { bg: 'arbol', lines: [
+          { s: 'narrador', t: 'Ekko envía un mensaje: las Luciérnagas pueden llevarte a ver la torre de Silco desde el aire. Te espera en el árbol, en Zaun.' },
+        ], end: true },
+      },
+    },
+    {
+      id: 'p8', route: 'piltover', title: 'Capítulo 8 · Vuelo sobre Zaun',
+      intro: 'Desde una aerotabla, Zaun parece otra cosa: un mar de luces verdes, tuberías y vida.',
+      unlocks: ['scar'],
+      start: 'a',
+      nodes: {
+        a: { bg: 'arbol', lines: [
+          { s: 'ekko', t: 'Agárrate fuerte. Si te caes, no grites: atrae a los matones de Sevika.' },
+          { s: 'scar', t: 'Si se cae, que no sea encima de mí.' },
+        ], choices: [
+          { t: 'Subir a la aerotabla.', next: 'b_ok', game: { id: 'aerotabla', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, scar: 2 }, rep: { zaun: 2 }, flags: ['explorado', 'alianza_luciernagas'] } }, fx: {} },
+          { t: 'Dejar que Ekko pilote mientras tú observas (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_mira', fx: { aff: { ekko: 1 }, flags: ['explorado'] } },
+        ] },
+        b_ok: { bg: 'zaun', lines: [
+          { s: 'narrador', t: 'Esquivas chimeneas y tuberías y ves la torre de Silco: un cohete en el tejado, apuntando a Piltover.' },
+          { s: 'ekko', t: 'Vuelas como una Luciérnaga. Bienvenid{g:o|a|e} a la familia.' },
+        ], next: 'c' },
+        b_mira: { bg: 'zaun', lines: [
+          { s: 'narrador', t: 'Desde el aire, cuentas guardias, rutas y escaleras. Ya sabes cómo llegar hasta el cohete.' },
+        ], next: 'c' },
+        b_ko: { bg: 'zaun', lines: [
+          { s: 'narrador', t: 'Una tubería te roza y acabáis aterrizando en un charco químico. Ekko se ríe tanto que casi se cae él también.' },
+          { s: 'ekko', t: 'Bueno, al menos hemos visto el cohete. Más o menos.' },
+        ], next: 'c' },
+        c: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Mañana el Consejo vota la paz. Y en una torre de Zaun, un cohete espera su momento.' },
+        ], end: true },
+      },
+    },
+
     // ======================= FINAL COMPARTIDO =======================
     {
       id: 'fin', route: 'ambas', title: 'Capítulo final · El Puente',
@@ -562,6 +752,9 @@ window.STORY = {
         ], choices: [
           { t: 'Hablar con Jinx de corazón (Afinidad con Jinx 5).', req: { aff: ['jinx', 5] }, next: 'b_jinx', fx: { flags: ['jinx_escucha'] } },
           { t: 'Sabotear el cohete (Ingenio 3).', req: { stat: 'ingenio', min: 3 }, next: 'b_sabotaje', fx: { flags: ['cohete_saboteado'] } },
+          { t: 'Usar la secuencia de runas para dormir la gema.', req: { flag: 'sabe_gema' }, next: 'b_sabotaje', fx: { flags: ['cohete_saboteado'] } },
+          { t: 'Usar lo que te contó Sevika para llegar al cohete antes que nadie.', req: { flag: 'sabe_cohete' }, next: 'b_sabotaje', fx: { flags: ['cohete_saboteado'] } },
+          { t: 'Seguir la ruta que viste desde la aerotabla.', req: { flag: 'explorado' }, next: 'b_sabotaje', fx: { flags: ['cohete_saboteado'] } },
           { t: 'Correr al Consejo para evacuar (Valor 2).', req: { stat: 'valor', min: 2 }, next: 'b_evacua', fx: { rep: { piltover: 2 }, flags: ['evacuacion'] } },
           { t: 'Dejar que Zaun hable a su manera.', next: 'b_deja', fx: { rep: { zaun: 2, piltover: -3 }, flags: ['deja_cohete'] } },
         ] },
@@ -592,8 +785,8 @@ window.STORY = {
 
   // Orden de capítulos por ruta.
   routes: {
-    zaun: ['z1', 'z2', 'z3', 'z4', 'z5', 'fin'],
-    piltover: ['p1', 'p2', 'p3', 'p4', 'p5', 'fin'],
+    zaun: ['z1', 'z2', 'z3', 'z4', 'z5', 'z6', 'z7', 'z8', 'fin'],
+    piltover: ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'fin'],
   },
 
   // Finales: se elige el primero cuya condición se cumple.

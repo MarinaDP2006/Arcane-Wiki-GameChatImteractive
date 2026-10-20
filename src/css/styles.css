@@ -560,3 +560,21 @@ canvas.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; opaci
   .story-body { grid-template-columns: 1fr; }
   .speaker { display: none; }
 }
+
+/* ============ Minijuegos ============ */
+.mg { position: fixed; inset: 0; z-index: 90; background: #000; animation: fadein 0.3s both; }
+.mg.out { animation: fadeout 0.3s both; }
+.mg-bg { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(0.75); }
+.mg-stage { position: absolute; inset: 3vh 3vw; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+.mg-hud { display: flex; gap: 1rem; align-items: center; padding: 0.7rem 1rem; background: rgba(13,11,20,0.85); flex-wrap: wrap; min-height: 48px; }
+.mg-canvas { flex: 1; width: 100%; display: block; cursor: crosshair; }
+.mg-meter { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 220px; }
+.mg-meter i { display: block; height: 10px; border-radius: 999px; transition: width 0.2s; min-width: 2px; flex: 0 0 auto; max-width: 160px; }
+.mg-meter b { font-size: 0.85rem; color: var(--muted); }
+.mg-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, 90%); text-align: center; animation: popin 0.35s both; z-index: 3; }
+.mg-card h2 { font-family: var(--display); color: var(--gold); margin-top: 0; font-size: 1.8rem; }
+.arcade { width: min(760px, 94%); }
+.arcade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }
+.arcade-card { display: flex; flex-direction: column; gap: 0.25rem; align-items: center; text-align: center; padding: 1rem; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,0.05); transition: 0.2s; }
+.arcade-card:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 0 20px rgba(227,196,90,0.25); }
+.arcade-icon { font-size: 2.2rem; }

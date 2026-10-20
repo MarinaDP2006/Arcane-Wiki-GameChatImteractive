@@ -163,7 +163,7 @@
       const key = `${loc.id}:${G.progress.chapterIdx}`;
       const done = G.acts[key];
       const maxed = (G.stats[loc.activity.stat] || 0) >= window.WORLD.maxStat;
-      if (!done && !maxed) acts.push({ label: `${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
+      if (!done && !maxed) acts.push({ label: `${loc.activity.game ? "🎮 " : ""}${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
     }
     const here = G.unlocked.filter((id) => window.WORLD.homes[id] === loc.id);
     here.forEach((id) => acts.push({ label: `Hablar con ${charName(id)}`, run: () => openOverlay('chats', id) }));
@@ -185,8 +185,18 @@
       el('button', { class: 'btn ghost', onclick: closeOverlay }, 'Cerrar (Esc)')));
   }
 
-  function doActivity(loc, key) {
+  async function doActivity(loc, key) {
     const a = loc.activity;
+    if (a.game) {
+      World.pause(true);
+      Audio2.stopSpeech();
+      const win = await Minigames.play(a.game);
+      World.pause(false);
+      if (!win) {
+        toast('Esta vez no ha salido. Puedes volver a intentarlo cuando quieras.', 'warn');
+        return;
+      }
+    }
     G.acts[key] = true;
     G.stats[a.stat] = Math.min(window.WORLD.maxStat, (G.stats[a.stat] || 0) + 1);
     Audio2.sfx.unlock();
@@ -270,6 +280,7 @@
         el('h2', {}, 'Pausa'),
         el('button', { class: 'btn primary', onclick: closeOverlay }, '▶ Continuar'),
         el('button', { class: 'btn', onclick: async () => { await persist(); toast('Partida guardada', 'good'); } }, '💾 Guardar partida'),
+        el('button', { class: 'btn', onclick: () => openArcade() }, '🎮 Salón de minijuegos'),
         el('button', { class: 'btn', onclick: () => openSettingsOverlay() }, '⚙ Ajustes'),
         el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, '❔ Controles'),
         el('button', { class: 'btn ghost', onclick: async () => { await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
@@ -291,6 +302,20 @@
         el('section', { id: 'play-main', class: 'play-main' }))));
     renderContacts();
     renderMain();
+  }
+
+  // Practicar cualquier minijuego sin recompensa.
+  function openArcade() {
+    const box = $('#overlay');
+    box.innerHTML = '';
+    box.className = 'overlay show';
+    box.append(el('div', { class: 'panel action-menu arcade' },
+      el('h2', {}, '🎮 Salón de minijuegos'),
+      el('p', { class: 'muted' }, 'Practica sin límite. Las recompensas de estadísticas se ganan en los lugares del mapa.'),
+      el('div', { class: 'arcade-grid' }, Object.entries(Minigames.GAMES).map(([id, g]) =>
+        el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id); box.style.visibility = ''; } },
+          el('span', { class: 'arcade-icon' }, g.icon), el('strong', {}, g.title), el('small', { class: 'muted' }, g.goal)))),
+      el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
   }
 
   function closeBtn() {
@@ -694,6 +719,16 @@
     scrollLog();
     applyFx(c.fx);
     renderContacts();
+    if (c.game) {
+      busy = true;
+      Audio2.stopSpeech();
+      const win = await Minigames.play(c.game.id);
+      busy = false;
+      if (win) applyFx(c.game.winFx);
+      pushLog('sistema', win ? '🏆 ¡Lo has conseguido!' : '💥 No ha salido como esperabas…');
+      $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
+      return advance(win ? c.game.win : c.game.lose);
+    }
     advance(c.next);
   }
 
