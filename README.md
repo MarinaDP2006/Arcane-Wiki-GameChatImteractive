@@ -6,6 +6,73 @@ Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arca
 Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
 Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 
+## 🚀 Instalación paso a paso (guía rápida)
+
+> Sigue estos pasos en orden. En unos 10 minutos estarás jugando.
+
+### Paso 1 · Descarga el juego
+
+1. Entra en el repositorio: https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive
+2. Arriba, pulsa la pestaña **Actions**.
+3. En la lista de la izquierda pulsa **Compilar ejecutables**.
+4. Abre la ejecución más reciente que tenga un **✅ verde** (la primera de la lista).
+5. Baja hasta el final de la página, al apartado **Artifacts**, y descarga:
+   - **`arcane-windows`** si tienes un PC con Windows.
+   - **`arcane-macos`** si tienes un Mac.
+
+   *(Si existe una versión en **Releases**, también puedes descargar el instalador desde ahí.)*
+6. Se descarga un archivo `.zip`. Haz clic derecho sobre él → **Extraer todo…** (Windows) o doble
+   clic (Mac) para descomprimirlo.
+
+### Paso 2 · Instálalo
+
+**🪟 Windows**
+1. Dentro de la carpeta descomprimida verás dos archivos `.exe`:
+   - **`Arcane Piltover y Zaun Setup …exe`** → el instalador. Doble clic, pulsa *Siguiente* hasta
+     el final y se creará un acceso directo en el escritorio.
+   - **`Arcane Piltover y Zaun-…-portable.exe`** → sin instalar. Doble clic y se abre el juego.
+2. Si aparece la ventana azul **«Windows protegió su PC»**, pulsa **Más información** y después
+   **Ejecutar de todas formas**. (Pasa porque el juego no tiene firma digital; es normal.)
+
+**🍎 Mac**
+1. Dentro de la carpeta descomprimida, haz doble clic en el archivo **`.dmg`**.
+2. Arrastra el icono **Arcane Piltover y Zaun** a la carpeta **Aplicaciones**.
+3. Ve a *Aplicaciones*, haz **clic derecho sobre el juego → Abrir → Abrir**.
+   - Si no te deja: **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
+   - Si dice que «está dañado»: abre **Terminal** y escribe
+     `xattr -cr "/Applications/Arcane Piltover y Zaun.app"` y vuelve a abrirlo.
+
+### Paso 3 · Activa el chat con IA (Ollama, opcional pero recomendado)
+
+1. Descarga e instala **Ollama** desde https://ollama.com/download (Windows o Mac).
+2. Abre una terminal:
+   - Windows: pulsa la tecla **Windows**, escribe `cmd` y pulsa Intro.
+   - Mac: abre **Terminal** (Aplicaciones → Utilidades).
+3. Mira qué modelos tienes instalados con:
+   ```
+   ollama list
+   ```
+4. Si no tienes ninguno de chat, descarga uno (elige uno):
+   ```
+   ollama pull llama3.2
+   ```
+   (`llama3.2` es ligero y va bien en casi cualquier PC; si tu ordenador es potente, prueba
+   `ollama pull qwen3:8b` o `ollama pull mistral`.)
+5. Deja Ollama abierto (en Windows aparece un icono de llama junto al reloj).
+6. Abre el juego → **⚙ Ajustes → Conversaciones con IA**. Deberías ver **✅ Ollama conectado** y tu
+   modelo. Pulsa **💬 Probar conversación** y Jinx te contestará.
+
+### Paso 4 · ¡A jugar!
+
+1. En el menú principal pulsa **✦ Nueva partida**.
+2. Elige **Zaun** o **Piltover**, crea tu personaje (nombre, aspecto, familia, aficiones…).
+3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
+4. Pulsa **C** para chatear con los personajes que conozcas y **Esc** para el menú de pausa.
+
+> ¿Prefieres ejecutarlo desde el código? Instala [Node.js](https://nodejs.org), descarga el proyecto
+> con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
+> `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
+
 ## Cómo se juega
 
 1. **Crea tu personaje**: nombre, género, edad, foto (o un retrato ilustrado que diseñas tú),
