@@ -13,11 +13,16 @@ contextBridge.exposeInMainWorld('arcane', {
     remove: (slot) => ipcRenderer.invoke('save:delete', slot),
   },
   exportSheet: (data) => ipcRenderer.invoke('sheet:export', data),
+  art: {
+    list: () => ipcRenderer.invoke('art:list'),
+    open: () => ipcRenderer.invoke('art:open'),
+  },
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch) => ipcRenderer.invoke('settings:set', patch),
   },
   ai: {
     chat: (payload) => ipcRenderer.invoke('ai:chat', payload),
+    ollamaModels: (url) => ipcRenderer.invoke('ai:ollama-models', url),
   },
 });

@@ -94,12 +94,11 @@
     imgCache.set(key, img);
     return img;
   }
-  function charImg(id) { return svgImage(`c:${id}`, Portrait.forCharacter(id)); }
-  function ambientImg(a) { return svgImage(`a:${a.name}`, Portrait.svg(a.look, a.colors, { label: a.name })); }
+  function charImg(id) { return svgImage(`c:${id}`, Portrait.charURL(id, 96)); }
+  function ambientImg(a) { return svgImage(`a:${a.name}`, Painter.toURL(a.look, { bg: [a.colors[0], a.colors[1]], rim: a.colors[0], size: 96 })); }
   function playerImg() {
-    const p = G.player;
-    if (p.photo) return svgImage(`p:${p.photo.length}:${p.photo.slice(-24)}`, p.photo);
-    return svgImage(`p:${JSON.stringify(p.look)}:${p.origin}`, Portrait.forPlayer(p));
+    const url = Portrait.playerURL(G.player, 96);
+    return svgImage(`p:${url.length}:${url.slice(-32)}`, url);
   }
 
   // ---------- Entidades dinámicas ----------

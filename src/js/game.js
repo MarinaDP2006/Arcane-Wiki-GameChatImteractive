@@ -72,6 +72,7 @@
       tab = 'historia';
       contact = null;
       await persist();
+      await playIntro(player);
       window.App.go('game');
       toast(`Objetivo: ve a ${objectiveName()}`, 'good');
     });
@@ -91,6 +92,26 @@
     tab = 'historia';
     contact = null;
     window.App.go('game');
+  }
+
+  // Cinemática de inicio según la ciudad elegida.
+  function playIntro(p) {
+    const me = { look: p.look, ...Portrait.playerOpts(p) };
+    const nar = { pitch: 0.9, rate: 1, gender: 'm' };
+    const shots = p.origin === 'zaun'
+      ? [
+        { scene: 'piltover', dur: 6, kicker: 'Runeterra', title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso brilla de oro y cristal.'], voice: nar, zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
+        { scene: 'puente', dur: 6, lines: ['Un puente une dos mundos que no se miran a los ojos.'], voice: nar, zoom: [1.0, 1.18], pan: [[0.5, -0.3], [-0.2, 0.4]] },
+        { scene: 'zaun', dur: 7, title: 'Zaun', lines: ['Abajo, entre humo verde y neón, la gente sobrevive como puede.'], voice: nar, zoom: [1.15, 1.0], pan: [[0, 0.6], [0, -0.2]] },
+        { scene: 'callejones', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], voice: nar, portrait: me, zoom: [1.05, 1.15] },
+      ]
+      : [
+        { scene: 'zaun', dur: 6, kicker: 'Runeterra', title: 'Zaun', lines: ['Bajo tus pies, una ciudad respira humo y rabia.'], voice: nar, zoom: [1.2, 1.05], pan: [[0.5, 0.5], [-0.3, 0]] },
+        { scene: 'puente', dur: 6, lines: ['El Puente del Progreso separa a quien tiene de quien no.'], voice: nar, zoom: [1.0, 1.18], pan: [[-0.5, 0.3], [0.3, -0.3]] },
+        { scene: 'piltover', dur: 7, title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso vive su edad dorada.'], voice: nar, zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
+        { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], voice: nar, portrait: me, zoom: [1.05, 1.15] },
+      ];
+    return Cinematic.play(shots, { videoId: `intro-${p.origin}` });
   }
 
   // ---------------- Mundo abierto ----------------
@@ -142,7 +163,7 @@
       const key = `${loc.id}:${G.progress.chapterIdx}`;
       const done = G.acts[key];
       const maxed = (G.stats[loc.activity.stat] || 0) >= window.WORLD.maxStat;
-      if (!done && !maxed) acts.push({ label: `${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
+      if (!done && !maxed) acts.push({ label: `${loc.activity.game ? "🎮 " : ""}${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
     }
     const here = G.unlocked.filter((id) => window.WORLD.homes[id] === loc.id);
     here.forEach((id) => acts.push({ label: `Hablar con ${charName(id)}`, run: () => openOverlay('chats', id) }));
@@ -164,8 +185,18 @@
       el('button', { class: 'btn ghost', onclick: closeOverlay }, 'Cerrar (Esc)')));
   }
 
-  function doActivity(loc, key) {
+  async function doActivity(loc, key) {
     const a = loc.activity;
+    if (a.game) {
+      World.pause(true);
+      Audio2.stopSpeech();
+      const win = await Minigames.play(a.game);
+      World.pause(false);
+      if (!win) {
+        toast('Esta vez no ha salido. Puedes volver a intentarlo cuando quieras.', 'warn');
+        return;
+      }
+    }
     G.acts[key] = true;
     G.stats[a.stat] = Math.min(window.WORLD.maxStat, (G.stats[a.stat] || 0) + 1);
     Audio2.sfx.unlock();
@@ -249,6 +280,7 @@
         el('h2', {}, 'Pausa'),
         el('button', { class: 'btn primary', onclick: closeOverlay }, '▶ Continuar'),
         el('button', { class: 'btn', onclick: async () => { await persist(); toast('Partida guardada', 'good'); } }, '💾 Guardar partida'),
+        el('button', { class: 'btn', onclick: () => openArcade() }, '🎮 Salón de minijuegos'),
         el('button', { class: 'btn', onclick: () => openSettingsOverlay() }, '⚙ Ajustes'),
         el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, '❔ Controles'),
         el('button', { class: 'btn ghost', onclick: async () => { await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
@@ -270,6 +302,20 @@
         el('section', { id: 'play-main', class: 'play-main' }))));
     renderContacts();
     renderMain();
+  }
+
+  // Practicar cualquier minijuego sin recompensa.
+  function openArcade() {
+    const box = $('#overlay');
+    box.innerHTML = '';
+    box.className = 'overlay show';
+    box.append(el('div', { class: 'panel action-menu arcade' },
+      el('h2', {}, '🎮 Salón de minijuegos'),
+      el('p', { class: 'muted' }, 'Practica sin límite. Las recompensas de estadísticas se ganan en los lugares del mapa.'),
+      el('div', { class: 'arcade-grid' }, Object.entries(Minigames.GAMES).map(([id, g]) =>
+        el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id); box.style.visibility = ''; } },
+          el('span', { class: 'arcade-icon' }, g.icon), el('strong', {}, g.title), el('small', { class: 'muted' }, g.goal)))),
+      el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
   }
 
   function closeBtn() {
@@ -413,13 +459,19 @@
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
-        el('div', {}, el('small', { class: 'muted' }, G.progress.route === 'zaun' ? 'Ruta de Zaun' : 'Ruta de Piltover'), el('h2', {}, ch.title)),
+        el('div', {}, el('small', { class: 'muted' }, G.progress.season === 2 ? 'Temporada 2' : G.progress.route === 'zaun' ? 'Ruta de Zaun' : 'Ruta de Piltover'), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; Audio2.stopSpeech(); } }, '⏩ Saltar'),
           el('button', { class: 'btn ghost small', title: 'Activar o desactivar voces', onclick: toggleVoice }, window.App.settings.voice ? '🔊 Voz' : '🔇 Voz'))),
-      el('div', { id: 'scene-bg', class: `scene-bg bg-${G.progress.node ? ch.nodes[G.progress.node]?.bg || 'zaun' : 'zaun'}` }),
-      el('div', { id: 'story-log', class: 'log' }),
+      el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
+      el('div', { class: 'story-body' },
+        el('div', { id: 'speaker', class: 'speaker' }, el('div', { class: 'speaker-art' }), el('div', { class: 'speaker-name' })),
+        el('div', { id: 'story-log', class: 'log' })),
       el('div', { id: 'choices', class: 'choices' }));
+    sceneCtl?.stop();
+    sceneCtl = Scenes.mount($('#scene-bg'), currentBg());
+    const last = [...G.log].reverse().find((m) => m.s !== 'narrador' && m.s !== 'sistema');
+    setSpeaker(last?.s || null);
     const log = $('#story-log');
     for (const m of G.log) log.append(bubble(m.s, m.t, true));
     log.scrollTop = log.scrollHeight;
@@ -451,9 +503,54 @@
     if (log) log.scrollTop = log.scrollHeight;
   }
 
+  // ---------- Escena animada y busto del personaje que habla ----------
+  let sceneCtl = null;
+  let speakerCtl = null;
+  let speakerId = undefined;
+
+  function currentBg() {
+    const ch = chapterById(G.progress.chapterId);
+    return (G.progress.node && ch.nodes[G.progress.node]?.bg) || ch.nodes[ch.start]?.bg || G.player.origin;
+  }
+
   function setBg(bg) {
-    const box = $('#scene-bg');
-    if (box && bg) box.className = `scene-bg bg-${bg}`;
+    if (bg) sceneCtl?.set(bg);
+  }
+
+  function setSpeaker(s) {
+    const box = $('#speaker');
+    if (!box) return;
+    if (s === 'narrador' || s === 'sistema' || !s) {
+      box.classList.remove('show');
+      return;
+    }
+    box.classList.add('show');
+    if (speakerId === s && box.querySelector('canvas, img')?.isConnected) return;
+    speakerId = s;
+    speakerCtl?.stop();
+    speakerCtl = null;
+    const art = box.querySelector('.speaker-art');
+    art.innerHTML = '';
+    box.querySelector('.speaker-name').textContent = s === 'yo' ? G.player.name : charName(s);
+    const custom = s !== 'yo' && window.CustomArt?.image('personajes', s);
+    if (custom || (s === 'yo' && G.player.photo)) {
+      art.append(el('img', { src: custom || G.player.photo, alt: '' }));
+      return;
+    }
+    const cv = el('canvas', { width: 420, height: 420 });
+    art.append(cv);
+    if (s === 'yo') speakerCtl = Painter.animate(cv, G.player.look || {}, Portrait.playerOpts(G.player));
+    else {
+      const { look, rim, bg } = Portrait.charLook(s);
+      speakerCtl = Painter.animate(cv, look, { rim, bg });
+    }
+    box.classList.remove('swap');
+    void box.offsetWidth;
+    box.classList.add('swap');
+  }
+
+  function talk(v) {
+    speakerCtl?.talk(v);
   }
 
   function lineVisible(line) {
@@ -464,8 +561,11 @@
     return true;
   }
 
-  function startChapter() {
+  async function startChapter() {
     const ch = chapterById(G.progress.chapterId);
+    busy = true;
+    await Cinematic.chapterCard(ch, ch.nodes[ch.start]?.bg || G.player.origin);
+    busy = false;
     pushLog('sistema', `— ${ch.title} —`);
     pushLog('narrador', ch.intro);
     renderStoryIfVisible();
@@ -509,14 +609,17 @@
       }
       pushLog(line.s, text);
       if (tab === 'historia') {
+        setSpeaker(line.s);
         $('#story-log')?.append(bubble(line.s, text, skipping));
         scrollLog();
         if (!skipping) Audio2.sfx.message();
       }
       if (!skipping && tab === 'historia') {
         const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm' } : line.s === 'yo' ? null : window.CHAT[line.s]?.voice;
+        talk(line.s !== 'narrador');
         if (voice && window.App.settings.voice) await Promise.race([Audio2.speak(text, voice), skipWait(12000)]);
         else await skipWait(delayFor(text));
+        talk(false);
       }
     }
     busy = false;
@@ -578,7 +681,8 @@
     box.innerHTML = '';
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
-        el('button', { class: 'btn primary', onclick: () => setTab('chats', G.unlocked[0]) }, '💬 Seguir chateando con los personajes'),
+        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, '🌙 Comenzar la Temporada 2') : null,
+        el('button', { class: 'btn', onclick: () => setTab('chats', G.unlocked[0]) }, '💬 Seguir chateando con los personajes'),
         el('button', { class: 'btn', onclick: () => setTab('ficha') }, '🪪 Ver mi ficha'),
         el('button', { class: 'btn ghost', onclick: replayRoute }, '↻ Rejugar la ruta con este personaje')));
       return;
@@ -616,6 +720,16 @@
     scrollLog();
     applyFx(c.fx);
     renderContacts();
+    if (c.game) {
+      busy = true;
+      Audio2.stopSpeech();
+      const win = await Minigames.play(c.game.id);
+      busy = false;
+      if (win) applyFx(c.game.winFx);
+      pushLog('sistema', win ? '🏆 ¡Lo has conseguido!' : '💥 No ha salido como esperabas…');
+      $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
+      return advance(win ? c.game.win : c.game.lose);
+    }
     advance(c.next);
   }
 
@@ -648,8 +762,15 @@
     toast(`Nuevo objetivo: ve a ${objectiveName()}`, 'good');
   }
 
+  // Todos los finales de ambas temporadas.
+  function allEndings() {
+    return [...S().endings, ...(S().endings2 || [])];
+  }
+
   async function playEnding() {
-    const ending = S().endings.find((e) => e.test(G));
+    const ch = chapterById(G.progress.chapterId);
+    const set = ch.nodes[G.progress.node]?.endingSet === 'endings2' ? S().endings2 : S().endings;
+    const ending = set.find((e) => e.test(G));
     busy = true;
     skipping = false;
     pushLog('sistema', `— ${ending.title} —`);
@@ -657,31 +778,58 @@
     for (const line of ending.lines) {
       const text = tpl(line.t, G.player);
       pushLog(line.s, text);
+      setSpeaker(line.s);
       $('#story-log')?.append(bubble(line.s, text, skipping));
       scrollLog();
       if (!skipping && tab === 'historia') {
         const voice = line.s === 'narrador' ? { pitch: 0.95, rate: 1.05, gender: 'm' } : window.CHAT[line.s]?.voice;
+        talk(line.s !== 'narrador');
         if (voice && window.App.settings.voice) await Promise.race([Audio2.speak(text, voice), skipWait(12000)]);
         else await skipWait(delayFor(text));
+        talk(false);
       }
     }
     busy = false;
     if (!G.endings.includes(ending.id)) G.endings.push(ending.id);
     G.progress.finished = true;
-    const ch = chapterById('fin');
-    const fresh = ch.unlocks.filter((id) => !G.unlocked.includes(id));
+    talk(false);
+    await Cinematic.play([
+      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Temporada 2' : 'Fin de la Temporada 1', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
+    ], { videoId: `fin-${ending.id}` });
+    const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id));
     G.unlocked.push(...fresh);
     if (fresh.length) {
       Audio2.sfx.unlock();
       pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${fresh.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     }
-    pushLog('sistema', `Has conseguido ${G.endings.length} de ${S().endings.length} finales. ¡Gracias por jugar!`);
+    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Temporada 2 te espera.'}`);
     $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     scrollLog();
     renderContacts();
     await persist();
     showChoices([]);
+  }
+
+  // Temporada 2: continúa la partida con las consecuencias de la primera.
+  async function startSeason2() {
+    if (!window.App.settings.spoilers && !confirm('La Temporada 2 contiene spoilers de la segunda temporada de Arcane. ¿Quieres continuar?')) return;
+    const route = S().routes.t2;
+    G.flags[`s1_${G.endings[G.endings.length - 1] || 'humo'}`] = true;
+    G.progress = { route: 't2', season: 2, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false };
+    G.log = [];
+    G.acts = {};
+    await persist();
+    closeOverlay();
+    await Cinematic.play([
+      { scene: 'puente-zaun', dur: 6, kicker: 'Arcane', title: 'Temporada 2', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
+      { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
+      { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
+      { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
+    ], { videoId: 'temporada-2' });
+    Audio2.playMusic('final');
+    toast(`Temporada 2 · Objetivo: ve a ${objectiveName()}`, 'good');
+    updateHud();
   }
 
   // Vuelve a empezar la ruta conservando ficha, finales y personajes desbloqueados.
@@ -690,7 +838,7 @@
     const route = S().routes[G.progress.route];
     G.flags = G.player.family !== 'ninguna' ? { familia_famosa: true } : {};
     G.rep = { zaun: G.player.origin === 'zaun' ? 1 : 0, piltover: G.player.origin === 'piltover' ? 1 : 0 };
-    G.progress = { route: G.progress.route, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: '', finished: false, started: false };
+    G.progress = { route: G.progress.route, season: G.progress.season, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: '', finished: false, started: false };
     G.log = [];
     G.acts = {};
     await persist();
@@ -708,13 +856,13 @@
     const id = contact;
     const data = window.CHAT[id];
     const wikiEntry = window.WIKI.personajes.find((p) => p.id === id);
-    const ai = window.App.settings.aiEnabled && window.App.settings.hasApiKey;
+    const ai = window.App.aiReady();
     if (!G.chats[id]) G.chats[id] = [{ s: id, t: tpl(greeting(id), G.player) }];
     main.append(
       el('header', { class: 'scene-head' },
         el('div', { class: 'row gap' },
           el('span', { class: 'avatar', html: Portrait.forCharacter(id) }),
-          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, `${wikiEntry?.role || ''} · Afinidad ${affOf(id)}/10 · ${ai ? '✨ Modo IA' : 'Modo clásico'}`))),
+          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, `${wikiEntry?.role || ''} · Afinidad ${affOf(id)}/10 · ${ai ? `✨ IA: ${window.App.aiLabel()}` : 'Modo clásico'}`))),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, '📚 Códice'),
           el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; persist(); renderMain(); } }, '🧹 Limpiar'))),
@@ -751,7 +899,7 @@
     log && (log.scrollTop = log.scrollHeight);
 
     let reply = null;
-    if (window.App.settings.aiEnabled && window.App.settings.hasApiKey && window.arcane?.ai) {
+    if (window.App.aiReady() && window.arcane?.ai) {
       const res = await window.arcane.ai.chat({ system: personaPrompt(id), messages: toApiMessages(thread) });
       if (res.ok && res.text) reply = res.text;
       else toast(`${res.error || 'La IA no respondió'} · Uso el modo clásico.`, 'warn');
@@ -858,8 +1006,8 @@
           el('span', {}, charName(id)), heart(affOf(id))))) : el('p', { class: 'muted' }, 'Todavía no conoces a nadie.'),
       el('h3', {}, 'Progreso'),
       el('p', {}, `${chapterById(G.progress.chapterId)?.title}${G.progress.finished ? ' (completado)' : ''}`),
-      el('p', {}, `Finales conseguidos: ${G.endings.length}/${S().endings.length}`,
-        G.endings.length ? ` — ${G.endings.map((e) => S().endings.find((x) => x.id === e).title.replace('Final · ', '')).join(', ')}` : '')));
+      el('p', {}, `Finales conseguidos: ${G.endings.length}/${allEndings().length}`,
+        G.endings.length ? ` — ${G.endings.map((e) => allEndings().find((x) => x.id === e)?.title.replace('Final · ', '')).join(', ')}` : '')));
   }
 
   function repBar(label, v, cls) {

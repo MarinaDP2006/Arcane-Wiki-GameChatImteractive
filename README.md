@@ -6,24 +6,99 @@ Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arca
 Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
 Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 
+## 🚀 Instalación paso a paso (guía rápida)
+
+> Sigue estos pasos en orden. En unos 10 minutos estarás jugando.
+
+### Paso 1 · Descarga el juego
+
+1. Entra en el repositorio: https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive
+2. Arriba, pulsa la pestaña **Actions**.
+3. En la lista de la izquierda pulsa **Compilar ejecutables**.
+4. Abre la ejecución más reciente que tenga un **✅ verde** (la primera de la lista).
+5. Baja hasta el final de la página, al apartado **Artifacts**, y descarga:
+   - **`arcane-windows`** si tienes un PC con Windows.
+   - **`arcane-macos`** si tienes un Mac.
+
+   *(Si existe una versión en **Releases**, también puedes descargar el instalador desde ahí.)*
+6. Se descarga un archivo `.zip`. Haz clic derecho sobre él → **Extraer todo…** (Windows) o doble
+   clic (Mac) para descomprimirlo.
+
+### Paso 2 · Instálalo
+
+**🪟 Windows**
+1. Dentro de la carpeta descomprimida verás dos archivos `.exe`:
+   - **`Arcane Piltover y Zaun Setup …exe`** → el instalador. Doble clic, pulsa *Siguiente* hasta
+     el final y se creará un acceso directo en el escritorio.
+   - **`Arcane Piltover y Zaun-…-portable.exe`** → sin instalar. Doble clic y se abre el juego.
+2. Si aparece la ventana azul **«Windows protegió su PC»**, pulsa **Más información** y después
+   **Ejecutar de todas formas**. (Pasa porque el juego no tiene firma digital; es normal.)
+
+**🍎 Mac**
+1. Dentro de la carpeta descomprimida, haz doble clic en el archivo **`.dmg`**.
+2. Arrastra el icono **Arcane Piltover y Zaun** a la carpeta **Aplicaciones**.
+3. Ve a *Aplicaciones*, haz **clic derecho sobre el juego → Abrir → Abrir**.
+   - Si no te deja: **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
+   - Si dice que «está dañado»: abre **Terminal** y escribe
+     `xattr -cr "/Applications/Arcane Piltover y Zaun.app"` y vuelve a abrirlo.
+
+### Paso 3 · Activa el chat con IA (Ollama, opcional pero recomendado)
+
+1. Descarga e instala **Ollama** desde https://ollama.com/download (Windows o Mac).
+2. Abre una terminal:
+   - Windows: pulsa la tecla **Windows**, escribe `cmd` y pulsa Intro.
+   - Mac: abre **Terminal** (Aplicaciones → Utilidades).
+3. Mira qué modelos tienes instalados con:
+   ```
+   ollama list
+   ```
+4. Si no tienes ninguno de chat, descarga uno (elige uno):
+   ```
+   ollama pull llama3.2
+   ```
+   (`llama3.2` es ligero y va bien en casi cualquier PC; si tu ordenador es potente, prueba
+   `ollama pull qwen3:8b` o `ollama pull mistral`.)
+5. Deja Ollama abierto (en Windows aparece un icono de llama junto al reloj).
+6. Abre el juego → **⚙ Ajustes → Conversaciones con IA**. Deberías ver **✅ Ollama conectado** y tu
+   modelo. Pulsa **💬 Probar conversación** y Jinx te contestará.
+
+### Paso 4 · ¡A jugar!
+
+1. En el menú principal pulsa **✦ Nueva partida**.
+2. Elige **Zaun** o **Piltover**, crea tu personaje (nombre, aspecto, familia, aficiones…).
+3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
+4. Pulsa **C** para chatear con los personajes que conozcas y **Esc** para el menú de pausa.
+
+> ¿Prefieres ejecutarlo desde el código? Instala [Node.js](https://nodejs.org), descarga el proyecto
+> con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
+> `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
+
 ## Cómo se juega
 
 1. **Crea tu personaje**: nombre, género, edad, foto (o un retrato ilustrado que diseñas tú),
    profesión, barrio, familia famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros,
    Giopara, la de Vander…) y aficiones. Todo eso suma a tus estadísticas
    (🧠 Ingenio, 💬 Carisma, 🔥 Valor, 🌑 Sigilo).
-2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 5 capítulos y empiezas
+2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
    en el barrio que elegiste.
 3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
    visita lugares, habla con la gente y recoge los fragmentos del Códice (hexágonos azules).
 4. **Sigue la historia**: el objetivo ★ te dice adónde ir. Al llegar, la escena se juega como
    un chat con voz. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
-5. **Entrena**: cada lugar tiene una actividad (pelear en el foso, estudiar en la Academia,
-   atender la barra de La Última Gota…) que sube una estadística, una vez por capítulo.
+5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
+   vez por capítulo. Muchas son minijuegos: 🥊 pelea en el foso (reflejos), 🏃 carrera por los
+   tejados, 🛹 vuelo en aerotabla, 🎯 galería de tiro, 🔧 circuito hextec (puzle), 🔷 runas de la
+   Academia (memoria) y 💰 regateo en el mercado. Algunas decisiones de la historia también se
+   resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
 6. **Chatea**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
    hablar con ellos por chat (con su propia voz) o en persona en su lugar del mapa.
    Conversar sube la afinidad, y la afinidad abre opciones en la historia.
 7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
+8. **Temporada 2** 🌙: al terminar la primera temporada se desbloquea la segunda, que continúa tu
+   partida con las consecuencias de lo que hiciste: la cacería de Jinx tras el ataque, Isha, el
+   Heraldo y su Evolución Gloriosa, Ambessa y Mel, la bestia del Sumidero, los ecos del tiempo de
+   Ekko y la guerra final por el puente, con 3 finales nuevos. Avisa antes de empezar porque
+   contiene spoilers de la segunda temporada de Arcane.
 
 ### Controles
 
@@ -40,42 +115,110 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | Espacio | Saltar la escena en curso |
 | F11 | Pantalla completa |
 
-### Chat con IA (opcional)
+### Arte pintado y animado
 
-Sin configurar nada, los personajes responden con diálogos escritos y temas de conversación.
-Si pones una clave de API de Anthropic en **Ajustes → Conversaciones con IA**, conversan
-libremente con Claude sin salir del personaje, teniendo en cuenta tu ficha, tu afinidad y
-tus decisiones. La clave se guarda solo en tu ordenador.
+Todo el arte se genera dentro del juego con un estilo pictórico: retratos pintados que
+respiran, parpadean, mueven el pelo y vocalizan al hablar; escenarios animados (niebla de
+Zaun, neones que parpadean, polvo dorado de Piltover, portales hextec); cinemáticas de
+inicio, de capítulo y de final con movimiento de cámara y narración. En el creador puedes
+elegir cara, ojos, cejas, nariz, labios, maquillaje, peinado, ropa y detalles, o subir una
+foto que el juego convierte en retrato pintado.
 
-## Descargar el juego
+**Tu propio arte:** en *Ajustes → Abrir carpeta de arte* puedes poner imágenes, concept art
+o vídeos (por ejemplo `personajes/jinx.png`, `escenas/ultima-gota.jpg`,
+`video/intro-zaun.mp4`). El juego los usa en lugar del arte generado. Esos archivos se quedan
+en tu ordenador y no se incluyen en el ejecutable.
 
-Cada push compila los ejecutables en GitHub Actions (workflow **Compilar ejecutables**):
+### Chat con IA: Ollama 🦙
 
-- **Windows**: `Arcane Piltover y Zaun Setup 1.0.0.exe` (instalador) y
-  `Arcane Piltover y Zaun-1.0.0-portable.exe` (sin instalar, doble clic y a jugar).
-- **macOS**: `.dmg` y `.zip` universales (Intel y Apple Silicon).
+Los personajes conversan libremente con **[Ollama](https://ollama.com)**, que funciona en tu
+propio ordenador: gratis, privado y sin conexión a internet.
 
-Descárgalos desde la pestaña **Actions** → última ejecución → *Artifacts*.
-Para publicar una versión con descarga directa, crea una etiqueta:
-`git tag v1.0.0 && git push origin v1.0.0` y aparecerá en **Releases**.
+1. Instala Ollama desde https://ollama.com y ábrelo.
+2. Descarga un modelo de chat desde una terminal, por ejemplo:
+   `ollama pull llama3.2` (ligero) o `ollama pull qwen3:8b` / `ollama pull mistral` (más potentes).
+3. Abre el juego: **detecta automáticamente los modelos instalados en tu PC** y elige uno de
+   chat (descarta los de *embeddings*). En **Ajustes → Conversaciones con IA** verás cuáles tienes,
+   podrás cambiar de modelo, cambiar la dirección de Ollama (por defecto `http://127.0.0.1:11434`)
+   y pulsar **💬 Probar conversación**.
 
-> En macOS, como la app no está firmada, la primera vez abre el juego con clic derecho → *Abrir*.
-> En Windows, si SmartScreen avisa, pulsa *Más información → Ejecutar de todas formas*.
+En el comunicador, la cabecera de cada chat indica si estás en **✨ IA: Ollama · modelo** o en
+modo clásico (sin Ollama abierto, los personajes responden con diálogos escritos y temas).
+Opcionalmente, en el mismo menú se puede usar Claude con una clave de API de Anthropic.
 
-## Compilar en tu ordenador
+## Cómo instalarlo
 
-Necesitas [Node.js](https://nodejs.org) 20 o superior.
+Hay dos formas: **descargar el juego ya compilado** (recomendado, no hace falta instalar nada más)
+o **ejecutarlo desde el código**.
+
+**Dónde se descarga el juego compilado:**
+- En **Releases** (https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases), si hay
+  alguna versión publicada.
+- O en **Actions → Compilar ejecutables**: abre la ejecución más reciente con ✅ y baja hasta
+  **Artifacts**. GitHub entrega los artifacts dentro de un `.zip`, así que primero hay que
+  descomprimirlo.
+
+### 🪟 En PC (Windows 10 / 11)
+
+**Opción 1 · Juego compilado**
+1. Descarga `arcane-windows` (en Artifacts) o el `.exe` de la Release y descomprímelo si es un `.zip`.
+2. Elige uno de los dos archivos:
+   - `Arcane Piltover y Zaun Setup X.Y.Z.exe` → **instalador**: doble clic, sigue los pasos y
+     tendrás un acceso directo en el escritorio y en el menú Inicio.
+   - `Arcane Piltover y Zaun-X.Y.Z-portable.exe` → **portable**: no se instala; doble clic y a jugar
+     (puedes llevarlo en un USB).
+3. Si Windows muestra **«Windows protegió su PC»** (SmartScreen), pulsa **Más información →
+   Ejecutar de todas formas**. Sale porque el juego no está firmado digitalmente.
+4. Para desinstalarlo: *Configuración → Aplicaciones → Arcane Piltover y Zaun → Desinstalar*
+   (la versión portable basta con borrarla).
+
+**Opción 2 · Desde el código**
+1. Instala [Node.js](https://nodejs.org) (versión LTS, 20 o superior) con las opciones por defecto.
+2. En GitHub pulsa **Code → Download ZIP** y descomprime la carpeta.
+3. Haz doble clic en **`jugar-windows.bat`**. La primera vez descarga lo necesario (unos minutos)
+   y después abre el juego. Las siguientes veces arranca directamente.
+
+Tus partidas se guardan en `%APPDATA%\Arcane Piltover y Zaun\partidas` y tu carpeta de arte en
+`%APPDATA%\Arcane Piltover y Zaun\arte`.
+
+### 🍎 En Mac (macOS 11 o superior, Intel y Apple Silicon)
+
+**Opción 1 · Juego compilado**
+1. Descarga `arcane-macos` (en Artifacts) o el `.dmg` de la Release y descomprímelo si es un `.zip`.
+2. Abre el `.dmg` y **arrastra «Arcane Piltover y Zaun» a la carpeta Aplicaciones**.
+3. La primera vez, como la app no está firmada por Apple:
+   - Haz **clic derecho (o Control + clic) sobre la app → Abrir → Abrir**.
+   - Si aun así no se abre, ve a **Ajustes del Sistema → Privacidad y seguridad**, baja hasta el
+     aviso de la app y pulsa **Abrir igualmente**.
+   - Si macOS dice que la app «está dañada», abre la app **Terminal** y escribe:
+     `xattr -cr "/Applications/Arcane Piltover y Zaun.app"`, y vuelve a abrirla.
+4. Para desinstalarlo, arrastra la app desde *Aplicaciones* a la Papelera.
+
+**Opción 2 · Desde el código**
+1. Instala [Node.js](https://nodejs.org) (versión LTS, 20 o superior).
+2. En GitHub pulsa **Code → Download ZIP** y descomprime la carpeta.
+3. Haz doble clic en **`jugar-mac.command`**. Si macOS lo bloquea: clic derecho → *Abrir*.
+   Si dice que no tiene permisos, abre **Terminal** dentro de la carpeta y escribe
+   `chmod +x jugar-mac.command`.
+
+Tus partidas se guardan en `~/Library/Application Support/Arcane Piltover y Zaun/partidas` y tu
+carpeta de arte en `~/Library/Application Support/Arcane Piltover y Zaun/arte`.
+
+### 🛠️ Compilar tus propios ejecutables
 
 ```bash
 npm install
 npm start          # jugar en modo desarrollo
 npm run check      # validar historia, mapas y diálogos
-npm run dist:win   # ejecutables de Windows (en Windows)
-npm run dist:mac   # .dmg de macOS (en un Mac)
+npm run dist:win   # ejecutables de Windows (hazlo en Windows)
+npm run dist:mac   # .dmg de macOS (hazlo en un Mac)
 ```
 
-Los ejecutables salen en la carpeta `dist/`. Las partidas se guardan en la carpeta de datos
-del usuario (3 ranuras con autoguardado).
+Los ejecutables salen en la carpeta `dist/`.
+
+**Publicar una versión con descarga directa:** en GitHub, ve a **Releases → Draft a new release**,
+escribe una etiqueta nueva (por ejemplo `v1.2.0`) y pulsa **Publish release**. El workflow compila
+Windows y Mac y añade los instaladores a esa Release automáticamente.
 
 ## Estructura
 

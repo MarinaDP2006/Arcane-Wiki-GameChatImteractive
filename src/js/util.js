@@ -100,7 +100,7 @@
       return true;
     },
     async getSettings() {
-      const base = { volume: 0.6, music: true, voice: true, voiceRate: 1, textSpeed: 'normal', spoilers: false, aiEnabled: false, aiModel: 'claude-opus-5-5' };
+      const base = { volume: 0.6, music: true, voice: true, voiceRate: 1, textSpeed: 'normal', spoilers: false, aiEnabled: true, aiProvider: 'ollama', aiModel: 'claude-opus-5-5' };
       if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
       return { ...base, ...LS.get('arcane-settings', {}), hasApiKey: false };
     },
@@ -125,6 +125,24 @@
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+  // Arte personal de la jugadora (carpeta «arte» en escritorio).
+  window.CustomArt = {
+    files: { personajes: {}, escenas: {}, codice: {}, video: {} },
+    async load() {
+      if (window.arcane?.art) {
+        try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
+      }
+    },
+    image(cat, id) {
+      const f = this.files[cat]?.[id];
+      return f && !/\.(mp4|webm)$/i.test(f) ? f : null;
+    },
+    video(id) {
+      const f = this.files.video?.[id];
+      return f && /\.(mp4|webm)$/i.test(f) ? f : null;
+    },
+  };
 
   window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, desktop };
 })();

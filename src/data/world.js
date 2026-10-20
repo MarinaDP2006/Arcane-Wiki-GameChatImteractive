@@ -15,10 +15,10 @@ window.WORLD = {
         { name: 'Los Muelles de las Hexpuertas', rect: [0, 1700, 3000, 500], tint: 'rgba(63,169,245,0.08)' },
       ],
       locations: [
-        { id: 'academia', name: 'Academia de Piltover', x: 700, y: 400, icon: '🎓', codex: 'academia', activity: { label: 'Estudiar en la biblioteca', stat: 'ingenio', text: 'Pasas horas entre tratados de runas y termodinámica. Algo se te queda.' } },
-        { id: 'taller-jayce', name: 'Taller de Jayce', x: 1200, y: 700, icon: '🔨', codex: 'taller-jayce' },
+        { id: 'academia', name: 'Academia de Piltover', x: 700, y: 400, icon: '🎓', codex: 'academia', activity: { label: 'Descifrar runas con Heimerdinger', stat: 'ingenio', game: 'runas', text: 'Pasas horas entre tratados de runas y termodinámica. Algo se te queda.' } },
+        { id: 'taller-jayce', name: 'Taller de Jayce', x: 1200, y: 700, icon: '🔨', codex: 'taller-jayce', activity: { label: 'Ajustar un circuito hextec', stat: 'ingenio', game: 'circuito', text: 'La gema se estabiliza en tus manos. Jayce silba admirado.' } },
         { id: 'consejo', name: 'Sala del Consejo', x: 2200, y: 380, icon: '🏛️', codex: 'consejo' },
-        { id: 'ejecutores', name: 'Jefatura de los Ejecutores', x: 2650, y: 800, icon: '🛡️', codex: 'ejecutores', activity: { label: 'Practicar en la galería de tiro', stat: 'valor', text: 'Respira, apunta, exhala. Las dianas caen una tras otra.' } },
+        { id: 'ejecutores', name: 'Jefatura de los Ejecutores', x: 2650, y: 800, icon: '🛡️', codex: 'ejecutores', activity: { label: 'Practicar en la galería de tiro', stat: 'valor', game: 'tiro', text: 'Respira, apunta, exhala. Las dianas caen una tras otra.' } },
         { id: 'mansion-kiramman', name: 'Mansión Kiramman', x: 500, y: 1250, icon: '🌹', codex: 'mansion-kiramman', activity: { label: 'Asistir a una gala de sociedad', stat: 'carisma', text: 'Sonrisas, brindis y cotilleos. Sales sabiendo quién odia a quién.' } },
         { id: 'plaza', name: 'Plaza del Progreso', x: 1650, y: 1150, icon: '⛲', codex: 'piltover', activity: { label: 'Actuar para los paseantes', stat: 'carisma', text: 'La gente se para, aplaude y te lanza alguna moneda.' } },
         { id: 'artesanos', name: 'Mercado de Artesanos', x: 2400, y: 1350, icon: '⚙️', codex: null, activity: { label: 'Seguir a un contrabandista', stat: 'sigilo', text: 'Lo sigues entre puestos sin que te vea. Ahora sabes dónde esconde la mercancía.' } },
@@ -56,15 +56,15 @@ window.WORLD = {
       locations: [
         { id: 'puente-zaun', name: 'Puente del Progreso', x: 1500, y: 90, icon: '🌉', codex: 'puente', travel: { to: 'piltover', at: 'puente', label: 'Subir a Piltover' } },
         { id: 'fabrica', name: 'Fábrica de Brillo', x: 650, y: 330, icon: '🧪', codex: 'brillo' },
-        { id: 'foso', name: 'Foso de peleas', x: 2450, y: 420, icon: '🥊', codex: null, activity: { label: 'Pelear en el foso', stat: 'valor', text: 'Recibes, devuelves y te levantas. La gente corea tu nombre.' } },
-        { id: 'tejados', name: 'Tejados de las Chimeneas', x: 1950, y: 600, icon: '🏚️', codex: null, activity: { label: 'Carrera por los tejados', stat: 'sigilo', text: 'Saltas de chimenea en chimenea sin hacer ruido. Nadie te ha visto.' } },
+        { id: 'foso', name: 'Foso de peleas', x: 2450, y: 420, icon: '🥊', codex: null, activity: { label: 'Pelear en el foso', stat: 'valor', game: 'foso', text: 'Recibes, devuelves y te levantas. La gente corea tu nombre.' } },
+        { id: 'tejados', name: 'Tejados de las Chimeneas', x: 1950, y: 600, icon: '🏚️', codex: null, activity: { label: 'Carrera por los tejados', stat: 'sigilo', game: 'tejados', text: 'Saltas de chimenea en chimenea sin hacer ruido. Nadie te ha visto.' } },
         { id: 'ultima-gota', name: 'La Última Gota', x: 800, y: 1000, icon: '🍺', codex: 'ultima-gota', activity: { label: 'Atender la barra una noche', stat: 'carisma', text: 'Sirves tragos, separas dos peleas y escuchas tres confesiones.' } },
         { id: 'callejones', name: 'Los Callejones', x: 1350, y: 1250, icon: '🏮', codex: 'callejones' },
-        { id: 'tienda-benzo', name: 'Tienda de Benzo', x: 400, y: 1300, icon: '🔧', codex: null, activity: { label: 'Reparar chatarra', stat: 'ingenio', text: 'Entre tuercas y muelles, consigues que algo vuelva a funcionar.' } },
-        { id: 'mercado', name: 'Mercado de las Tuberías', x: 2400, y: 1100, icon: '🛒', codex: 'zaun', activity: { label: 'Regatear en el mercado', stat: 'carisma', text: 'Consigues el doble por la mitad. La vendedora te mira con respeto.' } },
+        { id: 'tienda-benzo', name: 'Tienda de Benzo', x: 400, y: 1300, icon: '🔧', codex: null, activity: { label: 'Reparar chatarra con Benzo', stat: 'ingenio', game: 'circuito', text: 'Entre tuercas y muelles, consigues que algo vuelva a funcionar.' } },
+        { id: 'mercado', name: 'Mercado de las Tuberías', x: 2400, y: 1100, icon: '🛒', codex: 'zaun', activity: { label: 'Regatear en el mercado', stat: 'carisma', game: 'regateo', text: 'Consigues el doble por la mitad. La vendedora te mira con respeto.' } },
         { id: 'sumidero', name: 'Laboratorio del Sumidero', x: 850, y: 1900, icon: '☣️', codex: 'sumidero', activity: { label: 'Analizar residuos químicos', stat: 'ingenio', text: 'Muestras, frascos y un olor terrible. Pero ahora entiendes algo más de la quimtec.' } },
         { id: 'escondite-jinx', name: 'Escondite de Jinx', x: 1750, y: 1950, icon: '💣', codex: null },
-        { id: 'arbol', name: 'El Árbol de las Luciérnagas', x: 2550, y: 1850, icon: '🌳', codex: 'arbol' },
+        { id: 'arbol', name: 'El Árbol de las Luciérnagas', x: 2550, y: 1850, icon: '🌳', codex: 'arbol', activity: { label: 'Volar en aerotabla', stat: 'sigilo', game: 'aerotabla', text: 'Las Luciérnagas te enseñan sus rutas secretas por las profundidades.' } },
       ],
       fragments: [
         { x: 400, y: 150, codex: 'quimtec' }, { x: 1100, y: 450, codex: 'quimbarones' }, { x: 2800, y: 200, codex: 'bestias-brillo' },
@@ -103,8 +103,11 @@ window.WORLD = {
   // Dónde arranca cada capítulo de la historia.
   chapterLocations: {
     z1: 'ultima-gota', z2: 'tienda-benzo', z3: 'ultima-gota', z4: 'mercado', z5: 'callejones',
+    z6: 'foso', z7: 'tejados', z8: 'sumidero',
     p1: 'academia', p2: 'consejo', p3: 'ejecutores', p4: 'hexpuertas', p5: 'puente',
+    p6: 'ejecutores', p7: 'academia', p8: 'arbol',
     fin: { zaun: 'puente-zaun', piltover: 'puente' },
+    t1: 'consejo', t2: 'escondite-jinx', t3: 'fabrica', t4: 'consejo', t5: 'sumidero', t6: 'arbol', fin2: 'puente',
   },
 
   // Lugar de aparición según el barrio elegido al crear el personaje.

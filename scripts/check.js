@@ -15,9 +15,10 @@ const chars = new Set(WIKI.personajes.map((p) => p.id));
 const allIds = new Set(WIKI.categories.flatMap((c) => WIKI[c.id].map((e) => e.id)));
 const speakers = new Set([...chars, 'narrador', 'yo', 'sistema']);
 const FLAG_SET = new Set(['familia_famosa']);
+const GAME_IDS = ['foso', 'tejados', 'aerotabla', 'tiro', 'circuito', 'runas', 'regateo'];
 
 for (const ch of STORY.chapters) {
-  for (const n of Object.values(ch.nodes)) for (const c of n.choices || []) (c.fx?.flags || []).forEach((f) => FLAG_SET.add(f));
+  for (const n of Object.values(ch.nodes)) for (const c of n.choices || []) [...(c.fx?.flags || []), ...(c.game?.winFx?.flags || [])].forEach((f) => FLAG_SET.add(f));
 }
 
 for (const ch of STORY.chapters) {
@@ -37,6 +38,11 @@ for (const ch of STORY.chapters) {
       if (!free) errors.push(`${where}: todas las opciones tienen requisitos (el jugador podría quedarse atascado)`);
       for (const c of n.choices) {
         if (!ch.nodes[c.next]) errors.push(`${where}: opción "${c.t}" apunta a "${c.next}" que no existe`);
+        if (c.game) {
+          if (!GAME_IDS.includes(c.game.id)) errors.push(`${where}: minijuego "${c.game.id}" desconocido`);
+          for (const k of ['win', 'lose']) if (!ch.nodes[c.game[k]]) errors.push(`${where}: minijuego ${k} -> "${c.game[k]}" no existe`);
+          (c.game.winFx?.flags || []).forEach((f) => FLAG_SET.add(f));
+        }
         Object.keys(c.fx?.aff || {}).forEach((id) => { if (!chars.has(id)) errors.push(`${where}: afinidad con "${id}" desconocido`); });
         if (c.req?.flag && !FLAG_SET.has(c.req.flag)) errors.push(`${where}: requiere flag "${c.req.flag}" que nunca se activa`);
         if (c.req?.stat && !STORY.stats[c.req.stat]) errors.push(`${where}: estadística "${c.req.stat}" desconocida`);
@@ -45,7 +51,7 @@ for (const ch of STORY.chapters) {
   }
 }
 for (const [r, ids] of Object.entries(STORY.routes)) ids.forEach((id) => { if (!STORY.chapters.find((c) => c.id === id)) errors.push(`ruta ${r}: capítulo "${id}" no existe`); });
-STORY.endings.forEach((e) => e.lines.forEach((l) => { if (!speakers.has(l.s)) errors.push(`final ${e.id}: hablante "${l.s}"`); }));
+[...STORY.endings, ...(STORY.endings2 || [])].forEach((e) => e.lines.forEach((l) => { if (!speakers.has(l.s)) errors.push(`final ${e.id}: hablante "${l.s}"`); }));
 for (const p of WIKI.personajes) (p.relations || []).forEach((r) => { if (!allIds.has(r)) errors.push(`wiki ${p.id}: relación "${r}" no existe`); });
 for (const o of Object.values(CREATION.origins)) for (const f of o.families) Object.keys(f.aff || {}).forEach((id) => { if (!chars.has(id)) errors.push(`familia ${f.id}: "${id}" desconocido`); });
 
@@ -57,6 +63,7 @@ for (const [mid, m] of Object.entries(WORLD.maps)) {
     locIds.add(l.id);
     if (l.codex && !allIds.has(l.codex)) errors.push(`lugar ${l.id}: entrada de Códice "${l.codex}" no existe`);
     if (l.activity && !STORY.stats[l.activity.stat]) errors.push(`lugar ${l.id}: estadística "${l.activity.stat}"`);
+    if (l.activity?.game && !GAME_IDS.includes(l.activity.game)) errors.push(`lugar ${l.id}: minijuego "${l.activity.game}" desconocido`);
     if (l.x < 0 || l.y < 0 || l.x > m.size[0] || l.y > m.size[1]) errors.push(`lugar ${l.id}: fuera del mapa`);
   }
   for (const f of m.fragments) if (!allIds.has(f.codex)) errors.push(`fragmento en ${mid}: "${f.codex}" no existe`);
@@ -85,4 +92,4 @@ if (errors.length) {
   process.exit(1);
 }
 const nodes = STORY.chapters.reduce((a, c) => a + Object.keys(c.nodes).length, 0);
-console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con chat.`);
+console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con chat.`);
