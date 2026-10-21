@@ -110,8 +110,26 @@ function listDir(dir) {
 
 // Carpeta «arte» junto al ejecutable (o al .exe portátil): también se lee, para quien guarda
 // ahí sus vídeos e imágenes. La carpeta de arte de AppData manda sobre ella.
-const besideRoots = () => [...new Set([process.env.PORTABLE_EXECUTABLE_DIR, path.dirname(process.execPath)].filter(Boolean))]
-  .map((d) => path.join(d, 'arte')).filter((d) => d !== artRoot() && fs.existsSync(d));
+// También se busca una carpeta «arte» en Documentos (hasta dos niveles), p. ej.
+// Documentos\LOL-Game_Arcane\Arcane Piltover y Zaun\arte, donde mucha gente guarda sus vídeos.
+function documentsRoots() {
+  const out = [];
+  let docs;
+  try { docs = app.getPath('documents'); } catch { return out; }
+  const subdirs = (d) => { try { return fs.readdirSync(d, { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('.')).map((e) => path.join(d, e.name)); } catch { return []; } };
+  const level1 = subdirs(docs);
+  for (const d of [docs, ...level1, ...level1.flatMap(subdirs)]) {
+    const arte = path.join(d, 'arte');
+    if (fs.existsSync(arte)) out.push(arte);
+  }
+  return out;
+}
+
+const besideRoots = () => [...new Set([process.env.PORTABLE_EXECUTABLE_DIR, path.dirname(process.execPath)].filter(Boolean).map((d) => path.join(d, 'arte')).concat(documentsRoots()))]
+  .filter((d) => d !== artRoot() && fs.existsSync(d));
+
+// «videos» (con s) también vale como carpeta de vídeos.
+const listArt = (root, d) => Object.assign({}, d === 'video' ? listDir(path.join(root, 'videos')) : {}, listDir(path.join(root, d)));
 
 // Arte incluido con el juego (src/img/arte); lo que pongas en tu carpeta de arte lo sustituye.
 const bundledRoot = () => path.join(__dirname, 'src', 'img', 'arte');
@@ -144,8 +162,9 @@ ipcMain.handle('art:list', () => {
   ensureArtDir();
   retireRiotArt();
   const out = {};
+  const roots = besideRoots();
   for (const d of ART_DIRS) {
-    out[d] = Object.assign({}, listDir(path.join(bundledRoot(), d)), ...besideRoots().map((r) => listDir(path.join(r, d))), listDir(path.join(artRoot(), d)));
+    out[d] = Object.assign({}, listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
   }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
   return out;
