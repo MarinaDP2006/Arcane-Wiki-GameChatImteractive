@@ -36,7 +36,6 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 |---|---|
 | **Releases** (la más fácil) | Entra en [Releases](https://github.com/MarinaDP2006/grietas-and-gears/releases) y descarga la última versión. |
 | **Actions** | Pestaña **Actions** → **Compilar ejecutables** → abre la ejecución más reciente con ✅ → baja hasta **Artifacts**. |
-| **Google Play** | Cuando esté publicado, búscalo en la Play Store del móvil. |
 
 En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo…** (en Mac, doble clic).
 
@@ -48,7 +47,7 @@ En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo
 | Windows | `grietas-and-gears-windows` | `Grietas-and-Gears-…-portable.exe` | **Sin instalar.** Doble clic y se abre. Se puede llevar en un USB. |
 | Mac | `grietas-and-gears-macos` | `Grietas-and-Gears-….dmg` | Ábrelo y arrastra **Grietas & Gears** a la carpeta **Aplicaciones**. |
 | Android | `grietas-and-gears-android` | `Grietas-and-Gears-…-android.apk` (o `…-android-prueba.apk`) | Pásalo al móvil, ábrelo y acepta **Instalar apps de origen desconocido**. |
-| Android (Play Store) | `grietas-and-gears-android` | `Grietas-and-Gears-…-google-play.aab` | No se instala a mano: es el archivo que se sube a Google Play Console. |
+| Android | `grietas-and-gears-android` | `Grietas-and-Gears-…-google-play.aab`
 
 ### La primera vez que lo abres
 
@@ -58,7 +57,7 @@ En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo
 | Mac | «No se puede abrir» | Clic derecho sobre la app → **Abrir** → **Abrir**. |
 | Mac | Sigue sin abrir | **Ajustes del Sistema** → **Privacidad y seguridad** → **Abrir igualmente**. |
 | Mac | «Está dañada» | Abre **Terminal** y escribe `xattr -cr "/Applications/Grietas & Gears.app"` |
-| Android | «Por tu seguridad, el teléfono no puede instalar apps desconocidas» | Toca **Ajustes** → activa **Permitir de esta fuente** → vuelve atrás → **Instalar**. Desde Google Play no sale este aviso. |
+| Android | «Por tu seguridad, el teléfono no puede instalar apps desconocidas» | Toca **Ajustes** → activa **Permitir de esta fuente** → vuelve atrás → **Instalar** |
 
 ### Desinstalar
 
@@ -227,9 +226,8 @@ Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas qu
 ---
 
 ## Aviso legal
-
-Juego de fans **gratuito y sin ánimo de lucro**: no se vende, no tiene anuncios ni compras.
 Este juego se creó según la política [«Legal Jibber Jabber»](https://www.riotgames.com/en/legal) de Riot Games usando recursos propiedad de Riot Games.
+
 Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.
 
 [Política de privacidad](PRIVACIDAD.md): el juego no recoge ningún dato.
