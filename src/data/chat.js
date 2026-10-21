@@ -438,45 +438,6 @@ window.CHAT = {
     },
   },
 
-  // =========================================================== HEIMERDINGER
-  heimerdinger: {
-    greet: { low: 'Hmm, ¿y usted es…?', mid: '¡Ah, {name}! Pase, pase. Cuidado con los cables.', high: '¡Mi estimad{g:o|a|e} {name}! ¿Le apetece un té y una charla sobre termodinámica?' },
-    bye: ['¡Hasta la próxima! Y recuerde: la paciencia es un experimento a largo plazo.', 'Adiós, adiós. ¡Cuidado con la torreta!', 'Vuelva pronto. Un siglo pasa muy deprisa.'],
-    hub: [
-      { t: '¿Por qué desconfía de la hextec?', tone: 'pregunta', go: 'hextec' },
-      { t: '¿Cuántos años tiene usted, profesor?', tone: 'broma', go: 'edad' },
-      { t: '¿Qué opina de Viktor?', tone: 'pregunta', say: ['Viktor es mi mejor alumno. Y también el que más me preocupa.'] },
-      { t: 'Cuénteme un experimento suyo.', tone: 'amable', go: 'ciencia' },
-      { t: 'Le avisé de lo que tramaba Jayce.', tone: 'serio', req: { flag: 'delata_jayce' }, once: true, fx: { aff: 2 },
-        say: ['Y se lo agradezco. Aunque, entre usted y yo, el muchacho tenía razón en casi todo. Casi.'] },
-    ],
-    nodes: {
-      hextec: {
-        say: ['La magia es como un río: hermosa hasta que se desborda. Y la hextec es una presa de papel.'],
-        opts: [
-          { t: 'Pero la ciencia tiene que avanzar.', tone: 'serio', go: 'hub', say: ['¡Por supuesto! Despacio. Con cuidado. Y sin quemarse las cejas. Lo digo por experiencia.'] },
-          { t: 'Tiene razón. Vamos demasiado rápido.', tone: 'amable', fx: { aff: 2 }, go: 'hub', say: ['¡Al fin alguien sensato! ¿Le apetece una galleta? Son de 1874. Están perfectas.'] },
-          { t: 'Usted solo tiene miedo al cambio.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['(Se le erizan los bigotes.) Tengo miedo de lo que he visto. Que es distinto.'] },
-        ],
-      },
-      edad: {
-        say: ['¡Ja! Una pregunta indiscreta. He visto nacer y morir a generaciones de Piltover.', 'Créame: la paciencia nunca pasa de moda.'],
-        opts: [
-          { t: '¿Y no se cansa?', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['(Sus ojos se apagan un momento.) A veces echo de menos a los que se fueron. Los yordles vivimos demasiado.'] },
-          { t: '¿Hay más yordles en Piltover?', tone: 'pregunta', go: 'hub', say: ['Pocos. Somos discretos. Bueno, yo no. Yo tengo un bigote espectacular.'] },
-        ],
-      },
-      ciencia: {
-        say: ['¡Un buen experimento es como un buen té! Requiere tiempo, precisión y no quemarse.'],
-        opts: [
-          { t: 'Enséñeme algo, profesor.', tone: 'amable', fx: { aff: 1, stats: { ingenio: 1 } }, go: 'hub',
-            say: [{ s: 'narrador', t: 'Te enseña a calibrar un cristal de resonancia. Tardas una hora. Él diez segundos.' }, '¡Muy bien! En cien años será usted un genio.'] },
-          { t: '¿Qué es eso que pita en la esquina?', tone: 'broma', go: 'hub', say: ['¿Eso? Ah. Corra.', { s: 'narrador', t: 'Una pequeña torreta dispara confeti. El profesor se ríe a carcajadas.' }] },
-        ],
-      },
-    },
-  },
-
   // =========================================================== SILCO
   silco: {
     greet: { low: 'Tienes valor para presentarte aquí.', mid: '{name}. Siéntate. Hablemos de negocios.', high: '{name}. Eres de los pocos en quienes confío. No lo desperdicies.' },
@@ -688,6 +649,8 @@ window.CHAT = {
       { t: '¿Qué busca Noxus en Piltover?', tone: 'pregunta', go: 'noxus' },
       { t: 'Háblame de Mel.', tone: 'amable', go: 'mel' },
       { t: '¿Por qué los lobos?', tone: 'pregunta', say: ['El lobo que duda acaba siendo cordero. Mis hijos lo aprendieron pronto. Algunos, demasiado tarde.'] },
+      { t: '¿Qué es la Rosa Negra?', tone: 'pregunta', req: { season: 2 }, go: 'rosa' },
+      { t: '¿Qué piensas de Caitlyn Kiramman?', tone: 'astuto', req: { season: 2 }, say: ['La joven Kiramman ha perdido a su madre y ha encontrado su puntería. Es la mejor alumna que he tenido en años.', '(Sonríe apenas.) Lo malo de las buenas alumnas es que un día dejan de necesitarte.'] },
       { t: 'Negocié contigo las condiciones de la alianza.', tone: 'serio', req: { flag: 'trato_noxus' }, once: true, fx: { aff: 2 },
         say: ['Y lo hiciste bien. Pocos se atreven a regatear con una Medarda y conservan las manos.'] },
     ],
@@ -705,6 +668,16 @@ window.CHAT = {
         opts: [
           { t: 'Quizá la diplomacia sea más fuerte que tus ejércitos.', tone: 'serio', req: { stat: 'carisma', min: 3 }, fx: { aff: 1 }, go: 'hub', say: ['(Te estudia.) Eso mismo dijo su padre. Está muerto.', 'Pero tú no eres él. Veremos.'] },
           { t: 'La quieres, a tu manera.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['Una madre que no quisiera a su hija la habría dejado en paz. Yo la quiero viva y victoriosa.'] },
+          { t: '¿Por qué la mandaste lejos de niña?', tone: 'serio', req: { season: 2 }, go: 'hub',
+            say: ['(La mandíbula se le tensa.) Porque Noxus devora a sus hijos más brillantes. Y Mel brillaba demasiado.', 'Que ella crea que la exilié por débil es el precio. Lo pago con gusto.'] },
+        ],
+      },
+      rosa: {
+        say: ['Una sombra. Magos que gobiernan Noxus desde detrás del trono desde hace siglos. Visten de negro, sonríen mucho y no envejecen.', 'Llevo toda mi vida luchando contra ellos. Por eso necesito la hextec: para que una espada pueda matar a un mago.'],
+        opts: [
+          { t: 'Y Mel es una maga.', tone: 'astuto', req: { flag: 'aliado_mel_s2' }, fx: { aff: -1 }, go: 'hub', say: ['(Te mira como un lobo mira a otro lobo.) Mel es mi hija. Eso es lo único que importa de ella.', 'Repítelo en voz alta en otro sitio y no saldrás de él.'] },
+          { t: 'Usar sus armas contra ellos te hará igual.', tone: 'serio', req: { stat: 'carisma', min: 3 }, fx: { aff: 1 }, go: 'hub', say: ['Ya soy igual, {name}. La diferencia es que yo lo sé.'] },
+          { t: 'Entendido. No me meteré en eso.', tone: 'sigilo', go: 'hub', say: ['Sabia decisión. Los que se meten en eso desaparecen sin hacer ruido.'] },
         ],
       },
     },
@@ -718,6 +691,11 @@ window.CHAT = {
       { t: '¿Cómo es Caitlyn de verdad?', tone: 'amable', say: ['Caitlyn tiene el corazón de su padre y la cabeza dura de los Kiramman. Mala combinación para una madre.'] },
       { t: '¿Qué piensa de la hextec?', tone: 'pregunta', go: 'consejo' },
       { t: 'Su casa es preciosa.', tone: 'amable', once: true, fx: { aff: 1 }, say: ['Gracias. Lleva tres generaciones en la familia. Y tres generaciones de discusiones en esa mesa.'] },
+      { t: '¿Qué recuerda de la revuelta del puente?', tone: 'pregunta', go: 'puente' },
+      { t: '¿Por qué no quiere que Caitlyn sea ejecutora?', tone: 'serio', go: 'hija' },
+      { t: '¿Qué opina de Mel Medarda?', tone: 'astuto', say: ['Mel es brillante, encantadora y noxiana. Las tres cosas a la vez, y no sé cuál me preocupa más.', '(Bebe un sorbo de té.) Aun así, prefiero tenerla sentada a mi lado en el Consejo que enfrente.'] },
+      { t: 'Hablé en el Consejo para que la hextec llegara a Zaun.', tone: 'serio', req: { flag: 'hextec_zaun' }, once: true, fx: { aff: -1, rep: { zaun: 1 } },
+        say: ['Lo recuerdo. Fue valiente. Y temerario.', '(Pausa.) Mi marido dijo lo mismo que tú aquella noche, durante la cena. No le di la razón. Quizá debí hacerlo.'] },
     ],
     nodes: {
       consejo: {
@@ -725,6 +703,21 @@ window.CHAT = {
         opts: [
           { t: 'Coincido. Hay que ir con cuidado.', tone: 'serio', fx: { aff: 1, rep: { piltover: 1 } }, go: 'hub', say: ['Al fin alguien con sentido común en esta ciudad.'] },
           { t: 'Con prudencia, Zaun seguirá en el fango.', tone: 'duro', fx: { aff: -1, rep: { zaun: 1 } }, go: 'hub', say: ['(Frunce los labios.) Quizá. Pero la imprudencia también mata. Lo he visto.'] },
+        ],
+      },
+      puente: {
+        say: ['Yo era joven y acababa de ocupar mi asiento. Desde la ventana del Consejo se veía el humo del puente.', 'Un hombre enorme de abajo, Vander, avanzaba al frente de cientos de personas. Los ejecutores dispararon. Él siguió avanzando.'],
+        opts: [
+          { t: 'Vander se arrepintió toda su vida.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['(Silencio.) Eso dicen. Nosotros nunca nos arrepentimos en voz alta. Quizá esa es la diferencia entre arriba y abajo.'] },
+          { t: '¿Y qué hizo el Consejo después?', tone: 'pregunta', go: 'hub', say: ['Lo que hace siempre: cerrar las puertas y fingir que el problema se quedaba al otro lado del río.', 'No funcionó. Nunca funciona.'] },
+          { t: 'Piltover se lo buscó.', tone: 'duro', fx: { aff: -2, rep: { zaun: 1 } }, go: 'hub', say: ['(Deja la taza con cuidado.) Cuidado, {name}. Esta casa ha perdido gente en ese puente. Igual que las de abajo.'] },
+        ],
+      },
+      hija: {
+        say: ['Porque la conozco. Caitlyn no sabe parar. Si ve una injusticia, se mete dentro hasta el cuello.', 'Los ejecutores no protegen a gente como Caitlyn. La usan.'],
+        opts: [
+          { t: 'Por eso es buena en lo que hace.', tone: 'amable', fx: { aff: 1, flags: ['cass_orgullo'] }, go: 'hub', say: ['(Una sonrisa breve.) Lo sé. Y es lo que más miedo me da.', 'No le digas que estoy orgullosa. Lo usaría en mi contra en la próxima discusión.'] },
+          { t: 'Quizá debería decírselo a ella.', tone: 'serio', req: { stat: 'carisma', min: 2 }, fx: { aff: 2 }, go: 'hub', say: ['(Te mira largo rato.) Los Kiramman no somos buenos diciendo las cosas. Las escribimos en cartas que nunca enviamos.', 'Pero quizá tengas razón. Esta noche cenaremos juntas.'] },
         ],
       },
     },
@@ -739,6 +732,11 @@ window.CHAT = {
       { t: '¿Dónde está Jinx?', tone: 'pregunta', go: 'jinx' },
       { t: '¿Por qué llevas esas gafas?', tone: 'pregunta', say: ['(Se baja las gafas, te mira muy seria, y se las vuelve a subir. Secreto.)'] },
       { t: '¿Jugamos a algo?', tone: 'broma', fx: { aff: 1 }, once: true, say: ['(Te lanza una piedrecita y sale corriendo. Quiere que la persigas.)'] },
+      { t: '¿Tienes familia, Isha?', tone: 'serio', go: 'familia' },
+      { t: 'Te saqué de allí en aerotabla. ¿Te acuerdas?', tone: 'amable', req: { flag: 'salva_isha' }, once: true, fx: { aff: 2 },
+        say: ['(Abre los brazos como si volara, hace un ruido de motor sin voz y se tira al suelo de risa.)', { s: 'narrador', t: 'Luego se levanta, se pone muy seria y te da un abrazo rápido. Muy rápido. Antes de que puedas devolvérselo.' }] },
+      { t: 'Vi cuida bien de ti, ¿verdad?', tone: 'amable', req: { flag: 'isha_con_vi' }, once: true, fx: { aff: { isha: 1, vi: 1 } },
+        say: ['(Hace como que da puñetazos al aire, imitando a Vi. Luego se señala la espinilla y pone cara de pena.)', { s: 'narrador', t: 'Parece que la patada se la devolvieron. Con cariño.' }] },
     ],
     nodes: {
       dibujos: {
@@ -753,52 +751,15 @@ window.CHAT = {
         opts: [
           { t: '¿Te cuida bien?', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['(Asiente con fuerza y se pone las manos en la cabeza imitando las trenzas de Jinx.)'] },
           { t: 'Jinx es peligrosa, Isha.', tone: 'serio', go: 'hub', say: ['(Niega con la cabeza, muy seria, y te coge la mano muy fuerte.)'] },
+          { t: '¿Qué es lo que más te gusta de ella?', tone: 'pregunta', fx: { aff: 1 }, go: 'hub',
+            say: ['(Se lo piensa. Luego se tapa los oídos, pone cara de miedo… y se los destapa y sonríe.)', { s: 'narrador', t: 'Entiendes lo que quiere decir: Jinx también oye cosas que dan miedo. Y aun así, con ella, Isha no tiene miedo.' }] },
         ],
       },
-    },
-  },
-  // =========================================================== MADDIE
-  maddie: {
-    greet: { low: 'Identifíquese.', mid: '{name}. ¿Necesita algo?', high: '{name}. Si la señora Ambessa pregunta, no he dicho nada.' },
-    bye: ['Con permiso.', 'Que no la sorprenda la noche en Piltover.', '(Hace un saludo militar breve y se marcha.)'],
-    hub: [
-      { t: '¿Cuánto hace que sirves a Ambessa?', tone: 'pregunta', go: 'servicio' },
-      { t: '¿Qué te parece Piltover?', tone: 'amable', go: 'piltover' },
-      { t: 'Pareces cansada.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['(Se pasa la mano por la cara.) Los soldados no se cansan. Pero gracias por fijarse.'] },
-    ],
-    nodes: {
-      servicio: {
-        say: ['Desde que dejé la academia militar. Ella no habla mucho de eso, pero me eligió a mí.'],
+      familia: {
+        say: ['(Se queda quieta. Señala hacia el Sumidero. Luego hace un gesto de humo violeta con los dedos y baja la mirada.)', { s: 'narrador', t: 'El Brillo. Como a tantos otros en Zaun.' }],
         opts: [
-          { t: '¿Y si te pide algo que no está bien?', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['(Tarda en responder.) Lo cumplo. Y luego lo pienso. Esa es la parte difícil.'] },
-          { t: 'Debe de ser un honor.', tone: 'amable', go: 'hub', say: ['Lo es. También es una carga.'] },
-        ],
-      },
-      piltover: {
-        say: ['Demasiado limpia por arriba. Demasiado sucia por debajo. En Noxus al menos sabemos quién manda.'],
-        opts: [
-          { t: 'Aquí también lo sabemos. Solo que no se dice.', tone: 'astuto', fx: { aff: 1 }, go: 'hub', say: ['(Casi sonríe.) Entonces no somos tan distintas.'] },
-          { t: 'Pues vuelve a casa, entonces.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['No es una opción, señor.'] },
-        ],
-      },
-    },
-  },
-
-  // =========================================================== KINO
-  kino: {
-    greet: { low: '(Te mira de arriba abajo, sin decir nada.)', mid: 'Hm. {name}.', high: '{name}. Siéntate. Hoy hay tiempo.' },
-    bye: ['(Asiente una sola vez.)', 'Anda con cuidado.', '(Se cruza de brazos y mira al frente.)'],
-    hub: [
-      { t: '¿Has estado en muchas batallas?', tone: 'pregunta', go: 'batallas' },
-      { t: '¿Qué opinas de Ambessa?', tone: 'pregunta', say: ['(Tras un largo silencio.) Es la mejor general que he seguido. Y la más peligrosa de contradecir.'] },
-      { t: 'Cuéntame algo de Maddie.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['Es joven. Tiene buena cabeza. Ojalá la guerra no se la gaste pronto.'] },
-    ],
-    nodes: {
-      batallas: {
-        say: ['Más de las que quiero recordar. Cada una te quita algo y te da algo, y rara vez coinciden.'],
-        opts: [
-          { t: '¿Y qué te dieron a ti?', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['Silencio. Eso es lo que da la guerra cuando te sobrevive.'] },
-          { t: 'Pareces tranquilo para ser un soldado.', tone: 'broma', go: 'hub', say: ['(Resopla.) Los nerviosos no duran.'] },
+          { t: 'Ahora tienes a Jinx. Y me tienes a mí.', tone: 'amable', fx: { aff: 3 }, go: 'hub', say: ['(Te mira detrás de las gafas enormes. Luego te coge el dedo meñique con el suyo, como una promesa.)'] },
+          { t: 'Lo siento mucho, Isha.', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['(Se encoge de hombros, como si fuera demasiado grande para cargarlo. Luego te da otro dibujo: una casa con mucha gente dentro.)'] },
         ],
       },
     },
