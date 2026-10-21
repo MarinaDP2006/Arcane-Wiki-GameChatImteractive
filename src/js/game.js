@@ -8,6 +8,8 @@
   let slot = null;
   let busy = false; // reproduciendo líneas de la historia
   let skipping = false;
+  // Atajo de teclado entre corchetes (en móvil no hay teclado, así que no se muestra).
+  const keyHint = (k) => (U.touch ? '' : `  [${k}]`);
   let tab = 'historia';
   let contact = null; // personaje del chat libre seleccionado
 
@@ -113,8 +115,7 @@
         { scene: 'piltover', dur: 7, title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso vive su edad dorada.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
         { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ];
-    // «Welcome to Zaun» o «Welcome to Piltover» de la carpeta video, si están.
-    await Cinematic.play(shots, { videoId: `intro-${p.origin}` });
+    await Cinematic.play(shots);
   }
 
   // ---------------- Mundo abierto ----------------
@@ -324,9 +325,9 @@
             el('div', { class: 'avatar', html: Portrait.forPlayer(G.player) }),
             el('div', {}, el('strong', {}, G.player.name), el('small', { class: 'muted' }, tpl(G.player.jobLabel, G.player)))),
           el('div', { class: 'tabs-v' },
-            tabBtn('historia', 'Historia  [H]'), tabBtn('chats', 'Comunicador  [C]'), tabBtn('ficha', 'Ficha  [F]')),
+            tabBtn('historia', `Historia${keyHint('H')}`), tabBtn('chats', `Comunicador${keyHint('C')}`), tabBtn('ficha', `Ficha${keyHint('F')}`)),
           el('div', { id: 'contact-list', class: 'contact-list' }),
-          el('button', { class: 'btn ghost small', onclick: closeOverlay }, 'Volver al mapa  [Esc]')),
+          el('button', { class: 'btn ghost small', onclick: closeOverlay }, `Volver al mapa${keyHint('Esc')}`)),
         el('section', { id: 'play-main', class: 'play-main' }))));
     renderContacts();
     renderMain();
@@ -461,7 +462,7 @@
   }
 
   function closeBtn() {
-    return el('button', { class: 'btn ghost small', onclick: closeOverlay }, '✕ Cerrar  [Esc]');
+    return el('button', { class: 'btn ghost small', onclick: closeOverlay }, `✕ Cerrar${keyHint('Esc')}`);
   }
 
   function closeOverlay() {
@@ -485,6 +486,16 @@
   }
 
   function showHelp() {
+    if (U.touch) {
+      showNotice('Controles', [
+        'Moverse: arrastra el joystick de abajo a la izquierda (empújalo hasta el borde para correr). También puedes tocar un punto del mapa para ir allí.',
+        'Hablar, entrar o usar: botón ✦ de abajo a la derecha, o toca el aviso que sale en pantalla.',
+        'Cámara 3D: pellizca con dos dedos para acercar o alejar, y gira los dos dedos para rotar la vista.',
+        'Los botones de abajo abren la historia, el comunicador, la ficha, el Códice, el Atlas y la pausa. El botón «atrás» del móvil cierra ventanas y pausa.',
+        'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
+      ].join('\n'));
+      return;
+    }
     showNotice('Controles', [
       'Moverse: WASD o flechas (Mayús para correr). También puedes hacer clic en el mapa.',
       'Interactuar / hablar / entrar: E o Intro.',
@@ -516,7 +527,7 @@
     root.innerHTML = '';
     const canvas = el('canvas', { id: 'world-canvas' });
     const mini = el('canvas', { id: 'world-mini', width: 210, height: 154 });
-    const hudBtn = (label, key, fn) => el('button', { class: 'hud-btn', title: key, onclick: fn }, label, el('kbd', {}, key));
+    const hudBtn = (label, key, fn, icon) => el('button', { class: 'hud-btn', title: key, onclick: fn }, el('i', { class: 'hud-ico' }, icon), el('span', { class: 'hud-label' }, label), el('kbd', {}, key));
     root.append(el('div', { class: 'world' },
       canvas,
       el('div', { class: 'hud hud-top' },
@@ -525,14 +536,14 @@
           el('div', {}, el('strong', {}, G.player.name), el('small', { id: 'world-district', class: 'muted' }, ''), el('div', { id: 'hud-stats', class: 'hud-stats' }))),
         el('div', { id: 'hud-objective', class: 'hud-card objective', onclick: () => { if (G.progress.started) openStory(); } })),
       el('div', { class: 'hud hud-mini' }, mini, el('small', { id: 'hud-codex', class: 'muted' })),
-      el('div', { id: 'world-prompt', class: 'world-prompt' }),
+      el('div', { id: 'world-prompt', class: 'world-prompt', onclick: () => World.interact() }),
       el('div', { class: 'hud hud-bottom' },
-        hudBtn('Historia', 'H', () => openOverlay('historia')),
-        hudBtn('Comunicador', 'C', () => openOverlay('chats')),
-        hudBtn('Ficha', 'F', () => openOverlay('ficha')),
-        hudBtn('Códice', 'K', () => openOverlay('codice')),
-        hudBtn('Atlas', 'M', () => openOverlay('codice', null, 'atlas')),
-        hudBtn('Pausa', 'Esc', () => openOverlay('menu'))),
+        hudBtn('Historia', 'H', () => openOverlay('historia'), '📜'),
+        hudBtn('Comunicador', 'C', () => openOverlay('chats'), '💬'),
+        hudBtn('Ficha', 'F', () => openOverlay('ficha'), '👤'),
+        hudBtn('Códice', 'K', () => openOverlay('codice'), '📖'),
+        hudBtn('Atlas', 'M', () => openOverlay('codice', null, 'atlas'), '🗺'),
+        hudBtn('Pausa', 'Esc', () => openOverlay('menu'), '⏸')),
       el('div', { id: 'overlay', class: 'overlay' })));
     World.start(G, worldCallbacks(), canvas, mini);
     updateHud();
@@ -594,7 +605,7 @@
       main.append(el('div', { class: 'wiki-empty' },
         el('h2', {}, ch.title),
         el('p', {}, ch.intro),
-        el('p', { class: 'gold' }, `★ Ve a «${objectiveName()}» en el mapa y pulsa E para comenzar.`),
+        el('p', { class: 'gold' }, `★ Ve a «${objectiveName()}» en el mapa y ${U.touch ? 'toca ✦' : 'pulsa E'} para comenzar.`),
         el('button', { class: 'btn primary', onclick: closeOverlay }, 'Volver al mapa')));
       return;
     }
@@ -691,11 +702,6 @@
   async function startChapter() {
     const ch = chapterById(G.progress.chapterId);
     busy = true;
-    // La historia de la temporada 1 empieza con el vídeo «IntroS1» (una vez por partida).
-    if (G.progress.season !== 2 && G.progress.chapterIdx === 0 && !G.introS1 && window.CustomArt.video('historia-1')) {
-      G.introS1 = true;
-      await Cinematic.play([], { videoId: 'historia-1' });
-    }
     await Cinematic.chapterCard(ch, ch.nodes[ch.start]?.bg || G.player.origin);
     busy = false;
     pushLog('sistema', `— ${ch.title} —`);
@@ -947,7 +953,7 @@
     talk(false);
     await Cinematic.play([
       { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Temporada 2' : 'Fin de la Temporada 1', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
-    ], { videoId: `fin-${ending.id}` });
+    ]);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id));
     G.unlocked.push(...fresh);
     if (fresh.length) {
@@ -978,7 +984,7 @@
       { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
       { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
       { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
-    ], { videoId: 'temporada-2' });
+    ]);
     Audio2.playMusic('final');
     toast(`Temporada 2 · Objetivo: ve a ${objectiveName()}`, 'good');
     updateHud();

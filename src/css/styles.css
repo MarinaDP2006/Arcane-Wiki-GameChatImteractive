@@ -520,7 +520,6 @@ canvas.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; opaci
 .cine.out { animation: fadeout 0.5s both; }
 @keyframes fadeout { to { opacity: 0; } }
 .cine canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.cine-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
 .cine-bars::before, .cine-bars::after {
   content: ''; position: absolute; left: 0; right: 0; height: 11vh; background: #000; z-index: 2; animation: bars 1.2s cubic-bezier(.2,.8,.2,1) both;
 }
@@ -566,7 +565,8 @@ canvas.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; opaci
 .mg-meter { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 220px; }
 .mg-meter i { display: block; height: 10px; border-radius: 999px; transition: width 0.2s; min-width: 2px; flex: 0 0 auto; max-width: 160px; }
 .mg-meter b { font-size: 0.85rem; color: var(--muted); }
-.mg-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, 90%); text-align: center; animation: popin 0.35s both; z-index: 3; }
+.mg-card, .mg-card.panel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, 90%); text-align: center; animation: mg-pop 0.35s both; z-index: 3; }
+@keyframes mg-pop { from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%); } }
 .mg-card h2 { font-family: var(--display); color: var(--gold); margin-top: 0; font-size: 1.8rem; }
 .arcade { width: min(760px, 94%); }
 .arcade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }

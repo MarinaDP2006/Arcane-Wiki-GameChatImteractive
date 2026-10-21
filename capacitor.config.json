@@ -1,0 +1,12 @@
+{
+  "appId": "com.marinadp2006.arcanewikigame",
+  "appName": "Arcane",
+  "webDir": "www",
+  "backgroundColor": "#0d0b14",
+  "android": {
+    "backgroundColor": "#0d0b14",
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}

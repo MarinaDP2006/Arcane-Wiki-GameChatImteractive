@@ -1,7 +1,7 @@
 {
   "name": "arcane-piltover-zaun",
   "productName": "Arcane",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Juego de escritorio de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
@@ -11,9 +11,18 @@
     "check": "node scripts/check.js",
     "dist": "electron-builder",
     "dist:win": "electron-builder --win",
-    "dist:mac": "electron-builder --mac"
+    "dist:mac": "electron-builder --mac",
+    "android:web": "node scripts/build-mobile.js",
+    "android:sync": "node scripts/build-mobile.js && cap sync android",
+    "android:open": "cap open android",
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleRelease",
+    "android:aab": "npm run android:sync && cd android && ./gradlew bundleRelease"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "electron": "^44.9.1",
     "electron-builder": "^26.15.3"
   },
@@ -26,9 +35,6 @@
       "src/**/*",
       "build/icon.png",
       "package.json"
-    ],
-    "asarUnpack": [
-      "src/img/arte/video/**"
     ],
     "directories": {
       "output": "dist",

@@ -87,11 +87,11 @@ function createWindow() {
 }
 
 // ---------- Carpeta de arte personal ----------
-// La jugadora puede poner aquí sus propias imágenes y vídeos; el juego los usa
+// La jugadora puede poner aquí sus propias imágenes; el juego los usa
 // en lugar del arte pintado que genera. No se distribuye nada con el juego.
 // «escenas» es el nombre antiguo de «lugares» y se sigue leyendo.
-const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'];
-const ART_EXT = /\.(png|jpe?g|webp|gif|mp4|webm)$/i;
+const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice'];
+const ART_EXT = /\.(png|jpe?g|webp|gif)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
 function ensureArtDir() {
@@ -133,13 +133,10 @@ function documentsRoots() {
 const besideRoots = () => [...new Set([process.env.PORTABLE_EXECUTABLE_DIR, path.dirname(process.execPath)].filter(Boolean).map((d) => path.join(d, 'arte')).concat(documentsRoots()))]
   .filter((d) => d !== artRoot() && fs.existsSync(d));
 
-// «videos» (con s) también vale como carpeta de vídeos.
-const listArt = (root, d) => Object.assign({}, d === 'video' ? listDir(path.join(root, 'videos')) : {}, listDir(path.join(root, d)));
+const listArt = (root, d) => listDir(path.join(root, d));
 
 // Arte incluido con el juego (src/img/arte); lo que pongas en tu carpeta de arte lo sustituye.
 const bundledRoot = () => path.join(__dirname, 'src', 'img', 'arte');
-// Los vídeos incluidos van fuera del .asar (asarUnpack) para que se puedan reproducir y adelantar.
-const unpacked = (files) => Object.fromEntries(Object.entries(files).map(([k, u]) => [k, u.replace('/app.asar/', '/app.asar.unpacked/')]));
 
 // Las versiones anteriores podían bajar retratos de Riot (Data Dragon). Ahora todo sale de la
 // Arcane Wiki, así que esos archivos se apartan a «_riot-retirado» (no se borran). Se reconocen
@@ -171,7 +168,7 @@ ipcMain.handle('art:list', () => {
   const out = {};
   const roots = besideRoots();
   for (const d of ART_DIRS) {
-    out[d] = Object.assign({}, d === 'video' ? unpacked(listArt(bundledRoot(), d)) : listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
+    out[d] = Object.assign({}, listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
   }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
   return out;
