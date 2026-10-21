@@ -1,8 +1,8 @@
 {
-  "name": "arcane-piltover-zaun",
-  "productName": "Arcane",
-  "version": "1.11.0",
-  "description": "Juego de escritorio de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
+  "name": "grietas-and-gears",
+  "productName": "Grietas & Gears",
+  "version": "1.12.0",
+  "description": "Grietas & Gears, juego de fans de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
   "license": "MIT",
@@ -28,7 +28,7 @@
   },
   "build": {
     "appId": "com.marinadp2006.arcanewikigame",
-    "productName": "Arcane",
+    "productName": "Grietas & Gears",
     "files": [
       "main.js",
       "preload.js",
@@ -61,11 +61,11 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Arcane",
-      "artifactName": "Arcane-Setup-${version}.${ext}"
+      "shortcutName": "Grietas & Gears",
+      "artifactName": "Grietas-and-Gears-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "Arcane-${version}-portable.${ext}"
+      "artifactName": "Grietas-and-Gears-${version}-portable.${ext}"
     },
     "mac": {
       "target": [
@@ -83,7 +83,7 @@
         }
       ],
       "category": "public.app-category.role-playing-games",
-      "artifactName": "Arcane-${version}-${arch}.${ext}",
+      "artifactName": "Grietas-and-Gears-${version}-${arch}.${ext}",
       "icon": "build/icon.png",
       "identity": null
     }

@@ -72,7 +72,7 @@
       el('div', { class: 'home-motes' }, ...Array.from({ length: 22 }, (_, i) => el('i', { class: i % 3 ? 'blue' : 'green', style: `left:${(i * 47) % 100}%;animation-delay:${(i * 1.7) % 12}s;animation-duration:${10 + (i % 6) * 2.5}s` }))),
       el('div', { class: 'home-panel' },
         el('div', { class: 'home-logo' },
-          el('h1', { class: 'home-title' }, 'ARCANE'),
+          el('h1', { class: 'home-title' }, 'GRIETAS & GEARS'),
           el('div', { class: 'home-cities' },
             el('img', { src: 'img/arte/simbolos/piltover.png', alt: 'Piltover' }),
             el('span', {}, 'Piltover'), el('b', {}), el('span', {}, 'Zaun'),
@@ -166,7 +166,7 @@
       return line(id, loc?.name || wiki?.name || id);
     });
     return [
-      'GUÍA DE ARTE · Arcane: Piltover y Zaun',
+      'GUÍA DE ARTE · Grietas & Gears: Piltover y Zaun',
       '======================================',
       '',
       'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',

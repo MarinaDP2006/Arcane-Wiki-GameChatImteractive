@@ -980,7 +980,7 @@
     await persist();
     closeOverlay();
     await Cinematic.play([
-      { scene: 'puente-zaun', dur: 6, kicker: 'Arcane', title: 'Temporada 2', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
+      { scene: 'puente-zaun', dur: 6, kicker: 'Grietas & Gears', title: 'Temporada 2', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
       { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
       { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
       { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },

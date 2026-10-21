@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
 
-// La app se llama «Arcane», pero las partidas, ajustes y arte siguen en la carpeta de siempre
+// La app se llama «Grietas & Gears», pero las partidas, ajustes y arte siguen en la carpeta de siempre
 // (%APPDATA%\Arcane Piltover y Zaun), así no se pierde nada al actualizar.
 app.setPath('userData', path.join(app.getPath('appData'), 'Arcane Piltover y Zaun'));
 
@@ -47,7 +47,7 @@ function createWindow() {
     minWidth: 980,
     minHeight: 640,
     backgroundColor: '#0d0b14',
-    title: 'Arcane',
+    title: 'Grietas & Gears',
     show: false,
     icon: path.join(__dirname, 'build', 'icon.png'),
     autoHideMenuBar: true,
