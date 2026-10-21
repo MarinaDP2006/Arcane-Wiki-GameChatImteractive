@@ -57,6 +57,7 @@ jobs:
             dist/*.zip
           if-no-files-found: error
 
+  # ubuntu-latest ya trae el SDK de Android (ANDROID_HOME); Gradle baja lo que falte.
   android:
     runs-on: ubuntu-latest
     env:
@@ -74,8 +75,6 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: gradle
-
-      - uses: android-actions/setup-android@v3
 
       - name: Instalar dependencias
         run: npm ci
