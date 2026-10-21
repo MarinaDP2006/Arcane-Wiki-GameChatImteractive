@@ -789,3 +789,79 @@ body[data-city='zaun'] .btn.primary { background: linear-gradient(180deg, #8fe8c
 .topbar { border-bottom: 1px solid color-mix(in srgb, var(--accent, var(--gold)) 45%, transparent); box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5); }
 .avatar-card.active { box-shadow: 0 0 0 2px var(--accent, var(--gold)), 0 0 26px var(--accent-glow, rgba(227, 196, 90, 0.5)); }
 .splash { border-radius: 4px; box-shadow: 0 0 0 1px var(--accent, var(--gold)), 0 18px 50px rgba(0, 0, 0, 0.7); }
+
+/* ---------- Menú principal (v1.7): ilustración pintada + menú lateral ---------- */
+.home { position: relative; height: 100%; overflow: hidden; background: #07060b; }
+.home-art, .home-slide, .home-grain, .home-shade, .home-motes { position: absolute; inset: 0; }
+.home-slide {
+  background-size: cover; opacity: 0; transform: scale(1.08);
+  transition: opacity 2.4s ease, transform 12s linear;
+  filter: saturate(1.1) contrast(1.05);
+}
+.home-slide.on { opacity: 1; transform: scale(1.18) translateX(-1.5%); }
+/* Grano y trazo de pincel por encima de la imagen, como en los fondos de Arcane. */
+.home-grain {
+  pointer-events: none; mix-blend-mode: overlay; opacity: 0.35;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.4 -0.2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.home-shade {
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5,4,9,0.96) 0%, rgba(5,4,9,0.82) 28%, rgba(5,4,9,0.25) 55%, rgba(5,4,9,0) 75%),
+    linear-gradient(0deg, rgba(5,4,9,0.85) 0%, rgba(5,4,9,0) 35%),
+    radial-gradient(ellipse at 80% 20%, rgba(63,169,245,0.12), transparent 55%);
+}
+.home-motes { pointer-events: none; }
+.home-motes i {
+  position: absolute; bottom: -20px; width: 5px; height: 5px; border-radius: 50%;
+  animation: homemote linear infinite; opacity: 0;
+}
+.home-motes i.blue { background: #8fd8ff; box-shadow: 0 0 10px 3px rgba(63,169,245,0.7); }
+.home-motes i.green { background: #b8ff9a; box-shadow: 0 0 10px 3px rgba(143,191,58,0.6); width: 4px; height: 4px; }
+@keyframes homemote {
+  0% { transform: translate(0, 0); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translate(40px, -105vh); opacity: 0; }
+}
+.home-panel {
+  position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center;
+  padding: 0 0 0 clamp(2rem, 8vw, 9rem); animation: homein 1.4s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes homein { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
+.home-title {
+  margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(3.5rem, 8vw, 7.5rem); line-height: 1; white-space: nowrap;
+  letter-spacing: 0.12em; color: #f3e7c4;
+  background: linear-gradient(180deg, #fff8e0 0%, #e8cf8a 45%, #a8782c 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(0,0,0,0.8)) drop-shadow(0 0 30px rgba(227,196,90,0.18));
+}
+.home-cities { display: flex; align-items: center; gap: 0.7rem; margin: 1.1rem 0 0 0.3rem; color: #d8cfb8; font-family: var(--display); letter-spacing: 0.4em; text-transform: uppercase; font-size: 0.8rem; }
+.home-cities img { width: 30px; height: 30px; object-fit: contain; opacity: 0.9; filter: drop-shadow(0 0 6px rgba(0,0,0,0.8)); }
+.home-cities b { width: 70px; height: 2px; background: linear-gradient(90deg, var(--gold), #7fd0ff 50%, var(--zaun)); box-shadow: 0 0 10px rgba(127,208,255,0.7); }
+.home-menu { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 3rem; width: min(360px, 80vw); }
+.home-btn {
+  display: flex; align-items: center; gap: 0.9rem; background: transparent; border: none; color: #e9e1cf;
+  font: 600 1.15rem var(--display); letter-spacing: 0.22em; text-transform: uppercase; text-align: left;
+  padding: 0.75rem 0.4rem 0.75rem 0.2rem; cursor: pointer; position: relative;
+  transition: color 0.2s, padding-left 0.25s, text-shadow 0.25s;
+  animation: homein 0.8s both;
+}
+.home-menu .home-btn:nth-child(2) { animation-delay: 0.12s; }
+.home-menu .home-btn:nth-child(3) { animation-delay: 0.24s; }
+.home-menu .home-btn:nth-child(4) { animation-delay: 0.36s; }
+.home-menu .home-btn:nth-child(5) { animation-delay: 0.48s; }
+.home-btn::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, rgba(227,196,90,0.55), transparent 85%); transform-origin: left; transform: scaleX(0.35); transition: transform 0.35s;
+}
+.home-btn:hover, .home-btn:focus-visible { color: #fff; padding-left: 1rem; text-shadow: 0 0 14px rgba(127,208,255,0.6); outline: none; }
+.home-btn:hover::after, .home-btn:focus-visible::after { transform: scaleX(1); }
+.home-gem {
+  width: 12px; height: 12px; flex-shrink: 0; transform: rotate(45deg); border: 1.5px solid var(--gold);
+  background: rgba(127,208,255,0.1); transition: background 0.25s, box-shadow 0.25s;
+}
+.home-btn:hover .home-gem, .home-btn.primary .home-gem { background: #7fd0ff; box-shadow: 0 0 12px 3px rgba(63,169,245,0.75); }
+.home-btn.primary { color: #ffe9a8; }
+.home-btn.quiet { color: #a39cb3; font-size: 0.95rem; margin-top: 0.6rem; }
+@media (max-width: 700px) { .home-shade { background: rgba(5,4,9,0.75); } .home-panel { padding: 0 1.4rem; } }
+@media (prefers-reduced-motion: reduce) { .home-slide, .home-slide.on { transition: opacity 1s; transform: none; } .home-motes { display: none; } }

@@ -104,13 +104,45 @@ function listDir(dir) {
   return out;
 }
 
+// Carpeta «arte» junto al ejecutable (o al .exe portátil): también se lee, para quien guarda
+// ahí sus vídeos e imágenes. La carpeta de arte de AppData manda sobre ella.
+const besideRoots = () => [...new Set([process.env.PORTABLE_EXECUTABLE_DIR, path.dirname(process.execPath)].filter(Boolean))]
+  .map((d) => path.join(d, 'arte')).filter((d) => d !== artRoot() && fs.existsSync(d));
+
 // Arte incluido con el juego (src/img/arte); lo que pongas en tu carpeta de arte lo sustituye.
 const bundledRoot = () => path.join(__dirname, 'src', 'img', 'arte');
 
+// Las versiones anteriores podían bajar retratos de Riot (Data Dragon). Ahora todo sale de la
+// Arcane Wiki, así que esos archivos se apartan a «_riot-retirado» (no se borran). Se reconocen
+// por su tamaño: cuerpo 308×560 (loading), ilustración 1215×717 (splash) y cara 256×256 recortada.
+function retireRiotArt() {
+  const size = (f) => { try { return nativeImage.createFromPath(f).getSize(); } catch { return {}; } };
+  const is = (f, w, h) => { const s = size(f); return s.width === w && s.height === h; };
+  const move = (dir, file) => {
+    const to = path.join(artRoot(), '_riot-retirado', dir);
+    fs.mkdirSync(to, { recursive: true });
+    try { fs.renameSync(path.join(artRoot(), dir, file), path.join(to, file)); } catch { /* en uso */ }
+  };
+  const bodies = path.join(artRoot(), 'personajes');
+  if (!fs.existsSync(bodies)) return;
+  for (const f of fs.readdirSync(bodies)) {
+    if (!/\.jpg$/i.test(f) || !is(path.join(bodies, f), 308, 560)) continue;
+    const id = f.replace(/\.jpg$/i, '');
+    const when = fs.statSync(path.join(bodies, f)).mtimeMs;
+    move('personajes', f);
+    if (is(path.join(artRoot(), 'codice', `${id}.jpg`), 1215, 717)) move('codice', `${id}.jpg`);
+    const face = path.join(artRoot(), 'caras', `${id}.png`);
+    if (fs.existsSync(face) && is(face, 256, 256) && Math.abs(fs.statSync(face).mtimeMs - when) < 60000) move('caras', `${id}.png`);
+  }
+}
+
 ipcMain.handle('art:list', () => {
   ensureArtDir();
+  retireRiotArt();
   const out = {};
-  for (const d of ART_DIRS) out[d] = { ...listDir(path.join(bundledRoot(), d)), ...listDir(path.join(artRoot(), d)) };
+  for (const d of ART_DIRS) {
+    out[d] = Object.assign({}, listDir(path.join(bundledRoot(), d)), ...besideRoots().map((r) => listDir(path.join(r, d))), listDir(path.join(artRoot(), d)));
+  }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
   return out;
 });
@@ -125,10 +157,6 @@ ipcMain.handle('art:guide', (_e, text) => {
   return true;
 });
 
-// Retratos oficiales de League of Legends desde Data Dragon, el servidor público de Riot.
-// Se guardan solo en el ordenador de la jugadora (política de proyectos de fans de Riot).
-// ARCANE_DDRAGON solo sirve para pruebas automáticas con un servidor local.
-const DDRAGON = process.env.ARCANE_DDRAGON || 'https://ddragon.leagueoflegends.com';
 // Recorta la cara (parte alta y centrada) de un retrato y la guarda en caras/<id>.png.
 function saveFace(file, id) {
   const body = nativeImage.createFromPath(file);
@@ -184,39 +212,6 @@ ipcMain.handle('art:fandom', async (e, items) => {
   }
   send({ done: true, progress: 1 });
   return { ok: true, done, failed, skipped: items.length - todo.length };
-});
-
-ipcMain.handle('art:ddragon', async (e, champs) => {
-  ensureArtDir();
-  const send = (d) => { if (!e.sender.isDestroyed()) e.sender.send('art:ddragon-progress', d); };
-  const versions = await (await fetch(`${DDRAGON}/api/versions.json`)).json();
-  const v = versions[0];
-  const done = [];
-  const failed = [];
-  const entries = Object.entries(champs);
-  for (let i = 0; i < entries.length; i++) {
-    const [id, champ] = entries[i];
-    send({ current: champ, progress: i / entries.length });
-    try {
-      // Si el campeón tiene una apariencia de Arcane, se usa esa.
-      const info = await (await fetch(`${DDRAGON}/cdn/${v}/data/es_ES/champion/${champ}.json`)).json();
-      const skins = info.data[champ].skins || [];
-      const arcane = skins.find((s) => /arcane/i.test(s.name));
-      const num = arcane ? arcane.num : 0;
-      // Cuerpo entero (personajes), ilustración grande (codice) y cara recortada (caras).
-      for (const [kind, dir] of [['loading', 'personajes'], ['splash', 'codice']]) {
-        const res = await fetch(`${DDRAGON}/cdn/img/champion/${kind}/${champ}_${num}.jpg`);
-        if (!res.ok) throw new Error(`${res.status}`);
-        fs.writeFileSync(path.join(artRoot(), dir, `${id}.jpg`), Buffer.from(await res.arrayBuffer()));
-      }
-      saveFace(path.join(artRoot(), 'personajes', `${id}.jpg`), id);
-      done.push(id);
-    } catch {
-      failed.push(id);
-    }
-  }
-  send({ done: true, progress: 1 });
-  return { ok: true, done, failed, version: v };
 });
 
 // Mapa interactivo de la ciudad en una ventana del propio juego.

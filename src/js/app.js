@@ -51,39 +51,46 @@
   }
   App.tiltAll = tiltAll;
 
+  // Menú principal: ilustraciones de Piltover y Zaun pintadas, con fundido lento entre ellas,
+  // y el menú a la izquierda sobre la sombra. Sin escena 3D de bloques.
+  const TITLE_ART = [
+    ['piltover', '50% 40%'], ['hexpuertas', '50% 30%'], ['zaun', '50% 45%'], ['comuna-viktor', '50% 50%'],
+  ];
+
   async function renderTitle() {
     const root = $('#view-home');
     root.innerHTML = '';
     const slots = await store.listSlots();
     const hasSave = slots.some((s) => !s.empty);
-    const btn = (label, fn, cls = '') => el('button', { class: `title-btn ${cls}`, onclick: () => { Audio2.sfx.choice(); fn(); } }, label);
-    root.append(el('div', { class: 'title-screen' },
-      el('div', { class: 'title-scene scene3d-host', id: 'title-scene' }),
-      el('div', { class: 'title-hexes' }, ...Array.from({ length: 14 }, (_, i) => el('i', { style: `left:${(i * 37) % 100}%;animation-delay:${(i * 1.3) % 9}s;animation-duration:${9 + (i % 5) * 2}s` }))),
-      el('div', { class: 'title-content' },
-        el('p', { class: 'subtitle' }, 'Piltover · Zaun'),
-        el('h1', { class: 'title-arcane' }, 'ARCANE'),
-        el('p', { class: 'subtitle' }, 'Historia · Chat · Mundo abierto'),
-        el('div', { class: 'title-menu' },
-          hasSave ? btn('▶ Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,
-          btn('✦ Nueva partida', () => Game.newGame(), hasSave ? '' : 'primary'),
+    const btn = (label, fn, cls = '') => el('button', { class: `home-btn ${cls}`, onclick: () => { Audio2.sfx.choice(); fn(); } }, el('i', { class: 'home-gem' }), el('span', {}, label));
+    const art = TITLE_ART.map(([id, pos]) => [window.CustomArt.image('lugares', id) || `img/arte/lugares/${id}.webp`, pos]);
+    const slides = art.map(([src, pos], i) => el('div', { class: `home-slide${i ? '' : ' on'}`, style: `background-image:url("${src}");background-position:${pos}` }));
+    root.append(el('div', { class: 'home' },
+      el('div', { class: 'home-art' }, ...slides),
+      el('div', { class: 'home-grain' }),
+      el('div', { class: 'home-shade' }),
+      el('div', { class: 'home-motes' }, ...Array.from({ length: 22 }, (_, i) => el('i', { class: i % 3 ? 'blue' : 'green', style: `left:${(i * 47) % 100}%;animation-delay:${(i * 1.7) % 12}s;animation-duration:${10 + (i % 6) * 2.5}s` }))),
+      el('div', { class: 'home-panel' },
+        el('div', { class: 'home-logo' },
+          el('h1', { class: 'home-title' }, 'ARCANE'),
+          el('div', { class: 'home-cities' },
+            el('img', { src: 'img/arte/simbolos/piltover.png', alt: 'Piltover' }),
+            el('span', {}, 'Piltover'), el('b', {}), el('span', {}, 'Zaun'),
+            el('img', { src: 'img/arte/simbolos/zaun.png', alt: 'Zaun' }))),
+        el('nav', { class: 'home-menu' },
+          hasSave ? btn('Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,
+          btn('Nueva partida', () => Game.newGame(), hasSave ? '' : 'primary'),
           btn('Cargar partida', () => App.go('game')),
           btn('Ajustes', () => App.go('settings')),
-          U.desktop ? btn('✕ Salir', () => window.arcane.quit()) : null),
-        el('small', { class: 'muted title-foot' }, 'Proyecto de fans · Arcane y League of Legends son propiedad de Riot Games'))));
+          U.desktop ? btn('Salir', () => window.arcane.quit(), 'quiet') : null))));
     Audio2.playMusic('wiki');
-    // Fondo 3D en tiempo real; si el equipo no admite WebGL, fondo pintado 2D.
-    if (window.Scene3D?.mount($('#title-scene'), 'title')) { tiltAll(root); return; }
-    const cv = el('canvas', { class: 'title-scene' });
-    $('#title-scene').append(cv);
-    const ctl = Scenes.mount(cv, 'puente', { cam: undefined });
-    const cycle = ['puente', 'piltover', 'hexpuertas', 'puente-zaun', 'zaun', 'callejones', 'arbol'];
     let k = 0;
     const timer = setInterval(() => {
-      if (!$('#title-scene')) return clearInterval(timer);
-      k = (k + 1) % cycle.length;
-      ctl.set(cycle[k]);
-    }, 8000);
+      if (!slides[0].isConnected) return clearInterval(timer);
+      slides[k].classList.remove('on');
+      k = (k + 1) % slides.length;
+      slides[k].classList.add('on');
+    }, 9000);
   }
 
   function renderSettings(root, onBack) {
@@ -114,30 +121,10 @@
           [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido']].map(([v, l]) => el('option', { value: v, selected: s.textSpeed === v }, l)))),
       toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
       el('h3', {}, 'Acerca de'),
-      el('p', { class: 'muted small' }, 'Proyecto de fans sin ánimo de lucro. Arcane y League of Legends son propiedad de Riot Games. Los retratos y mapas se generan en la app y la música se sintetiza en tiempo real.')));
+      el('p', { class: 'muted small' }, 'Proyecto de fans sin ánimo de lucro. Arcane y League of Legends son propiedad de Riot Games. Las imágenes de personajes y lugares son de la Arcane Wiki (arcane.fandom.com) y la música se sintetiza en tiempo real.')));
   }
 
   // ---------- Arte personal ----------
-  // Personajes de League of Legends en Data Dragon (id del juego -> id de campeón).
-  const LOL_CHAMPS = { vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn', jayce: 'Jayce', viktor: 'Viktor', heimerdinger: 'Heimerdinger', ekko: 'Ekko', ambessa: 'Ambessa', mel: 'Mel', warwick: 'Warwick' };
-  // Páginas de la Arcane Wiki (Fandom) de donde se saca la imagen principal. «busca:» usa el buscador de la wiki.
-  const FANDOM_PAGES = {
-    personajes: {
-      vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn Kiramman', jayce: 'Jayce Talis', viktor: 'Viktor', mel: 'Mel Medarda',
-      heimerdinger: 'Cecil B. Heimerdinger', silco: 'Silco', vander: 'Vander', ekko: 'Ekko', sevika: 'Sevika', 
-      ambessa: 'Ambessa Medarda', cassandra: 'Cassandra Kiramman', 
-      isha: 'Isha', 
-    },
-    lugares: {
-      piltover: 'Piltover', zaun: 'Zaun', noxus: 'Noxus', 'ultima-gota': 'busca:The Last Drop', callejones: 'busca:The Lanes',
-      sumidero: 'busca:The Sump', academia: 'busca:Piltover Academy', consejo: 'busca:Council Chambers',
-      stillwater: 'busca:Stillwater Hold', hexpuertas: 'busca:Hexgate', puente: 'busca:Bridge of Progress',
-      'mansion-kiramman': 'busca:Kiramman Estate', ejecutores: 'busca:Enforcer headquarters', fabrica: 'busca:Shimmer factory',
-      foso: 'busca:Fight pit', 'escondite-jinx': "busca:Jinx's hideout", arbol: 'busca:Firelights hideout',
-      'taller-jayce': "busca:Jayce's laboratory", plaza: 'busca:Piltover plaza', mercado: 'busca:Zaun market',
-    },
-  };
-
   // Páginas de la Arcane Wiki (Fandom, en inglés) de cada personaje y lugar del juego.
   const FANDOM_CHARS = {
     vi: ['Vi'], jinx: ['Jinx'], caitlyn: ['Caitlyn Kiramman'], jayce: ['Jayce Talis'], viktor: ['Viktor'], mel: ['Mel Medarda'],
@@ -243,27 +230,7 @@
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
         ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
         el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
-      el('p', { class: 'muted small' }, 'Retratos oficiales (cara y cuerpo): el juego puede descargar a tu carpeta las ilustraciones de los campeones de League of Legends que aparecen en Arcane (Jinx, Vi, Caitlyn, Jayce, Viktor, Ekko, Heimerdinger, Singed, Ambessa, Mel y Warwick) desde Data Dragon, el servidor público de Riot. Si el campeón tiene apariencia de Arcane, se usa esa. Se guardan solo en tu ordenador, para uso personal.'),
-      el('button', {
-        class: 'btn primary small',
-        onclick: async (ev) => {
-          ev.target.disabled = true;
-          progress.classList.remove('hidden');
-          window.arcane.art.onDdragon((d) => {
-            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
-            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `Descargando ${d.current}…`;
-          });
-          try {
-            const r = await window.arcane.art.ddragon(LOL_CHAMPS);
-            await window.CustomArt.load();
-            toast(`Retratos descargados: ${r.done.length}${r.failed.length ? ` · no disponibles: ${r.failed.join(', ')}` : ''}`, 'good');
-          } catch (err) {
-            toast(`No se pudieron descargar: ${err.message || err}`, 'warn');
-          }
-          renderSettings(root, onBack);
-        },
-      }, 'Descargar retratos oficiales (Data Dragon)'),
-      el('p', { class: 'muted small' }, `Arcane Wiki (Fandom): descarga la imagen principal de la página de cada personaje (cuerpo y cara) y de cada lugar que aún te falte. Solo baja lo que no tienes, no toca tus archivos. Ahora faltan: ${fandomItems().length}.`),
+      el('p', { class: 'muted small' }, `Todas las imágenes de personajes salen de la Arcane Wiki (arcane.fandom.com), no de Riot. Este botón descarga la imagen principal de la página de cada personaje (cuerpo) y de cada lugar que aún te falte; las caras del chat ya vienen con el juego. Solo baja lo que no tienes, no toca tus archivos. Los retratos de Riot que bajaban las versiones anteriores se apartan a la carpeta «_riot-retirado». Ahora faltan: ${fandomItems().length}.`),
       el('button', {
         class: 'btn primary small',
         disabled: !fandomItems().length,
@@ -285,33 +252,6 @@
         },
       }, 'Descargar lo que falta de la Arcane Wiki'),
       progress,
-      el('p', { class: 'muted small' }, 'Arcane Wiki: descarga de arcane.fandom.com la imagen de cada personaje y lugar que todavía no tenga imagen tuya. No toca las que ya has puesto. Se guardan solo en tu ordenador, para uso personal.'),
-      el('button', {
-        class: 'btn small',
-        onclick: async (ev) => {
-          const F = window.CustomArt.files;
-          const wanted = {
-            personajes: Object.fromEntries(Object.entries(FANDOM_PAGES.personajes).filter(([id]) => !F.personajes?.[id] && !F.caras?.[id])),
-            lugares: Object.fromEntries(Object.entries(FANDOM_PAGES.lugares).filter(([id]) => window.CustomArt.report.missing.includes(id))),
-          };
-          const n = Object.keys(wanted.personajes).length + Object.keys(wanted.lugares).length;
-          if (!n) { toast('No falta ninguna imagen de personaje ni de lugar.', 'good'); return; }
-          ev.target.disabled = true;
-          progress.classList.remove('hidden');
-          window.arcane.art.onFandom((d) => {
-            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
-            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `Descargando ${d.current.replace(/^busca:/, '')}…`;
-          });
-          try {
-            const r = await window.arcane.art.fandom(wanted);
-            await window.CustomArt.load();
-            toast(`Imágenes de la wiki: ${r.done.length}${r.failed.length ? ` · sin imagen: ${r.failed.join(', ')}` : ''}`, 'good');
-          } catch (err) {
-            toast(`No se pudieron descargar: ${err.message || err}`, 'warn');
-          }
-          renderSettings(root, onBack);
-        },
-      }, 'Descargar lo que falte de la Arcane Wiki'),
       el('h3', {}, 'Mapas de la Wiki en el Códice'),
       el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K) en la pestaña «Mapas de la Wiki». El Atlas ilustrado (tecla M) no necesita internet.'),
       el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),

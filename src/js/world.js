@@ -1,5 +1,5 @@
 // Motor del mundo abierto: mapa 2D de Piltover y Zaun con movimiento libre,
-// colisiones, cámara, minimapa, personajes, habitantes y fragmentos del Códice.
+// colisiones, cámara, minimapa, personajes de Arcane, lugares con su imagen y cristales hextec.
 (function () {
   const W = () => window.WORLD;
   const PLAYER_R = 15;
@@ -21,7 +21,6 @@
   let nearest = null;
   let insideLoc = null;
   let fade = 0;
-  let speech = null; // bocadillo de habitante { text, x, y, until }
   const keys = new Set();
   const imgCache = new Map();
 
@@ -47,7 +46,6 @@
     const keepClear = [
       ...def.locations.map((l) => ({ x: l.x, y: l.y, r: 150 })),
       ...def.fragments.map((f) => ({ x: f.x, y: f.y, r: 50 })),
-      ...def.ambient.map((a) => ({ x: a.x, y: a.y, r: 60 })),
     ];
     const blocked = (x, y, bw, bh) => keepClear.some((c) => {
       const nx = Math.max(x, Math.min(c.x, x + bw));
@@ -94,8 +92,21 @@
     imgCache.set(key, img);
     return img;
   }
-  function charImg(id) { return svgImage(`c:${id}`, Portrait.charURL(id, 96)); }
-  function ambientImg(a) { return svgImage(`a:${a.name}`, Painter.toURL(a.look, { bg: [a.colors[0], a.colors[1]], rim: a.colors[0], size: 96 })); }
+  // Personajes: su avatar de chat (carpeta caras, imágenes de la Arcane Wiki).
+  function charImg(id) { return svgImage(`c:${id}`, Portrait.customChar(id, false) || Portrait.charURL(id, 96)); }
+
+  // Imagen de cada lugar: la de la carpeta de arte o, si no hay, la del Atlas.
+  const ATLAS_IMG = {
+    academia: 'piltover-academy', 'taller-jayce': 'hextech-lab', consejo: 'council-chamber', ejecutores: 'stillwater-hold',
+    'mansion-kiramman': 'kiramman-estate', plaza: 'piltover', artesanos: 'airship-docks', hexpuertas: 'the-hexgates',
+    'muelle-stillwater': 'stillwater-hold', puente: 'bridge-of-progress', 'puente-zaun': 'bridge-of-progress',
+    fabrica: 'shimmer-factory', foso: 'undercity', tejados: 'zaun', 'ultima-gota': 'the-last-drop', callejones: 'the-lanes',
+    'tienda-benzo': 'benzos-pawn-shop', mercado: 'undercity', sumidero: 'zaun', 'escondite-jinx': 'the-lanes', arbol: 'firelight-sanctuary',
+  };
+  function placeImg(l) {
+    const url = window.CustomArt?.image('lugares', l.id) || (ATLAS_IMG[l.id] && `img/atlas/${ATLAS_IMG[l.id]}.webp`);
+    return url ? svgImage(`l:${l.id}`, url) : null;
+  }
   function playerImg() {
     const url = Portrait.playerURL(G.player, 96);
     return svgImage(`p:${url.length}:${url.slice(-32)}`, url);
@@ -119,7 +130,7 @@
       if (!loc || loc.map !== mapId) continue;
       const n = (byLoc[loc.id] = (byLoc[loc.id] || 0) + 1);
       const ang = n * 1.25 + 0.6;
-      out.push({ kind: 'char', id, name: window.WIKI.personajes.find((p) => p.id === id)?.name || id, x: loc.x + Math.cos(ang) * 95, y: loc.y + Math.sin(ang) * 80 });
+      out.push({ kind: 'char', id, name: window.WIKI.personajes.find((p) => p.id === id)?.name || id, x: loc.x + Math.cos(ang) * 125, y: loc.y + Math.sin(ang) * 100 });
     }
     return out;
   }
@@ -196,10 +207,6 @@
       const d = Math.hypot(n.x - pos.x, n.y - pos.y);
       if (d < best) { best = d; nearest = n; }
     }
-    for (const a of map.def.ambient) {
-      const d = Math.hypot(a.x - pos.x, a.y - pos.y);
-      if (d < best) { best = d; nearest = { kind: 'ambient', ...a }; }
-    }
     // En el centro de un lugar, el lugar (historia, actividades) tiene prioridad.
     if (here && (!nearest || Math.hypot(here.x - pos.x, here.y - pos.y) < 60)) nearest = { kind: 'loc', ...here };
     updatePrompt();
@@ -213,7 +220,6 @@
     particles.forEach((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; });
     particles = particles.filter((p) => p.life > 0);
     if (fade > 0) fade = Math.max(0, fade - dt * 1.5);
-    if (speech && performance.now() > speech.until) speech = null;
   }
 
   function camera() {
@@ -315,50 +321,40 @@
       }
     }
 
-    // Lugares
+    // Farolas hextec en los cruces de Piltover; en Zaun, lámparas de quimtec.
+    for (let x = map.BLOCK; x < map.w; x += map.BLOCK) {
+      for (let y = map.BLOCK; y < map.h; y += map.BLOCK) {
+        if ((x / map.BLOCK + y / map.BLOCK) % 2) continue;
+        if (x < cam.x - 60 || x > cam.x + canvas.width + 60 || y < cam.y - 60 || y > cam.y + canvas.height + 60) continue;
+        hexLamp(x, y, t, zaun);
+      }
+    }
+
+    // Lugares: cada uno con su imagen enmarcada
     const obj = objectiveLoc();
     for (const l of map.def.locations) {
       const pulse = 0.5 + Math.sin(t / 500) * 0.5;
       const isObj = obj && obj.id === l.id;
-      const g = ctx.createRadialGradient(l.x, l.y, 10, l.x, l.y, 120);
-      g.addColorStop(0, isObj ? `rgba(255,220,120,${0.45 + pulse * 0.3})` : `${P.glow}55`);
+      const g = ctx.createRadialGradient(l.x, l.y, 10, l.x, l.y, 130);
+      g.addColorStop(0, isObj ? `rgba(255,220,120,${0.35 + pulse * 0.3})` : `${P.glow}44`);
       g.addColorStop(1, 'transparent');
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(l.x, l.y, 120, 0, Math.PI * 2);
+      ctx.arc(l.x, l.y, 130, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = isObj ? '#ffe08a' : `${P.glow}aa`;
-      ctx.lineWidth = isObj ? 4 : 2;
-      ctx.setLineDash(isObj ? [] : [8, 8]);
-      ctx.beginPath();
-      ctx.arc(l.x, l.y, LOC_DIST - 10, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.font = '38px serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(l.icon, l.x, l.y + 13);
-      label(l.name, l.x, l.y - 52, isObj ? '#ffe08a' : '#fff');
-      if (isObj) label('★ OBJETIVO', l.x, l.y - 76, '#ffe08a');
+      placeCard(l, isObj, t);
+      label(l.name, l.x, l.y - 70, isObj ? '#ffe08a' : '#fff');
+      if (isObj) label('★ OBJETIVO', l.x, l.y - 94, '#ffe08a');
     }
 
-    // Fragmentos del Códice
+    // Fragmentos del Códice: cristales hextec flotando
     for (const f of map.def.fragments) {
       if (G.codex.includes(f.codex)) continue;
-      const bob = Math.sin(t / 300 + f.x) * 4;
-      ctx.save();
-      ctx.translate(f.x, f.y + bob);
-      ctx.rotate(t / 1200);
-      ctx.shadowColor = '#3fa9f5';
-      ctx.shadowBlur = 20;
-      ctx.fillStyle = '#7fd0ff';
-      hexPath(11);
-      ctx.fill();
-      ctx.restore();
+      hexCrystal(f.x, f.y + Math.sin(t / 300 + f.x) * 4, t);
     }
 
-    // Habitantes y personajes
-    for (const a of map.def.ambient) drawPerson(ambientImg(a), a.x, a.y, a.name, '#bbb', 17);
-    for (const n of npcs()) drawPerson(charImg(n.id), n.x, n.y, n.name, P.glow, 20, true);
+    // Personajes de Arcane
+    for (const n of npcs()) drawPerson(charImg(n.id), n.x, n.y, n.name, P.glow, 24, true);
 
     // Jugador
     const pos = G.world;
@@ -374,9 +370,6 @@
       ctx.arc(target.x, target.y, 10 + Math.sin(t / 150) * 3, 0, Math.PI * 2);
       ctx.stroke();
     }
-
-    // Bocadillo
-    if (speech) bubble(speech.text, speech.x, speech.y - 50);
 
     // Partículas en coordenadas de mundo
     for (const p of particles) {
@@ -407,6 +400,133 @@
     drawMini(obj);
   }
 
+  // Tarjeta del lugar: imagen recortada en hexágono alargado con marco dorado (o verde en Zaun).
+  function placeCard(l, isObj, t) {
+    const W2 = 74;
+    const H2 = 50;
+    const zaun = mapId === 'zaun';
+    const frame = isObj ? '#ffe08a' : zaun ? '#3fbf9f' : '#e3c45a';
+    const shape = () => {
+      ctx.beginPath();
+      ctx.moveTo(l.x - W2 + 14, l.y - H2);
+      ctx.lineTo(l.x + W2 - 14, l.y - H2);
+      ctx.lineTo(l.x + W2, l.y - H2 + 14);
+      ctx.lineTo(l.x + W2, l.y + H2 - 14);
+      ctx.lineTo(l.x + W2 - 14, l.y + H2);
+      ctx.lineTo(l.x - W2 + 14, l.y + H2);
+      ctx.lineTo(l.x - W2, l.y + H2 - 14);
+      ctx.lineTo(l.x - W2, l.y - H2 + 14);
+      ctx.closePath();
+    };
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.7)';
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 8;
+    shape();
+    ctx.fillStyle = '#0d0b14';
+    ctx.fill();
+    ctx.restore();
+    const img = placeImg(l);
+    ctx.save();
+    shape();
+    ctx.clip();
+    if (img && img.complete && img.naturalWidth) {
+      // Encuadre «cover» dentro de la tarjeta
+      const s = Math.max((W2 * 2) / img.naturalWidth, (H2 * 2) / img.naturalHeight);
+      const iw = img.naturalWidth * s;
+      const ih = img.naturalHeight * s;
+      ctx.drawImage(img, l.x - iw / 2, l.y - ih / 2, iw, ih);
+    } else if (window.Scenes?.has(l.id)) {
+      const th = svgImage(`t:${l.id}`, Scenes.thumb(l.id));
+      if (th.complete && th.naturalWidth) ctx.drawImage(th, l.x - W2, l.y - H2, W2 * 2, H2 * 2);
+    }
+    ctx.restore();
+    shape();
+    ctx.strokeStyle = frame;
+    ctx.lineWidth = isObj ? 4 : 2.5;
+    if (isObj) { ctx.shadowColor = frame; ctx.shadowBlur = 16 + Math.sin(t / 250) * 6; }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    // Gema hextec en la parte de abajo del marco
+    ctx.save();
+    ctx.translate(l.x, l.y + H2);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = '#7fd0ff';
+    ctx.shadowColor = '#3fa9f5';
+    ctx.shadowBlur = 12;
+    ctx.fillRect(-5, -5, 10, 10);
+    ctx.strokeStyle = frame;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-5, -5, 10, 10);
+    ctx.restore();
+  }
+
+  // Cristal hextec: gema azul con marco dorado hexagonal y anillo de runas girando.
+  function hexCrystal(x, y, t) {
+    ctx.save();
+    ctx.translate(x, y);
+    const glow = ctx.createRadialGradient(0, 0, 2, 0, 0, 34);
+    glow.addColorStop(0, 'rgba(127,208,255,0.55)');
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 34, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.save();
+    ctx.rotate(t / 1600);
+    ctx.strokeStyle = 'rgba(127,208,255,0.55)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 5]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 22, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    ctx.rotate(-t / 2400);
+    ctx.strokeStyle = '#e3c45a';
+    ctx.lineWidth = 2.5;
+    hexPath(15);
+    ctx.stroke();
+    // Gema facetada
+    ctx.shadowColor = '#3fa9f5';
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = '#3fa9f5';
+    ctx.beginPath();
+    ctx.moveTo(0, -11); ctx.lineTo(8, 0); ctx.lineTo(0, 11); ctx.lineTo(-8, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#d6f2ff';
+    ctx.beginPath();
+    ctx.moveTo(0, -11); ctx.lineTo(4, -2); ctx.lineTo(0, 2); ctx.lineTo(-4, -2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Farola de los cruces: hextec azul en Piltover, quimtec verde en Zaun.
+  function hexLamp(x, y, t, zaun) {
+    const c = zaun ? '143,191,58' : '127,208,255';
+    const flick = zaun ? 0.75 + Math.sin(t / 90 + x * 3 + y) * 0.15 : 0.9 + Math.sin(t / 700 + x) * 0.1;
+    const g = ctx.createRadialGradient(x, y, 1, x, y, 46);
+    g.addColorStop(0, `rgba(${c},${0.35 * flick})`);
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, 46, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = zaun ? '#1a1a22' : '#5a4a2a';
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = `rgba(${c},${flick})`;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillRect(-3, -3, 6, 6);
+    ctx.restore();
+  }
+
   function hexPath(r) {
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
@@ -425,25 +545,6 @@
     ctx.fill();
     ctx.fillStyle = color;
     ctx.fillText(text, x, y + 2);
-  }
-
-  function bubble(text, x, y) {
-    ctx.font = '15px system-ui, sans-serif';
-    const words = text.split(' ');
-    const lines = [];
-    let cur = '';
-    for (const w of words) {
-      if (ctx.measureText(`${cur} ${w}`).width > 260) { lines.push(cur); cur = w; } else cur = cur ? `${cur} ${w}` : w;
-    }
-    lines.push(cur);
-    const h = lines.length * 19 + 14;
-    const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 22;
-    ctx.fillStyle = 'rgba(245,240,230,0.95)';
-    roundRect(x - w / 2, y - h, w, h, 10);
-    ctx.fill();
-    ctx.fillStyle = '#1a1408';
-    ctx.textAlign = 'center';
-    lines.forEach((l, i) => ctx.fillText(l, x, y - h + 22 + i * 19));
   }
 
   function roundRect(x, y, w, h, r) {
@@ -532,7 +633,6 @@
     if (!el) return;
     let txt = '';
     if (nearest?.kind === 'char') txt = `<kbd>E</kbd> Hablar con ${U.esc(nearest.name)}`;
-    else if (nearest?.kind === 'ambient') txt = `<kbd>E</kbd> Hablar con ${U.esc(nearest.name)}`;
     else if (nearest?.kind === 'loc') {
       const acts = cb.locationActions?.(nearest) || [];
       txt = acts.length ? `<b>${U.esc(nearest.name)}</b> · <kbd>E</kbd> ${U.esc(acts[0])}${acts.length > 1 ? ' …' : ''}` : `<b>${U.esc(nearest.name)}</b>`;
@@ -559,10 +659,7 @@
     if (!nearest || paused) return;
     Audio2.sfx.click();
     if (nearest.kind === 'char') cb.onTalk?.(nearest.id);
-    else if (nearest.kind === 'ambient') {
-      const line = U.tpl(U.pick(nearest.lines), G.player);
-      speech = { text: line, x: nearest.x, y: nearest.y, until: performance.now() + 5000 };
-    } else if (nearest.kind === 'loc') cb.onLocation?.(nearest);
+    else if (nearest.kind === 'loc') cb.onLocation?.(nearest);
   }
 
   // ---------- Bucle ----------
