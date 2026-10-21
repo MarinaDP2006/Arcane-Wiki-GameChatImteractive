@@ -140,6 +140,8 @@
           for (let k = 6; k < w - 3; k += 12) { g.fillRect(x + dx + k, y + dy + 4, 2.5, 2.5); g.fillRect(x + dx + k, y + dy + h - 6, 2.5, 2.5); }
           g.fillStyle = t < 0.3 ? 'rgba(120,72,44,0.45)' : t < 0.55 ? 'rgba(60,84,78,0.4)' : t < 0.8 ? 'rgba(40,40,46,0.35)' : 'rgba(170,160,140,0.3)';
         }
+        g.fillStyle = 'rgba(120,92,52,0.22)';
+        g.fillRect(0, y, S, 1.5);
       }
       for (let i = 0; i < 3000; i++) {
         g.fillStyle = `rgba(${r() < 0.6 ? '30,24,18' : '200,190,170'},${0.05 + r() * 0.1})`;
@@ -1611,6 +1613,8 @@
       cam: { yaw: 0, pitch: 0.92, dist: 820, goalYaw: 0, goalPitch: 0.92, goalDist: 820, focus: new T.Vector3(), mouse: { x: 0, y: 0 } },
       host: null, w: 0, h: 0, spotT: 0,
     };
+    mat.customProgramCacheKey = () => `ground-${map.id}`;
+    return mat;
   }
 
   // Suelo con detalle cercano (adoquines o grava) que se repite por encima del dibujo grande.

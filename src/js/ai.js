@@ -7,9 +7,6 @@
   const PROVIDERS = {
     off: { label: 'Desactivada' },
     ollama: { label: 'Ollama (en tu PC, sin internet)', url: 'http://localhost:11434/v1/chat/completions', model: 'llama3.2', key: false, help: 'Instala Ollama desde ollama.com, abre una terminal y escribe «ollama pull llama3.2». Mientras Ollama esté abierto, los personajes te responderán sin internet. Solo en el ordenador.' },
-    gemini: { label: 'Google Gemini (gratis con clave)', url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', model: 'gemini-2.5-flash', key: true, help: 'Crea una clave gratis en aistudio.google.com/apikey (con tu cuenta de Google) y pégala aquí. Funciona también en Android.' },
-    groq: { label: 'Groq (gratis con clave)', url: 'https://api.groq.com/openai/v1/chat/completions', model: 'openai/gpt-oss-120b', key: true, help: 'Crea una clave gratis en console.groq.com/keys y pégala aquí. Es muy rápido y funciona en Android.' },
-    openrouter: { label: 'OpenRouter (modelos gratis)', url: 'https://openrouter.ai/api/v1/chat/completions', model: 'meta-llama/llama-3.3-70b-instruct:free', key: true, help: 'Crea una clave en openrouter.ai/keys. Los modelos que terminan en «:free» no cuestan nada.' },
     custom: { label: 'Otro servidor compatible', url: '', model: '', key: true, help: 'Cualquier servidor con el formato de OpenAI (LM Studio, KoboldCpp, text-generation-webui…). Escribe la dirección completa de /chat/completions.' },
   };
 
