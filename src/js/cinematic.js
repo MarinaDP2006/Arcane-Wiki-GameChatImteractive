@@ -8,6 +8,8 @@
     return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
   }
 
+  // Reproduce un vídeo de la carpeta de arte. Devuelve false si no se puede ver (códec no
+  // compatible, archivo dañado o reproducción congelada) para usar la cinemática pintada.
   function playVideo(url) {
     return new Promise((resolve) => {
       const box = document.createElement('div');
@@ -15,18 +17,45 @@
       const v = document.createElement('video');
       v.src = url;
       v.autoplay = true;
+      v.playsInline = true;
+      v.preload = 'auto';
       v.className = 'cine-video';
       const skip = document.createElement('button');
       skip.className = 'cine-skip';
       skip.textContent = 'Saltar';
-      const done = () => { if (!box.isConnected) return; box.remove(); window.removeEventListener('keydown', key, true); resolve(); };
+      let lastTime = -1;
+      let still = 0;
+      let watch = 0;
+      const done = (ok = true) => {
+        if (!box.isConnected) return;
+        clearInterval(watch);
+        v.pause();
+        v.removeAttribute('src');
+        v.load();
+        box.remove();
+        window.removeEventListener('keydown', key, true);
+        resolve(ok);
+      };
       const key = (e) => { e.stopPropagation(); if (['Escape', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); done(); } };
-      v.onended = done;
-      v.onerror = done;
-      skip.onclick = done;
+      v.onended = () => done();
+      v.onerror = () => done(false);
+      // Sin imagen (por ejemplo, un vídeo HEVC que el ordenador no sabe decodificar): fuera.
+      v.onloadedmetadata = () => { if (!v.videoWidth) done(false); };
+      skip.onclick = (e) => { e.stopPropagation(); done(); };
+      box.addEventListener('click', () => done());
+      // Vigilante: si el vídeo no arranca o se queda congelado unos segundos, se cierra solo.
+      watch = setInterval(() => {
+        if (v.paused && v.readyState >= 2) v.play().catch(() => {});
+        if (v.currentTime === lastTime) still += 0.5;
+        else { still = 0; lastTime = v.currentTime; }
+        const started = v.currentTime > 0;
+        if (still >= (started ? 4 : 8)) done(started);
+        if (v.duration && v.currentTime >= v.duration - 0.05) done();
+      }, 500);
       window.addEventListener('keydown', key, true);
       box.append(v, skip);
       document.body.append(box);
+      v.play().catch(() => { v.muted = true; v.play().catch(() => done(false)); });
     });
   }
 
@@ -34,7 +63,8 @@
   async function play(shots, opts = {}) {
     if (active) active.stop();
     const vid = opts.videoId && window.CustomArt?.video(opts.videoId);
-    if (vid) return playVideo(vid);
+    if (vid && (await playVideo(vid))) return undefined;
+    if (!shots.length) return undefined;
 
     return new Promise((resolve) => {
       const box = document.createElement('div');
