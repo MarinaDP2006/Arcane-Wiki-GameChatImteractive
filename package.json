@@ -1,7 +1,7 @@
 {
   "name": "arcane-piltover-zaun",
   "productName": "Arcane",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Juego de escritorio de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
