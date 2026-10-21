@@ -4,6 +4,10 @@ const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
 
+// La app se llama «Arcane», pero las partidas, ajustes y arte siguen en la carpeta de siempre
+// (%APPDATA%\Arcane Piltover y Zaun), así no se pierde nada al actualizar.
+app.setPath('userData', path.join(app.getPath('appData'), 'Arcane Piltover y Zaun'));
+
 const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
 const SETTINGS_FILE = () => path.join(app.getPath('userData'), 'ajustes.json');
 const SLOTS = ['1', '2', '3'];
@@ -43,7 +47,7 @@ function createWindow() {
     minWidth: 980,
     minHeight: 640,
     backgroundColor: '#0d0b14',
-    title: 'Arcane: Piltover y Zaun',
+    title: 'Arcane',
     show: false,
     icon: path.join(__dirname, 'build', 'icon.png'),
     autoHideMenuBar: true,
