@@ -1,4 +1,4 @@
-// Conversaciones con los personajes desbloqueados: sin IA, con opciones de diálogo.
+// Conversaciones con los personajes desbloqueados: escritas a mano, con opciones de diálogo.
 //
 // Personaje: { greet: { low, mid, high }, bye: [..], hub: [opción..], nodes: { id: { say?, opts, noBack? } } }
 //   greet: saludo según la afinidad (negativa, normal, 5 o más).
@@ -951,5 +951,51 @@ window.CHAT = {
       { t: '¿Por qué te hiciste ejecutor?', tone: 'serio', say: ['Sinceramente, por el uniforme. Y los bocadillos gratis.', '(Se pone serio.) Y porque alguien tiene que ser decente aquí dentro.'], fx: { aff: 1 }, once: true },
     ],
     nodes: {},
+  },
+  // =========================================================== MADDIE
+  maddie: {
+    greet: { low: 'Identifíquese.', mid: '{name}. ¿Necesita algo?', high: '{name}. Si la señora Ambessa pregunta, no he dicho nada.' },
+    bye: ['Con permiso.', 'Que no la sorprenda la noche en Piltover.', '(Hace un saludo militar breve y se marcha.)'],
+    hub: [
+      { t: '¿Cuánto hace que sirves a Ambessa?', tone: 'pregunta', go: 'servicio' },
+      { t: '¿Qué te parece Piltover?', tone: 'amable', go: 'piltover' },
+      { t: 'Pareces cansada.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['(Se pasa la mano por la cara.) Los soldados no se cansan. Pero gracias por fijarse.'] },
+    ],
+    nodes: {
+      servicio: {
+        say: ['Desde que dejé la academia militar. Ella no habla mucho de eso, pero me eligió a mí.'],
+        opts: [
+          { t: '¿Y si te pide algo que no está bien?', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['(Tarda en responder.) Lo cumplo. Y luego lo pienso. Esa es la parte difícil.'] },
+          { t: 'Debe de ser un honor.', tone: 'amable', go: 'hub', say: ['Lo es. También es una carga.'] },
+        ],
+      },
+      piltover: {
+        say: ['Demasiado limpia por arriba. Demasiado sucia por debajo. En Noxus al menos sabemos quién manda.'],
+        opts: [
+          { t: 'Aquí también lo sabemos. Solo que no se dice.', tone: 'astuto', fx: { aff: 1 }, go: 'hub', say: ['(Casi sonríe.) Entonces no somos tan distintas.'] },
+          { t: 'Pues vuelve a casa, entonces.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['No es una opción, señor.'] },
+        ],
+      },
+    },
+  },
+
+  // =========================================================== KINO
+  kino: {
+    greet: { low: '(Te mira de arriba abajo, sin decir nada.)', mid: 'Hm. {name}.', high: '{name}. Siéntate. Hoy hay tiempo.' },
+    bye: ['(Asiente una sola vez.)', 'Anda con cuidado.', '(Se cruza de brazos y mira al frente.)'],
+    hub: [
+      { t: '¿Has estado en muchas batallas?', tone: 'pregunta', go: 'batallas' },
+      { t: '¿Qué opinas de Ambessa?', tone: 'pregunta', say: ['(Tras un largo silencio.) Es la mejor general que he seguido. Y la más peligrosa de contradecir.'] },
+      { t: 'Cuéntame algo de Maddie.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['Es joven. Tiene buena cabeza. Ojalá la guerra no se la gaste pronto.'] },
+    ],
+    nodes: {
+      batallas: {
+        say: ['Más de las que quiero recordar. Cada una te quita algo y te da algo, y rara vez coinciden.'],
+        opts: [
+          { t: '¿Y qué te dieron a ti?', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['Silencio. Eso es lo que da la guerra cuando te sobrevive.'] },
+          { t: 'Pareces tranquilo para ser un soldado.', tone: 'broma', go: 'hub', say: ['(Resopla.) Los nerviosos no duran.'] },
+        ],
+      },
+    },
   },
 };

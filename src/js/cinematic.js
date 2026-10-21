@@ -18,7 +18,7 @@
       v.className = 'cine-video';
       const skip = document.createElement('button');
       skip.className = 'cine-skip';
-      skip.textContent = 'Saltar ⏩';
+      skip.textContent = 'Saltar';
       const done = () => { if (!box.isConnected) return; box.remove(); window.removeEventListener('keydown', key, true); resolve(); };
       const key = (e) => { e.stopPropagation(); if (['Escape', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); done(); } };
       v.onended = done;
@@ -48,7 +48,7 @@
       portrait.className = 'cine-portrait';
       const skip = document.createElement('button');
       skip.className = 'cine-skip';
-      skip.textContent = 'Saltar ⏩';
+      skip.textContent = 'Saltar';
       const progress = document.createElement('div');
       progress.className = 'cine-progress';
       box.append(canvas, portrait, bars, text, skip, progress);

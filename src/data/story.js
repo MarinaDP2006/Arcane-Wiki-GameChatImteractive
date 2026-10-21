@@ -10,10 +10,10 @@
 // y {g:masculino|femenino|neutro} para concordar con el género del jugador.
 window.STORY = {
   stats: {
-    ingenio: { label: 'Ingenio', icon: '🧠' },
-    carisma: { label: 'Carisma', icon: '💬' },
-    valor: { label: 'Valor', icon: '🔥' },
-    sigilo: { label: 'Sigilo', icon: '🌑' },
+    ingenio: { label: 'Ingenio', icon: 'Ing' },
+    carisma: { label: 'Carisma', icon: 'Car' },
+    valor: { label: 'Valor', icon: 'Val' },
+    sigilo: { label: 'Sigilo', icon: 'Sig' },
   },
 
   chapters: [
@@ -883,7 +883,7 @@ window.STORY = {
     {
       id: 't4', route: 't2', title: 'T2 · Capítulo 4 · La loba y la rosa',
       intro: 'Madre e hija frente a frente. Una ofrece ejércitos; la otra, una advertencia. Piltover tiene que elegir… y tú también.',
-      unlocks: [],
+      unlocks: ['maddie', 'kino'],
       start: 'a',
       nodes: {
         a: { bg: 'consejo', lines: [

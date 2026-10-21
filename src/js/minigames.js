@@ -58,7 +58,7 @@
       }
 
       function intro() {
-        const c = card(`${def.icon} ${def.title}`, `<p>${def.desc}</p><p class="muted"><b>Controles:</b> ${def.controls}</p><p class="gold">Objetivo: ${def.goal}</p>${opts.bonus ? `<p class="mg-bonus">✨ Tus habilidades te dan ventaja +${opts.bonus} en este minijuego.</p>` : ''}`,
+        const c = card(`${def.icon} ${def.title}`, `<p>${def.desc}</p><p class="muted"><b>Controles:</b> ${def.controls}</p><p class="gold">Objetivo: ${def.goal}</p>${opts.bonus ? `<p class="mg-bonus">Tus habilidades te dan ventaja +${opts.bonus} en este minijuego.</p>` : ''}`,
           [['¡Empezar!', 'primary hex-btn', () => { c.remove(); start(); }], ['Salir', 'ghost', () => close(false)]]);
       }
 
@@ -90,7 +90,7 @@
 
       function result(win) {
         if (win) Audio2.sfx.unlock(); else Audio2.sfx.locked();
-        const c = card(win ? '🏆 ¡Victoria!' : '💥 Derrota', `<p>${win ? def.winText : def.loseText}</p>`,
+        const c = card(win ? '¡Victoria!' : 'Derrota', `<p>${win ? def.winText : def.loseText}</p>`,
           win ? [['Continuar', 'primary', () => close(true)]]
             : [['Reintentar', 'primary', () => { c.remove(); start(); }], ['Rendirse', 'ghost', () => close(false)]]);
       }
@@ -170,7 +170,7 @@
   // ---------- 1. Pelea en el foso (reflejos) ----------
   const ARROWS = { arrowup: '▲', arrowdown: '▼', arrowleft: '◀', arrowright: '▶' };
   GAMES.foso = {
-    title: 'Pelea en el foso', icon: '🥊', scene: 'foso',
+    title: 'Pelea en el foso', icon: '', scene: 'foso',
     desc: 'La multitud ruge. Tu rival ataca rápido: responde con la flecha correcta antes de que el anillo se cierre para esquivar y contraatacar.',
     controls: 'Flechas del teclado (o W A S D).', goal: 'Deja a tu rival sin energía antes de que te pase a ti.',
     winText: 'Tu rival besa la lona. El foso corea tu nombre.', loseText: 'Acabas en el suelo. Levántate e inténtalo otra vez.',
@@ -235,7 +235,7 @@
   function runner(mode) {
     const fly = mode === 'fly';
     return {
-      title: fly ? 'Vuelo en aerotabla' : 'Carrera por los tejados', icon: fly ? '🛹' : '🏃', scene: fly ? 'arbol' : 'tejados',
+      title: fly ? 'Vuelo en aerotabla' : 'Carrera por los tejados', icon: fly ? '' : '', scene: fly ? 'arbol' : 'tejados',
       desc: fly
         ? 'Surca las profundidades de Zaun en una aerotabla de las Luciérnagas, esquivando tuberías y chimeneas.'
         : 'Huye por los tejados de las Chimeneas. Salta los huecos y las chimeneas sin que te atrapen.',
@@ -329,7 +329,7 @@
 
   // ---------- 3. Galería de tiro ----------
   GAMES.tiro = {
-    title: 'Galería de tiro', icon: '🎯', scene: 'ejecutores',
+    title: 'Galería de tiro', icon: '', scene: 'ejecutores',
     desc: 'Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no toques los muñecos de civiles.',
     controls: 'Ratón: apunta y haz clic para disparar.', goal: 'Consigue 15 puntos en 30 segundos.',
     winText: 'Caitlyn estaría orgullosa. Puntería de francotirador.', loseText: 'Demasiadas balas perdidas. Respira, apunta, exhala.',
@@ -365,7 +365,7 @@
             if (tg.civ) {
               ctx.fillStyle = '#d9c9a0'; ctx.beginPath(); ctx.arc(tg.x, tg.y - tg.r * 0.4, tg.r * 0.45, 0, 7); ctx.fill();
               ctx.fillRect(tg.x - tg.r * 0.5, tg.y, tg.r, tg.r * 0.9);
-              glowText(ctx, '✋', tg.x, tg.y + tg.r * 0.4, 18, '#fff');
+              glowText(ctx, '', tg.x, tg.y + tg.r * 0.4, 18, '#fff');
             } else {
               ctx.fillStyle = '#123a5a'; hexPath(ctx, tg.x, tg.y, tg.r, t); ctx.fill();
               ctx.strokeStyle = '#7fd0ff'; ctx.lineWidth = 4; ctx.shadowColor = '#3fa9f5'; ctx.shadowBlur = 16; ctx.stroke(); ctx.shadowBlur = 0;
@@ -389,7 +389,7 @@
   // ---------- 4. Circuito hextec (puzle de conexiones) ----------
   // Cada pieza tiene conexiones [arriba, derecha, abajo, izquierda].
   GAMES.circuito = {
-    title: 'Circuito hextec', icon: '🔧', scene: 'taller-jayce',
+    title: 'Circuito hextec', icon: '', scene: 'taller-jayce',
     desc: 'La energía tiene que ir de la gema (izquierda) al receptor (derecha). Gira las piezas para que el circuito quede conectado.',
     controls: 'Clic en una pieza para girarla.', goal: 'Conecta el circuito en menos de 75 segundos.',
     winText: 'La gema se ilumina y el circuito zumba. ¡Funciona!', loseText: 'Saltan chispas. El circuito no aguantó.',
@@ -499,7 +499,7 @@
 
   // ---------- 5. Runas de la Academia (memoria) ----------
   GAMES.runas = {
-    title: 'Runas de la Academia', icon: '🔷', scene: 'academia',
+    title: 'Runas de la Academia', icon: '', scene: 'academia',
     desc: 'Heimerdinger te pone a prueba: las runas se encienden en un orden. Repite la secuencia, que cada vez será más larga.',
     controls: 'Clic en las runas (o teclas 1 a 6).', goal: 'Completa una secuencia de 7 runas. Tienes un fallo de margen.',
     winText: '«¡Fascinante! Memoria de yordle», aplaude Heimerdinger.', loseText: '«Hmm, hmm. La paciencia también es una ciencia», suspira el profesor.',
@@ -560,7 +560,7 @@
           });
           glowText(ctx, g.msg, cx, cy, 26, '#ffe08a');
         },
-        hud() { return bar('Secuencia', g.seq.length, target, '#3fa9f5') + `<span>${g.seq.length}/${target} · Vidas: ${'❤'.repeat(Math.max(0, g.lives))}</span>`; },
+        hud() { return bar('Secuencia', g.seq.length, target, '#3fa9f5') + `<span>${g.seq.length}/${target} · Vidas: ${''.repeat(Math.max(0, g.lives))}</span>`; },
       };
       return g;
     },
@@ -568,7 +568,7 @@
 
   // ---------- 6. Regateo en el mercado ----------
   GAMES.regateo = {
-    title: 'Regateo en el mercado', icon: '💰', scene: 'mercado',
+    title: 'Regateo en el mercado', icon: '', scene: 'mercado',
     desc: 'La vendedora pide 100 monedas por un cachivache que vale mucho menos. Haz ofertas: si te pasas de lista se enfadará, si ofreces poco perderá la paciencia.',
     controls: 'Flechas ← → para ajustar tu oferta, Espacio o Intro para ofrecer.', goal: 'Cierra el trato por 60 monedas o menos.',
     winText: '«Trato hecho… me has desplumado», ríe la vendedora.', loseText: '«Fuera de mi puesto», te dice cruzándose de brazos.',
@@ -608,13 +608,13 @@
         },
         draw(ctx) {
           panelBg(ctx, w, h, 0.45);
-          glowText(ctx, g.mood < 0 ? '😠' : g.mood > 0 ? '🤔' : '🙂', w / 2, h * 0.22, 80, '#fff');
+          glowText(ctx, g.mood < 0 ? '' : g.mood > 0 ? '' : '', w / 2, h * 0.22, 80, '#fff');
           glowText(ctx, `«${g.msg}»`, w / 2, h * 0.4, 26, '#f4efe6');
-          glowText(ctx, `Pide: ${g.ask} 🪙`, w / 2, h * 0.53, 30, '#e0457b');
-          glowText(ctx, `Tu oferta: ◀ ${g.offer} 🪙 ▶`, w / 2, h * 0.78, 40, '#ffe08a');
+          glowText(ctx, `Pide: ${g.ask}`, w / 2, h * 0.53, 30, '#e0457b');
+          glowText(ctx, `Tu oferta: ◀ ${g.offer} ▶`, w / 2, h * 0.78, 40, '#ffe08a');
           glowText(ctx, 'Pulsa Espacio para ofrecer', w / 2, h * 0.9, 18, '#a39cb3');
         },
-        hud() { return bar('Paciencia', g.patience, maxPat, '#e3c45a') + `<span>Meta: ≤ ${goal} 🪙</span>`; },
+        hud() { return bar('Paciencia', g.patience, maxPat, '#e3c45a') + `<span>Meta: ≤ ${goal}</span>`; },
       };
       return g;
     },

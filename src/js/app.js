@@ -65,8 +65,8 @@
         el('div', { class: 'title-menu' },
           hasSave ? btn('▶ Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,
           btn('✦ Nueva partida', () => Game.newGame(), hasSave ? '' : 'primary'),
-          btn('📂 Cargar partida', () => App.go('game')),
-          btn('⚙ Ajustes', () => App.go('settings')),
+          btn('Cargar partida', () => App.go('game')),
+          btn('Ajustes', () => App.go('settings')),
           U.desktop ? btn('✕ Salir', () => window.arcane.quit()) : null),
         el('small', { class: 'muted title-foot' }, 'Proyecto de fans · Arcane y League of Legends son propiedad de Riot Games'))));
     Audio2.playMusic('wiki');
@@ -100,7 +100,7 @@
       el('div', { class: 'row gap', style: 'justify-content:space-between' },
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
       el('h3', {}, 'Pantalla'),
-      U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, '⛶ Pantalla completa (F11)') : null,
+      U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, 'Pantalla completa (F11)') : null,
       U.desktop ? artSettings(root, onBack) : null,
       el('h3', {}, 'Audio'),
       el('label', { class: 'field' }, el('span', {}, 'Volumen general'),
@@ -220,7 +220,7 @@
       || window.WIKI.lugares.find((l) => l.id === id)?.name || id;
     const chip = (id, cls, title) => el('span', { class: `tag ${cls}`, title }, `${name(id)} · ${id}`);
     return el('details', { class: 'places-report', open: r.missing.length || r.unknown.length ? true : null },
-      el('summary', {}, `🏙 Lugares con imagen: ${r.found.length + r.borrowed.length}/${total}${r.missing.length ? ` · faltan ${r.missing.length}` : ' · ¡completo!'}`),
+      el('summary', {}, `Lugares con imagen: ${r.found.length + r.borrowed.length}/${total}${r.missing.length ? ` · faltan ${r.missing.length}` : ' · ¡completo!'}`),
       r.found.length ? el('div', { class: 'chips' }, r.found.map((id) => chip(id, 'ok', 'Tu imagen'))) : null,
       r.borrowed.length ? el('p', { class: 'muted small' }, 'Usan la imagen de su lugar gemelo (pon una propia si quieres):') : null,
       r.borrowed.length ? el('div', { class: 'chips' }, r.borrowed.map((id) => chip(id, 'warn', 'Imagen prestada'))) : null,
@@ -233,14 +233,14 @@
     const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
     const progress = el('div', { class: 'dl-progress hidden' }, el('i'), el('span'));
     return el('div', {},
-      el('h3', {}, '🖼 Arte personal'),
+      el('h3', {}, 'Arte personal'),
       el('p', { class: 'muted' }, 'Pon tus imágenes y vídeos en la carpeta de arte y el juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
       el('p', { class: 'small' }, `Archivos encontrados → ${counts}`),
       placesReport(),
       el('div', { class: 'row gap' },
-        el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, '📁 Abrir carpeta de arte'),
-        ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `📂 ${d}`)),
-        el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, '🔄 Recargar arte')),
+        el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
+        ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
+        el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
       el('p', { class: 'muted small' }, 'Retratos oficiales (cara y cuerpo): el juego puede descargar a tu carpeta las ilustraciones de los campeones de League of Legends que aparecen en Arcane (Jinx, Vi, Caitlyn, Jayce, Viktor, Ekko, Heimerdinger, Singed, Ambessa, Mel y Warwick) desde Data Dragon, el servidor público de Riot. Si el campeón tiene apariencia de Arcane, se usa esa. Se guardan solo en tu ordenador, para uso personal.'),
       el('button', {
         class: 'btn primary small',
@@ -260,7 +260,7 @@
           }
           renderSettings(root, onBack);
         },
-      }, '⬇ Descargar retratos oficiales (Data Dragon)'),
+      }, 'Descargar retratos oficiales (Data Dragon)'),
       el('p', { class: 'muted small' }, `Arcane Wiki (Fandom): descarga la imagen principal de la página de cada personaje (cuerpo y cara) y de cada lugar que aún te falte. Solo baja lo que no tienes, no toca tus archivos. Ahora faltan: ${fandomItems().length}.`),
       el('button', {
         class: 'btn primary small',
@@ -281,7 +281,7 @@
           }
           renderSettings(root, onBack);
         },
-      }, '⬇ Descargar lo que falta de la Arcane Wiki'),
+      }, 'Descargar lo que falta de la Arcane Wiki'),
       progress,
       el('p', { class: 'muted small' }, 'Arcane Wiki: descarga de arcane.fandom.com la imagen de cada personaje y lugar que todavía no tenga imagen tuya. No toca las que ya has puesto. Se guardan solo en tu ordenador, para uso personal.'),
       el('button', {
@@ -309,12 +309,12 @@
           }
           renderSettings(root, onBack);
         },
-      }, '⬇ Descargar lo que falte de la Arcane Wiki'),
-      el('h3', {}, '🌐 Mapas de la Wiki en el Códice'),
+      }, 'Descargar lo que falte de la Arcane Wiki'),
+      el('h3', {}, 'Mapas de la Wiki en el Códice'),
       el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K) en la pestaña «Mapas de la Wiki». El Atlas ilustrado (tecla M) no necesita internet.'),
       el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),
         el('input', { class: 'input', value: App.settings.mapUrl || DEFAULT_MAP, onchange: async (e) => { App.settings.mapUrl = e.target.value.trim(); await store.setSettings({ mapUrl: App.settings.mapUrl }); } })),
-      el('button', { class: 'btn small', onclick: () => App.openMap() }, '🗺 Abrir mapa interactivo'));
+      el('button', { class: 'btn small', onclick: () => App.openMap() }, 'Abrir mapa interactivo'));
   }
 
   // Mapas interactivos de la Arcane Wiki (menú «Interactive Maps» de arcane.fandom.com).

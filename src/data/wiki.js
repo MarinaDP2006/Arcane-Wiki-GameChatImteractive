@@ -2,11 +2,11 @@
 // hasta que el usuario activa el modo spoilers (segunda temporada).
 window.WIKI = {
   categories: [
-    { id: 'personajes', label: 'Personajes', icon: '👤' },
-    { id: 'lugares', label: 'Lugares', icon: '🏙️' },
-    { id: 'criaturas', label: 'Criaturas y razas', icon: '🐺' },
-    { id: 'tecnologia', label: 'Hextec, armas y Brillo', icon: '⚙️' },
-    { id: 'mundo', label: 'Mundo y facciones', icon: '🌍' },
+    { id: 'personajes', label: 'Personajes', icon: '' },
+    { id: 'lugares', label: 'Lugares', icon: '' },
+    { id: 'criaturas', label: 'Criaturas y razas', icon: '' },
+    { id: 'tecnologia', label: 'Hextec, armas y Brillo', icon: '' },
+    { id: 'mundo', label: 'Mundo y facciones', icon: '' },
   ],
 
   personajes: [
@@ -182,6 +182,26 @@ window.WIKI = {
       spoiler: 'En la segunda temporada sus planes en Piltover y Zaun empujan a ambas ciudades a una guerra abierta.',
       relations: ['mel', 'caitlyn'],
       quote: 'Un lobo no pide permiso para comer.',
+    },
+    {
+      id: 'maddie', name: 'Maddie', alias: '', origin: 'noxus', role: 'Soldado de Noxus',
+      colors: ['#a83a3a', '#2a0f0f'],
+      look: { skin: '#f0d0b8', hair: '#d9a030', style: 'bob', accent: 'freckles' },
+      summary: 'Joven oficial noxiana de la guardia de Ambessa. Seria, disciplinada y siempre a un paso de su superior.',
+      details: ['Maddie obedece a Ambessa sin preguntar, aunque lo que ve en Piltover le va dejando dudas.'],
+      spoiler: 'Su lealtad se pone a prueba cuando la guerra llega al puente.',
+      relations: ['ambessa', 'kino'],
+      quote: 'Las órdenes no se discuten. Se cumplen.',
+    },
+    {
+      id: 'kino', name: 'Kino', alias: '', origin: 'noxus', role: 'Soldado de Noxus',
+      colors: ['#a83a3a', '#2a0f0f'],
+      look: { skin: '#5a3a28', hair: '#1a1210', style: 'short', accent: 'beard' },
+      summary: 'Veterano noxiano de barba cerrada y pocas palabras, mano derecha de Ambessa en campaña.',
+      details: ['Kino ha visto más batallas de las que cuenta. Protege a los suyos con el mismo silencio con el que cumple órdenes.'],
+      spoiler: 'En la segunda temporada acompaña a Ambessa hasta lo más hondo de Zaun.',
+      relations: ['ambessa', 'maddie'],
+      quote: 'El que habla mucho en la guerra suele durar poco.',
     },
     {
       id: 'marcus', name: 'Marcus', alias: 'El sheriff', origin: 'piltover', role: 'Sheriff de los ejecutores',

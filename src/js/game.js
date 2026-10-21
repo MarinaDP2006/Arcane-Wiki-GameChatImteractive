@@ -96,7 +96,7 @@
   }
 
   // Cinemática de inicio según la ciudad elegida.
-  function playIntro(p) {
+  async function playIntro(p) {
     const me = { look: p.look, photo: p.photo, ...Portrait.playerOpts(p) };
     const shots = p.origin === 'zaun'
       ? [
@@ -111,7 +111,9 @@
         { scene: 'piltover', dur: 7, title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso vive su edad dorada.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
         { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ];
-    return Cinematic.play(shots, { videoId: `intro-${p.origin}` });
+    await Cinematic.play(shots, { videoId: `intro-${p.origin}` });
+    // Al entrar en la historia suena la intro de la temporada 1 (vídeo «IntroS1» de la carpeta video).
+    if (window.CustomArt.video('historia-1')) await Cinematic.play([], { videoId: 'historia-1' });
   }
 
   // ---------------- Mundo abierto ----------------
@@ -142,7 +144,7 @@
     const st = $('#hud-stats');
     if (st) st.innerHTML = Object.entries(S().stats).map(([k, m]) => `<span title="${m.label}">${m.icon} ${G.stats[k]}</span>`).join('');
     const cx = $('#hud-codex');
-    if (cx) cx.textContent = `📚 ${codexCount()}/${codexTotal()}`;
+    if (cx) cx.textContent = `${codexCount()}/${codexTotal()}`;
   }
 
   function codexKnown(id) {
@@ -163,7 +165,7 @@
       const key = `${loc.id}:${G.progress.chapterIdx}`;
       const done = G.acts[key];
       const maxed = (G.stats[loc.activity.stat] || 0) >= window.WORLD.maxStat;
-      if (!done && !maxed) acts.push({ label: `${loc.activity.game ? "🎮 " : ""}${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
+      if (!done && !maxed) acts.push({ label: `${loc.activity.game ? "" : ""}${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
     }
     const here = G.unlocked.filter((id) => window.WORLD.homes[id] === loc.id);
     here.forEach((id) => acts.push({ label: `Hablar con ${charName(id)}`, run: () => openOverlay('chats', id) }));
@@ -180,7 +182,7 @@
     box.innerHTML = '';
     box.className = 'overlay show';
     box.append(el('div', { class: 'panel action-menu' },
-      el('h2', {}, `${loc.icon} ${loc.name}`),
+      el('h2', {}, loc.name),
       ...acts.map((a, i) => el('button', { class: 'choice', onclick: () => { closeOverlay(); a.run(); } }, el('span', { class: 'num' }, i + 1), a.label)),
       el('button', { class: 'btn ghost', onclick: closeOverlay }, 'Cerrar (Esc)')));
   }
@@ -200,7 +202,7 @@
     const gain = G.player.keystone === 'estudioso' ? 2 : 1;
     G.stats[a.stat] = Math.min(window.WORLD.maxStat, (G.stats[a.stat] || 0) + gain);
     Audio2.sfx.unlock();
-    showNotice(`${loc.icon} ${a.label}`, `${a.text}\n\n${S().stats[a.stat].icon} ${S().stats[a.stat].label} +${gain} (ahora ${G.stats[a.stat]}).`);
+    showNotice(a.label, `${a.text}\n\n${S().stats[a.stat].icon} ${S().stats[a.stat].label} +${gain} (ahora ${G.stats[a.stat]}).`);
     updateHud();
     persist();
   }
@@ -232,14 +234,14 @@
       onVisit: (loc) => {
         if (!G.visited.includes(loc.id)) {
           G.visited.push(loc.id);
-          discover(loc.codex, `📍 Descubierto: ${loc.name} (añadido al Códice)`);
+          discover(loc.codex, `Descubierto: ${loc.name} (añadido al Códice)`);
           updateHud();
           persist();
         }
       },
       onFragment: (f) => {
         const entry = findEntry(f.codex);
-        if (discover(f.codex, `💠 Fragmento del Códice: ${entry?.name || f.codex}`)) {
+        if (discover(f.codex, `Fragmento del Códice: ${entry?.name || f.codex}`)) {
           Audio2.sfx.unlock();
           updateHud();
           persist();
@@ -270,8 +272,8 @@
       const tab = (id, label) => el('button', { class: `tab${sub === id ? ' active' : ''}`, onclick: () => openOverlay('codice', null, id) }, label);
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
-          el('h2', {}, `📚 Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
-          el('div', { class: 'codex-tabs' }, tab('entradas', '📖 Entradas'), tab('atlas', '🧭 Atlas'), tab('mapa', '🌐 Mapas de la Wiki')),
+          el('h2', {}, `Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
+          el('div', { class: 'codex-tabs' }, tab('entradas', 'Entradas'), tab('atlas', 'Atlas'), tab('mapa', 'Mapas de la Wiki')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
       box.append(panel);
@@ -283,13 +285,13 @@
         body.append(el('div', { class: 'neta-wrap' },
           el('div', { class: 'neta-bar' },
             el('span', { class: 'muted small' }, 'Mapas interactivos de la Arcane Wiki (se cargan desde internet).'),
-            el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, '🔄 Recargar'),
+            el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, 'Recargar'),
             el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
           U.desktop
             ? el('webview', { class: 'neta-view', src: url, partition: 'persist:mapa', allowpopups: 'false' })
             : el('iframe', { class: 'neta-view', src: url, referrerpolicy: 'no-referrer' }),
           el('div', { class: 'neta-error hidden' },
-            el('h3', {}, '📡 No se pudo cargar el mapa'),
+            el('h3', {}, 'No se pudo cargar el mapa'),
             el('p', { class: 'muted' }, 'El mapa interactivo necesita internet. Comprueba tu conexión y pulsa Recargar, o ábrelo en una ventana aparte.'))));
         const view = body.querySelector('webview');
         view?.addEventListener('did-fail-load', (e) => { if (e.isMainFrame && e.errorCode !== -3) body.querySelector('.neta-error')?.classList.remove('hidden'); });
@@ -304,10 +306,10 @@
       box.append(el('div', { class: 'panel action-menu' },
         el('h2', {}, 'Pausa'),
         el('button', { class: 'btn primary', onclick: closeOverlay }, '▶ Continuar'),
-        el('button', { class: 'btn', onclick: async () => { await persist(); toast('Partida guardada', 'good'); } }, '💾 Guardar partida'),
-        el('button', { class: 'btn', onclick: () => openArcade() }, '🎮 Salón de minijuegos'),
-        el('button', { class: 'btn', onclick: () => openSettingsOverlay() }, '⚙ Ajustes'),
-        el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, '❔ Controles'),
+        el('button', { class: 'btn', onclick: async () => { await persist(); toast('Partida guardada', 'good'); } }, 'Guardar partida'),
+        el('button', { class: 'btn', onclick: () => openArcade() }, 'Salón de minijuegos'),
+        el('button', { class: 'btn', onclick: () => openSettingsOverlay() }, 'Ajustes'),
+        el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, 'Controles'),
         el('button', { class: 'btn ghost', onclick: async () => { await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
         U.desktop ? el('button', { class: 'btn ghost', onclick: async () => { await persist(); window.arcane.quit(); } }, '✕ Salir del juego') : null));
       return;
@@ -321,9 +323,9 @@
             el('div', { class: 'avatar', html: Portrait.forPlayer(G.player) }),
             el('div', {}, el('strong', {}, G.player.name), el('small', { class: 'muted' }, tpl(G.player.jobLabel, G.player)))),
           el('div', { class: 'tabs-v' },
-            tabBtn('historia', '📖 Historia  [H]'), tabBtn('chats', '📡 Comunicador  [C]'), tabBtn('ficha', '🪪 Ficha  [F]')),
+            tabBtn('historia', 'Historia  [H]'), tabBtn('chats', 'Comunicador  [C]'), tabBtn('ficha', 'Ficha  [F]')),
           el('div', { id: 'contact-list', class: 'contact-list' }),
-          el('button', { class: 'btn ghost small', onclick: closeOverlay }, '🗺 Volver al mapa  [Esc]')),
+          el('button', { class: 'btn ghost small', onclick: closeOverlay }, 'Volver al mapa  [Esc]')),
         el('section', { id: 'play-main', class: 'play-main' }))));
     renderContacts();
     renderMain();
@@ -335,7 +337,7 @@
     box.innerHTML = '';
     box.className = 'overlay show';
     box.append(el('div', { class: 'panel action-menu arcade' },
-      el('h2', {}, '🎮 Salón de minijuegos'),
+      el('h2', {}, 'Salón de minijuegos'),
       el('p', { class: 'muted' }, 'Practica sin límite. Las recompensas de estadísticas se ganan en los lugares del mapa.'),
       el('div', { class: 'arcade-grid' }, Object.entries(Minigames.GAMES).map(([id, g]) =>
         el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id, { bonus: mgBonus(id) }); box.style.visibility = ''; } },
@@ -351,21 +353,54 @@
     const A = window.ATLAS;
     const spoilers = window.App.settings.spoilers;
     const detail = el('div', { class: 'atlas-detail hidden' });
+    const CITY = { piltover: 'Piltover', zaun: 'Zaun' };
+    let focus = null;
+    const pins = A.places.map((p) => el('button', {
+      class: `atlas-pin pin-${p.city || 'both'}${G.atlas.includes(p.id) ? ' explored' : ''}`,
+      style: `left:${p.x}%;top:${p.y}%`,
+      title: p.name,
+      onclick: () => showPlace(p),
+    }, el('span', {}, p.name)));
     const map = el('div', { class: 'atlas-map' },
-      el('img', { class: 'atlas-bg', src: 'img/atlas/mapa.webp', alt: 'Mapa de Piltover y Zaun', draggable: 'false' }),
-      A.places.map((p) => el('button', {
-        class: `atlas-loc${G.atlas.includes(p.id) ? ' explored' : ''}`,
-        style: `left:${p.x}%;top:${p.y}%`,
-        title: p.name,
-        onclick: () => showPlace(p),
-      }, el('img', { src: `img/atlas/${p.id}.webp`, alt: p.name, draggable: 'false' }), el('span', {}, p.name))));
-    const journalBtn = el('button', { class: 'btn small', onclick: showJournal }, `📔 Diario de viaje · ${G.atlas.length}/${A.places.length}`);
+      el('img', { class: 'atlas-bg', src: 'img/arte/codice/mapa-piltover-zaun.webp', alt: 'Mapa de Piltover y Zaun', draggable: 'false' }),
+      pins);
+    const emblem = (city) => el('button', { class: `atlas-emblem emblem-${city}`, title: `Lugares de ${CITY[city]}`, onclick: () => showCity(city) },
+      el('img', { src: `img/arte/simbolos/${city}.png`, alt: CITY[city], draggable: 'false' }), el('span', {}, CITY[city]));
+    const emblems = { piltover: emblem('piltover'), zaun: emblem('zaun') };
+    const journalBtn = el('button', { class: 'btn small', onclick: showJournal }, `Diario de viaje · ${G.atlas.length}/${A.places.length}`);
     body.append(el('div', { class: 'atlas' },
       el('div', { class: 'atlas-bar' },
-        el('span', { class: 'muted small' }, 'Pulsa un lugar para explorarlo.'),
+        el('span', { class: 'muted small' }, 'Pulsa un lugar del mapa, o el símbolo de una ciudad para ver todos sus lugares.'),
         journalBtn),
-      el('div', { class: 'atlas-stage' }, map, detail),
+      el('div', { class: 'atlas-stage' }, emblems.piltover, map, emblems.zaun, detail),
       el('small', { class: 'muted atlas-credit' }, A.credit)));
+
+    function setFocus(city) {
+      focus = city;
+      map.classList.toggle('focus', Boolean(city));
+      pins.forEach((pin, i) => pin.classList.toggle('dim', Boolean(city) && A.places[i].city !== city && A.places[i].city !== null));
+      Object.entries(emblems).forEach(([c, b]) => b.classList.toggle('active', c === city));
+    }
+
+    function showCity(city) {
+      Audio2.sfx.click();
+      setFocus(city);
+      const list = A.places.filter((p) => p.city === city);
+      detail.innerHTML = '';
+      detail.append(
+        el('button', { class: 'btn ghost small atlas-back', onclick: () => { detail.classList.add('hidden'); setFocus(null); } }, '← Volver al mapa'),
+        el('div', { class: 'atlas-copy' },
+          el('div', { class: 'atlas-cityhead' }, el('img', { src: `img/arte/simbolos/${city}.png`, alt: '' }), el('h2', {}, CITY[city])),
+          el('p', {}, city === 'piltover' ? A.places.find((p) => p.id === 'piltover').intro : A.places.find((p) => p.id === 'zaun').intro),
+          el('div', { class: 'atlas-journal' }, list.map((p) => el('button', { class: 'atlas-jitem', onclick: () => showPlace(p) },
+            el('img', { class: 'atlas-thumb', src: placeArt(p), alt: '' }), el('span', {}, p.name))))));
+      detail.classList.remove('hidden');
+    }
+
+    // Foto de la carpeta lugares (la propia, o la que viaja con el juego) o, si falta, la ilustración del atlas.
+    function placeArt(p) {
+      return (p.scene && window.CustomArt.image('lugares', p.scene)) || `img/atlas/${p.id}.webp`;
+    }
 
     function showPlace(p) {
       Audio2.sfx.click();
@@ -376,21 +411,21 @@
       detail.append(
         el('button', { class: 'btn ghost small atlas-back', onclick: () => detail.classList.add('hidden') }, '← Volver al mapa'),
         el('div', { class: 'atlas-card' },
-          el('img', { class: 'atlas-art', src: `img/atlas/${p.id}.webp`, alt: p.name }),
+          el('img', { class: `atlas-art${p.scene && window.CustomArt.image('lugares', p.scene) ? ' photo' : ''}`, src: placeArt(p), alt: p.name }),
           el('div', { class: 'atlas-copy' },
             el('h2', {}, p.name),
             hidden
-              ? el('p', { class: 'muted' }, '⚠ Este lugar es un spoiler de la Temporada 2. Activa los spoilers en Ajustes para leerlo.')
+              ? el('p', { class: 'muted' }, 'Este lugar es un spoiler de la Temporada 2. Activa los spoilers en Ajustes para leerlo.')
               : el('p', {}, p.intro),
             hidden ? null : el('ul', { class: 'atlas-poi' }, p.poi.map(([t, d]) => el('li', {}, el('strong', {}, t), ` · ${d}`))),
             p.people.length ? el('h3', {}, 'Aquí puedes encontrar a') : null,
             p.people.length ? el('div', { class: 'row gap wrap' },
-              people.map((id) => el('button', { class: 'chip', onclick: () => openOverlay('chats', id) }, `💬 ${charName(id)}`)),
+              people.map((id) => el('button', { class: 'chip', onclick: () => openOverlay('chats', id) }, `${charName(id)}`)),
               unknown ? el('span', { class: 'chip muted' }, `??? ×${unknown}`) : null) : null,
             el('div', { class: 'row gap wrap atlas-actions' },
               el('button', { class: `btn ${G.atlas.includes(p.id) ? '' : 'primary'} small`, onclick: () => explore(p) },
-                G.atlas.includes(p.id) ? '✓ Explorado' : '🧭 Explorar este lugar'),
-              p.codex ? el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', p.codex) }, codexKnown(p.codex) ? '📚 Ver en el Códice' : '📚 Códice (???)') : null))));
+                G.atlas.includes(p.id) ? '✓ Explorado' : 'Explorar este lugar'),
+              p.codex ? el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', p.codex) }, codexKnown(p.codex) ? 'Ver en el Códice' : 'Códice (???)') : null))));
       detail.classList.remove('hidden');
     }
 
@@ -398,9 +433,9 @@
       if (!G.atlas.includes(p.id)) {
         G.atlas.push(p.id);
         Audio2.sfx.unlock();
-        toast(`📔 ${p.name} añadido a tu diario de viaje (${G.atlas.length}/${A.places.length})`, 'good');
-        map.querySelectorAll('.atlas-loc')[A.places.indexOf(p)]?.classList.add('explored');
-        journalBtn.textContent = `📔 Diario de viaje · ${G.atlas.length}/${A.places.length}`;
+        toast(`${p.name} añadido a tu diario de viaje (${G.atlas.length}/${A.places.length})`, 'good');
+        pins[A.places.indexOf(p)]?.classList.add('explored');
+        journalBtn.textContent = `Diario de viaje · ${G.atlas.length}/${A.places.length}`;
         persist();
       }
       showPlace(p);
@@ -412,10 +447,10 @@
       detail.append(
         el('button', { class: 'btn ghost small atlas-back', onclick: () => detail.classList.add('hidden') }, '← Volver al mapa'),
         el('div', { class: 'atlas-copy' },
-          el('h2', {}, `📔 Diario de viaje · ${done.length}/${A.places.length}`),
+          el('h2', {}, `Diario de viaje · ${done.length}/${A.places.length}`),
           done.length
             ? el('div', { class: 'atlas-journal' }, done.map((p) => el('button', { class: 'atlas-jitem', onclick: () => showPlace(p) },
-              el('img', { src: `img/atlas/${p.id}.webp`, alt: '' }), el('span', {}, p.name))))
+              el('img', { class: 'atlas-thumb', src: placeArt(p), alt: '' }), el('span', {}, p.name))))
             : el('p', { class: 'muted' }, 'Aún no has explorado ningún lugar. Pulsa uno en el mapa para empezar tu viaje.')));
       detail.classList.remove('hidden');
     }
@@ -490,12 +525,12 @@
       el('div', { class: 'hud hud-mini' }, mini, el('small', { id: 'hud-codex', class: 'muted' })),
       el('div', { id: 'world-prompt', class: 'world-prompt' }),
       el('div', { class: 'hud hud-bottom' },
-        hudBtn('📖 Historia', 'H', () => openOverlay('historia')),
-        hudBtn('📡 Comunicador', 'C', () => openOverlay('chats')),
-        hudBtn('🪪 Ficha', 'F', () => openOverlay('ficha')),
-        hudBtn('📚 Códice', 'K', () => openOverlay('codice')),
-        hudBtn('🧭 Atlas', 'M', () => openOverlay('codice', null, 'atlas')),
-        hudBtn('☰ Pausa', 'Esc', () => openOverlay('menu'))),
+        hudBtn('Historia', 'H', () => openOverlay('historia')),
+        hudBtn('Comunicador', 'C', () => openOverlay('chats')),
+        hudBtn('Ficha', 'F', () => openOverlay('ficha')),
+        hudBtn('Códice', 'K', () => openOverlay('codice')),
+        hudBtn('Atlas', 'M', () => openOverlay('codice', null, 'atlas')),
+        hudBtn('Pausa', 'Esc', () => openOverlay('menu'))),
       el('div', { id: 'overlay', class: 'overlay' })));
     World.start(G, worldCallbacks(), canvas, mini);
     updateHud();
@@ -537,7 +572,7 @@
   }
 
   function heart(a) {
-    const lvl = a < 0 ? '💔' : a >= 8 ? '💖' : a >= 5 ? '❤️' : a >= 2 ? '🧡' : '🤍';
+    const lvl = a < 0 ? '' : a >= 8 ? '' : a >= 5 ? '' : a >= 2 ? '' : '';
     return el('small', { class: 'aff' }, `${lvl} ${a}`);
   }
 
@@ -558,14 +593,14 @@
         el('h2', {}, ch.title),
         el('p', {}, ch.intro),
         el('p', { class: 'gold' }, `★ Ve a «${objectiveName()}» en el mapa y pulsa E para comenzar.`),
-        el('button', { class: 'btn primary', onclick: closeOverlay }, '🗺 Volver al mapa')));
+        el('button', { class: 'btn primary', onclick: closeOverlay }, 'Volver al mapa')));
       return;
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
         el('div', {}, el('small', { class: 'muted' }, G.progress.season === 2 ? 'Temporada 2' : G.progress.route === 'zaun' ? 'Ruta de Zaun' : 'Ruta de Piltover'), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
-          el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; } }, '⏩ Saltar'))),
+          el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; } }, 'Saltar'))),
       el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
       el('div', { class: 'story-body' },
         el('div', { id: 'speaker', class: 'speaker' }, el('div', { class: 'speaker-art' }), el('div', { class: 'speaker-name' })),
@@ -749,7 +784,7 @@
     const node = ch?.nodes[G.progress.node];
     if (!node || !G.progress.linesShown) return [];
     if (node.choices) return node.choices;
-    if (node.end) return [{ t: '🗺 Volver al mapa: siguiente objetivo →', __next: true }];
+    if (node.end) return [{ t: 'Volver al mapa: siguiente objetivo →', __next: true }];
     return [];
   }
 
@@ -774,10 +809,10 @@
     box.innerHTML = '';
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
-        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, '🌙 Comenzar la Temporada 2') : null,
-        el('button', { class: 'btn', onclick: () => setTab('chats', G.unlocked[0]) }, '💬 Seguir chateando con los personajes'),
-        el('button', { class: 'btn', onclick: () => setTab('ficha') }, '🪪 Ver mi ficha'),
-        el('button', { class: 'btn ghost', onclick: replayRoute }, '↻ Rejugar la ruta con este personaje')));
+        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Temporada 2') : null,
+        el('button', { class: 'btn', onclick: () => setTab('chats', G.unlocked[0]) }, 'Seguir chateando con los personajes'),
+        el('button', { class: 'btn', onclick: () => setTab('ficha') }, 'Ver mi ficha'),
+        el('button', { class: 'btn ghost', onclick: replayRoute }, 'Rejugar la ruta con este personaje')));
       return;
     }
     choices.filter((c) => !reqHidden(c.req)).forEach((c, i) => {
@@ -787,7 +822,7 @@
         disabled: !ok,
         title: ok ? '' : 'No cumples el requisito',
         onclick: () => choose(c),
-      }, el('span', { class: 'num' }, i + 1), tpl(c.t, G.player), !ok ? el('em', {}, ' 🔒') : null));
+      }, el('span', { class: 'num' }, i + 1), tpl(c.t, G.player), !ok ? el('em', {}, '') : null));
     });
   }
 
@@ -798,7 +833,7 @@
     for (const [k, v] of Object.entries(fx.rep || {})) G.rep[k] = (G.rep[k] || 0) + v;
     for (const [k, v] of Object.entries(fx.stats || {})) {
       G.stats[k] = (G.stats[k] || 0) + v;
-      toast(`${S().stats[k].icon} ${S().stats[k].label} +${v}`, 'good');
+      toast(`${S().stats[k].label} +${v}`, 'good');
     }
     (fx.flags || []).forEach((f) => { G.flags[f] = true; });
   }
@@ -818,7 +853,7 @@
       const win = await Minigames.play(c.game.id, { bonus: mgBonus(c.game.id) });
       busy = false;
       if (win) applyFx(c.game.winFx);
-      pushLog('sistema', win ? '🏆 ¡Lo has conseguido!' : '💥 No ha salido como esperabas…');
+      pushLog('sistema', win ? '¡Lo has conseguido!' : 'No ha salido como esperabas…');
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
       return advance(win ? c.game.win : c.game.lose);
     }
@@ -964,7 +999,7 @@
   // ---------------- Conversaciones con opciones ----------------
   // Cada personaje tiene un árbol de diálogo (src/data/chat.js): eliges qué decir
   // entre varias respuestas y su tono cambia la afinidad, tus estadísticas o la historia.
-  const TONES = { amable: '💗', broma: '😏', duro: '🔥', pregunta: '❓', coqueto: '💋', astuto: '🎭', serio: '🗡️', sigilo: '🌑' };
+  const TONES = { amable: 'Amable', broma: 'Broma', duro: 'Dura', pregunta: 'Pregunta', coqueto: 'Coqueta', astuto: 'Astuta', serio: 'Seria', sigilo: 'Sigilo' };
   let talking = false;
 
   function talkState() {
@@ -1042,8 +1077,8 @@
           el('span', { class: 'avatar', html: Portrait.forCharacter(id) }),
           el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, headLine(id)))),
         el('div', { class: 'row gap' },
-          el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, '📚 Códice'),
-          el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; talkState().at[id] = 'hub'; persist(); renderMain(); } }, '🧹 Limpiar'))),
+          el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, 'Códice'),
+          el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; talkState().at[id] = 'hub'; persist(); renderMain(); } }, 'Limpiar'))),
       el('div', { id: 'chat-log', class: 'log' }),
       el('div', { id: 'dlg-choices', class: 'choices' }));
     const log = $('#chat-log');
@@ -1058,7 +1093,7 @@
     box.innerHTML = '';
     if (talking) return;
     if (talkState().at[id] === 'bye') {
-      box.append(el('button', { class: 'choice', onclick: () => restartTalk(id) }, el('span', { class: 'num' }, 1), `💬 Volver a hablar con ${charName(id)}`));
+      box.append(el('button', { class: 'choice', onclick: () => restartTalk(id) }, el('span', { class: 'num' }, 1), `Volver a hablar con ${charName(id)}`));
       return;
     }
     const seen = talkState().seen;
@@ -1072,10 +1107,10 @@
         onclick: () => sayOption(id, o),
       }, el('span', { class: 'num' }, i + 1),
       el('span', {},
-        o.__back ? '↩ ' : o.__bye ? '👋 ' : TONES[o.tone] ? `${TONES[o.tone]} ` : '',
+        o.__back ? '↩ ' : o.__bye ? '' : TONES[o.tone] ? el('small', { class: `tone tone-${o.tone}` }, `${TONES[o.tone]} `) : '',
         tpl(o.t, G.player),
         o.req && reqLabel(o.req) ? el('em', { class: 'req' }, ` ${reqLabel(o.req)}`) : null,
-        !ok ? el('em', {}, ' 🔒') : null,
+        !ok ? el('em', {}, '') : null,
         isNew ? el('em', { class: 'new' }, ' ✦') : null)));
     });
   }
@@ -1176,14 +1211,14 @@
           el('h2', {}, p.name),
           el('span', { class: `tag origin-${p.origin}` }, p.origin === 'zaun' ? 'Zaun' : 'Piltover'),
           el('div', { class: 'row gap no-print' },
-            el('button', { class: 'btn small', onclick: () => photoInput.click() }, '📷 Cambiar foto'),
-            el('button', { class: 'btn small', onclick: exportSheet }, '⬇ Exportar ficha'),
-            el('button', { class: 'btn small ghost', onclick: () => window.print() }, '🖨 Imprimir'), photoInput))),
+            el('button', { class: 'btn small', onclick: () => photoInput.click() }, 'Cambiar foto'),
+            el('button', { class: 'btn small', onclick: exportSheet }, 'Exportar ficha'),
+            el('button', { class: 'btn small ghost', onclick: () => window.print() }, 'Imprimir'), photoInput))),
       Creator.sheetList(p),
       p.bio ? el('div', {}, el('h3', {}, 'Biografía'), el('p', {}, p.bio)) : null,
       el('h3', {}, 'Estadísticas'),
       el('div', { class: 'stat-bars' }, Object.entries(S().stats).map(([k, meta]) =>
-        el('div', { class: 'stat' }, el('span', {}, `${meta.icon} ${meta.label}`),
+        el('div', { class: 'stat' }, el('span', {}, meta.label),
           el('div', { class: 'bar' }, el('i', { style: `width:${Math.min(100, G.stats[k] * 20)}%` })), el('b', {}, G.stats[k])))),
       el('h3', {}, 'Reputación'),
       el('div', { class: 'stat-bars' },

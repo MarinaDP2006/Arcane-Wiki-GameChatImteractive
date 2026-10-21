@@ -236,7 +236,7 @@
         ctx.fillStyle = '#1e2a3a'; ctx.fillRect(w * 0.08, h * 0.12, w * 0.5, h * 0.4);
         ctx.strokeStyle = 'rgba(230,240,255,0.55)'; ctx.lineWidth = 1.5 * s; ctx.font = `${16 * s}px Georgia`;
         ctx.fillStyle = 'rgba(230,240,255,0.55)';
-        for (let i = 0; i < 9; i++) ctx.fillText(['∑ ψ(r) = ∫ φ', 'E = h·ν', '⬡ → ⬢', 'Δt · Ω', 'ρ ∝ λ²'][i % 5], w * 0.1 + r() * w * 0.35, h * 0.16 + i * 18 * s);
+        for (let i = 0; i < 9; i++) ctx.fillText(['∑ ψ(r) = ∫ φ', 'E = h·ν', '→ ', 'Δt · Ω', 'ρ ∝ λ²'][i % 5], w * 0.1 + r() * w * 0.35, h * 0.16 + i * 18 * s);
         for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(w * 0.2 + r() * w * 0.3, h * 0.25 + r() * h * 0.2, 20 * s + r() * 20 * s, 0, 7); ctx.stroke(); }
         ctx.fillStyle = '#3a2a1a'; ctx.fillRect(0, h * 0.68, w, h * 0.32);
         ctx.fillStyle = '#5a3a20'; ctx.fillRect(w * 0.05, h * 0.62, w * 0.9, h * 0.08);
