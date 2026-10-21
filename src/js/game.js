@@ -111,9 +111,8 @@
         { scene: 'piltover', dur: 7, title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso vive su edad dorada.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
         { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ];
+    // «Welcome to Zaun» o «Welcome to Piltover» de la carpeta video, si están.
     await Cinematic.play(shots, { videoId: `intro-${p.origin}` });
-    // Al entrar en la historia suena la intro de la temporada 1 (vídeo «IntroS1» de la carpeta video).
-    if (window.CustomArt.video('historia-1')) await Cinematic.play([], { videoId: 'historia-1' });
   }
 
   // ---------------- Mundo abierto ----------------
@@ -662,18 +661,13 @@
     const art = box.querySelector('.speaker-art');
     art.innerHTML = '';
     box.querySelector('.speaker-name').textContent = s === 'yo' ? G.player.name : charName(s);
-    const custom = s !== 'yo' && window.CustomArt?.image('personajes', s);
-    if (custom || (s === 'yo' && G.player.photo)) {
-      art.append(el('img', { src: custom || G.player.photo, alt: '' }));
+    // En la historia solo salen los avatares de chat (caras), nunca retratos generados.
+    const face = s === 'yo' ? G.player.photo : Portrait.customChar(s, false);
+    if (!face) {
+      box.classList.remove('show');
       return;
     }
-    const cv = el('canvas', { width: 420, height: 420 });
-    art.append(cv);
-    if (s === 'yo') speakerCtl = Painter.animate(cv, G.player.look || {}, Portrait.playerOpts(G.player));
-    else {
-      const { look, rim, bg } = Portrait.charLook(s);
-      speakerCtl = Painter.animate(cv, look, { rim, bg });
-    }
+    art.append(el('img', { src: face, alt: '' }));
     box.classList.remove('swap');
     void box.offsetWidth;
     box.classList.add('swap');
@@ -694,6 +688,11 @@
   async function startChapter() {
     const ch = chapterById(G.progress.chapterId);
     busy = true;
+    // La historia de la temporada 1 empieza con el vídeo «IntroS1» (una vez por partida).
+    if (G.progress.season !== 2 && G.progress.chapterIdx === 0 && !G.introS1 && window.CustomArt.video('historia-1')) {
+      G.introS1 = true;
+      await Cinematic.play([], { videoId: 'historia-1' });
+    }
     await Cinematic.chapterCard(ch, ch.nodes[ch.start]?.bg || G.player.origin);
     busy = false;
     pushLog('sistema', `— ${ch.title} —`);

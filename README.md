@@ -44,6 +44,20 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
 > `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
 
+## Novedades de la v1.7.0
+
+- **Menú principal nuevo:** ilustraciones pintadas de Piltover y Zaun que se funden entre sí, el título
+  ARCANE y el menú a la izquierda. Sin subtítulo ni texto al pie.
+- **Vídeos en su momento:** *Welcome to Zaun* o *Welcome to Piltover* al terminar de crear tu personaje
+  (según tu ciudad), *IntroS1* cuando empieza la historia de la Temporada 1 e *IntroS2* al empezar la
+  Temporada 2.
+- **Mundo abierto:** en las calles solo están los personajes de Arcane (con su avatar de chat), sin
+  habitantes genéricos. Cada lugar se ve con su imagen enmarcada, los fragmentos del Códice son cristales
+  hextec y las farolas son hextec en Piltover y de quimtec en Zaun.
+- **Imágenes de la Arcane Wiki, no de Riot:** se quita la descarga de Data Dragon. Los retratos de Riot que
+  bajaron versiones anteriores se apartan solos a `arte\_riot-retirado` (no se borran).
+- **Historia:** en las escenas solo salen los avatares de chat de cada personaje, nunca retratos generados.
+
 ## Novedades de la v1.6.0
 
 - **Avatares por género:** 8 retratos de mujer y 8 de hombre en el creador.
@@ -70,7 +84,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
    en el barrio que elegiste.
 3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
-   visita lugares, habla con la gente y recoge los fragmentos del Códice (hexágonos azules).
+   visita lugares, habla con los personajes y recoge los fragmentos del Códice (cristales hextec).
 4. **Sigue la historia**: el objetivo ★ te dice adónde ir. Al llegar, la escena se juega como
    un chat. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
 5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
@@ -107,7 +121,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 
 ### Menús y Códice
 
-**Menús en 3D:** la pantalla de inicio, el menú, los ajustes y el creador tienen una escena
+**Menús en 3D:** el menú de partidas, los ajustes y el creador tienen una escena
 3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
@@ -223,13 +237,14 @@ que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa d
 Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
 (`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
 
-Los vídeos no se incluyen (pesan mucho). Copia estos cuatro en la carpeta `arte\video`:
+Los vídeos no se incluyen (pesan mucho). Copia estos cuatro en la carpeta `arte\video` de
+`%APPDATA%\Arcane Piltover y Zaun\` o en una carpeta `arte\video` junto al `.exe` del juego:
 
 | Archivo | Cuándo se reproduce |
 |---|---|
 | `Welcome to Zaun.mp4` | Al empezar con origen en Zaun |
 | `Welcome to Piltover.mp4` | Al empezar con origen en Piltover |
-| `IntroS1.mp4` | Al entrar en la historia de la Temporada 1 |
+| `IntroS1.mp4` | Al empezar el primer capítulo de la Temporada 1 |
 | `IntroS2.mp4` | Al empezar la Temporada 2 |
 
 Se pueden saltar con Esc, espacio o Intro.

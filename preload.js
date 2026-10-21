@@ -17,8 +17,6 @@ contextBridge.exposeInMainWorld('arcane', {
     list: () => ipcRenderer.invoke('art:list'),
     open: (sub) => ipcRenderer.invoke('art:open', sub),
     guide: (text) => ipcRenderer.invoke('art:guide', text),
-    ddragon: (champs) => ipcRenderer.invoke('art:ddragon', champs),
-    onDdragon: (cb) => ipcRenderer.on('art:ddragon-progress', (_e, d) => cb(d)),
     fandom: (wanted) => ipcRenderer.invoke('art:fandom', wanted),
     onFandom: (cb) => ipcRenderer.on('art:fandom-progress', (_e, d) => cb(d)),
   },
