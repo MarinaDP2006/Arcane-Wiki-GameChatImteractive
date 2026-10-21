@@ -121,7 +121,9 @@
           [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido']].map(([v, l]) => el('option', { value: v, selected: s.textSpeed === v }, l)))),
       toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
       el('h3', {}, 'Acerca de'),
-      el('p', { class: 'muted small' }, 'Proyecto de fans sin ánimo de lucro. Arcane y League of Legends son propiedad de Riot Games. Las imágenes de personajes y lugares son de la Arcane Wiki (arcane.fandom.com) y la música se sintetiza en tiempo real.')));
+      el('p', { class: 'muted small' }, 'Juego de fans gratuito y sin ánimo de lucro: no se vende, no tiene anuncios ni compras. Las imágenes de personajes y lugares son de la Arcane Wiki (arcane.fandom.com) y la música se sintetiza en tiempo real.'),
+      el('p', { class: 'muted small' }, 'Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.'),
+      el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo.')));
   }
 
   // ---------- Arte personal ----------

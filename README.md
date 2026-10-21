@@ -209,3 +209,13 @@ Los instaladores salen en la carpeta `dist/`. El APK de Android lo crea GitHub A
 | `src/data/wiki.js` | Entradas del Códice |
 | `src/data/creation.js` | Opciones del creador de personaje |
 | `scripts/check.js` | El revisor de `npm run check` |
+
+---
+
+## Aviso legal
+
+Juego de fans **gratuito y sin ánimo de lucro**: no se vende, no tiene anuncios ni compras.
+Este juego se creó según la política [«Legal Jibber Jabber»](https://www.riotgames.com/en/legal) de Riot Games usando recursos propiedad de Riot Games.
+Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.
+
+[Política de privacidad](PRIVACIDAD.md): el juego no recoge ningún dato.
