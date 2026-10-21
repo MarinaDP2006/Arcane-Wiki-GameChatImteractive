@@ -185,35 +185,98 @@ ipcMain.handle('art:guide', (_e, text) => {
   return true;
 });
 
-// ---------- Modelos 3D (.glb) ----------
-// Personajes en 3D para el mundo abierto (por ejemplo, de Mixamo): modelos/<id>.glb,
-// modelos/jugador.glb, modelos/generico.glb y modelos/animaciones/{reposo,andar,correr}.glb.
-// Se leen de src/models (incluidos con el juego), de las carpetas «arte» de siempre y de la
-// carpeta de arte de AppData, que manda sobre las demás.
+// ---------- Modelos 3D (.glb, .fbx o .zip) ----------
+// Personajes en 3D para el mundo abierto (por ejemplo, de Mixamo o Sketchfab): modelos/<id>.glb,
+// .fbx o .zip (con el .fbx y sus texturas dentro), modelos/jugador.*, modelos/generico.* y
+// modelos/animaciones/{reposo,andar,correr}.*. El nombre vale aunque lleve más palabras
+// («Vi_Arcane.zip» es Vi). También se miran las carpetas de personajes con «3d» en el nombre
+// (personajes/3d models). Se leen de src/models (incluidos con el juego), de las carpetas «arte»
+// de siempre y de la carpeta de arte de AppData, que manda sobre las demás.
+const MODEL_IDS = ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino', 'jugador', 'generico'];
+const MODEL_ALIASES = { ...ART_ALIASES, cait: 'caitlyn', heimer: 'heimerdinger', player: 'jugador', generic: 'generico' };
+const MODEL_EXT = /\.(glb|fbx|zip)$/i;
+const TEX_EXT = /\.(png|jpe?g|tga|bmp|webp|tiff?|dds)$/i;
+
+function modelName(base) {
+  const n = base.replace(MODEL_EXT, '').toLowerCase();
+  if (MODEL_IDS.includes(n)) return n;
+  if (MODEL_ALIASES[n]) return MODEL_ALIASES[n];
+  for (const w of n.split(/[^a-z0-9]+/)) {
+    if (MODEL_IDS.includes(w)) return w;
+    if (MODEL_ALIASES[w]) return MODEL_ALIASES[w];
+  }
+  return n;
+}
+
+// Primer modelo dentro de una carpeta (un .zip descomprimido: «vi_arcane/source/Vi.fbx»).
+function findModel(dir, depth = 0) {
+  let list;
+  try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return null; }
+  const f = list.find((e) => e.isFile() && /\.glb$/i.test(e.name)) || list.find((e) => e.isFile() && /\.fbx$/i.test(e.name));
+  if (f) return path.join(dir, f.name);
+  if (depth > 3) return null;
+  for (const e of list) if (e.isDirectory()) { const r = findModel(path.join(dir, e.name), depth + 1); if (r) return r; }
+  return null;
+}
+
 function modelFiles() {
   const out = {};
+  const add = (name, file, root) => { out[name] = { file, root: root || path.dirname(file) }; };
   const walk = (dir, pre) => {
     let list;
     try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
     for (const e of list) {
-      if (e.isDirectory() && !pre) walk(path.join(dir, e.name), `${e.name.toLowerCase()}/`);
-      else if (e.isFile() && /\.glb$/i.test(e.name)) {
-        const name = `${pre}${e.name.replace(/\.glb$/i, '').toLowerCase()}`;
-        out[pre ? name : ART_ALIASES[name] || name] = path.join(dir, e.name);
+      const full = path.join(dir, e.name);
+      if (e.isFile() && MODEL_EXT.test(e.name)) add(pre ? `${pre}${e.name.replace(MODEL_EXT, '').toLowerCase()}` : modelName(e.name), full);
+      else if (e.isDirectory() && !pre && e.name.toLowerCase() === 'animaciones') walk(full, 'animaciones/');
+      else if (e.isDirectory() && !pre) {
+        const name = modelName(e.name);
+        const m = MODEL_IDS.includes(name) ? findModel(full) : null;
+        if (m && !out[name]) add(name, m, full);
+        else if (!m) walk(full, '');
       }
     }
   };
+  const roots = (r) => {
+    walk(path.join(r, 'modelos'), '');
+    let list = [];
+    try { list = fs.readdirSync(path.join(r, 'personajes'), { withFileTypes: true }); } catch { /* sin carpeta */ }
+    for (const e of list) if (e.isDirectory() && /3d/i.test(e.name)) walk(path.join(r, 'personajes', e.name), '');
+  };
   walk(path.join(__dirname, 'src', 'models'), '');
-  for (const r of besideRoots()) walk(path.join(r, 'modelos'), '');
-  walk(path.join(artRoot(), 'modelos'), '');
+  for (const r of besideRoots()) roots(r);
+  roots(artRoot());
   return out;
 }
+
+const bytes = (buf) => new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+
+// Un .glb se devuelve tal cual; un .fbx suelto va con las imágenes de su carpeta (texturas)
+// y un .zip entero, que se abre en la ventana del juego.
 ipcMain.handle('model:list', () => Object.keys(modelFiles()));
 ipcMain.handle('model:read', (_e, name) => {
-  const file = modelFiles()[String(name)];
-  if (!file) return null;
-  const buf = fs.readFileSync(file);
-  return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+  const m = modelFiles()[String(name)];
+  if (!m) return null;
+  const data = bytes(fs.readFileSync(m.file));
+  if (/\.glb$/i.test(m.file)) return data;
+  if (/\.zip$/i.test(m.file)) return { kind: 'zip', name: path.basename(m.file), data };
+  const textures = {};
+  let total = 0;
+  const walk = (dir, depth) => {
+    let list;
+    try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of list) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory() && depth < 3) walk(full, depth + 1);
+      else if (e.isFile() && TEX_EXT.test(e.name) && total < 160e6) {
+        const b = fs.readFileSync(full);
+        total += b.length;
+        textures[e.name.toLowerCase()] = bytes(b);
+      }
+    }
+  };
+  walk(m.root, 0);
+  return { kind: 'fbx', name: path.basename(m.file), data, textures };
 });
 
 // Recorta la cara (parte alta y centrada) de un retrato y la guarda en caras/<id>.png.
@@ -395,6 +458,18 @@ ipcMain.handle('ai:chat', async (_e, url, headers, body) => {
   } catch (err) {
     const msg = err?.cause?.code === 'ECONNREFUSED' ? 'No hay nada escuchando en esa dirección (¿está Ollama abierto?)' : err?.name === 'TimeoutError' ? 'La IA ha tardado demasiado en responder' : String(err?.message || err);
     return { error: msg };
+  }
+});
+
+// Lista de modelos de Ollama (solo direcciones del propio ordenador).
+ipcMain.handle('ai:get', async (_e, url) => {
+  try {
+    const u = new URL(String(url));
+    if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(u.hostname)) return { error: 'Solo se pueden mirar servidores de este ordenador' };
+    const res = await fetch(u, { signal: AbortSignal.timeout(8000) });
+    return { status: res.status, data: await res.json() };
+  } catch (err) {
+    return { error: err?.cause?.code === 'ECONNREFUSED' ? 'Ollama no está abierto' : String(err?.message || err) };
   }
 });
 

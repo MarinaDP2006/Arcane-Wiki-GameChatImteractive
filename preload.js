@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld('arcane', {
   },
   openMap: (url) => ipcRenderer.invoke('map:open', url),
   ai: (url, headers, body) => ipcRenderer.invoke('ai:chat', url, headers, body),
+  aiGet: (url) => ipcRenderer.invoke('ai:get', url),
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch) => ipcRenderer.invoke('settings:set', patch),
