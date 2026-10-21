@@ -44,32 +44,6 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
 > `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
 
-## Novedades de la v1.7.0
-
-- **Menú principal nuevo:** ilustraciones pintadas de Piltover y Zaun que se funden entre sí, el título
-  ARCANE y el menú a la izquierda. Sin subtítulo ni texto al pie.
-- **Vídeos en su momento:** *Welcome to Zaun* o *Welcome to Piltover* al terminar de crear tu personaje
-  (según tu ciudad), *IntroS1* cuando empieza la historia de la Temporada 1 e *IntroS2* al empezar la
-  Temporada 2.
-- **Mundo abierto en 3D:** la ciudad se levanta en 3D (three.js) sobre un suelo pintado en 2D y la cámara
-  te sigue desde arriba con un ligero balanceo. Cada ciudad tiene su propio mapa: **Piltover** con
-  bulevares, torres con cúpulas y agujas, el canal del río con tres puentes, farolas hextec y dirigibles;
-  **Zaun** con callejas torcidas, chabolas apiladas con neones, chimeneas que echan humo, tuberías
-  gigantes, niebla verde y el abismo químico cruzado por pasarelas. Si tu tarjeta gráfica no tiene WebGL,
-  se ve el mismo mapa en 2D.
-- En las calles solo están los personajes de Arcane (con su avatar de chat), sin habitantes genéricos. Cada
-  lugar se ve con su imagen enmarcada flotando sobre una plataforma y los fragmentos del Códice son
-  cristales hextec.
-- **Imágenes de la Arcane Wiki, no de Riot:** se quita la descarga de Data Dragon. Los retratos de Riot que
-  bajaron versiones anteriores se apartan solos a `arte\_riot-retirado` (no se borran).
-- **Historia:** en las escenas solo salen los avatares de chat de cada personaje, nunca retratos generados.
-
-## Novedades de la v1.6.0
-
-- **Avatares por género:** 8 retratos de mujer y 8 de hombre en el creador.
-- **16 personajes de Arcane** con su retrato; los secundarios ya no son personajes.
-- **Atlas interactivo** con el mapa de Piltover y Zaun y los símbolos de cada ciudad.
-
 ## Cómo se juega
 1. **Crea tu campeón** (al estilo de League of Legends), en 8 pasos:
    - **Origen e identidad**: ciudad, nombre, género, edad, profesión y barrio.
@@ -126,7 +100,6 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | F11 | Pantalla completa |
 
 ### Menús y Códice
-
 **Menús en 3D:** el menú de partidas, los ajustes y el creador tienen una escena
 3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
@@ -140,12 +113,6 @@ lugares explorados. A la izquierda está el símbolo de Piltover y a la derecha 
 púlsalos para ver todos los lugares de cada ciudad. La pestaña de la Wiki abre los
 mapas interactivos de la [Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) (necesita
 internet; la dirección se cambia en *Ajustes*).
-
-### Conversaciones sin IA
-
-Desde la v1.5.0 el juego ya no usa Ollama ni ninguna IA: todas las conversaciones están
-escritas a mano en `src/data/chat.js`, con casi 250 respuestas posibles entre 16 personajes.
-Funciona sin internet y sin instalar nada aparte.
 
 ## Cómo instalarlo
 Hay dos formas: **descargar el juego ya compilado** (recomendado, no hace falta instalar nada más)
@@ -237,15 +204,6 @@ scripts/check.js         Validador de datos
 
 
 ## Arte y vídeos (v1.6.0)
-
-Las imágenes vienen dentro del juego: 16 retratos para elegir (8 de mujer y 8 de hombre, según el género
-que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa de Piltover y Zaun del
-Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
-(`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
-
-Los vídeos no se incluyen (pesan mucho). Copia estos cuatro en la carpeta `arte\video` de
-`%APPDATA%\Arcane Piltover y Zaun\` o en una carpeta `arte\video` junto al `.exe` del juego:
-
 | Archivo | Cuándo se reproduce |
 |---|---|
 | `Welcome to Zaun.mp4` | Al empezar con origen en Zaun |
