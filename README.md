@@ -1,4 +1,4 @@
-# Arcane: Piltover y Zaun
+# Arcane: HistoryGame
 
 Un juego para **Windows** y **Mac** ambientado en *Arcane*. Creas tu personaje, eliges si vienes de
 **Piltover** o de **Zaun**, recorres las dos ciudades y vives la historia hablando con sus personajes.
