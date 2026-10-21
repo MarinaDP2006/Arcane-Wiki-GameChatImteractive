@@ -8,7 +8,7 @@ window.WORLD = {
       size: [3000, 2200],
       seed: 7,
       block: 300, street: 96, // bulevares anchos
-      palette: { ground: '#2a2418', street: '#4a3f2a', building: ['#d9c9a0', '#cbb68a', '#e6d8b4', '#bfa878'], roof: ['#3a8a8a', '#2f6f7a', '#8a5a3a', '#4a6a9a'], outline: '#5a4a2a', glow: '#e3c45a', particle: 'gold' },
+      palette: { ground: '#2a2418', street: '#4a3f2a', building: ['#d9c9a0', '#cbb68a', '#e6d8b4', '#bfa878'], roof: ['#4f9a8c', '#3f7f7a', '#9a5a3a', '#5e6670'], outline: '#5a4a2a', glow: '#e3c45a', particle: 'gold' },
       districts: [
         { name: 'Barrio Académico', rect: [0, 0, 1500, 900], tint: 'rgba(227,196,90,0.06)' },
         { name: 'Distrito del Consejo', rect: [1500, 0, 1500, 900], tint: 'rgba(212,167,63,0.09)' },

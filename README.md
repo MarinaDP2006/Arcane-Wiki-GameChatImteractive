@@ -28,7 +28,8 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 | **Relaciones** | Según tu personaje puedes haceros amigos, mejores amigos, pareja (si os atraéis y tienes 18 años o más), hermandad o, si te faltan los padres, conseguir una figura paterna o materna (Vander, Silco, Ambessa, Cassandra, Heimerdinger, Sevika). Cada relación trae saludos y citas propias. |
 | **Chat libre con IA** | Opcional y gratis, al estilo de Character AI: en **Ajustes → IA para los chats** eliges Google Gemini, Groq u OpenRouter (con clave gratis) u Ollama en tu PC (sin internet). Luego en el Comunicador pulsas **✦ Libre** y escribes lo que quieras. |
 | **Minijuegos** | Cada lugar tiene una actividad que mejora tus estadísticas, con cuenta atrás, chispas, humo, sacudidas y botones táctiles grandes en el móvil (con vibración). |
-| **Códice** | Enciclopedia del juego con el **Atlas de las Dos Ciudades** (20 lugares) y los mapas de la Arcane Wiki. |
+| **Códice** | Enciclopedia del juego con el **Atlas de las Dos Ciudades** (20 lugares). |
+| **Ajustes** | 10 pestañas: gráficos (calidad, resolución, sombras, estilo pintado, brillo, FPS), audio (música y efectos por separado), lectura (velocidad y tamaño del texto), juego (dificultad de los minijuegos, minimapa, flecha del objetivo), controles, accesibilidad (menos movimiento, alto contraste, letra fácil de leer), IA, copias de seguridad y más. |
 
 ## 2. Descargar e instalar
 
@@ -128,7 +129,7 @@ Estos son los 16 personajes que hablan en la historia y en el comunicador.
 
 **Ya vienen dentro del juego**, no hace falta copiar nada: las caras y las imágenes de cuerpo entero de los personajes,
 los 16 retratos para elegir, las fotos de los lugares y los fondos del mapa 3D de Piltover y Zaun.
-En el ordenador, al abrir el juego con internet, **se descargan solas** de la Arcane Wiki las imágenes que falten.
+El juego **no necesita internet**: no descarga nada (solo el chat libre con IA, si lo activas con un servicio en línea).
 
 El juego ya no usa vídeos: las escenas de inicio son cinemáticas pintadas que se saltan con **Espacio**, **Esc**, **Intro** o tocando la pantalla.
 
@@ -155,7 +156,7 @@ Si reinstalas el juego, tus partidas siguen ahí. La carpeta conserva el nombre 
 |---|---|
 | El mapa sale en 2D y no en 3D | Tu tarjeta gráfica no tiene WebGL. El juego funciona igual en 2D. Actualizar los drivers suele arreglarlo. |
 | En el móvil el mapa va lento | Cierra otras apps. En móviles antiguos el mapa pasa solo a 2D. |
-| La pestaña de mapas de la Wiki está en blanco | Necesita internet. La dirección se cambia en **Ajustes**. |
+| El mapa 3D va a tirones | **Ajustes → Gráficos**: baja la calidad o la resolución del mundo 3D. |
 
 ---
 
@@ -223,6 +224,7 @@ Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas qu
 | `src/data/atlas.js` | Lugares del Atlas |
 | `src/data/wiki.js` | Entradas del Códice |
 | `src/data/creation.js` | Opciones del creador de personaje |
+| `src/data/arte.js` | Lista del arte incluido (se genera con `node scripts/art-manifest.js`) |
 | `scripts/check.js` | El revisor de `npm run check` |
 
 ---

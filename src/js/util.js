@@ -78,6 +78,15 @@
     },
   };
 
+  // Valores de fábrica de todos los ajustes (Ajustes → Datos → Restablecer).
+  const SETTINGS_DEFAULTS = {
+    volume: 0.6, music: true, musicVolume: 1, sfxVolume: 1, muteBackground: true,
+    textSpeed: 'normal', textSize: 'normal', spoilers: false,
+    quality: 'alta', renderScale: 1, shadows: true, postfx: true, paintStyle: true, particles: true, cameraSway: true, brightness: 1, showFps: false,
+    difficulty: 'normal', objectiveArrow: true, minimap: true, names: false, confirmExit: true,
+    camSpeed: 1, invertCam: false, vibration: true, shake: 1,
+    reduceMotion: false, highContrast: false, readableFont: false,
+  };
   const desktop = window.arcane?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).
   const touch = Boolean(window.Capacitor?.isNativePlatform?.() || window.matchMedia?.('(pointer: coarse)').matches);
@@ -103,7 +112,7 @@
       return true;
     },
     async getSettings() {
-      const base = { volume: 0.6, music: true, textSpeed: 'normal', spoilers: false };
+      const base = { ...SETTINGS_DEFAULTS };
       if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
       return { ...base, ...LS.get('arcane-settings', {}) };
     },
@@ -187,14 +196,6 @@
     return { out, unknown, direct };
   }
 
-  // Arte que viaja dentro del juego. En el escritorio lo sirve main.js; en el navegador se lee de aquí.
-  const BUNDLED = {
-    avatares: ['mujer-1', 'mujer-2', 'mujer-3', 'mujer-4', 'mujer-5', 'mujer-6', 'mujer-7', 'mujer-8', 'hombre-1', 'hombre-2', 'hombre-3', 'hombre-4', 'hombre-5', 'hombre-6', 'hombre-7', 'hombre-8'].map((n) => [n, 'webp']),
-    caras: ['vi', 'jinx', 'ekko', 'silco', 'vander', 'sevika', 'isha', 'jayce', 'viktor', 'caitlyn', 'mel', 'heimerdinger', 'cassandra', 'ambessa', 'maddie', 'kino'].map((n) => [n, 'webp']),
-    lugares: ['piltover', 'zaun', 'academia', 'consejo', 'hexpuertas', 'stillwater', 'taller-jayce', 'ultima-gota', 'comuna-viktor'].map((n) => [n, 'webp']),
-    codice: [['mapa-piltover-zaun', 'webp']],
-  };
-
   // Arte personal de la jugadora (carpeta «arte» en escritorio).
   window.CustomArt = {
     files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {} },
@@ -203,7 +204,8 @@
       if (window.arcane?.art) {
         try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
       } else {
-        for (const [dir, list] of Object.entries(BUNDLED)) this.files[dir] = Object.fromEntries(list.map(([n, e]) => [n, `img/arte/${dir}/${n}.${e}`]));
+        // Navegador y Android: el arte incluido (lista generada en src/data/arte.js).
+        for (const dir of Object.keys(this.files)) this.files[dir] = { ...(window.ART_BUNDLED?.[dir] || {}) };
       }
       const { out, unknown, direct } = matchPlaces(this.files.lugares || {});
       const ids = Object.keys(window.Scenes?.THEMES || {});
@@ -221,5 +223,5 @@
     },
   };
 
-  window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, genderize, desktop, touch };
+  window.U = { $, $$, el, esc, tpl, store, SETTINGS_DEFAULTS, toast, sleep, pick, norm, genderIndex, genderize, desktop, touch };
 })();

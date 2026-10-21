@@ -277,29 +277,13 @@
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
           el('h2', {}, `Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
-          el('div', { class: 'codex-tabs' }, tab('entradas', 'Entradas'), tab('atlas', 'Atlas'), tab('mapa', 'Mapas de la Wiki')),
+          el('div', { class: 'codex-tabs' }, tab('entradas', 'Entradas'), tab('atlas', 'Atlas')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
       box.append(panel);
       const body = $('#codex-body');
       if (sub === 'atlas') {
         renderAtlas(body, who);
-      } else if (sub === 'mapa') {
-        const url = window.App.mapUrl();
-        body.append(el('div', { class: 'neta-wrap' },
-          el('div', { class: 'neta-bar' },
-            el('span', { class: 'muted small' }, 'Mapas interactivos de la Arcane Wiki (se cargan desde internet).'),
-            el('button', { class: 'btn small', onclick: () => body.querySelector('webview')?.reload() }, 'Recargar'),
-            el('button', { class: 'btn small', onclick: () => window.App.openMap() }, '⧉ Abrir en ventana')),
-          U.desktop
-            ? el('webview', { class: 'neta-view', src: url, partition: 'persist:mapa', allowpopups: 'false' })
-            : el('iframe', { class: 'neta-view', src: url, referrerpolicy: 'no-referrer' }),
-          el('div', { class: 'neta-error hidden' },
-            el('h3', {}, 'No se pudo cargar el mapa'),
-            el('p', { class: 'muted' }, 'El mapa interactivo necesita internet. Comprueba tu conexión y pulsa Recargar, o ábrelo en una ventana aparte.'))));
-        const view = body.querySelector('webview');
-        view?.addEventListener('did-fail-load', (e) => { if (e.isMainFrame && e.errorCode !== -3) body.querySelector('.neta-error')?.classList.remove('hidden'); });
-        view?.addEventListener('did-start-loading', () => body.querySelector('.neta-error')?.classList.add('hidden'));
       } else {
         Wiki.mount(body, { known: codexKnown, onTalk: (id) => openOverlay('chats', id), canTalk: (id) => G.unlocked.includes(id) });
         if (who) Wiki.open(who);
@@ -314,7 +298,7 @@
         el('button', { class: 'btn', onclick: () => openArcade() }, 'Salón de minijuegos'),
         el('button', { class: 'btn', onclick: () => openSettingsOverlay() }, 'Ajustes'),
         el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, 'Controles'),
-        el('button', { class: 'btn ghost', onclick: async () => { await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
+        el('button', { class: 'btn ghost', onclick: async () => { if (window.App.settings.confirmExit !== false && !confirm('¿Salir al menú principal? La partida se guarda.')) return; await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
         U.desktop ? el('button', { class: 'btn ghost', onclick: async () => { await persist(); window.arcane.quit(); } }, '✕ Salir del juego') : null));
       return;
     }
@@ -726,6 +710,7 @@
 
   function delayFor(text) {
     const speed = window.App.settings.textSpeed;
+    if (speed === 'instantaneo') return 120;
     const base = speed === 'rapido' ? 250 : speed === 'lento' ? 1100 : 600;
     return base + Math.min(2200, text.length * (speed === 'rapido' ? 8 : speed === 'lento' ? 30 : 18));
   }
@@ -746,7 +731,7 @@
     showChoices([]);
     for (const line of node.lines.filter(lineVisible)) {
       const text = tpl(line.t, G.player);
-      if (tab === 'historia' && !skipping) {
+      if (tab === 'historia' && !skipping && window.App.settings.textSpeed !== 'instantaneo') {
         const typing = typingIndicator(line.s);
         await sleep(skipping ? 0 : 350);
         typing?.remove();
@@ -1245,7 +1230,7 @@
       const line = typeof raw === 'string' ? { s: id, t: raw } : raw;
       const text = line.raw ? line.t : tpl(line.t, G.player);
       const log = contact === id && tab === 'chats' ? $('#chat-log') : null;
-      if (log && line.s !== 'narrador' && !line.raw) {
+      if (log && line.s !== 'narrador' && !line.raw && window.App.settings.textSpeed !== 'instantaneo') {
         const typing = el('div', { class: 'msg them typing' }, el('div', { class: 'bubble' }, el('i'), el('i'), el('i')));
         log.append(typing);
         log.scrollTop = log.scrollHeight;
