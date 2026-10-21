@@ -809,6 +809,9 @@
     last = t;
     // Un error en un fotograma no debe parar el bucle (pantalla congelada).
     requestAnimationFrame((nt) => frame(nt, id));
+    // Con un minijuego o una cinemática a pantalla completa encima no hace falta dibujar
+    // la ciudad (ahorra mucha batería en el móvil).
+    if (paused && document.querySelector('.mg:not(.out), .cine')) return;
     try {
       if (!paused) update(dt);
       draw(t);

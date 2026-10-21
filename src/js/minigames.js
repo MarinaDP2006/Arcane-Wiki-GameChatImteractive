@@ -258,12 +258,14 @@
 
       function loop(now) {
         if (!running) return;
-        const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
+        // La cuenta atrás usa tiempo real (aunque el equipo vaya lento); el juego, pasos cortos.
+        const raw = Math.max(0, Math.min(0.25, (now - last) / 1000));
+        const dt = Math.min(0.05, raw);
         last = now;
         const input = { keys, pressed: pressed.splice(0), mouse: { ...mouse, clicks: mouse.clicks.splice(0) } };
         if (count > 0) {
           const before = Math.ceil(count - 0.6);
-          count -= dt;
+          count -= raw;
           if (Math.ceil(count - 0.6) !== before) { Audio2.sfx.click(); buzz(15); }
         } else game.update(dt, input);
         FX.update(dt);
