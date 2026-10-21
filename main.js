@@ -94,12 +94,16 @@ function ensureArtDir() {
   for (const d of ART_DIRS) fs.mkdirSync(path.join(artRoot(), d), { recursive: true });
 }
 
+// Otros nombres con los que la jugadora guarda las caras de los personajes.
+const ART_ALIASES = { ambressa: 'ambessa', kiraman: 'cassandra', kiramman: 'cassandra', 'cassandra-kiramman': 'cassandra', powder: 'jinx', violet: 'vi' };
+
 function listDir(dir) {
   const out = {};
   if (!fs.existsSync(dir)) return out;
   for (const f of fs.readdirSync(dir)) {
     if (!ART_EXT.test(f)) continue;
-    out[f.replace(/\.[^.]+$/, '').toLowerCase()] = pathToFileURL(path.join(dir, f)).href;
+    const name = f.replace(/\.[^.]+$/, '').toLowerCase();
+    out[ART_ALIASES[name] || name] = pathToFileURL(path.join(dir, f)).href;
   }
   return out;
 }

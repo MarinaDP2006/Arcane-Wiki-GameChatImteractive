@@ -13,7 +13,9 @@ const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS } = ctx.window;
 const errors = [];
 const chars = new Set(WIKI.personajes.map((p) => p.id));
 const allIds = new Set(WIKI.categories.flatMap((c) => WIKI[c.id].map((e) => e.id)));
-const speakers = new Set([...chars, 'narrador', 'yo', 'sistema']);
+const cast = new Set(STORY.cast || []);
+const speakers = new Set([...cast, 'narrador', 'yo', 'sistema']);
+cast.forEach((id) => { if (!chars.has(id)) errors.push(`reparto: "${id}" no está en la wiki`); });
 const FLAG_SET = new Set(['familia_famosa']);
 const GAME_IDS = ['foso', 'tejados', 'aerotabla', 'tiro', 'circuito', 'runas', 'regateo'];
 
@@ -24,7 +26,7 @@ for (const ch of STORY.chapters) {
 for (const ch of STORY.chapters) {
   if (!ch.nodes[ch.start]) errors.push(`${ch.id}: nodo inicial "${ch.start}" no existe`);
   (ch.unlocks || []).forEach((id) => {
-    if (!chars.has(id)) errors.push(`${ch.id}: desbloquea "${id}" que no está en la wiki`);
+    if (!cast.has(id)) errors.push(`${ch.id}: desbloquea "${id}" que no es del reparto`);
     if (!CHAT[id]) errors.push(`${ch.id}: "${id}" no tiene diálogos de chat`);
   });
   for (const [nid, n] of Object.entries(ch.nodes)) {
@@ -92,7 +94,7 @@ const TONES = ['amable', 'broma', 'duro', 'pregunta', 'coqueto', 'astuto', 'seri
 for (const d of Object.values(CHAT)) for (const o of [...d.hub, ...Object.values(d.nodes || {}).flatMap((n) => n.opts)]) (o.fx?.flags || []).forEach((f) => FLAG_SET.add(f));
 let dlgOpts = 0;
 for (const [id, d] of Object.entries(CHAT)) {
-  if (!chars.has(id)) errors.push(`chat: personaje "${id}" no está en la wiki`);
+  if (!cast.has(id)) errors.push(`chat: personaje "${id}" no es del reparto`);
   if (!d.greet?.low || !d.greet?.mid || !d.greet?.high) errors.push(`chat ${id}: faltan saludos`);
   if (!d.bye?.length) errors.push(`chat ${id}: falta despedida`);
   if (!Array.isArray(d.hub) || !d.hub.length) errors.push(`chat ${id}: menú de temas vacío`);

@@ -89,6 +89,8 @@
     G.codex = G.codex || [];
     G.visited = G.visited || [];
     G.acts = G.acts || {};
+    // Solo el reparto principal sale en el comunicador (partidas antiguas tenían a más gente).
+    G.unlocked = G.unlocked.filter((id) => window.STORY.cast.includes(id));
     if (G.progress.started === undefined) G.progress.started = Boolean(G.progress.node);
     tab = 'historia';
     contact = null;
