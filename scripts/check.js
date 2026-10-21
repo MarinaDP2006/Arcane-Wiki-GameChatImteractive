@@ -158,6 +158,9 @@ for (const p of ATLAS.places) {
   if (p.x < 0 || p.x > 100 || p.y < 0 || p.y > 100) errors.push(`atlas ${p.id}: fuera del mapa`);
 }
 
+// Todo el arte incluido debe estar en la lista que usan el navegador y Android.
+try { require('child_process').execFileSync(process.execPath, [path.join(__dirname, 'art-manifest.js'), '--check'], { stdio: 'pipe' }); } catch { errors.push('src/data/arte.js está desactualizado: ejecuta node scripts/art-manifest.js'); }
+
 if (errors.length) {
   console.error(`✗ ${errors.length} problema(s):\n - ${errors.join('\n - ')}`);
   process.exit(1);

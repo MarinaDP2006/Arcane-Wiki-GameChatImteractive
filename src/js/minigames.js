@@ -10,7 +10,10 @@
   // Textos con números (sueltos para que el traductor los encuentre como patrón).
   const streakTxt = (n) => `Racha ×${n}`;
   const goalTxt = (t) => `Objetivo: ${t}`;
-  const buzz = (ms) => { try { if (U.touch) navigator.vibrate?.(ms); } catch { /* sin vibración */ } };
+  const opt = () => window.App?.settings || {};
+  const buzz = (ms) => { try { if (U.touch && opt().vibration !== false) navigator.vibrate?.(ms); } catch { /* sin vibración */ } };
+  // Dificultad de Ajustes: fácil da una ventaja más, difícil quita una.
+  const DIFF = { facil: 1, normal: 0, dificil: -1 };
 
   // ---------- Emblemas (iconos de línea dorada) ----------
   const EMBLEM = {
@@ -60,7 +63,7 @@
         }
       },
       text(x, y, txt, col = '#ffe08a', size = 30) { texts.push({ x, y, txt, col, size, life: 1 }); },
-      shake(v) { S.shake = Math.max(S.shake, v); },
+      shake(v) { S.shake = Math.max(S.shake, v * (opt().shake ?? 1)); },
       flash(a = 0.5, col = '255,255,255') { S.flash = Math.max(S.flash, a); S.flashCol = col; },
       hurt(a = 1) { S.hurt = Math.max(S.hurt, a); },
       update(dt) {
@@ -224,7 +227,7 @@
       function start() {
         size();
         FX = makeFX();
-        game = def.create(W, H, opts);
+        game = def.create(W, H, { ...opts, bonus: (opts.bonus || 0) + (DIFF[opt().difficulty] || 0) });
         running = true;
         count = 2.6;
         last = performance.now();
