@@ -1166,7 +1166,8 @@
       onkeydown: (e) => { if (e.key !== 'Escape') e.stopPropagation(); if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } } });
     const send = () => { const t = input.value.trim(); if (!t || talking) return; input.value = ''; sendAI(id, t); };
     box.append(el('div', { class: 'ai-row' }, input, el('button', { class: 'btn primary ai-send', title: 'Enviar', onclick: send }, '➤')),
-      el('small', { class: 'muted ai-note' }, window.AI.cfg().provider === 'ollama' : `✦ ${window.AI.PROVIDERS[window.AI.cfg().provider].label} · lo que escribas se envía a ese servicio`));
+      window.AI.cfg().provider === 'ollama' ? null : el('small', { class: 'muted ai-note' }, `✦ ${window.AI.PROVIDERS[window.AI.cfg().provider].label} · lo que escribas se envía a ese servicio`));
+    window.AI.warm();
     if (!U.touch) setTimeout(() => input.focus(), 0);
   }
 

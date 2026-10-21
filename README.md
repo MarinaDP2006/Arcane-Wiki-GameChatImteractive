@@ -26,7 +26,7 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 | **Historia** | 8 capítulos por ciudad, un capítulo final con 4 finales y una **Temporada 2** con 3 finales más. |
 | **Comunicador** | Chats con los personajes que conoces, con su retrato grande en un marco de latón. Eliges qué decir y ellos reaccionan. *Charlar un rato…* tiene más de 300 respuestas que cambian cada vez. |
 | **Relaciones** | Según tu personaje puedes haceros amigos, mejores amigos, pareja (si os atraéis y tienes 18 años o más), hermandad o, si te faltan los padres, conseguir una figura paterna o materna (Vander, Silco, Ambessa, Cassandra, Heimerdinger, Sevika). Cada relación trae saludos y citas propias. |
-| **Chat libre con IA** | Opcional y gratis, al estilo de Character AI: en **Ajustes → IA para los chats** eliges Google Gemini, Groq u OpenRouter (con clave gratis) u Ollama en tu PC (sin internet). Luego en el Comunicador pulsas **✦ Libre** y escribes lo que quieras. |
+| **Chat libre con IA** | Opcional y gratis, al estilo de Character AI: en **Ajustes → IA para los chats** eliges Google Gemini, Groq u OpenRouter (con clave gratis) u Ollama en tu PC (sin internet; recomendado `gemma3:4b`, o `gemma3:12b` con tarjeta gráfica). Cada personaje tiene sus propias instrucciones de cómo habla y cómo te trata (`src/data/ai-voices.js`). Luego en el Comunicador pulsas **✦ Libre** y escribes lo que quieras. |
 | **Minijuegos** | Cada lugar tiene una actividad que mejora tus estadísticas, con cuenta atrás, chispas, humo, sacudidas y botones táctiles grandes en el móvil (con vibración). |
 | **Códice** | Enciclopedia del juego con el **Atlas de las Dos Ciudades** (20 lugares) y los mapas de la Arcane Wiki. |
 
@@ -141,7 +141,7 @@ Si el móvil va lento, se pueden quitar en **Ajustes → Mundo 3D** (vuelven los
 | `modelos/generico.glb` | Quien no tenga modelo propio |
 | `modelos/animaciones/reposo.glb`, `andar.glb`, `correr.glb` | Animaciones para todos (Mixamo, marcando **In Place**) |
 
-Mixamo descarga en `.fbx`: ábrelo en [Blender](https://www.blender.org) (gratis) y expórtalo como **glTF binario (.glb)**.
+En el ordenador también valen **`.fbx`** y **`.zip`** tal cual los descargas (el `.zip` con el `.fbx` y sus texturas dentro), y el nombre puede llevar más palabras: `Vi_Arcane.zip` es Vi. El juego también mira las carpetas de `personajes` con «3d» en el nombre (por ejemplo `personajes/3d models`). Si el modelo no tiene huesos, se mueve entero con un balanceo al andar; para que ande de verdad, pásalo por [Mixamo](https://www.mixamo.com). Para la app de Android hace falta `.glb`: abre el modelo en [Blender](https://www.blender.org) (gratis) y expórtalo como **glTF binario (.glb)**.
 Si un modelo ya trae sus propias animaciones llamadas *idle*, *walk* o *run*, se usan esas.
 
 ## 6. Imágenes
@@ -235,6 +235,8 @@ Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas qu
 | `src/js/avatars3d.js` | Los personajes en 3D: muñecos pintados con animación de andar y correr, o modelos `.glb` de Mixamo |
 | `src/models/` | Modelos 3D incluidos con el juego (opcional, ver «Personajes en 3D») |
 | `src/vendor/three-gltf.js` | El lector de modelos `.glb` de Three.js |
+| `src/vendor/three-fbx.js` | El lector de modelos `.fbx` y `.zip` de Three.js |
+| `src/data/ai-voices.js` | Cómo habla cada personaje y cómo te trata en el chat con IA |
 | `src/js/minigames.js` | Los 7 minijuegos y sus efectos (partículas, sacudidas, cuenta atrás) |
 | `src/js/game.js` | Historia, comunicador, ficha, actividades y Códice |
 | `src/js/creator.js` | El creador de personaje |

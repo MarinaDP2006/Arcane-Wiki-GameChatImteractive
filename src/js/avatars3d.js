@@ -495,10 +495,45 @@
   async function readModel(name) {
     if (desktop()) {
       const buf = await window.arcane.models.read(name);
-      return buf ? (buf.buffer ? buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) : buf) : null;
+      if (!buf || buf.kind) return buf;
+      return buf.buffer ? buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) : buf;
     }
     const res = await fetch(`models/${name}.glb`);
     return res.ok ? res.arrayBuffer() : null;
+  }
+
+  // Imágenes de un modelo .fbx: se buscan por el nombre del archivo, vengan de donde vengan
+  // (los .fbx suelen guardar la ruta del ordenador de quien los hizo).
+  const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', bmp: 'image/bmp' };
+  const baseName = (u) => decodeURIComponent(String(u).split(/[\\/]/).pop() || '').toLowerCase();
+  function parseFBX(data, textures) {
+    const urls = {};
+    for (const [n, b] of Object.entries(textures)) {
+      const ext = n.split('.').pop();
+      urls[baseName(n)] = URL.createObjectURL(new Blob([b], { type: MIME[ext] || 'application/octet-stream' }));
+    }
+    const manager = new T.LoadingManager();
+    manager.setURLModifier((u) => (/^(blob|data):/.test(u) ? u : urls[baseName(u)] || urls[baseName(u).replace(/\.[^.]+$/, '.png')] || u));
+    const buf = data.buffer ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) : data;
+    const group = new window.THREE_FBX.FBXLoader(manager).parse(buf, '');
+    return { scene: group, animations: group.animations || [] };
+  }
+
+  function parseGLB(buf, name) {
+    return new Promise((ok) => new window.THREE_GLTF.GLTFLoader().parse(buf, '', ok, (err) => { console.warn(`Modelo ${name}:`, err); ok(null); }));
+  }
+
+  // Un .zip trae dentro el modelo (.glb o .fbx) y sus texturas.
+  function parseZip(data, name) {
+    const files = window.THREE_FBX.unzipSync(new Uint8Array(data));
+    const entries = Object.keys(files).filter((n) => !/(^|\/)(__MACOSX|\.)/.test(n) && files[n].length);
+    const glb = entries.find((n) => /\.glb$/i.test(n));
+    if (glb) return parseGLB(files[glb].slice().buffer, name);
+    const fbx = entries.filter((n) => /\.fbx$/i.test(n)).sort((a, b) => files[b].length - files[a].length)[0];
+    if (!fbx) { console.warn(`Modelo ${name}: el .zip no tiene ningún .fbx ni .glb`); return null; }
+    const tex = {};
+    for (const n of entries) if (/\.(png|jpe?g|webp|bmp|tga)$/i.test(n)) tex[n] = files[n];
+    return parseFBX(files[fbx], tex);
   }
 
   function loadGLB(name) {
@@ -508,8 +543,10 @@
       if (!set.has(name) || !window.THREE_GLTF) return null;
       const buf = await readModel(name);
       if (!buf) return null;
-      return new Promise((ok) => new window.THREE_GLTF.GLTFLoader().parse(buf, '', ok, (err) => { console.warn(`Modelo ${name}:`, err); ok(null); }));
-    })().catch(() => null);
+      if (buf.kind === 'zip') return parseZip(buf.data, name);
+      if (buf.kind === 'fbx') return parseFBX(buf.data, buf.textures || {});
+      return parseGLB(buf, name);
+    })().catch((err) => { console.warn(`Modelo ${name}:`, err); return null; });
     parsed.set(name, p);
     return p;
   }
@@ -549,9 +586,16 @@
     for (const n of names) { gltf = await loadGLB(n); if (gltf) break; }
     if (!gltf) return null;
     const model = window.THREE_GLTF.SkeletonUtils.clone(gltf.scene);
+    let rigged = false;
     model.traverse((o) => {
       o.name = bone(o.name);
-      if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; }
+      if (o.isBone && /^hips$/i.test(o.name)) rigged = true;
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.frustumCulled = false;
+        // Los .fbx traen a veces materiales negros o transparentes sin querer.
+        for (const m of [].concat(o.material)) { if (m.map) m.color?.setRGB(1, 1, 1); if (m.opacity === 0) m.opacity = 1; }
+      }
     });
     const box = new T.Box3().setFromObject(model);
     const size = box.getSize(new T.Vector3());
@@ -564,7 +608,8 @@
     const own = {};
     for (const clip of gltf.animations || []) for (const [k2, re] of Object.entries(CLIPS)) if (!own[k2] && re.test(clip.name)) own[k2] = clip;
     if (!own.idle && !own.walk && gltf.animations?.length) own.idle = gltf.animations[0];
-    const shared = await sharedClips();
+    // Las animaciones compartidas de Mixamo solo sirven si el modelo tiene sus huesos.
+    const shared = rigged ? await sharedClips() : {};
     const actions = {};
     for (const k2 of Object.keys(CLIPS)) {
       const clip = own[k2] || shared[k2];
@@ -575,11 +620,18 @@
       actions[k2] = a;
     }
     if (!actions.walk && actions.run) actions.walk = actions.run;
-    return { root, mixer, actions, kind: 'glb' };
+    // Sin animaciones (modelo quieto, sin huesos): se mueve entero con un balanceo al andar.
+    return { root, model, mixer, actions, kind: Object.keys(actions).length ? 'glb' : 'static' };
   }
 
   function animateGLB(av, dt, speed) {
     const A = av.actions;
+    // Solo trae una animación de estar quieto: se usa siempre y al andar se balancea entero.
+    if (!A.walk && !A.run) {
+      A.idle?.setEffectiveWeight(1);
+      av.mixer.update(dt);
+      return animateStatic(av, dt, speed);
+    }
     const amp = Math.min(1, speed / 110);
     const run = Math.max(0, Math.min(1, (speed - 260) / 120));
     av.amp = (av.amp ?? 0) + (amp - (av.amp ?? 0)) * Math.min(1, dt * 8);
@@ -592,6 +644,17 @@
     if (hasRun) A.run.timeScale = Math.max(0.8, Math.min(1.3, speed / (WALK * 1.7)));
     if (!A.idle && A.walk && av.amp < 0.05) A.walk.timeScale = 0; // sin animación de reposo: se queda quieto
     av.mixer.update(dt);
+  }
+
+  function animateStatic(av, dt, speed) {
+    const amp = Math.min(1, speed / 110);
+    av.amp = (av.amp ?? 0) + (amp - (av.amp ?? 0)) * Math.min(1, dt * 8);
+    av.ph = ((av.ph || 0) + dt * (speed / (34 * DOLL)) * Math.PI) % (Math.PI * 2);
+    const A = av.amp;
+    av.model.position.y = av.base ?? (av.base = av.model.position.y);
+    av.model.position.y += Math.abs(Math.sin(av.ph)) * 2.2 * A;
+    av.model.rotation.z = Math.sin(av.ph) * 0.06 * A;
+    av.model.rotation.x = 0.1 * A;
   }
 
   // ---------- Interfaz ----------
@@ -621,6 +684,7 @@
     av.yaw += d * Math.min(1, dt * 10);
     av.holder.rotation.y = av.yaw;
     if (av.kind === 'glb') animateGLB(av, dt, speed);
+    else if (av.kind === 'static') animateStatic(av, dt, speed);
     else animateDoll(av, dt, speed, t);
   }
 

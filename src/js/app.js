@@ -102,6 +102,8 @@
       const d = P[a.provider] || P.off;
       const save = (patch) => set({ ai: { ...a, ...patch } }).then(draw);
       const status = el('small', { class: 'muted ai-status' });
+      // Modelos que ya tiene Ollama: se elige uno con un clic.
+      const models = el('div', { class: 'chips ai-models' });
       box.innerHTML = '';
       box.append(
         el('h3', {}, 'IA para los chats (opcional)'),
@@ -116,11 +118,27 @@
           el('input', { class: 'input', value: a.url || d.url, placeholder: 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
         a.provider !== 'off' ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
           el('input', { class: 'input', value: a.model || d.model, onchange: (e) => save({ model: e.target.value.trim() }) })) : null,
+        a.provider === 'ollama' ? models : null,
         a.provider !== 'off' ? el('div', { class: 'row gap' },
+          a.provider === 'ollama' ? el('button', { class: 'btn small', onclick: findModels }, 'Buscar mis modelos') : null,
           el('button', { class: 'btn small', onclick: async () => {
             status.textContent = 'Probando…';
-            try { status.textContent = `✓ Funciona: «${await window.AI.test()}»`; } catch (err) { status.textContent = `✗ ${err.message}`; }
+            try {
+              const r = await window.AI.test();
+              status.textContent = `✓ Funciona en ${r.secs.toFixed(1)} s: «${r.text}»${a.provider === 'ollama' && r.secs > 15 ? ' · La primera vez tarda más porque carga el modelo. Prueba otra vez; si sigue lento, elige un modelo más pequeño.' : ''}`;
+            } catch (err) { status.textContent = `✗ ${err.message}`; }
           } }, 'Probar conexión'), status) : null);
+      async function findModels() {
+        status.textContent = 'Buscando…';
+        try {
+          const list = await window.AI.ollamaModels();
+          status.textContent = list.length ? 'Elige uno (los pequeños responden antes).' : 'Ollama no tiene ningún modelo. Abre una terminal y escribe «ollama pull gemma3:4b».';
+          models.replaceChildren(...list.map((m) => el('button', {
+            class: `chip${m.name === (a.model || d.model) ? ' active' : ''}`,
+            onclick: () => save({ model: m.name }),
+          }, `${m.name} · ${m.gb.toFixed(1)} GB`)));
+        } catch (err) { status.textContent = `✗ ${err.message}`; }
+      }
     };
     draw();
     return box;
