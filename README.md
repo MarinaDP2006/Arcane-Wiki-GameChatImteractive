@@ -88,6 +88,8 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | Tecla | Acción |
 |---|---|
 | WASD / flechas (Mayús para correr) o clic en el mapa | Moverse |
+| Rueda del ratón o + / − | Acercar o alejar la cámara |
+| Q / R o botón derecho arrastrando | Girar (e inclinar) la cámara |
 | E o Intro | Hablar / entrar / interactuar |
 | 1–9 | Elegir una opción |
 | H | Historia |
@@ -100,6 +102,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | F11 | Pantalla completa |
 
 ### Menús y Códice
+
 **Menús en 3D:** el menú de partidas, los ajustes y el creador tienen una escena
 3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
@@ -187,6 +190,7 @@ Windows y Mac y añade los instaladores a esa Release automáticamente.
 main.js, preload.js      Proceso de Electron: ventana, partidas y ajustes
 src/index.html           Interfaz del juego
 src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
+src/js/world3d.js        Ciudad en 3D del mundo abierto (Three.js): Piltover y Zaun
 src/js/game.js           Historia, comunicador, ficha, actividades y Códice
 src/js/creator.js        Creador de personaje
 src/js/audio.js          Música procedural y efectos de sonido
@@ -202,13 +206,10 @@ scripts/check.js         Validador de datos
 
 ---
 
-
 ## Arte y vídeos (v1.6.0)
-| Archivo | Cuándo se reproduce |
-|---|---|
-| `Welcome to Zaun.mp4` | Al empezar con origen en Zaun |
-| `Welcome to Piltover.mp4` | Al empezar con origen en Piltover |
-| `IntroS1.mp4` | Al empezar el primer capítulo de la Temporada 1 |
-| `IntroS2.mp4` | Al empezar la Temporada 2 |
+Las imágenes vienen dentro del juego: 16 retratos para elegir (8 de mujer y 8 de hombre, según el género
+que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa de Piltover y Zaun del
+Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
+(`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
 
 Se pueden saltar con Esc, espacio o Intro.

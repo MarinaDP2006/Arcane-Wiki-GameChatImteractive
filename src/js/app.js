@@ -252,6 +252,22 @@
         },
       }, 'Descargar lo que falta de la Arcane Wiki'),
       progress,
+      el('h3', {}, 'Fondos del mapa 3D'),
+      el('p', { class: 'muted small' }, 'El mundo abierto pone alrededor de cada ciudad las ilustraciones de su página de región en Universe de League of Legends (universe.leagueoflegends.com). Se bajan solas la primera vez que entras en cada ciudad; con estos botones las vuelves a bajar. También puedes poner tus propias imágenes en las carpetas mapa/piltover y mapa/zaun de tu carpeta de arte.'),
+      el('div', { class: 'row gap' }, ...['piltover', 'zaun'].map((region) => el('button', {
+        class: 'btn small',
+        onclick: async (ev) => {
+          ev.target.disabled = true;
+          try {
+            const r = await window.arcane.art.universe(region);
+            window.World3D?.reloadBackdrops();
+            toast(r.ok ? `${r.done} imágenes de ${region === 'zaun' ? 'Zaun' : 'Piltover'} guardadas.` : 'No encontré imágenes en la página de Universe.', r.ok ? 'good' : 'warn');
+          } catch (err) {
+            toast(`No se pudo conectar con Universe: ${err.message || err}`, 'warn');
+          }
+          ev.target.disabled = false;
+        },
+      }, `Bajar fondos de ${region === 'zaun' ? 'Zaun' : 'Piltover'}`))),
       el('h3', {}, 'Mapas de la Wiki en el Códice'),
       el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K) en la pestaña «Mapas de la Wiki». El Atlas ilustrado (tecla M) no necesita internet.'),
       el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),

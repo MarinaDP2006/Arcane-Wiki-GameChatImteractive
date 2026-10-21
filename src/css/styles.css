@@ -376,6 +376,8 @@ kbd {
 /* Mundo abierto */
 .world { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
 #world-canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+#world-canvas.over-3d { position: relative; z-index: 1; background: transparent; }
+.world-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hud { position: absolute; z-index: 5; display: flex; gap: 0.6rem; pointer-events: none; }
 .hud > * { pointer-events: auto; }
 .hud-top { top: 12px; left: 12px; flex-direction: column; align-items: flex-start; }
@@ -865,7 +867,3 @@ body[data-city='zaun'] .btn.primary { background: linear-gradient(180deg, #8fe8c
 .home-btn.quiet { color: #a39cb3; font-size: 0.95rem; margin-top: 0.6rem; }
 @media (max-width: 700px) { .home-shade { background: rgba(5,4,9,0.75); } .home-panel { padding: 0 1.4rem; } }
 @media (prefers-reduced-motion: reduce) { .home-slide, .home-slide.on { transition: opacity 1s; transform: none; } .home-motes { display: none; } }
-
-/* Mundo abierto en 3D: WebGL debajo y el lienzo 2D de etiquetas encima */
-.world-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-#world-canvas.over3d { position: absolute; inset: 0; background: transparent; }
