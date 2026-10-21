@@ -376,6 +376,8 @@ kbd {
 /* Mundo abierto */
 .world { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
 #world-canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+#world-canvas.over-3d { position: relative; z-index: 1; background: transparent; }
+.world-3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hud { position: absolute; z-index: 5; display: flex; gap: 0.6rem; pointer-events: none; }
 .hud > * { pointer-events: auto; }
 .hud-top { top: 12px; left: 12px; flex-direction: column; align-items: flex-start; }

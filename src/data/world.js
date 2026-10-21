@@ -7,6 +7,7 @@ window.WORLD = {
       label: 'Piltover',
       size: [3000, 2200],
       seed: 7,
+      block: 300, street: 96, // bulevares anchos
       palette: { ground: '#2a2418', street: '#4a3f2a', building: ['#d9c9a0', '#cbb68a', '#e6d8b4', '#bfa878'], roof: ['#3a8a8a', '#2f6f7a', '#8a5a3a', '#4a6a9a'], outline: '#5a4a2a', glow: '#e3c45a', particle: 'gold' },
       districts: [
         { name: 'Barrio Académico', rect: [0, 0, 1500, 900], tint: 'rgba(227,196,90,0.06)' },
@@ -38,6 +39,7 @@ window.WORLD = {
       label: 'Zaun',
       size: [3000, 2200],
       seed: 13,
+      block: 210, street: 60, cramped: true, // callejones estrechos
       palette: { ground: '#0e1614', street: '#1f2a26', building: ['#2a2a36', '#33303e', '#24302c', '#3a2c34'], roof: ['#3fbf9f', '#bf3abf', '#8fbf3a', '#e0457b'], outline: '#0a0a10', glow: '#3fbf9f', particle: 'smoke' },
       districts: [
         { name: 'Las Fábricas de Entresuelo', rect: [0, 0, 1500, 700], tint: 'rgba(143,191,58,0.07)' },

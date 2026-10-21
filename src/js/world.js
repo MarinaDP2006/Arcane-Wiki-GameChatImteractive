@@ -1,5 +1,7 @@
-// Motor del mundo abierto: mapa 2D de Piltover y Zaun con movimiento libre,
-// colisiones, cámara, minimapa, personajes de Arcane, lugares con su imagen y cristales hextec.
+// Motor del mundo abierto: Piltover y Zaun con movimiento libre, colisiones, cámara,
+// minimapa, personajes de Arcane, lugares con su imagen y cristales hextec.
+// Con WebGL la ciudad se dibuja en 3D (world3d.js) y este lienzo pinta encima, en 2D,
+// los personajes, las tarjetas de los lugares y los rótulos. Sin WebGL se usa el mapa 2D.
 (function () {
   const W = () => window.WORLD;
   const PLAYER_R = 15;
@@ -21,6 +23,9 @@
   let nearest = null;
   let insideLoc = null;
   let fade = 0;
+  let r3d = null; // renderizador 3D (null = mapa 2D clásico)
+  let vel = { x: 0, y: 0 };
+  let drag = null;
   const keys = new Set();
   const imgCache = new Map();
 
@@ -41,8 +46,9 @@
     const def = W().maps[id];
     const [w, h] = def.size;
     const r = rng(def.seed);
-    const BLOCK = 250;
-    const STREET = 74;
+    // Piltover: manzanas grandes y bulevares anchos. Zaun: callejones estrechos y apiñados.
+    const BLOCK = def.block || 250;
+    const STREET = def.street || 74;
     const keepClear = [
       ...def.locations.map((l) => ({ x: l.x, y: l.y, r: 150 })),
       ...def.fragments.map((f) => ({ x: f.x, y: f.y, r: 50 })),
@@ -53,13 +59,17 @@
       return (nx - c.x) ** 2 + (ny - c.y) ** 2 < c.r * c.r;
     });
     const buildings = [];
+    const lots = [];
     for (let bx = 0; bx < w; bx += BLOCK) {
       for (let by = 0; by < h; by += BLOCK) {
         const x0 = bx + STREET / 2;
         const y0 = by + STREET / 2;
         const size = BLOCK - STREET;
-        if (r() < 0.12) continue; // patio o solar vacío
-        const split = r() < 0.5 ? 1 : 2;
+        if (r() < 0.12) { // patio o solar vacío
+          if (!blocked(x0, y0, size, size) && x0 + size < w && y0 + size < h) lots.push({ x: x0, y: y0, size });
+          continue;
+        }
+        const split = def.cramped ? (r() < 0.3 ? 2 : 3) : r() < 0.5 ? 1 : 2;
         const cell = size / split;
         for (let i = 0; i < split; i++) {
           for (let j = 0; j < split; j++) {
@@ -74,13 +84,13 @@
               x, y, w: bw, h: bh,
               color: def.palette.building[Math.floor(r() * def.palette.building.length)],
               roof: def.palette.roof[Math.floor(r() * def.palette.roof.length)],
-              tall: r(), sign: r() < 0.35, chimney: r() < 0.4,
+              tall: r(), sign: r() < 0.35, chimney: r() < 0.4, style: r(),
             });
           }
         }
       }
     }
-    cache[id] = { id, def, w, h, buildings, BLOCK, STREET };
+    cache[id] = { id, def, w, h, buildings, lots, BLOCK, STREET };
     return cache[id];
   }
 
@@ -177,7 +187,18 @@
       if (d < 6) target = null;
       else { dx = tx / d; dy = ty / d; }
     }
+    if (r3d && (dx || dy) && !target) {
+      // Con la cámara girada, las flechas se mueven según lo que se ve en pantalla.
+      const a = r3d.yaw;
+      [dx, dy] = [dx * Math.cos(a) + dy * Math.sin(a), -dx * Math.sin(a) + dy * Math.cos(a)];
+    }
+    if (r3d) {
+      if (keys.has('q')) r3d.rotate(-1.6 * dt);
+      if (keys.has('r')) r3d.rotate(1.6 * dt);
+    }
     const len = Math.hypot(dx, dy);
+    const ox = pos.x;
+    const oy = pos.y;
     if (len) {
       const sp = SPEED * (keys.has('shift') ? 1.7 : 1) * (G.player.keystone === 'pies' ? 1.3 : 1) * dt;
       const mx = (dx / len) * sp;
@@ -189,6 +210,7 @@
       pos.dir = Math.atan2(dy, dx);
       pos.walk = (pos.walk || 0) + dt * 10;
     }
+    if (dt) { vel.x += ((pos.x - ox) / dt - vel.x) * 0.1; vel.y += ((pos.y - oy) / dt - vel.y) * 0.1; }
 
     // Fragmentos: se recogen al pasar por encima.
     for (const f of map.def.fragments) {
@@ -213,7 +235,7 @@
     updateDistrict();
 
     // Partículas de ambiente.
-    if (particles.length < 70 && Math.random() < 0.5) {
+    if (!r3d && particles.length < 70 && Math.random() < 0.5) {
       const cam = camera();
       particles.push({ x: cam.x + Math.random() * canvas.width, y: cam.y + canvas.height + 10, vy: -(20 + Math.random() * 40), vx: (Math.random() - 0.5) * 15, life: 6 + Math.random() * 6, r: map.def.palette.particle === 'smoke' ? 18 + Math.random() * 30 : 1.5 + Math.random() * 2 });
     }
@@ -230,6 +252,7 @@
 
   // ---------- Dibujo ----------
   function draw(t) {
+    if (r3d) return draw3d(t);
     const cam = camera();
     const P = map.def.palette;
     const zaun = mapId === 'zaun';
@@ -400,22 +423,101 @@
     drawMini(obj);
   }
 
+  // Dibujo en 2D+3D: la ciudad la pinta world3d.js y aquí se pintan encima, ordenados por
+  // profundidad, los lugares (tarjeta sobre un poste), los personajes y el jugador.
+  function draw3d(t) {
+    const obj = objectiveLoc();
+    r3d.render(t, { x: G.world.x, y: G.world.y, vx: vel.x, vy: vel.y, codex: G.codex, obj: obj && obj.map === mapId ? obj.id : null });
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const items = [];
+    const labels = [];
+    for (const l of map.def.locations) {
+      const top = r3d.project(l.x, l.y, 105);
+      const foot = r3d.project(l.x, l.y, 0);
+      if (!top || !foot) continue;
+      const isObj = obj && obj.id === l.id;
+      const k = Math.min(1.6, Math.max(0.45, top.k * 0.8));
+      items.push({ d: top.d, fn: () => {
+        ctx.strokeStyle = mapId === 'zaun' ? '#3fbf9f' : '#c9a24a';
+        ctx.lineWidth = Math.max(2, 4 * k);
+        ctx.beginPath();
+        ctx.moveTo(foot.x, foot.y);
+        ctx.lineTo(top.x, top.y + 50 * k);
+        ctx.stroke();
+        placeCard(l, isObj, t, top.x, top.y, k);
+      } });
+      labels.push({ d: top.d, fn: () => {
+        label(l.name, top.x, top.y - 50 * k - 16, isObj ? '#ffe08a' : '#fff');
+        if (isObj) label('★ OBJETIVO', top.x, top.y - 50 * k - 40, '#ffe08a');
+      } });
+    }
+    const people = npcs().map((n) => ({ img: charImg(n.id), x: n.x, y: n.y, name: n.name, ring: map.def.palette.glow, r: 24 }));
+    const pos = G.world;
+    const bounce = Math.abs(Math.sin(pos.walk || 0)) * 4;
+    people.push({ img: playerImg(), x: pos.x, y: pos.y, name: G.player.name, ring: '#ffe08a', r: PLAYER_R + 6, bounce });
+    for (const p of people) {
+      const foot = r3d.project(p.x, p.y, 0);
+      const head = r3d.project(p.x, p.y, 34 + (p.bounce || 0));
+      if (!foot || !head) continue;
+      const r = Math.max(10, p.r * head.k);
+      items.push({ d: head.d, person: true, fn: () => {
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.ellipse(foot.x, foot.y, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = p.ring;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(foot.x, foot.y);
+        ctx.lineTo(head.x, head.y + r);
+        ctx.stroke();
+        drawPerson(p.img, head.x, head.y, p.name, p.ring, r, false);
+      } });
+      labels.push({ d: head.d, fn: () => label(p.name, head.x, head.y - r - 14, p.ring) });
+    }
+    // Los personajes siempre por delante de las tarjetas de los lugares
+    items.sort((a, b) => (a.person === b.person ? b.d - a.d : a.person ? 1 : -1)).forEach((i) => i.fn());
+    labels.sort((a, b) => b.d - a.d).forEach((i) => i.fn());
+    if (target) {
+      const p = r3d.project(target.x, target.y, 0);
+      if (p) {
+        ctx.strokeStyle = 'rgba(255,224,138,0.8)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, (12 + Math.sin(t / 150) * 3) * p.k, (5 + Math.sin(t / 150)) * p.k, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    const zaun = mapId === 'zaun';
+    const v = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.height * 0.35, canvas.width / 2, canvas.height / 2, canvas.height * 0.95);
+    v.addColorStop(0, 'transparent');
+    v.addColorStop(1, zaun ? 'rgba(0,20,10,0.55)' : 'rgba(40,24,0,0.3)');
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (obj) drawObjectiveArrow(obj, null);
+    if (fade > 0) {
+      ctx.fillStyle = `rgba(0,0,0,${fade})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    drawMini(obj);
+  }
+
   // Tarjeta del lugar: imagen recortada en hexágono alargado con marco dorado (o verde en Zaun).
-  function placeCard(l, isObj, t) {
-    const W2 = 74;
-    const H2 = 50;
+  function placeCard(l, isObj, t, cx = l.x, cy = l.y, k = 1) {
+    const W2 = 74 * k;
+    const H2 = 50 * k;
     const zaun = mapId === 'zaun';
     const frame = isObj ? '#ffe08a' : zaun ? '#3fbf9f' : '#e3c45a';
     const shape = () => {
       ctx.beginPath();
-      ctx.moveTo(l.x - W2 + 14, l.y - H2);
-      ctx.lineTo(l.x + W2 - 14, l.y - H2);
-      ctx.lineTo(l.x + W2, l.y - H2 + 14);
-      ctx.lineTo(l.x + W2, l.y + H2 - 14);
-      ctx.lineTo(l.x + W2 - 14, l.y + H2);
-      ctx.lineTo(l.x - W2 + 14, l.y + H2);
-      ctx.lineTo(l.x - W2, l.y + H2 - 14);
-      ctx.lineTo(l.x - W2, l.y - H2 + 14);
+      ctx.moveTo(cx - W2 + 14 * k, cy - H2);
+      ctx.lineTo(cx + W2 - 14 * k, cy - H2);
+      ctx.lineTo(cx + W2, cy - H2 + 14 * k);
+      ctx.lineTo(cx + W2, cy + H2 - 14 * k);
+      ctx.lineTo(cx + W2 - 14 * k, cy + H2);
+      ctx.lineTo(cx - W2 + 14 * k, cy + H2);
+      ctx.lineTo(cx - W2, cy + H2 - 14 * k);
+      ctx.lineTo(cx - W2, cy - H2 + 14 * k);
       ctx.closePath();
     };
     ctx.save();
@@ -435,25 +537,26 @@
       const s = Math.max((W2 * 2) / img.naturalWidth, (H2 * 2) / img.naturalHeight);
       const iw = img.naturalWidth * s;
       const ih = img.naturalHeight * s;
-      ctx.drawImage(img, l.x - iw / 2, l.y - ih / 2, iw, ih);
+      ctx.drawImage(img, cx - iw / 2, cy - ih / 2, iw, ih);
     } else if (window.Scenes?.has(l.id)) {
       const th = svgImage(`t:${l.id}`, Scenes.thumb(l.id));
-      if (th.complete && th.naturalWidth) ctx.drawImage(th, l.x - W2, l.y - H2, W2 * 2, H2 * 2);
+      if (th.complete && th.naturalWidth) ctx.drawImage(th, cx - W2, cy - H2, W2 * 2, H2 * 2);
     }
     ctx.restore();
     shape();
     ctx.strokeStyle = frame;
-    ctx.lineWidth = isObj ? 4 : 2.5;
+    ctx.lineWidth = (isObj ? 4 : 2.5) * Math.max(0.7, k);
     if (isObj) { ctx.shadowColor = frame; ctx.shadowBlur = 16 + Math.sin(t / 250) * 6; }
     ctx.stroke();
     ctx.shadowBlur = 0;
     // Gema hextec en la parte de abajo del marco
     ctx.save();
-    ctx.translate(l.x, l.y + H2);
+    ctx.translate(cx, cy + H2);
     ctx.rotate(Math.PI / 4);
     ctx.fillStyle = '#7fd0ff';
     ctx.shadowColor = '#3fa9f5';
     ctx.shadowBlur = 12;
+    ctx.scale(Math.max(0.6, k), Math.max(0.6, k));
     ctx.fillRect(-5, -5, 10, 10);
     ctx.strokeStyle = frame;
     ctx.lineWidth = 1.5;
@@ -586,12 +689,23 @@
   }
 
   function arrowTo(x, y, cam, text) {
-    const sx = x - cam.x;
-    const sy = y - cam.y;
-    if (sx > 40 && sy > 40 && sx < canvas.width - 40 && sy < canvas.height - 40) return;
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const a = Math.atan2(sy - cy, sx - cx);
+    let a;
+    if (r3d) {
+      const p = r3d.project(x, y, 60);
+      if (p && p.x > 40 && p.y > 40 && p.x < canvas.width - 40 && p.y < canvas.height - 40) return;
+      // Dirección en pantalla según el giro de la cámara
+      const dx = x - G.world.x;
+      const dy = y - G.world.y;
+      const yaw = r3d.yaw;
+      a = Math.atan2(-(-dx * Math.sin(yaw) - dy * Math.cos(yaw)), dx * Math.cos(yaw) - dy * Math.sin(yaw));
+    } else {
+      const sx = x - cam.x;
+      const sy = y - cam.y;
+      if (sx > 40 && sy > 40 && sx < canvas.width - 40 && sy < canvas.height - 40) return;
+      a = Math.atan2(sy - cy, sx - cx);
+    }
     const ex = cx + Math.cos(a) * (Math.min(cx, cy) - 50);
     const ey = cy + Math.sin(a) * (Math.min(cx, cy) - 50);
     ctx.save();
@@ -621,6 +735,16 @@
     }
     mctx.fillStyle = '#7fd0ff';
     for (const f of map.def.fragments) if (!G.codex.includes(f.codex)) mctx.fillRect(f.x * s - 1.5, f.y * s - 1.5, 3, 3);
+    if (r3d) {
+      // Hacia dónde mira la cámara
+      const a = -Math.PI / 2 - r3d.yaw;
+      mctx.fillStyle = 'rgba(255,224,138,0.25)';
+      mctx.beginPath();
+      mctx.moveTo(G.world.x * s, G.world.y * s);
+      mctx.arc(G.world.x * s, G.world.y * s, 26, a - 0.5, a + 0.5);
+      mctx.closePath();
+      mctx.fill();
+    }
     mctx.fillStyle = '#ff5a8a';
     mctx.beginPath();
     mctx.arc(G.world.x * s, G.world.y * s, 4, 0, Math.PI * 2);
@@ -686,17 +810,44 @@
       if (paused) return;
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
       if (k === 'e' || k === 'enter') return interact();
+      if (r3d && (k === '+' || k === '=')) r3d.zoom(0.85);
+      if (r3d && k === '-') r3d.zoom(1.18);
       keys.add(k);
     } else keys.delete(k);
   }
 
   function onClick(e) {
     if (paused) return;
+    if (e.button !== 0) return;
     const r = canvas.getBoundingClientRect();
-    const cam = camera();
-    target = { x: e.clientX - r.left + cam.x, y: e.clientY - r.top + cam.y };
+    if (r3d) target = r3d.pick(e.clientX - r.left, e.clientY - r.top);
+    else {
+      const cam = camera();
+      target = { x: e.clientX - r.left + cam.x, y: e.clientY - r.top + cam.y };
+    }
+    if (!target) return;
     // Clic sobre algo cercano al jugador = interactuar.
-    if (nearest && Math.hypot((nearest.x ?? 0) - target.x, (nearest.y ?? 0) - target.y) < 40) { target = null; interact(); }
+    if (nearest && Math.hypot((nearest.x ?? 0) - target.x, (nearest.y ?? 0) - target.y) < (r3d ? 60 : 40)) { target = null; interact(); }
+  }
+
+  // Ratón en 3D: rueda = zoom, botón derecho arrastrando = girar e inclinar la cámara.
+  function bindCamera() {
+    canvas.addEventListener('wheel', (e) => { e.preventDefault(); r3d.zoom(e.deltaY > 0 ? 1.12 : 0.89); }, { passive: false });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    canvas.addEventListener('pointerdown', (e) => {
+      if (e.button !== 2 && e.button !== 1) return;
+      drag = { x: e.clientX, y: e.clientY };
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      const b = canvas.getBoundingClientRect();
+      r3d.mouse((e.clientX - b.left) / b.width * 2 - 1, (e.clientY - b.top) / b.height * 2 - 1);
+      if (!drag) return;
+      r3d.rotate((e.clientX - drag.x) * -0.006);
+      r3d.tilt((e.clientY - drag.y) * 0.004);
+      drag = { x: e.clientX, y: e.clientY };
+    });
+    canvas.addEventListener('pointerup', () => { drag = null; });
   }
 
   window.addEventListener('keydown', onKey);
@@ -722,6 +873,7 @@
     particles = [];
     lastDistrict = '';
     fade = 1;
+    if (r3d) { r3d.setMap(map); r3d.arrive(G.world.x, G.world.y); }
     Audio2.playMusic(cb.music?.() || id);
   }
 
@@ -734,6 +886,10 @@
       mini = miniEl;
       mctx = mini?.getContext('2d');
       resize();
+      r3d = window.World3D?.mount(canvas.parentElement) ? window.World3D : null;
+      canvas.classList.toggle('over-3d', Boolean(r3d));
+      if (r3d) bindCamera();
+      canvas.addEventListener('click', onClick);
       if (!G.world.map) {
         const spawn = W().spawns[G.player.district] || (G.player.origin === 'zaun' ? 'callejones' : 'plaza');
         setMap(G.player.origin, spawn);

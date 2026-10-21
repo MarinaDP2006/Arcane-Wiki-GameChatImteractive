@@ -44,6 +44,23 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
 > `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
 
+## Novedades de la v1.8.0
+
+- **Mundo abierto en 2D+3D:** la ciudad se ve en 3D con edificios, sombras, luces y niebla, y la cámara
+  sigue a tu personaje con un pequeño retardo, se balancea y se mueve con el ratón. Los personajes y las
+  tarjetas de los lugares se pintan en 2D encima. Al llegar a una ciudad la cámara baja desde el horizonte.
+- **Cámara libre:** rueda del ratón (o `+`/`−`) para acercar o alejar, `Q`/`R` para girar y botón derecho
+  arrastrando para girar e inclinar. Los edificios que tapan a tu personaje se vuelven transparentes.
+- **Dos ciudades distintas:** Piltover es dorada y soleada, con bulevares anchos, cúpulas, torres con
+  reloj, parques, dirigibles, el mar, las Hexpuertas y el Puente del Progreso. Zaun es un pozo oscuro de
+  callejones estrechos con pisos amontonados, neones que parpadean, tuberías gigantes, chimeneas con humo,
+  charcas químicas y las luces de Piltover allá arriba.
+- **Fondos de Universe:** alrededor de cada ciudad se ven las ilustraciones de su página de región en
+  [Universe de League of Legends](https://universe.leagueoflegends.com/en_US/region/piltover/). Se bajan
+  solas la primera vez que entras en cada ciudad (o con *Ajustes → Arte → Bajar fondos*) a
+  `arte\mapa\piltover` y `arte\mapa\zaun`; ahí puedes poner también tus propias imágenes.
+- Si el ordenador no tiene WebGL, el juego usa el mapa 2D de siempre.
+
 ## Novedades de la v1.7.0
 
 - **Menú principal nuevo:** ilustraciones pintadas de Piltover y Zaun que se funden entre sí, el título
@@ -108,6 +125,8 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 | Tecla | Acción |
 |---|---|
 | WASD / flechas (Mayús para correr) o clic en el mapa | Moverse |
+| Rueda del ratón o + / − | Acercar o alejar la cámara |
+| Q / R o botón derecho arrastrando | Girar (e inclinar) la cámara |
 | E o Intro | Hablar / entrar / interactuar |
 | 1–9 | Elegir una opción |
 | H | Historia |
@@ -214,6 +233,7 @@ Windows y Mac y añade los instaladores a esa Release automáticamente.
 main.js, preload.js      Proceso de Electron: ventana, partidas y ajustes
 src/index.html           Interfaz del juego
 src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
+src/js/world3d.js        Ciudad en 3D del mundo abierto (Three.js): Piltover y Zaun
 src/js/game.js           Historia, comunicador, ficha, actividades y Códice
 src/js/creator.js        Creador de personaje
 src/js/audio.js          Música procedural y efectos de sonido

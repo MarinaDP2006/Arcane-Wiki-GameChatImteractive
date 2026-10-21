@@ -486,6 +486,7 @@
     showNotice('Controles', [
       'Moverse: WASD o flechas (Mayús para correr). También puedes hacer clic en el mapa.',
       'Interactuar / hablar / entrar: E o Intro.',
+      'Cámara 3D: rueda del ratón (o + y −) para acercar o alejar, Q y R para girar, botón derecho arrastrando para girar e inclinar.',
       'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
