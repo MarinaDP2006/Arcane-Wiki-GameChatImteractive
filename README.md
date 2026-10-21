@@ -10,7 +10,7 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 3. [Primeros pasos](#3-primeros-pasos)
 4. [Controles](#4-controles)
 5. [Personajes](#5-personajes)
-6. [Vídeos](#6-vídeos)
+6. [Vídeos e imágenes](#6-vídeos-e-imágenes)
 7. [Dónde se guardan tus partidas](#7-dónde-se-guardan-tus-partidas)
 8. [Problemas frecuentes](#8-problemas-frecuentes)
 9. [Para programadores](#9-para-programadores)
@@ -106,27 +106,27 @@ Estos son los 16 personajes que hablan en la historia y en el comunicador.
 | Ekko | Cassandra | Kino |
 | Sevika | | |
 
-## 6. Vídeos
+## 6. Vídeos e imágenes
 
-El juego trae cinemáticas animadas propias. Si quieres ver **tus vídeos** en su lugar, cópialos aquí:
+**Ya vienen dentro del juego**, no hace falta copiar nada:
+
+| Vídeo incluido | Cuándo sale |
+|---|---|
+| Welcome to Zaun | Al empezar una partida en Zaun |
+| Welcome to Piltover | Al empezar una partida en Piltover |
+| IntroS1 | Al empezar el capítulo 1 de la Temporada 1 |
+| IntroS2 | Al empezar la Temporada 2 |
+
+También vienen incluidas las caras de los 16 personajes, los 16 retratos para elegir y las fotos de los lugares.
+Al abrir el juego con internet, **se descargan solas** de la Arcane Wiki las imágenes que falten.
+Todos los vídeos se saltan con **Espacio**, **Esc** o **Intro**.
+
+**¿Quieres usar tus propios vídeos o imágenes?** Ponlos en esta carpeta y sustituyen a los incluidos:
 
 | Sistema | Carpeta |
 |---|---|
-| Windows | `C:\Users\TU-USUARIO\AppData\Roaming\Arcane Piltover y Zaun\arte\video` |
-| Mac | `~/Library/Application Support/Arcane Piltover y Zaun/arte/video` |
-
-> En Windows puedes llegar rápido escribiendo `%APPDATA%\Arcane Piltover y Zaun\arte\video` en la barra del Explorador.
-
-| Vídeo que copiar | Cuándo sale |
-|---|---|
-| `Welcome to Zaun.mp4` | Al empezar una partida en Zaun |
-| `Welcome to Piltover.mp4` | Al empezar una partida en Piltover |
-| `IntroS1.mp4` | Al empezar el capítulo 1 de la Temporada 1 |
-| `IntroS2.mp4` | Al empezar la Temporada 2 |
-
-- Valen archivos `.mp4` o `.webm`. Mayúsculas y espacios dan igual.
-- Cierra y vuelve a abrir el juego después de copiarlos.
-- Todos se saltan con **Espacio**, **Esc** o **Intro**.
+| Windows | `%APPDATA%\Arcane Piltover y Zaun\arte` (escríbelo en la barra del Explorador) |
+| Mac | `~/Library/Application Support/Arcane Piltover y Zaun/arte` |
 
 ## 7. Dónde se guardan tus partidas
 
@@ -142,7 +142,7 @@ Si reinstalas el juego, tus partidas siguen ahí.
 | Problema | Solución |
 |---|---|
 | El mapa sale en 2D y no en 3D | Tu tarjeta gráfica no tiene WebGL. El juego funciona igual en 2D. Actualizar los drivers suele arreglarlo. |
-| No sale mi vídeo | Revisa que esté en la carpeta `video` de la sección 6, con el nombre de la tabla, y reinicia el juego. |
+| No sale mi vídeo propio | Ponlo en la carpeta `video` dentro de la carpeta de la sección 6, con el mismo nombre que el incluido (por ejemplo `IntroS1.mp4`), y reinicia el juego. |
 | La pestaña de mapas de la Wiki está en blanco | Necesita internet. La dirección se cambia en **Ajustes**. |
 
 ---

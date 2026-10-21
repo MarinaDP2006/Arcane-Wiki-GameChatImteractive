@@ -138,6 +138,8 @@ const listArt = (root, d) => Object.assign({}, d === 'video' ? listDir(path.join
 
 // Arte incluido con el juego (src/img/arte); lo que pongas en tu carpeta de arte lo sustituye.
 const bundledRoot = () => path.join(__dirname, 'src', 'img', 'arte');
+// Los vídeos incluidos van fuera del .asar (asarUnpack) para que se puedan reproducir y adelantar.
+const unpacked = (files) => Object.fromEntries(Object.entries(files).map(([k, u]) => [k, u.replace('/app.asar/', '/app.asar.unpacked/')]));
 
 // Las versiones anteriores podían bajar retratos de Riot (Data Dragon). Ahora todo sale de la
 // Arcane Wiki, así que esos archivos se apartan a «_riot-retirado» (no se borran). Se reconocen
@@ -169,7 +171,7 @@ ipcMain.handle('art:list', () => {
   const out = {};
   const roots = besideRoots();
   for (const d of ART_DIRS) {
-    out[d] = Object.assign({}, listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
+    out[d] = Object.assign({}, d === 'video' ? unpacked(listArt(bundledRoot(), d)) : listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
   }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
   return out;
