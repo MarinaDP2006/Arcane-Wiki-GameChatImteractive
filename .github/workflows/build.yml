@@ -50,7 +50,7 @@ jobs:
       - name: Subir ejecutables
         uses: actions/upload-artifact@v4
         with:
-          name: arcane-${{ matrix.name }}
+          name: grietas-and-gears-${{ matrix.name }}
           path: |
             dist/*.exe
             dist/*.dmg
@@ -110,15 +110,15 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           mkdir -p dist
-          for f in android/app/build/outputs/apk/release/*-release.apk; do [ -f "$f" ] && cp "$f" "dist/Arcane-$VERSION-android.apk"; done
-          for f in android/app/build/outputs/apk/debug/*-debug.apk; do [ -f "$f" ] && cp "$f" "dist/Arcane-$VERSION-android-prueba.apk"; done
-          for f in android/app/build/outputs/bundle/release/*.aab; do [ -f "$f" ] && cp "$f" "dist/Arcane-$VERSION-google-play.aab"; done
+          for f in android/app/build/outputs/apk/release/*-release.apk; do [ -f "$f" ] && cp "$f" "dist/Grietas-and-Gears-$VERSION-android.apk"; done
+          for f in android/app/build/outputs/apk/debug/*-debug.apk; do [ -f "$f" ] && cp "$f" "dist/Grietas-and-Gears-$VERSION-android-prueba.apk"; done
+          for f in android/app/build/outputs/bundle/release/*.aab; do [ -f "$f" ] && cp "$f" "dist/Grietas-and-Gears-$VERSION-google-play.aab"; done
           ls -la dist
 
       - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
-          name: arcane-android
+          name: grietas-and-gears-android
           path: |
             dist/*.apk
             dist/*.aab

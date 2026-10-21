@@ -193,8 +193,9 @@
   // Frases al hacer clic en el retrato.
   function quip() {
     const cls = C().classes.find((c) => c.id === draft.cls);
+    const who = `${draft.name || 'yo'}${draft.title ? `, ${tpl(draft.title, draft)}` : ''}`;
     const lines = [
-      `¿Qué miras? Soy ${draft.name || 'yo'}${draft.title ? `, ${tpl(draft.title, draft)}` : ''}.`,
+      `¿Qué miras? Soy ${who}.`,
       cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'piltover' ? 'Piltover' : 'Zaun'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
       '¡Eh, sin tocar!',
       'Si me vuelves a pinchar, te lanzo una bomba de pintura.',

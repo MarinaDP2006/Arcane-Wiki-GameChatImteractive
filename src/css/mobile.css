@@ -85,7 +85,7 @@ body.touch[data-city='zaun'] .touch-knob { background: radial-gradient(circle at
   .touch h2 { font-size: 1.15rem; }
 
   /* Menú principal */
-  .touch .home-title { font-size: clamp(2.2rem, 9vh, 4rem); }
+  .touch .home-title { font-size: clamp(1.8rem, 7vh, 3.2rem); }
   .touch .home-btn { padding-top: 0.55rem; padding-bottom: 0.55rem; }
 
   /* Creador: dos columnas en horizontal, con el retrato pequeño a la derecha */

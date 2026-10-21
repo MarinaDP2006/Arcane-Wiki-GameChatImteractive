@@ -72,7 +72,7 @@
       el('div', { class: 'home-motes' }, ...Array.from({ length: 22 }, (_, i) => el('i', { class: i % 3 ? 'blue' : 'green', style: `left:${(i * 47) % 100}%;animation-delay:${(i * 1.7) % 12}s;animation-duration:${10 + (i % 6) * 2.5}s` }))),
       el('div', { class: 'home-panel' },
         el('div', { class: 'home-logo' },
-          el('h1', { class: 'home-title' }, 'ARCANE'),
+          el('h1', { class: 'home-title' }, 'GRIETAS & GEARS'),
           el('div', { class: 'home-cities' },
             el('img', { src: 'img/arte/simbolos/piltover.png', alt: 'Piltover' }),
             el('span', {}, 'Piltover'), el('b', {}), el('span', {}, 'Zaun'),
@@ -108,6 +108,17 @@
     root.append(el('div', { class: 'settings panel' },
       el('div', { class: 'row gap', style: 'justify-content:space-between' },
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
+      el('h3', {}, 'Idioma · Language · Langue'),
+      el('div', { class: 'chips', 'data-no-i18n': '' },
+        window.I18N.LANGS.map((l) => el('button', {
+          class: `chip${window.I18N.lang === l.id ? ' active' : ''}`,
+          onclick: async () => {
+            if (window.I18N.lang === l.id) return;
+            await set({ lang: l.id });
+            await window.Game?.save?.();
+            location.reload();
+          },
+        }, l.label))),
       el('h3', {}, 'Pantalla'),
       U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, 'Pantalla completa (F11)') : null,
       U.desktop ? artSettings(root, onBack) : null,
@@ -168,7 +179,7 @@
       return line(id, loc?.name || wiki?.name || id);
     });
     return [
-      'GUÍA DE ARTE · Arcane: Piltover y Zaun',
+      'GUÍA DE ARTE · Grietas & Gears: Piltover y Zaun',
       '======================================',
       '',
       'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',
@@ -295,6 +306,7 @@
 
   async function init() {
     App.settings = await store.getSettings();
+    window.I18N.setLang(App.settings.lang);
     await window.CustomArt.load();
     window.arcane?.art?.guide(artGuide());
     autoFandom();

@@ -1,6 +1,6 @@
-# Arcane: HistoryGame
+# Grietas & Gears
 
-Un juego para **Windows**, **Mac** y **Android** ambientado en *Arcane*. Creas tu personaje, eliges si vienes de
+*Las grietas de Zaun, los gears de Piltover.* Un juego de fans para **Windows**, **Mac** y **Android** ambientado en el mundo de *Arcane*. Creas tu personaje, eliges si vienes de
 **Piltover** o de **Zaun**, recorres las dos ciudades y vives la historia hablando con sus personajes.
 Lo que decides cambia cómo te tratan y qué final consigues.
 
@@ -34,7 +34,7 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 
 | Opción | Cómo |
 |---|---|
-| **Releases** (la más fácil) | Entra en [Releases](https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases) y descarga la última versión. |
+| **Releases** (la más fácil) | Entra en [Releases](https://github.com/MarinaDP2006/grietas-and-gears/releases) y descarga la última versión. |
 | **Actions** | Pestaña **Actions** → **Compilar ejecutables** → abre la ejecución más reciente con ✅ → baja hasta **Artifacts**. |
 | **Google Play** | Cuando esté publicado, búscalo en la Play Store del móvil. |
 
@@ -44,11 +44,11 @@ En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo
 
 | Tu ordenador | Descarga | Archivo | Qué hace |
 |---|---|---|---|
-| Windows | `arcane-windows` | `Arcane-Setup-….exe` | **Instalador.** Doble clic y *Siguiente* hasta el final. Crea un acceso directo. |
-| Windows | `arcane-windows` | `Arcane-…-portable.exe` | **Sin instalar.** Doble clic y se abre. Se puede llevar en un USB. |
-| Mac | `arcane-macos` | `Arcane-….dmg` | Ábrelo y arrastra **Arcane** a la carpeta **Aplicaciones**. |
-| Android | `arcane-android` | `Arcane-…-android.apk` (o `…-android-prueba.apk`) | Pásalo al móvil, ábrelo y acepta **Instalar apps de origen desconocido**. |
-| Android (Play Store) | `arcane-android` | `Arcane-…-google-play.aab` | No se instala a mano: es el archivo que se sube a Google Play Console. |
+| Windows | `grietas-and-gears-windows` | `Grietas-and-Gears-Setup-….exe` | **Instalador.** Doble clic y *Siguiente* hasta el final. Crea un acceso directo. |
+| Windows | `grietas-and-gears-windows` | `Grietas-and-Gears-…-portable.exe` | **Sin instalar.** Doble clic y se abre. Se puede llevar en un USB. |
+| Mac | `grietas-and-gears-macos` | `Grietas-and-Gears-….dmg` | Ábrelo y arrastra **Grietas & Gears** a la carpeta **Aplicaciones**. |
+| Android | `grietas-and-gears-android` | `Grietas-and-Gears-…-android.apk` (o `…-android-prueba.apk`) | Pásalo al móvil, ábrelo y acepta **Instalar apps de origen desconocido**. |
+| Android (Play Store) | `grietas-and-gears-android` | `Grietas-and-Gears-…-google-play.aab` | No se instala a mano: es el archivo que se sube a Google Play Console. |
 
 ### La primera vez que lo abres
 
@@ -57,16 +57,16 @@ En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo
 | Windows | «Windows protegió su PC» | Pulsa **Más información** → **Ejecutar de todas formas**. Es normal: el juego no tiene firma digital. |
 | Mac | «No se puede abrir» | Clic derecho sobre la app → **Abrir** → **Abrir**. |
 | Mac | Sigue sin abrir | **Ajustes del Sistema** → **Privacidad y seguridad** → **Abrir igualmente**. |
-| Mac | «Está dañada» | Abre **Terminal** y escribe `xattr -cr /Applications/Arcane.app` |
+| Mac | «Está dañada» | Abre **Terminal** y escribe `xattr -cr "/Applications/Grietas & Gears.app"` |
 | Android | «Por tu seguridad, el teléfono no puede instalar apps desconocidas» | Toca **Ajustes** → activa **Permitir de esta fuente** → vuelve atrás → **Instalar**. Desde Google Play no sale este aviso. |
 
 ### Desinstalar
 
 | Sistema | Cómo |
 |---|---|
-| Windows (instalado) | **Configuración** → **Aplicaciones** → **Arcane** → **Desinstalar** |
+| Windows (instalado) | **Configuración** → **Aplicaciones** → **Grietas & Gears** → **Desinstalar** |
 | Windows (portable) | Borra el archivo `.exe` |
-| Mac | Arrastra **Arcane** de *Aplicaciones* a la Papelera |
+| Mac | Arrastra **Grietas & Gears** de *Aplicaciones* a la Papelera |
 | Android | Mantén pulsado el icono → **Desinstalar** |
 
 ## 3. Primeros pasos
@@ -146,7 +146,7 @@ El juego ya no usa vídeos: las escenas de inicio son cinemáticas pintadas que 
 | Mac | `~/Library/Application Support/Arcane Piltover y Zaun/partidas` |
 | Android | Dentro de la app. Si la desinstalas, se borran. |
 
-Si reinstalas el juego, tus partidas siguen ahí.
+Si reinstalas el juego, tus partidas siguen ahí. La carpeta conserva el nombre antiguo a propósito, para no perder nada al actualizar.
 
 ## 8. Problemas frecuentes
 
@@ -186,6 +186,19 @@ Los instaladores salen en la carpeta `dist/`. El APK de Android lo crea GitHub A
 
 **Publicar una versión:** en GitHub ve a **Releases** → **Draft a new release**, pon una etiqueta nueva
 (por ejemplo `v2.0.0`) y pulsa **Publish release**. GitHub crea los instaladores y los añade solo.
+
+### Idiomas (español, inglés y francés)
+
+El juego está escrito en español. En **Ajustes → Idioma** puedes cambiarlo a inglés o francés; la partida se guarda y el juego se recarga en el idioma elegido. La primera vez se elige solo según el idioma del ordenador o del móvil.
+
+| Archivo | Qué contiene |
+|---|---|
+| `src/js/i18n.js` | Traduce la pantalla al vuelo usando los diccionarios |
+| `src/i18n/en.js`, `src/i18n/fr.js` | Diccionarios: texto en español → traducción |
+| `scripts/i18n-extract.js` | Saca todos los textos del juego a `i18n/textos.tsv` |
+| `scripts/i18n-build.js` | Junta las traducciones (`id ⇥ inglés ⇥ francés`) en los diccionarios |
+
+Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas que falten en un `.tsv` y ejecuta `node scripts/i18n-build.js <carpeta-con-los-tsv>`. Lo que no esté traducido se ve en español.
 
 ### Archivos del proyecto
 
