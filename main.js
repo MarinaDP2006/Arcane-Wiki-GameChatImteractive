@@ -96,6 +96,7 @@ const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
 function ensureArtDir() {
   for (const d of ART_DIRS) fs.mkdirSync(path.join(artRoot(), d), { recursive: true });
+  fs.mkdirSync(path.join(artRoot(), 'modelos', 'animaciones'), { recursive: true });
 }
 
 // Otros nombres con los que la jugadora guarda las caras de los personajes.
@@ -175,13 +176,44 @@ ipcMain.handle('art:list', () => {
 });
 ipcMain.handle('art:open', (_e, sub) => {
   ensureArtDir();
-  return shell.openPath(sub && ART_DIRS.includes(sub) ? path.join(artRoot(), sub) : artRoot());
+  return shell.openPath(sub && [...ART_DIRS, 'modelos'].includes(sub) ? path.join(artRoot(), sub) : artRoot());
 });
 // La interfaz genera la guía con todos los nombres de archivo que el juego reconoce.
 ipcMain.handle('art:guide', (_e, text) => {
   ensureArtDir();
   fs.writeFileSync(path.join(artRoot(), 'GUIA-DE-ARTE.txt'), String(text), 'utf8');
   return true;
+});
+
+// ---------- Modelos 3D (.glb) ----------
+// Personajes en 3D para el mundo abierto (por ejemplo, de Mixamo): modelos/<id>.glb,
+// modelos/jugador.glb, modelos/generico.glb y modelos/animaciones/{reposo,andar,correr}.glb.
+// Se leen de src/models (incluidos con el juego), de las carpetas «arte» de siempre y de la
+// carpeta de arte de AppData, que manda sobre las demás.
+function modelFiles() {
+  const out = {};
+  const walk = (dir, pre) => {
+    let list;
+    try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of list) {
+      if (e.isDirectory() && !pre) walk(path.join(dir, e.name), `${e.name.toLowerCase()}/`);
+      else if (e.isFile() && /\.glb$/i.test(e.name)) {
+        const name = `${pre}${e.name.replace(/\.glb$/i, '').toLowerCase()}`;
+        out[pre ? name : ART_ALIASES[name] || name] = path.join(dir, e.name);
+      }
+    }
+  };
+  walk(path.join(__dirname, 'src', 'models'), '');
+  for (const r of besideRoots()) walk(path.join(r, 'modelos'), '');
+  walk(path.join(artRoot(), 'modelos'), '');
+  return out;
+}
+ipcMain.handle('model:list', () => Object.keys(modelFiles()));
+ipcMain.handle('model:read', (_e, name) => {
+  const file = modelFiles()[String(name)];
+  if (!file) return null;
+  const buf = fs.readFileSync(file);
+  return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
 });
 
 // Recorta la cara (parte alta y centrada) de un retrato y la guarda en caras/<id>.png.

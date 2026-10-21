@@ -8,7 +8,7 @@
     off: { label: 'Desactivada' },
     ollama: { label: 'Ollama (en tu PC, sin internet)', url: 'http://localhost:11434/v1/chat/completions', model: 'llama3.2', key: false, help: 'Instala Ollama desde ollama.com, abre una terminal y escribe «ollama pull llama3.2». Mientras Ollama esté abierto, los personajes te responderán sin internet. Solo en el ordenador.' },
     gemini: { label: 'Google Gemini (gratis con clave)', url: 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', model: 'gemini-2.5-flash', key: true, help: 'Crea una clave gratis en aistudio.google.com/apikey (con tu cuenta de Google) y pégala aquí. Funciona también en Android.' },
-    groq: { label: 'Groq (gratis con clave)', url: 'https://api.groq.com/openai/v1/chat/completions', model: 'llama-3.3-70b-versatile', key: true, help: 'Crea una clave gratis en console.groq.com/keys y pégala aquí. Es muy rápido y funciona en Android.' },
+    groq: { label: 'Groq (gratis con clave)', url: 'https://api.groq.com/openai/v1/chat/completions', model: 'openai/gpt-oss-120b', key: true, help: 'Crea una clave gratis en console.groq.com/keys y pégala aquí. Es muy rápido y funciona en Android.' },
     openrouter: { label: 'OpenRouter (modelos gratis)', url: 'https://openrouter.ai/api/v1/chat/completions', model: 'meta-llama/llama-3.3-70b-instruct:free', key: true, help: 'Crea una clave en openrouter.ai/keys. Los modelos que terminan en «:free» no cuestan nada.' },
     custom: { label: 'Otro servidor compatible', url: '', model: '', key: true, help: 'Cualquier servidor con el formato de OpenAI (LM Studio, KoboldCpp, text-generation-webui…). Escribe la dirección completa de /chat/completions.' },
   };
@@ -54,14 +54,18 @@
     const headers = {};
     if (c.key) headers.Authorization = `Bearer ${c.key}`;
     if (c.provider === 'openrouter') { headers['HTTP-Referer'] = 'https://github.com/MarinaDP2006/grietas-and-gears'; headers['X-Title'] = 'Grietas & Gears'; }
-    const r = await post(c.url, headers, { model: c.model, messages, temperature: opts.temperature ?? 0.9, max_tokens: opts.max ?? 350 });
+    const body = { model: c.model, messages, temperature: opts.temperature ?? 0.9, max_tokens: opts.max ?? 350 };
+    // Los modelos que razonan antes de hablar (gpt-oss) gastan parte de los tokens pensando:
+    // se les pide que piensen poco y se les deja más margen.
+    if (/gpt-oss/.test(c.model)) { body.reasoning_effort = 'low'; body.max_tokens = Math.max(body.max_tokens, 800); }
+    const r = await post(c.url, headers, body);
     if (r.status >= 400 || r.data?.error) {
       const msg = r.data?.error?.message || r.data?.error || r.data?.message || `HTTP ${r.status}`;
       throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
     }
     const text = r.data?.choices?.[0]?.message?.content;
     if (!text) throw new Error('La IA no ha devuelto texto');
-    return String(text);
+    return String(text).replace(/<think>[\s\S]*?<\/think>/gi, '');
   }
 
   const LANG = { es: 'español de España', en: 'English', fr: 'français' };
@@ -87,10 +91,15 @@
       p.bio ? `biografía: ${p.bio}` : '',
     ].filter(Boolean).join('; ');
     const relTxt = rel ? `Vuestra relación: ${t(Relations.label(G, id))}.` : 'Todavía no tenéis una relación especial.';
+    // Algunas frases suyas de los diálogos escritos, para que la IA copie su forma de hablar.
+    const d = window.CHAT?.[id];
+    const samples = d ? [d.greet?.mid, d.greet?.high, ...(d.bye || []), ...Object.values(d.nodes || {}).flatMap((n) => [].concat(n.say || []))]
+      .filter((x) => typeof x === 'string').slice(0, 8).map((x) => `«${t(x)}»`) : [];
     const feel = aff <= -3 ? 'Le tienes antipatía y desconfías.' : aff < 1 ? 'Le tratas con cautela.' : aff < 5 ? 'Te cae bien.' : aff < 8 ? 'Le aprecias mucho.' : 'Es una de las personas más importantes para ti.';
     return [
       `Eres ${name}, de la serie Arcane (Piltover y Zaun). Interpreta a ${name} en un chat dentro de un juego de fans, siempre en su papel y en primera persona.`,
       `Personalidad: ${info?.persona || window.WIKI.personajes.find((x) => x.id === id)?.role || ''}`,
+      samples.length ? `Así hablas (frases tuyas en el juego): ${samples.join(' ')}` : '',
       `Hablas con ${who}.`,
       `${relTxt} Afinidad ${aff}/10: ${feel}${mate && mate !== id ? ` (${p.name} sale con ${window.WIKI.personajes.find((x) => x.id === mate)?.name}.)` : ''}`,
       ch ? `Momento de la historia: ${ch.title}${G.progress.season === 2 ? ' (segunda temporada)' : ''}. No reveles cosas que tu personaje aún no sabe.` : '',

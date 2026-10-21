@@ -164,11 +164,15 @@
         el('select', { class: 'input', onchange: (e) => set({ textSpeed: e.target.value }) },
           [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido']].map(([v, l]) => el('option', { value: v, selected: s.textSpeed === v }, l)))),
       toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
+      el('h3', {}, 'Mundo 3D'),
+      el('label', { class: 'switch-row' },
+        el('span', {}, el('strong', {}, 'Personajes en 3D'), el('small', { class: 'muted' }, 'Tu personaje y los de Arcane caminan y corren por el mapa. Desactívalo si el móvil va lento (vuelven los iconos redondos).')),
+        el('input', { type: 'checkbox', checked: s.models3d !== false, onchange: (e) => { set({ models3d: e.target.checked }); window.World3D?.resetActors(); } })),
       aiSettings(set),
       el('h3', {}, 'Acerca de'),
       el('p', { class: 'muted small' }, 'Juego de fans gratuito y sin ánimo de lucro: no se vende, no tiene anuncios ni compras. Las imágenes de personajes y lugares son de la Arcane Wiki (arcane.fandom.com) y la música se sintetiza en tiempo real.'),
       el('p', { class: 'muted small' }, 'Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.'),
-      el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo.')));
+      el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo. Si activas la IA para los chats, lo que escribes en el comunicador (y el contexto del personaje) se envía al servicio que elijas, con tu propia clave; con Ollama no sale de tu ordenador.')));
   }
 
   // ---------- Arte personal ----------
@@ -237,7 +241,13 @@
       'codice/       Ilustraciones del Códice (criaturas, tecnología, mundo y lugares)',
       ...['criaturas', 'tecnologia', 'mundo', 'lugares'].flatMap((c) => [`  -- ${W.categories.find((x) => x.id === c).label}`, ...W[c].map((e) => line(e.id, e.name))]),
       '',
-      'Ejemplos: personajes/jinx.png · lugares/ultima-gota.jpg · codice/hextec.png',
+      'modelos/      PERSONAJES 3D (.glb) para el mapa, por ejemplo de Mixamo (mixamo.com, gratis).',
+      '              Un archivo por personaje con los nombres de personajes/ (vi.glb, jinx.glb…), jugador.glb para',
+      '              ti y generico.glb para quien no tenga el suyo. Si falta, se usa el muñeco pintado del juego.',
+      '  animaciones/ reposo.glb, andar.glb y correr.glb (Mixamo, marca «In Place»). Valen para todos los modelos de Mixamo.',
+      '              Mixamo descarga .fbx: ábrelo en Blender y exporta como glTF binario (.glb).',
+      '',
+      'Ejemplos: personajes/jinx.png · lugares/ultima-gota.jpg · codice/hextec.png · modelos/vi.glb',
     ].join('\n');
   }
 
@@ -260,16 +270,18 @@
 
   function artSettings(root, onBack) {
     const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
+    const models = el('span', {});
+    window.Avatars3D?.listModels().then((m) => { models.textContent = ` · modelos 3D: ${m.size}`; });
     const progress = el('div', { class: 'dl-progress hidden' }, el('i'), el('span'));
     return el('div', {},
       el('h3', {}, 'Arte personal'),
       el('p', { class: 'muted' }, 'Pon tus imágenes en la carpeta de arte y el juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
-      el('p', { class: 'small' }, `Archivos encontrados → ${counts}`),
+      el('p', { class: 'small' }, `Archivos encontrados → ${counts}`, models),
       placesReport(),
       el('div', { class: 'row gap' },
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
-        ...['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
-        el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
+        ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'modelos'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
+        el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); window.World3D?.resetActors(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
       el('p', { class: 'muted small' }, `Todas las imágenes de personajes salen de la Arcane Wiki (arcane.fandom.com), no de Riot. Este botón descarga la imagen principal de la página de cada personaje (cuerpo) y de cada lugar que aún te falte; las caras del chat ya vienen con el juego. Solo baja lo que no tienes, no toca tus archivos. Los retratos de Riot que bajaban las versiones anteriores se apartan a la carpeta «_riot-retirado». Ahora faltan: ${fandomItems().length}.`),
       el('button', {
         class: 'btn primary small',
