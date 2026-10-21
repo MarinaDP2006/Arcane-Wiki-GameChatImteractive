@@ -25,7 +25,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 2. Si aparece la ventana azul **«Windows protegió su PC»**, pulsa **Más información** y después
    **Ejecutar de todas formas**. (Pasa porque el juego no tiene firma digital; es normal.)
 
-** Mac**
+**Mac**
 1. Dentro de la carpeta descomprimida, haz doble clic en el archivo **`.dmg`**.
 2. Arrastra el icono **Arcane Piltover y Zaun** a la carpeta **Aplicaciones**.
 3. Ve a *Aplicaciones*, haz **clic derecho sobre el juego → Abrir → Abrir**.
