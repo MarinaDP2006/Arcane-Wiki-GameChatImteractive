@@ -1,215 +1,195 @@
 # Arcane: Piltover y Zaun
 
-Juego de escritorio para **Windows** y **macOS** ambientado en el mundo de *Arcane*: **historia interactiva + conversaciones con opciones + mundo abierto** de Piltover y Zaun. Creas tu personaje, eliges de qué lado del puente vienes y recorres las dos ciudades.
-Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
+Un juego para **Windows** y **Mac** ambientado en *Arcane*. Creas tu personaje, eliges si vienes de
+**Piltover** o de **Zaun**, recorres las dos ciudades y vives la historia hablando con sus personajes.
+Lo que decides cambia cómo te tratan y qué final consigues.
 
-##  Instalación paso a paso (guía rápida)
-### Paso 1 · Descarga el juego
-1. Entra en el repositorio: https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive
-2. Arriba, pulsa la pestaña **Actions**.
-3. En la lista de la izquierda pulsa **Compilar ejecutables**.
-4. Abre la ejecución más reciente que tenga un **verde** (la primera de la lista).
-5. Baja hasta el final de la página, al apartado **Artifacts**, y descarga:
-   - **`arcane-windows`** si tienes un PC con Windows.
-   - **`arcane-macos`** si tienes un Mac.
-   *(Si existe una versión en **Releases**, también puedes descargar el instalador desde ahí.)*
-6. Se descarga un archivo `.zip`. Haz clic derecho sobre él → **Extraer todo…** (Windows) o doble
-   clic (Mac) para descomprimirlo.
-
-### Paso 2 · Instálalo
-**Windows**
-1. Dentro de la carpeta descomprimida verás dos archivos `.exe`:
-   - **`Arcane Piltover y Zaun Setup …exe`** → el instalador. Doble clic, pulsa *Siguiente* hasta
-     el final y se creará un acceso directo en el escritorio.
-   - **`Arcane Piltover y Zaun-…-portable.exe`** → sin instalar. Doble clic y se abre el juego.
-2. Si aparece la ventana azul **«Windows protegió su PC»**, pulsa **Más información** y después
-   **Ejecutar de todas formas**. (Pasa porque el juego no tiene firma digital; es normal.)
-
-**Mac**
-1. Dentro de la carpeta descomprimida, haz doble clic en el archivo **`.dmg`**.
-2. Arrastra el icono **Arcane Piltover y Zaun** a la carpeta **Aplicaciones**.
-3. Ve a *Aplicaciones*, haz **clic derecho sobre el juego → Abrir → Abrir**.
-   - Si no te deja: **Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente**.
-   - Si dice que «está dañado»: abre **Terminal** y escribe
-     `xattr -cr "/Applications/Arcane Piltover y Zaun.app"` y vuelve a abrirlo.
-
-### Paso 3 · ¡A jugar!
-1. En el menú principal pulsa **✦ Nueva partida**.
-2. Elige **Zaun** o **Piltover**, crea tu personaje (clase, habilidades, retrato, familia…).
-3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
-4. Pulsa **C** para hablar con los personajes que conozcas y **Esc** para el menú de pausa.
-   No necesitas instalar nada más.
-
-> ¿Prefieres ejecutarlo desde el código? Instala [Node.js](https://nodejs.org), descarga el proyecto
-> con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
-> `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
-
-## Cómo se juega
-1. **Crea tu campeón** (al estilo de League of Legends), en 8 pasos:
-   - **Origen e identidad**: ciudad, nombre, género, edad, profesión y barrio.
-   - **Clase**: Luchador, Tirador, Inventor, Asesino, Protector o Líder. Cada una tiene su
-     propia pasiva.
-   - **Habilidades Q, W, E y R**: eliges una por ranura. Dan estadísticas y ventajas en los
-     minijuegos o en el chat.
-   - **Aptitudes**: repartes 4 puntos (el radar los muestra), eliges una runa clave
-     (Encanto, Estudioso, Pies ligeros o Veterano) y un título.
-   - **Retrato**: eliges entre 8 retratos de mujer o 8 de hombre, según el género del paso 1
-     (con «No binario» salen los 16), o subes tu foto.
-   - **Familia y aficiones**: familia
-     famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros, Giopara, la de Vander…).
-   - **Ficha final**: tu barra de habilidades P/Q/W/E/R.
-
-   El botón Aleatorio lo rellena todo. Todo suma a tus estadísticas, y tu build da **ventaja** en los
-   minijuegos: más vida, más tiempo o menos objetivos.
-2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
-   en el barrio que elegiste.
-3. **Explora el mundo abierto**: camina por los dos mapas, cruza el Puente del Progreso,
-   visita lugares, habla con los personajes y recoge los fragmentos del Códice (cristales hextec).
-4. **Sigue la historia**: el objetivo ★ te dice adónde ir. Al llegar, la escena se juega como
-   un chat. Algunas opciones necesitan estadísticas, afinidad o decisiones anteriores.
-5. **Minijuegos y entrenamiento**: cada lugar tiene una actividad que sube una estadística una
-   vez por capítulo. Muchas son minijuegos. Algunas decisiones de la historia también se
-   resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
-6. **Conversa**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
-   hablar con ellos por el comunicador o en persona en su lugar del mapa. Cada conversación es
-   un árbol de diálogo: eliges qué decir entre varias respuestas (amable, broma, dura,
-   pregunta, coqueta, astuta, seria, sigilosa) y el personaje reacciona.
-   Lo que dices sube o baja la afinidad, te da estadísticas y activa decisiones de la historia.
-   Algunas respuestas piden **Ingenio, Carisma, Valor, Sigilo o afinidad**, y otras solo aparecen
-   si tomaste ciertas decisiones antes (o en la Temporada 2). Los temas nuevos se marcan con ✦.
-7. **Consigue los finales**: el capítulo final en el Puente tiene 4 desenlaces distintos.
-8. **Temporada 2**: al terminar la primera temporada se desbloquea la segunda, que continúa tu
-   partida con las consecuencias de lo que hiciste: la cacería de Jinx tras el ataque, Isha, el
-   Heraldo y su Evolución Gloriosa, Ambessa y Mel, la bestia del Sumidero, los ecos del tiempo de
-   Ekko y la guerra final por el puente, con 3 finales nuevos. Avisa antes de empezar porque
-   contiene spoilers de la segunda temporada de Arcane.
-
-### Controles
-| Tecla | Acción |
-|---|---|
-| WASD / flechas (Mayús para correr) o clic en el mapa | Moverse |
-| Rueda del ratón o + / − | Acercar o alejar la cámara |
-| Q / R o botón derecho arrastrando | Girar (e inclinar) la cámara |
-| E o Intro | Hablar / entrar / interactuar |
-| 1–9 | Elegir una opción |
-| H | Historia |
-| C | Comunicador (chats) |
-| F | Ficha del personaje |
-| K | Códice |
-| M | Atlas de las Dos Ciudades (Códice) |
-| Esc | Pausa / cerrar ventana |
-| Espacio | Saltar la escena en curso |
-| F11 | Pantalla completa |
-
-### Menús y Códice
-
-**Menús en 3D:** el menú de partidas, los ajustes y el creador tienen una escena
-3D animada en tiempo real (three.js): las torres de Piltover, los neones de Zaun, el Puente
-del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
-fondo pintado en 2D.
-
-**Códice con Atlas y mapas:** el Códice (K) tiene tres pestañas: **Entradas**,
-**Atlas** (M) y **Mapas de la Wiki**. El Atlas usa el mapa de Piltover y Zaun de Charles Lee y va
-dentro del juego, sin internet: 20 lugares marcados en el mapa, cada uno con su foto, su ficha,
-sus puntos de interés, quién vive allí (con botón para hablar) y un diario de viaje con los
-lugares explorados. A la izquierda está el símbolo de Piltover y a la derecha el de Zaun:
-púlsalos para ver todos los lugares de cada ciudad. La pestaña de la Wiki abre los
-mapas interactivos de la [Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) (necesita
-internet; la dirección se cambia en *Ajustes*).
-
-## Cómo instalarlo
-Hay dos formas: **descargar el juego ya compilado** (recomendado, no hace falta instalar nada más)
-o **ejecutarlo desde el código**.
-
-**Dónde se descarga el juego compilado:**
-- En **Releases** (https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases), si hay
-  alguna versión publicada.
-- O en **Actions → Compilar ejecutables**: abre la ejecución más reciente con y baja hasta
-  **Artifacts**. GitHub entrega los artifacts dentro de un `.zip`, así que primero hay que
-  descomprimirlo.
-
-### En PC (Windows 10 / 11)
-**Opción 1 · Juego compilado**
-1. Descarga `arcane-windows` (en Artifacts) o el `.exe` de la Release y descomprímelo si es un `.zip`.
-2. Elige uno de los dos archivos:
-   - `Arcane Piltover y Zaun Setup X.Y.Z.exe` → **instalador**: doble clic, sigue los pasos y
-     tendrás un acceso directo en el escritorio y en el menú Inicio.
-   - `Arcane Piltover y Zaun-X.Y.Z-portable.exe` → **portable**: no se instala; doble clic y a jugar
-     (puedes llevarlo en un USB).
-3. Si Windows muestra **«Windows protegió su PC»** (SmartScreen), pulsa **Más información →
-   Ejecutar de todas formas**. Sale porque el juego no está firmado digitalmente.
-4. Para desinstalarlo: *Configuración → Aplicaciones → Arcane Piltover y Zaun → Desinstalar*
-   (la versión portable basta con borrarla).
-
-**Opción 2 · Desde el código**
-1. Instala [Node.js](https://nodejs.org) (versión LTS, 20 o superior) con las opciones por defecto.
-2. En GitHub pulsa **Code → Download ZIP** y descomprime la carpeta.
-3. Haz doble clic en **`jugar-windows.bat`**. La primera vez descarga lo necesario (unos minutos)
-   y después abre el juego. Las siguientes veces arranca directamente.
-
-Tus partidas se guardan en `%APPDATA%\Arcane Piltover y Zaun\partidas`.
-
-### En Mac (macOS 11 o superior, Intel y Apple Silicon)
-**Opción 1 · Juego compilado**
-1. Descarga `arcane-macos` (en Artifacts) o el `.dmg` de la Release y descomprímelo si es un `.zip`.
-2. Abre el `.dmg` y **arrastra «Arcane Piltover y Zaun» a la carpeta Aplicaciones**.
-3. La primera vez, como la app no está firmada por Apple:
-   - Haz **clic derecho (o Control + clic) sobre la app → Abrir → Abrir**.
-   - Si aun así no se abre, ve a **Ajustes del Sistema → Privacidad y seguridad**, baja hasta el
-     aviso de la app y pulsa **Abrir igualmente**.
-   - Si macOS dice que la app «está dañada», abre la app **Terminal** y escribe:
-     `xattr -cr "/Applications/Arcane Piltover y Zaun.app"`, y vuelve a abrirla.
-4. Para desinstalarlo, arrastra la app desde *Aplicaciones* a la Papelera.
-
-**Opción 2 · Desde el código**
-1. Instala [Node.js](https://nodejs.org) (versión LTS, 20 o superior).
-2. En GitHub pulsa **Code → Download ZIP** y descomprime la carpeta.
-3. Haz doble clic en **`jugar-mac.command`**. Si macOS lo bloquea: clic derecho → *Abrir*.
-   Si dice que no tiene permisos, abre **Terminal** dentro de la carpeta y escribe
-   `chmod +x jugar-mac.command`.
-
-Tus partidas se guardan en `~/Library/Application Support/Arcane Piltover y Zaun/partidas`.
-
-### Compilar tus propios ejecutables
-```bash
-npm install
-npm start          # jugar en modo desarrollo
-npm run check      # validar historia, mapas y diálogos
-npm run dist:win   # ejecutables de Windows (hazlo en Windows)
-npm run dist:mac   # .dmg de macOS (hazlo en un Mac)
-```
-
-Los ejecutables salen en la carpeta `dist/`.
-
-**Publicar una versión con descarga directa:** en GitHub, ve a **Releases → Draft a new release**,
-escribe una etiqueta nueva (por ejemplo `v1.2.0`) y pulsa **Publish release**. El workflow compila
-Windows y Mac y añade los instaladores a esa Release automáticamente.
-
-## Estructura
-```
-main.js, preload.js      Proceso de Electron: ventana, partidas y ajustes
-src/index.html           Interfaz del juego
-src/js/world.js          Motor del mundo abierto (mapa, colisiones, cámara, minimapa)
-src/js/world3d.js        Ciudad en 3D del mundo abierto (Three.js): Piltover y Zaun
-src/js/game.js           Historia, comunicador, ficha, actividades y Códice
-src/js/creator.js        Creador de personaje
-src/js/audio.js          Música procedural y efectos de sonido
-src/js/portrait.js       Retratos ilustrados generados en SVG
-src/data/story.js        Capítulos, decisiones y finales
-src/data/world.js        Mapas de Piltover y Zaun, lugares, actividades, fragmentos
-src/data/chat.js         Árboles de diálogo de cada personaje
-src/data/atlas.js        Lugares del Atlas de las Dos Ciudades
-src/data/wiki.js         Entradas del Códice (personajes, lugares, criaturas, tecnología, mundo)
-src/data/creation.js     Opciones del creador de personaje
-scripts/check.js         Validador de datos
-```
+## Índice
+1. [Qué tiene el juego](#1-qué-tiene-el-juego)
+2. [Descargar e instalar](#2-descargar-e-instalar)
+3. [Primeros pasos](#3-primeros-pasos)
+4. [Controles](#4-controles)
+5. [Personajes](#5-personajes)
+6. [Vídeos](#6-vídeos)
+7. [Dónde se guardan tus partidas](#7-dónde-se-guardan-tus-partidas)
+8. [Problemas frecuentes](#8-problemas-frecuentes)
+9. [Para programadores](#9-para-programadores)
 
 ---
 
-## Arte y vídeos (v1.6.0)
-Las imágenes vienen dentro del juego: 16 retratos para elegir (8 de mujer y 8 de hombre, según el género
-que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa de Piltover y Zaun del
-Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
-(`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
+## 1. Qué tiene el juego
 
-Se pueden saltar con Esc, espacio o Intro.
+| Parte | Qué es |
+|---|---|
+| **Creador de personaje** | Eliges ciudad, nombre, clase, habilidades, retrato y familia. El botón *Aleatorio* lo rellena todo. |
+| **Mundo abierto en 3D** | Caminas por Piltover y por Zaun y cruzas el Puente del Progreso. |
+| **Historia** | 8 capítulos por ciudad, un capítulo final con 4 finales y una **Temporada 2** con 3 finales más. |
+| **Comunicador** | Chats con los personajes que conoces. Eliges qué decir y ellos reaccionan. |
+| **Minijuegos** | Cada lugar tiene una actividad que mejora tus estadísticas. |
+| **Códice** | Enciclopedia del juego con el **Atlas de las Dos Ciudades** (20 lugares) y los mapas de la Arcane Wiki. |
+
+## 2. Descargar e instalar
+
+### Dónde descargarlo
+
+| Opción | Cómo |
+|---|---|
+| **Releases** (la más fácil) | Entra en [Releases](https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases) y descarga la última versión. |
+| **Actions** | Pestaña **Actions** → **Compilar ejecutables** → abre la ejecución más reciente con ✅ → baja hasta **Artifacts**. |
+
+En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo…** (en Mac, doble clic).
+
+### Qué archivo elegir
+
+| Tu ordenador | Descarga | Archivo | Qué hace |
+|---|---|---|---|
+| Windows | `arcane-windows` | `Arcane-Setup-….exe` | **Instalador.** Doble clic y *Siguiente* hasta el final. Crea un acceso directo. |
+| Windows | `arcane-windows` | `Arcane-…-portable.exe` | **Sin instalar.** Doble clic y se abre. Se puede llevar en un USB. |
+| Mac | `arcane-macos` | `Arcane-….dmg` | Ábrelo y arrastra **Arcane** a la carpeta **Aplicaciones**. |
+
+### La primera vez que lo abres
+
+| Sistema | Aviso | Qué hacer |
+|---|---|---|
+| Windows | «Windows protegió su PC» | Pulsa **Más información** → **Ejecutar de todas formas**. Es normal: el juego no tiene firma digital. |
+| Mac | «No se puede abrir» | Clic derecho sobre la app → **Abrir** → **Abrir**. |
+| Mac | Sigue sin abrir | **Ajustes del Sistema** → **Privacidad y seguridad** → **Abrir igualmente**. |
+| Mac | «Está dañada» | Abre **Terminal** y escribe `xattr -cr /Applications/Arcane.app` |
+
+### Desinstalar
+
+| Sistema | Cómo |
+|---|---|
+| Windows (instalado) | **Configuración** → **Aplicaciones** → **Arcane** → **Desinstalar** |
+| Windows (portable) | Borra el archivo `.exe` |
+| Mac | Arrastra **Arcane** de *Aplicaciones* a la Papelera |
+
+## 3. Primeros pasos
+
+| Paso | Qué hacer |
+|---|---|
+| 1 | En el menú principal pulsa **✦ Nueva partida**. |
+| 2 | Elige **Zaun** o **Piltover** y crea tu personaje. |
+| 3 | En el mapa, ve al lugar marcado con **★ OBJETIVO** y pulsa **E** para empezar el capítulo. |
+| 4 | Habla con los personajes con **C**. Algunas respuestas solo salen si tienes suficiente Ingenio, Carisma, Valor, Sigilo o amistad. Los temas nuevos llevan ✦. |
+| 5 | Al terminar la Temporada 1 se desbloquea la **Temporada 2** (avisa antes porque tiene spoilers). |
+
+## 4. Controles
+
+| Tecla | Acción |
+|---|---|
+| **W A S D** o flechas | Moverse (con **Mayús** corres) |
+| Clic en el mapa | Ir a ese punto |
+| Rueda del ratón o **+ / −** | Acercar o alejar la cámara |
+| **Q / R** o botón derecho arrastrando | Girar la cámara |
+| **E** o **Intro** | Hablar, entrar o usar |
+| **1 – 9** | Elegir una respuesta |
+| **H** | Historia |
+| **C** | Comunicador (chats) |
+| **F** | Ficha de tu personaje |
+| **K** | Códice |
+| **M** | Atlas de las Dos Ciudades |
+| **Espacio** | Saltar la escena o el vídeo |
+| **Esc** | Pausa o cerrar ventana |
+| **F11** | Pantalla completa |
+
+## 5. Personajes
+
+Estos son los 16 personajes que hablan en la historia y en el comunicador.
+
+| Zaun | Piltover | Otros |
+|---|---|---|
+| Vi | Caitlyn | Ambessa |
+| Jinx | Jayce | Mel |
+| Vander | Viktor | Isha |
+| Silco | Heimerdinger | Maddie |
+| Ekko | Cassandra | Kino |
+| Sevika | | |
+
+## 6. Vídeos
+
+El juego trae cinemáticas animadas propias. Si quieres ver **tus vídeos** en su lugar, cópialos aquí:
+
+| Sistema | Carpeta |
+|---|---|
+| Windows | `C:\Users\TU-USUARIO\AppData\Roaming\Arcane Piltover y Zaun\arte\video` |
+| Mac | `~/Library/Application Support/Arcane Piltover y Zaun/arte/video` |
+
+> En Windows puedes llegar rápido escribiendo `%APPDATA%\Arcane Piltover y Zaun\arte\video` en la barra del Explorador.
+
+| Vídeo que copiar | Cuándo sale |
+|---|---|
+| `Welcome to Zaun.mp4` | Al empezar una partida en Zaun |
+| `Welcome to Piltover.mp4` | Al empezar una partida en Piltover |
+| `IntroS1.mp4` | Al empezar el capítulo 1 de la Temporada 1 |
+| `IntroS2.mp4` | Al empezar la Temporada 2 |
+
+- Valen archivos `.mp4` o `.webm`. Mayúsculas y espacios dan igual.
+- Cierra y vuelve a abrir el juego después de copiarlos.
+- Todos se saltan con **Espacio**, **Esc** o **Intro**.
+
+## 7. Dónde se guardan tus partidas
+
+| Sistema | Carpeta |
+|---|---|
+| Windows | `%APPDATA%\Arcane Piltover y Zaun\partidas` |
+| Mac | `~/Library/Application Support/Arcane Piltover y Zaun/partidas` |
+
+Si reinstalas el juego, tus partidas siguen ahí.
+
+## 8. Problemas frecuentes
+
+| Problema | Solución |
+|---|---|
+| El mapa sale en 2D y no en 3D | Tu tarjeta gráfica no tiene WebGL. El juego funciona igual en 2D. Actualizar los drivers suele arreglarlo. |
+| No sale mi vídeo | Revisa que esté en la carpeta `video` de la sección 6, con el nombre de la tabla, y reinicia el juego. |
+| La pestaña de mapas de la Wiki está en blanco | Necesita internet. La dirección se cambia en **Ajustes**. |
+
+---
+
+## 9. Para programadores
+
+### Jugar desde el código
+
+| Paso | Qué hacer |
+|---|---|
+| 1 | Instala [Node.js](https://nodejs.org) (versión 20 o superior). |
+| 2 | En GitHub pulsa **Code** → **Download ZIP** y descomprímelo. |
+| 3 | Doble clic en `jugar-windows.bat` (Windows) o `jugar-mac.command` (Mac). La primera vez tarda unos minutos. |
+
+En Mac, si `jugar-mac.command` no tiene permisos, abre Terminal en la carpeta y escribe `chmod +x jugar-mac.command`.
+
+### Comandos
+
+| Comando | Qué hace |
+|---|---|
+| `npm install` | Descarga lo necesario |
+| `npm start` | Abre el juego |
+| `npm run check` | Revisa que la historia, los mapas y los diálogos estén bien |
+| `npm run dist:win` | Crea el instalador de Windows (hazlo en Windows) |
+| `npm run dist:mac` | Crea el `.dmg` de Mac (hazlo en un Mac) |
+
+Los instaladores salen en la carpeta `dist/`.
+
+**Publicar una versión:** en GitHub ve a **Releases** → **Draft a new release**, pon una etiqueta nueva
+(por ejemplo `v2.0.0`) y pulsa **Publish release**. GitHub crea los instaladores y los añade solo.
+
+### Archivos del proyecto
+
+| Archivo | Qué contiene |
+|---|---|
+| `main.js`, `preload.js` | La ventana del juego, las partidas y los ajustes |
+| `src/index.html` | La pantalla del juego |
+| `src/js/world.js` | El mundo abierto: mapa, movimiento y cámara |
+| `src/js/world3d.js` | Las ciudades en 3D |
+| `src/js/game.js` | Historia, comunicador, ficha, actividades y Códice |
+| `src/js/creator.js` | El creador de personaje |
+| `src/js/audio.js` | Música y efectos de sonido |
+| `src/js/portrait.js` | Retratos dibujados |
+| `src/data/story.js` | Capítulos, decisiones y finales |
+| `src/data/world.js` | Mapas, lugares y actividades |
+| `src/data/chat.js` | Conversaciones de cada personaje |
+| `src/data/atlas.js` | Lugares del Atlas |
+| `src/data/wiki.js` | Entradas del Códice |
+| `src/data/creation.js` | Opciones del creador de personaje |
+| `scripts/check.js` | El revisor de `npm run check` |
