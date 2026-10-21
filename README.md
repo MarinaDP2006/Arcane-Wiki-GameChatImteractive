@@ -51,9 +51,15 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 - **Vídeos en su momento:** *Welcome to Zaun* o *Welcome to Piltover* al terminar de crear tu personaje
   (según tu ciudad), *IntroS1* cuando empieza la historia de la Temporada 1 e *IntroS2* al empezar la
   Temporada 2.
-- **Mundo abierto:** en las calles solo están los personajes de Arcane (con su avatar de chat), sin
-  habitantes genéricos. Cada lugar se ve con su imagen enmarcada, los fragmentos del Códice son cristales
-  hextec y las farolas son hextec en Piltover y de quimtec en Zaun.
+- **Mundo abierto en 3D:** la ciudad se levanta en 3D (three.js) sobre un suelo pintado en 2D y la cámara
+  te sigue desde arriba con un ligero balanceo. Cada ciudad tiene su propio mapa: **Piltover** con
+  bulevares, torres con cúpulas y agujas, el canal del río con tres puentes, farolas hextec y dirigibles;
+  **Zaun** con callejas torcidas, chabolas apiladas con neones, chimeneas que echan humo, tuberías
+  gigantes, niebla verde y el abismo químico cruzado por pasarelas. Si tu tarjeta gráfica no tiene WebGL,
+  se ve el mismo mapa en 2D.
+- En las calles solo están los personajes de Arcane (con su avatar de chat), sin habitantes genéricos. Cada
+  lugar se ve con su imagen enmarcada flotando sobre una plataforma y los fragmentos del Códice son
+  cristales hextec.
 - **Imágenes de la Arcane Wiki, no de Riot:** se quita la descarga de Data Dragon. Los retratos de Riot que
   bajaron versiones anteriores se apartan solos a `arte\_riot-retirado` (no se borran).
 - **Historia:** en las escenas solo salen los avatares de chat de cada personaje, nunca retratos generados.
