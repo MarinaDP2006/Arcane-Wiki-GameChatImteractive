@@ -93,7 +93,7 @@ En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo
 | **H** | Historia |
 | **C** | Comunicador (chats) |
 | **F** | Ficha de tu personaje |
-| **K** | Códice |
+| **K** | Códice que abre el mapa interactivo oficial de LOL -> https://map.leagueoflegends.com/es_ES/|
 | **M** | Atlas de las Dos Ciudades |
 | **Espacio** | Saltar la escena |
 | **Esc** | Pausa o cerrar ventana |
@@ -131,8 +131,7 @@ Cada uno lleva su pelo, su ropa, su cara pintada y sus marcas: el tatuaje de Vi,
 el brazo de metal de Sevika, el sombrero de Caitlyn… Los de Arcane te miran cuando te acercas.
 Si el móvil va lento, se pueden quitar en **Ajustes → Mundo 3D** (vuelven los iconos redondos).
 
-**¿Quieres modelos de verdad, por ejemplo de [Mixamo](https://www.mixamo.com) (gratis)?** Ponlos en la carpeta `modelos` de tu carpeta de arte
-(en Ajustes → Arte personal hay un botón para abrirla) o en `src/models` para que vayan dentro del juego y de la app de Android:
+**¿Quieres modelos de verdad, por ejemplo de [Mixamo](https://www.mixamo.com) (gratis)?** Ponlos en la carpeta `modelos` de tu carpeta de arte (en Ajustes → Arte personal hay un botón para abrirla) o en `src/models` para que vayan dentro del juego y de la app de Android:
 
 | Archivo | Para quién |
 |---|---|
@@ -180,9 +179,6 @@ Si reinstalas el juego, tus partidas siguen ahí. La carpeta conserva el nombre 
 ---
 
 ## 9. Para programadores
-
-### Jugar desde el código
-
 | Paso | Qué hacer |
 |---|---|
 | 1 | Instala [Node.js](https://nodejs.org) (versión 20 o superior). |
