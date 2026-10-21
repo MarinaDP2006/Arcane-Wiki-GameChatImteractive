@@ -99,7 +99,8 @@ function ensureArtDir() {
 }
 
 // Otros nombres con los que la jugadora guarda las caras de los personajes.
-const ART_ALIASES = { ambressa: 'ambessa', kiraman: 'cassandra', kiramman: 'cassandra', 'cassandra-kiramman': 'cassandra', powder: 'jinx', violet: 'vi' };
+const ART_ALIASES = { ambressa: 'ambessa', kiraman: 'cassandra', kiramman: 'cassandra', 'cassandra-kiramman': 'cassandra', powder: 'jinx', violet: 'vi',
+  heirmendinger: 'heimerdinger', heimendinger: 'heimerdinger', heimer: 'heimerdinger' };
 
 function listDir(dir) {
   const out = {};

@@ -19,8 +19,8 @@ window.STORY = {
   },
 
   // Reparto: los únicos personajes que hablan, se desbloquean y salen en el comunicador.
-  // Son los protagonistas cuyas caras están en arte/caras.
-  cast: ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha'],
+  // Son los 16 protagonistas cuyas caras están en arte/caras.
+  cast: ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino'],
 
   chapters: [
     // ======================= RUTA ZAUN =======================
@@ -495,25 +495,26 @@ window.STORY = {
     {
       id: 'p1', route: 'piltover', title: 'Capítulo 1 · La Academia',
       intro: 'Piltover, la Ciudad del Progreso. Latón, cristal y ambición. En la Academia, alguien está a punto de convertir la magia en ciencia.',
-      unlocks: ['jayce', 'viktor'],
+      unlocks: ['jayce', 'heimerdinger', 'viktor'],
       start: 'a',
       nodes: {
         a: { bg: 'academia', lines: [
           { s: 'narrador', t: 'Eres {name}, {job} de {district}. Hoy te han citado en la Academia por un asunto «delicado».' },
           { s: 'narrador', t: 'Los pasillos huelen a tinta y a cera. En el despacho del decano, el profesor Heimerdinger, un yordle de bigote blanco, revisa papeles chamuscados con cara de funeral.' },
-          { s: 'viktor', t: '(Apoyado en su bastón, junto a la puerta.) El profesor está… alterado. Anoche hubo una explosión en un apartamento del barrio alto. Un tal Jayce Talis jugaba con magia.' },
-          { s: 'viktor', t: 'Magia en la Academia. Para el profesor es como decir «fuego» en una biblioteca.' },
+          { s: 'heimerdinger', t: '¡Ah, puntualidad! Una virtud olvidada. Ha habido una explosión en un apartamento del barrio alto. Un tal Talis jugaba con magia. ¡Magia! En mi Academia.' },
+          { s: 'viktor', t: '(Apoyado en su bastón, junto a la puerta.) El profesor está… alterado. Para él, decir «magia» en la Academia es como decir «fuego» en una biblioteca.' },
+          { s: 'heimerdinger', t: 'Porque lo es, Viktor. Lo es. He visto ciudades enteras arder por menos. Y llevo vivo el tiempo suficiente para recordarlas todas.' },
         ], choices: [
-          { t: '«Seguro que hay una explicación científica.»', next: 'b_ciencia', fx: { aff: { jayce: 1, viktor: 1 } } },
-          { t: '«La magia sin control es peligrosa. Tiene razón.»', next: 'b_razon', fx: { aff: { jayce: -1 } } },
+          { t: '«Seguro que hay una explicación científica.»', next: 'b_ciencia', fx: { aff: { heimerdinger: 1, jayce: 1, viktor: 1 } } },
+          { t: '«La magia sin control es peligrosa. Tiene razón.»', next: 'b_razon', fx: { aff: { heimerdinger: 3, jayce: -1 } } },
           { t: '(Fijarte en el joven del bastón que toma notas.)', next: 'b_viktor', fx: { aff: { viktor: 2 }, stats: { ingenio: 1 } } },
         ] },
         b_ciencia: { bg: 'academia', lines: [
           { s: 'viktor', t: '(Una media sonrisa.) Eso mismo pienso yo. La magia solo es ciencia que aún no entendemos.' },
-          { s: 'narrador', t: 'Heimerdinger refunfuña desde su escritorio que la paciencia también es una ciencia. Una que los jóvenes nunca estudian.' },
+          { s: 'heimerdinger', t: 'Ciencia… Bueno, bueno. Quizá. Pero la paciencia también es una ciencia, joven. Una que nadie de vuestra edad estudia.' },
         ], next: 'b2' },
         b_razon: { bg: 'academia', lines: [
-          { s: 'narrador', t: 'Heimerdinger levanta las cejas, encantado: por fin alguien sensato. Lleva un siglo diciéndolo. Un siglo.' },
+          { s: 'heimerdinger', t: '¡Por fin alguien sensato! Llevo un siglo diciéndolo. Un siglo.' },
           { s: 'viktor', t: '(En voz baja, solo para ti.) La prudencia es fácil cuando vas a vivir trescientos años. Algunos no tenemos tanto tiempo.' },
         ], next: 'b2' },
         b_viktor: { bg: 'academia', lines: [
@@ -521,7 +522,8 @@ window.STORY = {
           { s: 'viktor', t: 'Las notas de Talis… son extraordinarias. Ha conseguido que una runa responda a una fórmula. Aunque nadie quiera verlo.' },
         ], next: 'b2' },
         b2: { bg: 'academia', lines: [
-          { s: 'narrador', t: 'El decano te pide que bajes al taller de Talis a recoger sus apuntes. Expulsado, dice. Y que no vuelva a acercarse a un cristal.' },
+          { s: 'heimerdinger', t: 'Hágame un favor, {name}: baje al taller de Talis y recoja sus apuntes. Queda expulsado. Y que no vuelva a acercarse a un cristal.' },
+          { s: 'heimerdinger', t: '(Más bajito.) Es un muchacho brillante. Por eso me da miedo.' },
           { s: 'viktor', t: 'Si vas, ve con cuidado. Un hombre al que le acaban de quitar su sueño muerde.' },
         ], next: 'c' },
         c: { bg: 'taller-jayce', lines: [
@@ -532,7 +534,7 @@ window.STORY = {
         ], choices: [
           { t: 'Ayudar a Jayce en secreto con sus cálculos (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'd_ayuda', fx: { aff: { jayce: 3, viktor: 1 }, rep: { piltover: 1 }, flags: ['ayuda_hextec'] } },
           { t: 'Presentarle a Viktor: «Él sí cree en ti».', next: 'd_presenta', fx: { aff: { jayce: 2, viktor: 3 }, flags: ['une_jayce_viktor'] } },
-          { t: 'Informar a Heimerdinger de lo que trama.', next: 'd_informa', fx: { aff: { jayce: -3 }, flags: ['delata_jayce'] } },
+          { t: 'Informar a Heimerdinger de lo que trama.', next: 'd_informa', fx: { aff: { heimerdinger: 2, jayce: -3 }, flags: ['delata_jayce'] } },
         ] },
         d_ayuda: { bg: 'taller-jayce', lines: [
           { s: 'narrador', t: 'Pasáis la noche entre fórmulas, tazas de café frío y pruebas que acaban en chispas. Jayce piensa en voz alta; tú le corriges las sumas.' },
@@ -549,7 +551,7 @@ window.STORY = {
           { s: 'narrador', t: 'Sin saberlo, acabas de juntar a los padres de la hextec.' },
         ], next: 'd2' },
         d_informa: { bg: 'academia', lines: [
-          { s: 'narrador', t: 'Heimerdinger te escucha con las manos cruzadas. Te asegura que has hecho lo correcto, aunque no lo parezca.' },
+          { s: 'heimerdinger', t: '(Con las manos cruzadas sobre la mesa.) Has hecho lo correcto. Aunque no lo parezca. Lo correcto rara vez lo parece.' },
           { s: 'viktor', t: '(Al salir, sin mirarte.) Lo correcto. Claro. Aquí arriba todo es correcto hasta que deja de serlo.' },
           { s: 'narrador', t: 'Esa noche, Jayce sigue trabajando a escondidas. Y alguien llama a su puerta: Viktor, con las notas que el decano iba a quemar.' },
         ], next: 'd2' },
@@ -613,12 +615,13 @@ window.STORY = {
         c: { bg: 'consejo', lines: [
           { s: 'narrador', t: 'Llega el día. Jayce se presenta ante el Consejo con una gema hextec flotando sobre un pedestal. La sala entera contiene el aliento.' },
           { s: 'jayce', t: 'Durante siglos, la magia ha sido un privilegio de unos pocos. Hoy os traigo una forma de que sea de todos. Lo llamamos hextec.' },
-          { s: 'narrador', t: 'Heimerdinger pide prudencia: lo que no se entiende, no se usa. Cassandra asiente. Mel calla y observa. La votación está igualada.' },
+          { s: 'heimerdinger', t: 'Consejeros, os lo ruego: prudencia. Lo que no se entiende, no se usa. Dadnos tiempo. Diez años. Veinte. ¿Qué son veinte años?' },
+          { s: 'narrador', t: 'Cassandra asiente. Mel calla y observa. La votación está igualada.' },
           { s: 'jayce', t: '(Te busca con la mirada.) {name}, di algo. Te escucharán.' },
         ], choices: [
-          { t: 'Defender la hextec: «Es el futuro de todos».', next: 'd_si', fx: { aff: { jayce: 2, mel: 2 }, rep: { piltover: 1 }, flags: ['vota_hextec'] } },
+          { t: 'Defender la hextec: «Es el futuro de todos».', next: 'd_si', fx: { aff: { jayce: 2, mel: 2, heimerdinger: -2 }, rep: { piltover: 1 }, flags: ['vota_hextec'] } },
           { t: 'Pedir que también beneficie a Zaun.', next: 'd_zaun', fx: { aff: { viktor: 3, cassandra: -1 }, rep: { zaun: 2 }, flags: ['hextec_zaun'] } },
-          { t: 'Apoyar al decano: «Aún no estamos preparados».', next: 'd_no', fx: { aff: { cassandra: 2, jayce: -2 } } },
+          { t: 'Apoyar a Heimerdinger: «Aún no estamos preparados».', next: 'd_no', fx: { aff: { heimerdinger: 3, cassandra: 1, jayce: -2 } } },
         ] },
         d_si: { bg: 'consejo', lines: [
           { s: 'yo', t: 'Cada generación de Piltover ha tenido miedo de algo nuevo. Y cada generación se ha equivocado. La hextec es el futuro de todos.' },
@@ -631,7 +634,8 @@ window.STORY = {
           { s: 'viktor', t: '(Luego, en el pasillo.) Gracias. Nadie dice eso aquí arriba. Ni siquiera Jayce, aunque lo piense.' },
         ], next: 'e' },
         d_no: { bg: 'consejo', lines: [
-          { s: 'narrador', t: 'Heimerdinger te dedica un gesto de gratitud. Cassandra también. Por un momento parece que la prudencia va a ganar.' },
+          { s: 'heimerdinger', t: 'Sabias palabras. Aunque me temo que el progreso no sabe esperar.' },
+          { s: 'narrador', t: 'Cassandra también te lo agradece con un gesto. Por un momento parece que la prudencia va a ganar.' },
           { s: 'narrador', t: 'Pero Mel mueve sus fichas: un susurro aquí, una promesa allá. La hextec se aprueba igualmente, por un voto.' },
           { s: 'mel', t: 'No te lo tomes como algo personal, {name}. El progreso no sabe esperar.' },
         ], next: 'e' },
@@ -750,8 +754,8 @@ window.STORY = {
           { s: 'viktor', t: 'El Hexcore. Mira cómo se mueve. Aprende, {name}. Se adapta. Podría curar cualquier cosa.' },
           { s: 'viktor', t: '(Tose en un pañuelo y lo esconde rápido.) Incluso a mí.' },
         ], choices: [
-          { t: 'Animarle a seguir: «Si puede salvarte, hazlo».', next: 'c_sigue', fx: { aff: { viktor: 3 }, flags: ['impulsa_hexcore'] } },
-          { t: 'Pedirle que se detenga (Carisma 2).', req: { stat: 'carisma', min: 2 }, next: 'c_para', fx: { aff: { viktor: -1, cassandra: 1 }, flags: ['frena_hexcore'] } },
+          { t: 'Animarle a seguir: «Si puede salvarte, hazlo».', next: 'c_sigue', fx: { aff: { viktor: 3, heimerdinger: -1 }, flags: ['impulsa_hexcore'] } },
+          { t: 'Pedirle que se detenga (Carisma 2).', req: { stat: 'carisma', min: 2 }, next: 'c_para', fx: { aff: { viktor: -1, heimerdinger: 2 }, flags: ['frena_hexcore'] } },
           { t: 'Analizar el Hexcore tú mism{g:o|a|e} (Ingenio 3).', req: { stat: 'ingenio', min: 3 }, next: 'c_analiza', fx: { aff: { viktor: 2 }, stats: { ingenio: 1 }, flags: ['entiende_hexcore'] } },
         ] },
         c_sigue: { bg: 'academia', lines: [
@@ -1060,7 +1064,7 @@ window.STORY = {
           { s: 'vi', t: '(Te guiña un ojo por encima de la taza.) Se pone así cada vez que entro. Es adorable.' },
         ], next: 'c' },
         c: { bg: 'academia', lines: [
-          { s: 'narrador', t: 'Un mensaje de la Academia: Viktor y Jayce quieren verte. Dicen que han encontrado algo sobre la gema robada.' },
+          { s: 'narrador', t: 'Un mensaje de la Academia: Heimerdinger, Viktor y Jayce quieren verte. Dicen que han encontrado algo sobre la gema robada.' },
         ], end: true },
       },
     },
@@ -1074,14 +1078,15 @@ window.STORY = {
           { s: 'jayce', t: '{name}, gracias por venir. Llevamos dos noches sin dormir. Viktor, cuéntaselo tú, que yo lo explico fatal.' },
           { s: 'viktor', t: 'La gema que robó esa muchacha no es estable. Las runas grabadas en ella siguen una secuencia… y si alguien la recuerda, podría apagarla.' },
           { s: 'viktor', t: 'O hacerla estallar. Depende de quién la toque.' },
-          { s: 'narrador', t: 'Heimerdinger, que ya no es decano, observa desde un rincón sin intervenir. Jayce evita mirarle.' },
+          { s: 'heimerdinger', t: '(Desde un rincón, con un libro más grande que él.) Y por eso, queridos míos, la magia no se toca sin manual. Ni con manual.' },
+          { s: 'jayce', t: '(Evita mirarle.) Gracias, profesor. Muy útil.' },
         ], choices: [
-          { t: 'Memorizar la secuencia de runas.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { jayce: 2, viktor: 1 }, flags: ['sabe_gema'] } }, fx: {} },
+          { t: 'Memorizar la secuencia de runas.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { heimerdinger: 3, jayce: 1 }, flags: ['sabe_gema'] } }, fx: {} },
           { t: 'Pedir a Viktor que la anote por ti.', req: { aff: ['viktor', 4] }, next: 'b_viktor', fx: { aff: { viktor: 2 }, flags: ['sabe_gema'] } },
-          { t: '«No hay tiempo para clases.»', next: 'b_ko', fx: { aff: { jayce: -1, viktor: -1 } } },
+          { t: '«No hay tiempo para clases, profesor.»', next: 'b_ko', fx: { aff: { heimerdinger: -2 } } },
         ] },
         b_ok: { bg: 'academia', lines: [
-          { s: 'jayce', t: '¡Extraordinario! Con esa secuencia, la gema se dormirá como un gatito.' },
+          { s: 'heimerdinger', t: '¡Extraordinario! Con esa secuencia, la gema se dormirá como un gatito.' },
           { s: 'viktor', t: 'Un gatito muy peligroso, eso sí. No te equivoques en la cuarta runa.' },
         ], next: 'b2' },
         b_viktor: { bg: 'academia', lines: [
@@ -1089,8 +1094,8 @@ window.STORY = {
           { s: 'jayce', t: '¡Te he oído!' },
         ], next: 'b2' },
         b_ko: { bg: 'academia', lines: [
-          { s: 'viktor', t: 'Hmm. Bueno. Confiemos en la suerte, entonces.' },
-          { s: 'jayce', t: 'Odio confiar en la suerte. Mi vida entera es para no depender de ella.' },
+          { s: 'heimerdinger', t: 'Hmm, hmm. Bueno. Confiemos en la suerte, entonces. Odio confiar en la suerte.' },
+          { s: 'jayce', t: 'Por una vez estamos de acuerdo, profesor.' },
         ], next: 'b2' },
         b2: { bg: 'taller-jayce', lines: [
           { s: 'narrador', t: 'Cuando Viktor sale a toser al pasillo, Jayce baja la voz.' },
@@ -1399,11 +1404,12 @@ window.STORY = {
     {
       id: 't4', route: 't2', title: 'T2 · Capítulo 4 · La loba y la rosa',
       intro: 'Madre e hija frente a frente. Una ofrece ejércitos; la otra, una advertencia. Piltover tiene que elegir… y tú también.',
-      unlocks: [],
+      unlocks: ['maddie', 'kino'],
       start: 'a',
       nodes: {
         a: { bg: 'consejo', lines: [
           { s: 'narrador', t: 'Lo que queda del Consejo se reúne en una sala provisional. Caitlyn, de uniforme negro, ocupa el asiento de su madre. Nadie se atreve a decirle que no le corresponde.' },
+          { s: 'narrador', t: 'Detrás de Ambessa, dos soldados noxianos montan guardia: un hombre enorme y callado, Kino, y una joven de mirada atenta, Maddie, que no le quita ojo a Caitlyn.' },
           { s: 'ambessa', t: 'Noxus protegerá Piltover. Sus fábricas, su hextec, su gente. A cambio, solo pido lealtad. Y vuestras armas.' },
           { s: 'mel', t: 'Mi madre no regala espadas, {name}. Las presta. Y siempre las cobra.' },
           { s: 'mel', t: 'Y hay alguien más moviendo los hilos: una rosa negra que crece en la sombra de Noxus. Mi madre lleva años luchando contra ella… o usándola.' },
@@ -1428,17 +1434,27 @@ window.STORY = {
         b_trato: { bg: 'consejo', lines: [
           { s: 'ambessa', t: '(Ríe.) Negocias como una noxiana. Está bien: Zaun no será tocado. Por ahora.' },
           { s: 'caitlyn', t: '(Te mira con algo parecido a la gratitud. O al cansancio.) Bien jugado.' },
-        ], next: 'c0' },
+        ], next: 'c00' },
         b_mel: { bg: 'mansion-kiramman', lines: [
           { s: 'mel', t: 'Gracias. La magia que llevo dentro puede proteger a mucha gente. Pero necesito tiempo… y alguien que me cubra las espaldas.' },
           { s: 'ambessa', t: '(Desde la puerta, fría.) Elegir a mi hija es elegir a una niña que aún no sabe usar sus armas. Espero que no te arrepientas.' },
-        ], next: 'c0' },
+        ], next: 'c00' },
         b_ambessa: { bg: 'consejo', lines: [
           { s: 'narrador', t: 'Soldados noxianos desfilan por el Puente del Progreso. Desde abajo, Zaun los mira con un odio nuevo.' },
           { s: 'ambessa', t: 'Así se hacen las cosas, {name}. Rápido y con firmeza.' },
           { s: 'mel', t: '(Al pasar a tu lado, en un susurro.) Acabas de dejar entrar al lobo. Ya veremos quién lo saca.' },
-        ], next: 'c0' },
+        ], next: 'c00' },
+        c00: { bg: 'ejecutores', lines: [
+          { s: 'maddie', t: '(Ofreciéndole a Caitlyn una taza de té.) Comandante. Lleva dos días sin dormir. Con todo respeto, así no se gana una guerra.' },
+          { s: 'caitlyn', t: '(La acepta, sin mirarla.) Gracias, Maddie.' },
+          { s: 'kino', t: '(A ti, en voz baja, junto a la puerta.) La señora Ambessa dice que vigile quién entra en esta sala. Tú entras mucho.' },
+        ], choices: [
+          { t: '«Tranquilo, Kino. Soy de los buenos.»', next: 'c0', fx: { aff: { kino: 1 } } },
+          { t: 'Fijarte en cómo Maddie mira los mapas de Caitlyn (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'c0', fx: { aff: { maddie: -1 }, flags: ['sospecha_maddie'] } },
+          { t: 'Darle las gracias a Maddie por cuidar de Caitlyn.', next: 'c0', fx: { aff: { maddie: 2 } } },
+        ] },
         c0: { bg: 'ejecutores', lines: [
+          { s: 'narrador', t: 'Maddie se queda un segundo más de lo necesario mirando el mapa. Luego saluda y sale.', cond: { flag: 'sospecha_maddie' } },
           { s: 'caitlyn', t: '(Más tarde, a solas, mirando un mapa de Zaun lleno de cruces rojas.) Mi madre murió ahí abajo, {name}. Ahí. (Señala una cruz.)' },
           { s: 'caitlyn', t: 'Vi dice que me estoy convirtiendo en otra persona. Puede que tenga razón. Pero la Caitlyn de antes no protegía a nadie.' },
         ], choices: [
@@ -1508,11 +1524,12 @@ window.STORY = {
       start: 'a',
       nodes: {
         a: { bg: 'arbol', lines: [
+          { s: 'heimerdinger', t: '(Sentado en una rama, con la bata llena de hojas.) Desde el ataque al Consejo vivo aquí, entre críos con máscaras. Es lo más parecido a una Academia que he tenido en años.' },
           { s: 'ekko', t: '(Con el Z-Drive en la mano, la voz rara.) Lo he visto, {name}. Un mundo donde Powder nunca se convirtió en Jinx. Donde Vander sigue sirviendo cerveza. Donde todos están bien.' },
           { s: 'ekko', t: 'Allí Powder y yo… (Se calla.) Allí la Academia aceptó a Viktor de verdad. Allí la hextec bajó a Zaun.' },
           { s: 'ekko', t: 'Pero solo puedo traer de allí una cosa. Un recuerdo, una idea… algo que nos ayude aquí.' },
         ], choices: [
-          { t: 'Viajar con Ekko a través de la grieta.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3 }, flags: ['esperanza'] } }, fx: {} },
+          { t: 'Viajar con Ekko a través de la grieta.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, heimerdinger: 2 }, flags: ['esperanza'] } }, fx: {} },
           { t: 'Pedirle que no vaya: «Nuestro mundo nos necesita.»', next: 'b_queda', fx: { aff: { ekko: 1 } } },
         ] },
         b_ok: { bg: 'callejones', lines: [
@@ -1527,6 +1544,7 @@ window.STORY = {
         ], next: 'b2' },
         b_queda: { bg: 'arbol', lines: [
           { s: 'ekko', t: '(Guarda el Z-Drive.) Tienes razón. Los sueños no paran ejércitos.' },
+          { s: 'heimerdinger', t: 'Una decisión sensata. Aunque, a mi edad, uno aprende que los sueños son lo único que de verdad mueve ejércitos.' },
           { s: 'ekko', t: 'Pero a veces me gustaría quedarme un rato en ellos.' },
         ], next: 'b2' },
         b2: { bg: 'arbol', lines: [
