@@ -187,6 +187,19 @@ Los instaladores salen en la carpeta `dist/`. El APK de Android lo crea GitHub A
 **Publicar una versión:** en GitHub ve a **Releases** → **Draft a new release**, pon una etiqueta nueva
 (por ejemplo `v2.0.0`) y pulsa **Publish release**. GitHub crea los instaladores y los añade solo.
 
+### Idiomas (español, inglés y francés)
+
+El juego está escrito en español. En **Ajustes → Idioma** puedes cambiarlo a inglés o francés; la partida se guarda y el juego se recarga en el idioma elegido. La primera vez se elige solo según el idioma del ordenador o del móvil.
+
+| Archivo | Qué contiene |
+|---|---|
+| `src/js/i18n.js` | Traduce la pantalla al vuelo usando los diccionarios |
+| `src/i18n/en.js`, `src/i18n/fr.js` | Diccionarios: texto en español → traducción |
+| `scripts/i18n-extract.js` | Saca todos los textos del juego a `i18n/textos.tsv` |
+| `scripts/i18n-build.js` | Junta las traducciones (`id ⇥ inglés ⇥ francés`) en los diccionarios |
+
+Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas que falten en un `.tsv` y ejecuta `node scripts/i18n-build.js <carpeta-con-los-tsv>`. Lo que no esté traducido se ve en español.
+
 ### Archivos del proyecto
 
 | Archivo | Qué contiene |

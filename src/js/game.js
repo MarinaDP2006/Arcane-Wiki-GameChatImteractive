@@ -53,7 +53,7 @@
         s.empty ? el('p', { class: 'muted' }, 'Vacía') : el('div', {},
           el('strong', {}, s.name), el('span', { class: `tag origin-${s.origin}` }, s.origin === 'zaun' ? 'Zaun' : 'Piltover'),
           el('p', { class: 'muted' }, s.chapter || ''),
-          s.savedAt ? el('small', { class: 'muted' }, new Date(s.savedAt).toLocaleString('es-ES')) : null),
+          s.savedAt ? el('small', { class: 'muted' }, new Date(s.savedAt).toLocaleString(window.I18N?.lang || 'es')) : null),
         el('div', { class: 'row gap' },
           s.empty
             ? el('button', { class: 'btn primary', onclick: () => newGame(s.slot) }, 'Nueva partida')
@@ -1323,5 +1323,5 @@
     return true;
   }
 
-  window.Game = { mount, current: () => G, continueLatest, newGame: () => store.listSlots().then((sl) => { const free = sl.find((x) => x.empty); if (free) newGame(free.slot); else { toast('Las 3 ranuras están ocupadas: borra una partida.', 'warn'); window.App.go('game'); } }) };
+  window.Game = { mount, current: () => G, save: persist, continueLatest, newGame: () => store.listSlots().then((sl) => { const free = sl.find((x) => x.empty); if (free) newGame(free.slot); else { toast('Las 3 ranuras están ocupadas: borra una partida.', 'warn'); window.App.go('game'); } }) };
 })();

@@ -108,6 +108,17 @@
     root.append(el('div', { class: 'settings panel' },
       el('div', { class: 'row gap', style: 'justify-content:space-between' },
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
+      el('h3', {}, 'Idioma · Language · Langue'),
+      el('div', { class: 'chips', 'data-no-i18n': '' },
+        window.I18N.LANGS.map((l) => el('button', {
+          class: `chip${window.I18N.lang === l.id ? ' active' : ''}`,
+          onclick: async () => {
+            if (window.I18N.lang === l.id) return;
+            await set({ lang: l.id });
+            await window.Game?.save?.();
+            location.reload();
+          },
+        }, l.label))),
       el('h3', {}, 'Pantalla'),
       U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, 'Pantalla completa (F11)') : null,
       U.desktop ? artSettings(root, onBack) : null,
@@ -293,6 +304,7 @@
 
   async function init() {
     App.settings = await store.getSettings();
+    window.I18N.setLang(App.settings.lang);
     await window.CustomArt.load();
     window.arcane?.art?.guide(artGuide());
     autoFandom();

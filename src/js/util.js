@@ -38,15 +38,16 @@
 
   function tpl(text, player) {
     if (!text) return '';
+    const t = window.I18N?.t || ((x) => x);
     const gi = genderIndex(player);
-    const out = genderize(text, gi);
+    const out = genderize(t(text), gi);
     if (!player) return out;
     const vars = {
-      name: player.name || 'forastero',
-      job: player.jobLabel ? genderize(player.jobLabel, gi) : '',
-      district: player.district || '',
-      family: player.familyName || '',
-      hobby: (player.hobbyLabels || [])[0] || '',
+      name: player.name || t('forastero'),
+      job: player.jobLabel ? genderize(t(player.jobLabel), gi) : '',
+      district: t(player.district || ''),
+      family: t(player.familyName || ''),
+      hobby: t((player.hobbyLabels || [])[0] || ''),
     };
     return out.replace(/\{(name|job|district|family|hobby)\}/g, (_, k) => vars[k]);
   }
@@ -220,5 +221,5 @@
     },
   };
 
-  window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, desktop, touch };
+  window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, genderize, desktop, touch };
 })();
