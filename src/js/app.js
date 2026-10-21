@@ -7,6 +7,8 @@
     view: 'home',
     go(view) {
       App.view = view;
+      // Ciudad del jugador: tiñe los fondos pintados (dorado de Piltover, neón de Zaun).
+      document.body.dataset.city = (view === 'game' && window.Game?.current()?.player?.origin) || 'piltover';
       $$('.view').forEach((v) => v.classList.toggle('active', v.id === `view-${view}`));
       if (view !== 'game') window.World?.stop();
       if (view === 'home') renderTitle();
