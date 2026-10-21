@@ -20,7 +20,8 @@ function build() {
 
 const text = build();
 if (process.argv.includes('--check')) {
-  const cur = fs.existsSync(out) ? fs.readFileSync(out, 'utf8') : '';
+  // Git en Windows puede cambiar los saltos de línea (\r\n): no cuentan como cambio.
+  const cur = fs.existsSync(out) ? fs.readFileSync(out, 'utf8').replace(/\r\n/g, '\n') : '';
   if (cur !== text) { console.error('✗ src/data/arte.js está desactualizado: ejecuta node scripts/art-manifest.js'); process.exit(1); }
   console.log('✓ Lista de arte incluido al día');
 } else {
