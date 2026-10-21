@@ -680,42 +680,6 @@ window.CHAT = {
     },
   },
 
-  // =========================================================== SINGED
-  singed: {
-    greet: { low: 'Interrumpes un experimento.', mid: 'Ah, el mensajero. Pasa. No toques nada.', high: '{name}, mi estimad{g:o|a|e} observador{g:|a|e}. ¿Vienes a aprender?' },
-    bye: ['Cierra la puerta. Los vapores son celosos.', '(No levanta la vista de sus probetas.)', 'Vuelve cuando hayas leído algo.'],
-    hub: [
-      { t: '¿Qué es el Brillo, exactamente?', tone: 'pregunta', go: 'brillo' },
-      { t: '¿No le importa la ética?', tone: 'duro', go: 'etica' },
-      { t: '¿Quién es su «paciente»?', tone: 'sigilo', go: 'paciente' },
-      { t: '¿Conoce a Heimerdinger?', tone: 'pregunta', say: ['Heimerdinger y yo compartimos laboratorio hace mucho. Él eligió el miedo. Yo, el conocimiento.'] },
-    ],
-    nodes: {
-      brillo: {
-        say: ['El Brillo es la llave que abre el potencial del cuerpo. Que algunos no soporten la puerta abierta no es culpa de la llave.'],
-        opts: [
-          { t: '¿Podría usarse para curar?', tone: 'pregunta', req: { stat: 'ingenio', min: 2 }, fx: { aff: 1, stats: { ingenio: 1 } }, go: 'hub', say: ['(Por fin te mira.) …Sí. Con la dosis adecuada. Nadie me lo había preguntado.'] },
-          { t: 'Es veneno y usted lo sabe.', tone: 'duro', fx: { aff: -1, rep: { zaun: 1 } }, go: 'hub', say: ['Todo es veneno. Depende de la dosis. Paracelso. Lee un libro.'] },
-        ],
-      },
-      etica: {
-        say: ['La ética es un lujo para quien tiene tiempo. La ciencia no espera.'],
-        opts: [
-          { t: 'Entonces la ciencia no merece la pena.', tone: 'serio', go: 'hub', say: ['Dígaselo a los que se curan gracias a ella. Oh, espere: aún no existen. Por eso trabajo.'] },
-          { t: 'Hay algo de verdad en eso.', tone: 'astuto', fx: { aff: 1 }, go: 'hub', say: ['Una mente abierta. Qué rareza tan deliciosa.'] },
-        ],
-      },
-      paciente: {
-        say: ['Mi paciente progresa adecuadamente. Mejor que tú, probablemente.'],
-        opts: [
-          { t: 'Era Vander, ¿verdad?', tone: 'serio', req: { flag: 'sabe_warwick' }, fx: { aff: -1 }, go: 'hub', say: ['(Deja la probeta.) Eso que tú llamas Vander ya no existe. Ahora es algo mejor. Más fuerte.'] },
-          { t: '¿Puedo verlo?', tone: 'pregunta', req: { stat: 'valor', min: 2 }, go: 'hub',
-            say: [{ s: 'narrador', t: 'Detrás de un cristal, algo enorme respira. Una garra golpea el vidrio. Retrocedes.' }, 'Fascinante, ¿verdad?'] },
-        ],
-      },
-    },
-  },
-
   // =========================================================== AMBESSA
   ambessa: {
     greet: { low: '¿Quién eres tú para dirigirte a mí?', mid: '{name}. He oído hablar de ti. Impresióname.', high: '{name}. Tienes el temple de un lobo. Noxus podría usar a alguien como tú.' },
@@ -746,34 +710,6 @@ window.CHAT = {
     },
   },
 
-  // =========================================================== MARCUS
-  marcus: {
-    greet: { low: 'Circule, por favor.', mid: '{name}. ¿Qué te trae por la jefatura?', high: '{name}… gracias por no juzgarme. No mucha gente lo hace.' },
-    bye: ['Váyase. Y no ha estado aquí.', 'Buenas tardes.', '(Vuelve a sus papeles sin mirarte.)'],
-    hub: [
-      { t: 'Sé que trabajas para Silco.', tone: 'duro', go: 'silco' },
-      { t: '¿Por qué te hiciste ejecutor?', tone: 'pregunta', say: ['Para proteger a la gente. Hace mucho. Casi no me acuerdo.'] },
-      { t: '¿Tienes familia?', tone: 'amable', go: 'hija' },
-      { t: '¿Qué opinas de Caitlyn Kiramman?', tone: 'pregunta', say: ['La señorita Kiramman es buena ejecutora. Demasiado buena para su propio bien.'] },
-    ],
-    nodes: {
-      silco: {
-        say: ['(Mira alrededor.) No vuelvas a decir ese nombre aquí dentro.'],
-        opts: [
-          { t: 'O me ayudas, o se lo cuento a Caitlyn.', tone: 'duro', req: { stat: 'carisma', min: 2 }, fx: { aff: -2, flags: ['marcus_chantaje'] }, go: 'hub', say: ['(Pálido.) …Está bien. Te daré lo que quieras. Pero esto no ha pasado.'] },
-          { t: 'Puedo ayudarte a salir de esto.', tone: 'amable', fx: { aff: 2 }, go: 'hub', say: ['Nadie sale de esto. Pero… gracias. Hacía años que nadie me lo ofrecía.'] },
-        ],
-      },
-      hija: {
-        say: ['Todo lo que hago, lo hago por ella. Todo.'],
-        opts: [
-          { t: 'Ella no querría un padre corrupto.', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['(Se le quiebra la voz.) Lo sé. Por eso no se lo cuento.'] },
-          { t: 'Entiendo. Haría lo mismo.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['No. No lo hagas. Nunca.'] },
-        ],
-      },
-    },
-  },
-
   // =========================================================== CASSANDRA
   cassandra: {
     greet: { low: 'Usted dirá.', mid: '{name}. Gracias por cuidar de mi hija.', high: '{name}, querid{g:o|a|e}. Siempre eres bienvenid{g:o|a|e} en la mansión.' },
@@ -789,125 +725,6 @@ window.CHAT = {
         opts: [
           { t: 'Coincido. Hay que ir con cuidado.', tone: 'serio', fx: { aff: 1, rep: { piltover: 1 } }, go: 'hub', say: ['Al fin alguien con sentido común en esta ciudad.'] },
           { t: 'Con prudencia, Zaun seguirá en el fango.', tone: 'duro', fx: { aff: -1, rep: { zaun: 1 } }, go: 'hub', say: ['(Frunce los labios.) Quizá. Pero la imprudencia también mata. Lo he visto.'] },
-        ],
-      },
-    },
-  },
-
-  // =========================================================== MYLO
-  mylo: {
-    greet: { low: 'Uf, otra vez tú.', mid: '¿Qué pasa, {name}? ¿Tienes algo que valga la pena robar?', high: '¡{name}! Te he guardado el mejor botín. Bueno, el segundo mejor.' },
-    bye: ['Venga, piérdete. Pero vuelve, ¿eh?', 'Si ves a Vander, yo no he sido.', 'Chao. Y vigila tu cartera.'],
-    hub: [
-      { t: '¿Me enseñas a abrir cerraduras?', tone: 'astuto', go: 'cerraduras' },
-      { t: '¿Qué opinas de Powder?', tone: 'pregunta', go: 'powder' },
-      { t: 'Eres un pesado, Mylo.', tone: 'broma', once: true, fx: { aff: 1 }, say: ['¡Gracias! Me lo trabajo mucho. Es un arte.'] },
-    ],
-    nodes: {
-      cerraduras: {
-        say: ['Ninguna cerradura se me resiste. Bueno, la del baúl de Vander sí. Pero esa no cuenta.'],
-        opts: [
-          { t: '(Practicar con su candado.)', tone: 'sigilo', fx: { aff: 1, stats: { sigilo: 1 } }, go: 'hub', say: [{ s: 'narrador', t: 'Después de veinte intentos, clic.' }, '¡Eh! Nada mal para un{g:|a|e} novat{g:o|a|e}. Ahora devuélveme el candado.'] },
-          { t: 'Robar está mal, Mylo.', tone: 'serio', fx: { aff: -1 }, go: 'hub', say: ['Comer también está mal, si no tienes dinero. Así es Zaun.'] },
-        ],
-      },
-      powder: {
-        say: ['Powder es un desastre. Pero es nuestro desastre.'],
-        opts: [
-          { t: 'Deberías ser más amable con ella.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['(Se frota el brazo.) Ya. Es que me da miedo que le pase algo por mi culpa. Mejor que se quede atrás.'] },
-          { t: 'Tiene talento, aunque no lo veas.', tone: 'serio', go: 'hub', say: ['Talento para hacer explotar cosas. Vale. Eso sí.'] },
-        ],
-      },
-    },
-  },
-
-  // =========================================================== CLAGGOR
-  claggor: {
-    greet: { low: 'Hola.', mid: 'Hola, {name}. ¿Me pasas esa llave inglesa?', high: '{name}. Me alegra que estés aquí. Mylo también, aunque no lo diga.' },
-    bye: ['Adiós.', 'Vuelve cuando quieras. Siempre hay algo que arreglar.', '(Te saluda con la llave inglesa.)'],
-    hub: [
-      { t: '¿Qué estás arreglando?', tone: 'pregunta', go: 'maquinas' },
-      { t: '¿Qué es la familia para ti?', tone: 'amable', fx: { aff: 1 }, once: true, say: ['Somos raros, pero somos familia. Eso basta.'] },
-      { t: 'Hablas poco, ¿eh?', tone: 'broma', say: ['Sí.', '(Pausa.) Los demás hablan por mí.'] },
-    ],
-    nodes: {
-      maquinas: {
-        say: ['Un motor de Z que encontré en la basura. Las máquinas no mienten. Si algo falla, hay una razón. Con la gente es más difícil.'],
-        opts: [
-          { t: '¿Me enseñas?', tone: 'amable', fx: { aff: 1, stats: { ingenio: 1 } }, go: 'hub', say: [{ s: 'narrador', t: 'Pasáis una hora en silencio, rodeados de tuercas. Es la hora más tranquila de tu semana.' }, 'Ves. Ya funciona.'] },
-          { t: 'Podrías venderlo por un buen dinero.', tone: 'astuto', go: 'hub', say: ['Podría. Pero es para la aerotabla de Ekko. Está casi.'] },
-        ],
-      },
-    },
-  },
-
-  // =========================================================== BENZO
-  benzo: {
-    greet: { low: 'Si no vas a comprar, no toques.', mid: '¡Hombre, {name}! Pasa, que tengo chatarra nueva.', high: '{name}. Siempre hay un té caliente para ti en esta tienda.' },
-    bye: ['Vuelve pronto. Y trae chatarra.', 'Cuídate, chaval{g:|a|e}. Zaun está revuelto.', '(Te guiña un ojo.) Ya sabes dónde estoy.'],
-    hub: [
-      { t: 'Háblame de Ekko.', tone: 'amable', say: ['Ese chico llegará lejos. Más lejos que todos nosotros.'] },
-      { t: '¿Quién es el hombre de la cicatriz?', tone: 'sigilo', go: 'silco' },
-      { t: '¿Qué tienes hoy en la tienda?', tone: 'pregunta', go: 'tienda' },
-    ],
-    nodes: {
-      silco: {
-        say: ['(Baja la voz y cierra la puerta.) Vander y Silco eran uña y carne. Hasta que el puente se los tragó.'],
-        opts: [
-          { t: '¿Qué pasó entre ellos?', tone: 'pregunta', fx: { flags: ['benzo_cuenta'] }, go: 'hub', say: ['Vander quiso paz. Silco, guerra. Y ahora Silco ha vuelto. Eso no trae nada bueno.'] },
-          { t: 'Gracias por fiarte de mí.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['Me fío porque Ekko se fía. Y Ekko nunca se equivoca. Casi.'] },
-        ],
-      },
-      tienda: {
-        say: ['Lo que tiras hoy puede salvarte mañana. Mira: un muelle de hextec. Casi nuevo.'],
-        opts: [
-          { t: '¿Cuánto pides?', tone: 'astuto', req: { stat: 'carisma', min: 2 }, fx: { aff: 1, stats: { ingenio: 1 } }, go: 'hub', say: ['Para ti, una sonrisa y una historia. Trato hecho.'] },
-          { t: 'Solo miraba.', tone: 'amable', go: 'hub', say: ['Mirar es gratis. Por ahora.'] },
-        ],
-      },
-    },
-  },
-
-  // =========================================================== SCAR
-  scar: {
-    greet: { low: 'Te estoy vigilando.', mid: '{name}. Ekko dice que eres de fiar. Ya veremos.', high: '{name}. Tienes sitio en el árbol. Te lo has ganado.' },
-    bye: ['Vete por la ruta del este. La otra está vigilada.', 'Mmm. Adiós.', 'No traigas a nadie la próxima vez.'],
-    hub: [
-      { t: '¿Qué es este árbol para vosotros?', tone: 'pregunta', go: 'arbol' },
-      { t: '¿Por qué desconfías de mí?', tone: 'serio', go: 'ekko' },
-    ],
-    nodes: {
-      arbol: {
-        say: ['Este árbol es lo único bueno que le queda a Zaun. Lo defenderé con mi vida.'],
-        opts: [
-          { t: 'Yo también lo defenderé.', tone: 'serio', fx: { aff: 2, rep: { zaun: 1 } }, go: 'hub', say: ['Palabras. Ya veremos cuando lleguen los de Silco.'] },
-          { t: 'Es bonito.', tone: 'amable', go: 'hub', say: ['(Casi sonríe.) Sí. Lo es.'] },
-        ],
-      },
-      ekko: {
-        say: ['Ekko confía demasiado. Por eso estoy yo.'],
-        opts: [
-          { t: 'Haces bien en vigilar.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['Al menos lo entiendes.'] },
-          { t: 'Tu desconfianza os aislará.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['Mi desconfianza nos mantiene vivos.'] },
-        ],
-      },
-    },
-  },
-
-  // =========================================================== SKY
-  sky: {
-    greet: { low: 'Ah, hola…', mid: '¡Hola, {name}! ¿Has visto a Viktor?', high: '¡{name}! Qué bien que estés aquí. Viktor está de mejor humor cuando vienes.' },
-    bye: ['¡Adiós! Si ves a Viktor, dile que coma algo.', 'Hasta luego. (Sonríe con timidez.)', 'Vuelve pronto, ¿vale?'],
-    hub: [
-      { t: '¿Qué piensas de Viktor?', tone: 'amable', go: 'viktor' },
-      { t: '¿Te da miedo el Hexcore?', tone: 'pregunta', say: ['El Hexcore me da un poco de miedo. Pero si puede ayudar a Viktor…'] },
-    ],
-    nodes: {
-      viktor: {
-        say: ['Viktor es brillante. Ojalá él lo viera también.'],
-        opts: [
-          { t: 'Deberías decírselo.', tone: 'coqueto', fx: { aff: 1 }, go: 'hub', say: ['(Se pone roja.) ¿Decírselo? No, no… él solo piensa en el trabajo.'] },
-          { t: 'Cuida de él, ¿vale?', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['Siempre. Aunque él no se deje.'] },
         ],
       },
     },
@@ -939,18 +756,6 @@ window.CHAT = {
         ],
       },
     },
-  },
-
-  // =========================================================== LORIS
-  loris: {
-    greet: { low: 'Eh, ¿qué tal?', mid: '¡{name}! ¿Una cerveza?', high: '¡{name}! Mi colega favorit{g:o|a|e}. La primera ronda la pagas tú, ¿eh?' },
-    bye: ['¡Hasta luego! Y si ves a Vi, yo no estaba aquí.', 'Nos vemos. ¡Me voy al bar!', 'Chao. Que no te pillen.'],
-    hub: [
-      { t: '¿Dónde está la mejor cerveza?', tone: 'broma', fx: { aff: 1 }, once: true, say: ['La mejor cerveza de Piltover está en Zaun. No se lo digas a nadie.'] },
-      { t: '¿Qué opinas de Vi?', tone: 'pregunta', say: ['Vi da miedo. Pero del bueno. Del que te salva el pellejo.'] },
-      { t: '¿Por qué te hiciste ejecutor?', tone: 'serio', say: ['Sinceramente, por el uniforme. Y los bocadillos gratis.', '(Se pone serio.) Y porque alguien tiene que ser decente aquí dentro.'], fx: { aff: 1 }, once: true },
-    ],
-    nodes: {},
   },
   // =========================================================== MADDIE
   maddie: {

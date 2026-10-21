@@ -85,19 +85,19 @@ window.WORLD = {
 
   // Dónde se encuentra cada personaje en el mundo una vez desbloqueado.
   homes: {
-    vander: 'ultima-gota', mylo: 'ultima-gota', claggor: 'ultima-gota', silco: 'ultima-gota',
-    vi: 'callejones', jinx: 'escondite-jinx', benzo: 'tienda-benzo', ekko: 'arbol', scar: 'arbol',
-    sevika: 'foso', singed: 'sumidero', isha: 'escondite-jinx',
-    jayce: 'taller-jayce', viktor: 'academia', heimerdinger: 'academia', sky: 'academia',
+    vander: 'ultima-gota', silco: 'ultima-gota',
+    vi: 'callejones', jinx: 'escondite-jinx', ekko: 'arbol', 
+    sevika: 'foso', isha: 'escondite-jinx',
+    jayce: 'taller-jayce', viktor: 'academia', heimerdinger: 'academia', 
     mel: 'consejo', ambessa: 'consejo', cassandra: 'mansion-kiramman', caitlyn: 'ejecutores',
-    marcus: 'ejecutores', loris: 'plaza', maddie: 'consejo', kino: 'consejo',
+    maddie: 'consejo', kino: 'consejo',
   },
 
   // Personajes que ya no se encuentran en el mapa en ciertos capítulos
   // (siguen disponibles en el comunicador como recuerdos).
   absent: {
-    vander: ['z3', 'z4', 'z5', 'fin'], mylo: ['z3', 'z4', 'z5', 'fin'], claggor: ['z3', 'z4', 'z5', 'fin'],
-    benzo: ['z3', 'z4', 'z5', 'fin'],
+    vander: ['z3', 'z4', 'z5', 'fin'], 
+    
   },
 
   // Dónde arranca cada capítulo de la historia.

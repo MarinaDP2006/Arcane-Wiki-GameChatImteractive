@@ -23,9 +23,9 @@ window.CREATION = {
       families: [
         { id: 'ninguna', label: 'Sin familia famosa' },
         { id: 'vander', name: 'de Vander', label: 'Acogid{g:o|a|e} por Vander', stats: { valor: 1 }, aff: { vander: 2, vi: 1 } },
-        { id: 'benzo', name: 'de Benzo', label: 'Sobrin{g:o|a|e} de Benzo', stats: { ingenio: 1 }, aff: { benzo: 2, ekko: 1 } },
+        { id: 'benzo', name: 'de Benzo', label: 'Sobrin{g:o|a|e} de Benzo', stats: { ingenio: 1 }, aff: { ekko: 1 } },
         { id: 'renni', name: 'de Renni', label: 'Pariente de la químbarona Renni', stats: { carisma: 1 }, aff: { silco: 1 } },
-        { id: 'luciernagas', name: 'de las Luciérnagas', label: 'Criad{g:o|a|e} en el árbol de las Luciérnagas', stats: { sigilo: 1 }, aff: { ekko: 1, scar: 2 } },
+        { id: 'luciernagas', name: 'de las Luciérnagas', label: 'Criad{g:o|a|e} en el árbol de las Luciérnagas', stats: { sigilo: 1 }, aff: { ekko: 1, } },
       ],
     },
     piltover: {

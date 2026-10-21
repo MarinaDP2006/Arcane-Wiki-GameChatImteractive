@@ -117,14 +117,14 @@
 
   // ---------- Arte personal ----------
   // Personajes de League of Legends en Data Dragon (id del juego -> id de campeón).
-  const LOL_CHAMPS = { vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn', jayce: 'Jayce', viktor: 'Viktor', heimerdinger: 'Heimerdinger', ekko: 'Ekko', singed: 'Singed', ambessa: 'Ambessa', mel: 'Mel', warwick: 'Warwick' };
+  const LOL_CHAMPS = { vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn', jayce: 'Jayce', viktor: 'Viktor', heimerdinger: 'Heimerdinger', ekko: 'Ekko', ambessa: 'Ambessa', mel: 'Mel', warwick: 'Warwick' };
   // Páginas de la Arcane Wiki (Fandom) de donde se saca la imagen principal. «busca:» usa el buscador de la wiki.
   const FANDOM_PAGES = {
     personajes: {
       vi: 'Vi', jinx: 'Jinx', caitlyn: 'Caitlyn Kiramman', jayce: 'Jayce Talis', viktor: 'Viktor', mel: 'Mel Medarda',
-      heimerdinger: 'Cecil B. Heimerdinger', silco: 'Silco', vander: 'Vander', ekko: 'Ekko', sevika: 'Sevika', singed: 'Singed',
-      ambessa: 'Ambessa Medarda', marcus: 'Marcus', cassandra: 'Cassandra Kiramman', mylo: 'Mylo', claggor: 'Claggor',
-      benzo: 'Benzo', scar: 'Scar', isha: 'Isha', sky: 'Sky Young', loris: 'Loris',
+      heimerdinger: 'Cecil B. Heimerdinger', silco: 'Silco', vander: 'Vander', ekko: 'Ekko', sevika: 'Sevika', 
+      ambessa: 'Ambessa Medarda', cassandra: 'Cassandra Kiramman', 
+      isha: 'Isha', 
     },
     lugares: {
       piltover: 'Piltover', zaun: 'Zaun', noxus: 'Noxus', 'ultima-gota': 'busca:The Last Drop', callejones: 'busca:The Lanes',
@@ -140,8 +140,8 @@
   const FANDOM_CHARS = {
     vi: ['Vi'], jinx: ['Jinx'], caitlyn: ['Caitlyn Kiramman'], jayce: ['Jayce Talis'], viktor: ['Viktor'], mel: ['Mel Medarda'],
     heimerdinger: ['Cecil B. Heimerdinger', 'Heimerdinger'], silco: ['Silco'], vander: ['Vander'], ekko: ['Ekko'], sevika: ['Sevika'],
-    singed: ['Singed'], ambessa: ['Ambessa Medarda'], marcus: ['Marcus'], cassandra: ['Cassandra Kiramman'], mylo: ['Mylo'],
-    claggor: ['Claggor'], benzo: ['Benzo'], scar: ['Scar'], isha: ['Isha'], sky: ['Sky Young'], loris: ['Loris'],
+    ambessa: ['Ambessa Medarda'], cassandra: ['Cassandra Kiramman'], 
+    isha: ['Isha'], 
   };
   const FANDOM_PLACES = {
     piltover: ['Piltover'], zaun: ['Zaun', 'The Undercity'], puente: ['Bridge of Progress', 'The Bridge of Progress'],

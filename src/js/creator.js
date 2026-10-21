@@ -245,7 +245,7 @@
           rerender();
         },
       }, cv, el('div', { class: 'origin-info' }, el('h3', {}, o.label), el('p', {}, o.tagline),
-        el('small', {}, id === 'zaun' ? 'Empiezas con: Vander, Vi, Powder, Mylo, Claggor' : 'Empiezas con: Jayce, Viktor, Heimerdinger')));
+        el('small', {}, id === 'zaun' ? 'Empiezas con: Vander, Vi, Jinx' : 'Empiezas con: Jayce, Viktor, Heimerdinger')));
       grid.append(card);
       requestAnimationFrame(() => Scenes.mount(cv, id === 'zaun' ? 'zaun' : 'piltover'));
     }
