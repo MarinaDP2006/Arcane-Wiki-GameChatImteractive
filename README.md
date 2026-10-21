@@ -8,7 +8,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 1. Entra en el repositorio: https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive
 2. Arriba, pulsa la pestaña **Actions**.
 3. En la lista de la izquierda pulsa **Compilar ejecutables**.
-4. Abre la ejecución más reciente que tenga un **✅ verde** (la primera de la lista).
+4. Abre la ejecución más reciente que tenga un **verde** (la primera de la lista).
 5. Baja hasta el final de la página, al apartado **Artifacts**, y descarga:
    - **`arcane-windows`** si tienes un PC con Windows.
    - **`arcane-macos`** si tienes un Mac.
@@ -38,7 +38,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 2. Elige **Zaun** o **Piltover**, crea tu personaje (clase, habilidades, retrato, familia…).
 3. Ve al lugar marcado con **★ OBJETIVO** en el mapa y pulsa **E** para empezar el capítulo.
 4. Pulsa **C** para hablar con los personajes que conozcas y **Esc** para el menú de pausa.
-   No necesitas instalar nada más: el juego no usa IA ni Ollama.
+   No necesitas instalar nada más.
 
 > ¿Prefieres ejecutarlo desde el código? Instala [Node.js](https://nodejs.org), descarga el proyecto
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
@@ -59,7 +59,7 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
      famosa de Arcane (opcional: Kiramman, Talis, Medarda, Ferros, Giopara, la de Vander…).
    - **Ficha final**: tu barra de habilidades P/Q/W/E/R.
 
-   El botón 🎲 Aleatorio lo rellena todo. Todo suma a tus estadísticas, y tu build da **ventaja** en los
+   El botón Aleatorio lo rellena todo. Todo suma a tus estadísticas, y tu build da **ventaja** en los
    minijuegos: más vida, más tiempo o menos objetivos.
 2. **Elige Zaun o Piltover**: cada ciudad tiene su propia ruta de 8 capítulos y empiezas
    en el barrio que elegiste.
@@ -72,8 +72,8 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
    resuelven jugando, y en el menú de pausa está el **Salón de minijuegos** para practicar.
 6. **Conversa**: cada personaje que conoces se desbloquea en el **comunicador**. Puedes
    hablar con ellos por el comunicador o en persona en su lugar del mapa. Cada conversación es
-   un árbol de diálogo: eliges qué decir entre varias respuestas (💗 amable, 😏 broma, 🔥 dura,
-   ❓ pregunta, 💋 coqueta, 🎭 astuta, 🗡️ seria, 🌑 sigilosa) y el personaje reacciona.
+   un árbol de diálogo: eliges qué decir entre varias respuestas (amable, broma, dura,
+   pregunta, coqueta, astuta, seria, sigilosa) y el personaje reacciona.
    Lo que dices sube o baja la afinidad, te da estadísticas y activa decisiones de la historia.
    Algunas respuestas piden **Ingenio, Carisma, Valor, Sigilo o afinidad**, y otras solo aparecen
    si tomaste ciertas decisiones antes (o en la Temporada 2). Los temas nuevos se marcan con ✦.
@@ -112,11 +112,11 @@ retrato sale de la galería `avatares/` o de tu foto.
 del Progreso y un cristal hextec flotante. Si tu tarjeta gráfica no tiene WebGL, se usa el
 fondo pintado en 2D.
 
-**Códice con Atlas y mapas:** el Códice (K) tiene tres pestañas: 📖 **Entradas**,
-🧭 **Atlas** (M) y 🌐 **Mapas de la Wiki**. El Atlas es el mapa ilustrado de las Dos Ciudades
+**Códice con Atlas y mapas:** el Códice (K) tiene tres pestañas: **Entradas**,
+**Atlas** (M) y **Mapas de la Wiki**. El Atlas es el mapa ilustrado de las Dos Ciudades
 (basado en el atlas de neta.art) y va dentro del juego, sin internet: 20 lugares de Piltover,
 Zaun y Noxus, cada uno con su ficha, sus puntos de interés, quién vive allí (con botón para
-hablar) y un 📔 diario de viaje con los lugares que has explorado. La pestaña de la Wiki abre los
+hablar) y un diario de viaje con los lugares que has explorado. La pestaña de la Wiki abre los
 mapas interactivos de la [Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) (necesita
 internet; la dirección se cambia en *Ajustes*).
 
@@ -144,12 +144,12 @@ Arte personal* ves qué lugares tienen imagen, cuáles faltan y qué archivos no
 falta un lugar gemelo (los dos lados del puente, Stillwater y su muelle, Piltover y la plaza,
 Zaun y el mercado), usa la imagen del otro.
 
-El botón **⬇ Descargar lo que falta de la Arcane Wiki** baja de arcane.fandom.com la imagen
+El botón **Descargar lo que falta de la Arcane Wiki** baja de arcane.fandom.com la imagen
 principal de cada personaje (Silco, Vander, Sevika, Isha, Mylo, Claggor…), con la cara
 recortada, y de cada lugar que aún no tenga imagen. Solo descarga lo que falta: no toca tus
 archivos.
 
-El botón **⬇ Descargar retratos oficiales (Data Dragon)** baja de la web pública de Riot el
+El botón **Descargar retratos oficiales (Data Dragon)** baja de la web pública de Riot el
 cuerpo, la cara y la imagen del Códice de los campeones de LoL que salen en Arcane: Vi,
 Jinx, Caitlyn, Jayce, Viktor, Heimerdinger, Ekko, Singed, Ambessa, Mel y Warwick. El juego
 elige el aspecto de Arcane cuando existe. Los personajes que no son campeones (Silco,
@@ -169,7 +169,7 @@ o **ejecutarlo desde el código**.
 **Dónde se descarga el juego compilado:**
 - En **Releases** (https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/releases), si hay
   alguna versión publicada.
-- O en **Actions → Compilar ejecutables**: abre la ejecución más reciente con ✅ y baja hasta
+- O en **Actions → Compilar ejecutables**: abre la ejecución más reciente con y baja hasta
   **Artifacts**. GitHub entrega los artifacts dentro de un `.zip`, así que primero hay que
   descomprimirlo.
 
@@ -217,7 +217,7 @@ Tus partidas se guardan en `%APPDATA%\Arcane Piltover y Zaun\partidas` y tu carp
 Tus partidas se guardan en `~/Library/Application Support/Arcane Piltover y Zaun/partidas` y tu
 carpeta de arte en `~/Library/Application Support/Arcane Piltover y Zaun/arte`.
 
-### 🛠️ Compilar tus propios ejecutables
+### Compilar tus propios ejecutables
 ```bash
 npm install
 npm start          # jugar en modo desarrollo
@@ -251,3 +251,22 @@ scripts/check.js         Validador de datos
 ```
 
 ---
+
+
+## Arte y vídeos (v1.6.0)
+
+Las imágenes vienen dentro del juego: 16 retratos para elegir (8 de mujer y 8 de hombre, según el género
+que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa de Piltover y Zaun del
+Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
+(`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
+
+Los vídeos no se incluyen (pesan mucho). Copia estos cuatro en la carpeta `arte\video`:
+
+| Archivo | Cuándo se reproduce |
+|---|---|
+| `Welcome to Zaun.mp4` | Al empezar con origen en Zaun |
+| `Welcome to Piltover.mp4` | Al empezar con origen en Piltover |
+| `IntroS1.mp4` | Al entrar en la historia de la Temporada 1 |
+| `IntroS2.mp4` | Al empezar la Temporada 2 |
+
+Se pueden saltar con Esc, espacio o Intro.

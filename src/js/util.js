@@ -134,6 +134,8 @@
     callejones: ['lanes', 'zaun-callejones'],
     sumidero: ['sump', 'laboratorio-sumidero', 'laboratorio-de-singed', 'lab-singed'],
     academia: ['academy', 'piltover-academy'],
+    zaun: ['undercity', 'ciudad-subterranea'],
+    'taller-jayce': ['jaycetaller'],
     consejo: ['council', 'council-chamber', 'sala-consejo'],
     hexpuertas: ['hexgates', 'hexgate', 'hexpuerta'],
     puente: ['bridge', 'bridge-of-progress', 'puente-progreso'],
@@ -153,7 +155,7 @@
     foso: ['pit', 'fight-pit', 'foso-peleas', 'foso-de-peleas'],
   };
   // Si falta un lugar, usa la imagen de su gemelo antes que el fondo pintado.
-  const PLACE_FALLBACK = { 'puente-zaun': 'puente', puente: 'puente-zaun', 'muelle-stillwater': 'stillwater', stillwater: 'muelle-stillwater', plaza: 'piltover', piltover: 'plaza', mercado: 'zaun', zaun: 'mercado' };
+  const PLACE_FALLBACK = { callejones: 'zaun', sumidero: 'zaun', mercado: 'zaun', fabrica: 'zaun', 'puente-zaun': 'puente', puente: 'puente-zaun', 'muelle-stillwater': 'stillwater', stillwater: 'muelle-stillwater', plaza: 'piltover', piltover: 'plaza', zaun: 'mercado' };
 
   // Asigna los archivos de lugares/ a los ids del juego aunque el nombre no sea exacto.
   function matchPlaces(raw) {
@@ -182,6 +184,22 @@
     return { out, unknown, direct };
   }
 
+  // Arte que viaja dentro del juego. En el escritorio lo sirve main.js; en el navegador se lee de aquí.
+  const BUNDLED = {
+    avatares: ['mujer-1', 'mujer-2', 'mujer-3', 'mujer-4', 'mujer-5', 'mujer-6', 'mujer-7', 'mujer-8', 'hombre-1', 'hombre-2', 'hombre-3', 'hombre-4', 'hombre-5', 'hombre-6', 'hombre-7', 'hombre-8'].map((n) => [n, 'webp']),
+    caras: ['vi', 'jinx', 'ekko', 'silco', 'vander', 'sevika', 'isha', 'jayce', 'viktor', 'caitlyn', 'mel', 'heimerdinger', 'cassandra', 'ambessa', 'maddie', 'kino'].map((n) => [n, 'webp']),
+    lugares: ['piltover', 'zaun', 'academia', 'consejo', 'hexpuertas', 'stillwater', 'taller-jayce', 'ultima-gota', 'comuna-viktor'].map((n) => [n, 'webp']),
+    codice: [['mapa-piltover-zaun', 'webp']],
+  };
+
+  // Los vídeos se reconocen por su nombre de archivo, con o sin espacios y mayúsculas.
+  const VIDEO_ALIASES = {
+    'intro-zaun': ['welcome-to-zaun', 'intro-zaun'],
+    'intro-piltover': ['welcome-to-piltover', 'intro-piltover'],
+    'historia-1': ['intros1', 'intro-s1'],
+    'temporada-2': ['intros2', 'intro-s2'],
+  };
+
   // Arte personal de la jugadora (carpeta «arte» en escritorio).
   window.CustomArt = {
     files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {}, video: {} },
@@ -189,7 +207,12 @@
     async load() {
       if (window.arcane?.art) {
         try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
+      } else {
+        for (const [dir, list] of Object.entries(BUNDLED)) this.files[dir] = Object.fromEntries(list.map(([n, e]) => [n, `img/arte/${dir}/${n}.${e}`]));
       }
+      const vids = {};
+      for (const [k, url] of Object.entries(this.files.video || {})) vids[slug(k)] = url;
+      this.files.video = { ...this.files.video, ...vids };
       const { out, unknown, direct } = matchPlaces(this.files.lugares || {});
       const ids = Object.keys(window.Scenes?.THEMES || {});
       this.files.lugares = { ...this.files.lugares, ...out };
@@ -205,7 +228,8 @@
       return f && !/\.(mp4|webm)$/i.test(f) ? f : null;
     },
     video(id) {
-      const f = this.files.video?.[id];
+      const V = this.files.video || {};
+      const f = V[id] || (VIDEO_ALIASES[id] || []).map((a) => V[a]).find(Boolean);
       return f && /\.(mp4|webm)$/i.test(f) ? f : null;
     },
   };
