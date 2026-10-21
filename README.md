@@ -21,11 +21,13 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 
 | Parte | Qué es |
 |---|---|
-| **Creador de personaje** | Eliges ciudad, nombre, clase, habilidades, retrato y familia. El botón *Aleatorio* lo rellena todo. |
-| **Mundo abierto en 3D** | Caminas por Piltover y por Zaun y cruzas el Puente del Progreso. |
+| **Creador de personaje** | Eliges ciudad, nombre, clase, habilidades, retrato, familia, si tienes padres y quién te atrae. El botón *Aleatorio* lo rellena todo. |
+| **Mundo abierto en 3D** | Caminas por Piltover (dorada, al atardecer) y por Zaun (neones, niebla química y cables con bombillas) y cruzas el Puente del Progreso. La imagen lleva resplandor, gradación de color y reflejos para parecerse a la serie. |
 | **Historia** | 8 capítulos por ciudad, un capítulo final con 4 finales y una **Temporada 2** con 3 finales más. |
-| **Comunicador** | Chats con los personajes que conoces. Eliges qué decir y ellos reaccionan. |
-| **Minijuegos** | Cada lugar tiene una actividad que mejora tus estadísticas. |
+| **Comunicador** | Chats con los personajes que conoces, con su retrato grande en un marco de latón. Eliges qué decir y ellos reaccionan. *Charlar un rato…* tiene más de 300 respuestas que cambian cada vez. |
+| **Relaciones** | Según tu personaje puedes haceros amigos, mejores amigos, pareja (si os atraéis y tienes 18 años o más), hermandad o, si te faltan los padres, conseguir una figura paterna o materna (Vander, Silco, Ambessa, Cassandra, Heimerdinger, Sevika). Cada relación trae saludos y citas propias. |
+| **Chat libre con IA** | Opcional y gratis, al estilo de Character AI: en **Ajustes → IA para los chats** eliges Google Gemini, Groq u OpenRouter (con clave gratis) u Ollama en tu PC (sin internet). Luego en el Comunicador pulsas **✦ Libre** y escribes lo que quieras. |
+| **Minijuegos** | Cada lugar tiene una actividad que mejora tus estadísticas, con cuenta atrás, chispas, humo, sacudidas y botones táctiles grandes en el móvil (con vibración). |
 | **Códice** | Enciclopedia del juego con el **Atlas de las Dos Ciudades** (20 lugares) y los mapas de la Arcane Wiki. |
 
 ## 2. Descargar e instalar
@@ -209,7 +211,8 @@ Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas qu
 | `store/` | Icono y gráfico para la ficha de Google Play |
 | `src/index.html` | La pantalla del juego |
 | `src/js/world.js` | El mundo abierto: mapa, movimiento y cámara |
-| `src/js/world3d.js` | Las ciudades en 3D |
+| `src/js/world3d.js` | Las ciudades en 3D y su posprocesado (resplandor, color, viñeta) |
+| `src/js/minigames.js` | Los 7 minijuegos y sus efectos (partículas, sacudidas, cuenta atrás) |
 | `src/js/game.js` | Historia, comunicador, ficha, actividades y Códice |
 | `src/js/creator.js` | El creador de personaje |
 | `src/js/audio.js` | Música y efectos de sonido |

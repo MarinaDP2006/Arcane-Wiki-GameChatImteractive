@@ -6,6 +6,21 @@ window.CREATION = {
     { id: 'nobinario', label: 'No binario', g: 2 },
   ],
 
+  // Tus padres: si falta alguno, ciertos personajes pueden ser tu familia elegida.
+  parents: [
+    { id: 'ambos', label: 'Tengo a mis padres' },
+    { id: 'madre', label: 'Solo tengo a mi madre' },
+    { id: 'padre', label: 'Solo tengo a mi padre' },
+    { id: 'ninguno', label: 'Huérfan{g:o|a|e}, sin familia' },
+  ],
+  // A quién puede querer tu personaje como pareja.
+  attractions: [
+    { id: 'hombres', label: 'Hombres' },
+    { id: 'mujeres', label: 'Mujeres' },
+    { id: 'todos', label: 'Ambos' },
+    { id: 'nadie', label: 'Nadie' },
+  ],
+
   origins: {
     zaun: {
       label: 'Zaun',

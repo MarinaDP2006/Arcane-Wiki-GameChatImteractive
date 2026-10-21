@@ -10,7 +10,7 @@
 
   function fresh() {
     return {
-      origin: null, name: '', gender: 'mujer', age: 20, district: '', job: '', family: 'ninguna',
+      origin: null, name: '', gender: 'mujer', age: 20, district: '', job: '', family: 'ninguna', parents: 'ambos', attraction: 'todos',
       hobbies: [], bio: '', photo: null,
       cls: null, abilities: { Q: null, W: null, E: null, R: null }, keystone: null, title: '',
       alloc: { ingenio: 0, carisma: 0, valor: 0, sigilo: 0 },
@@ -42,7 +42,7 @@
     const fam = o.families.find((f) => f.id === d.family) || o.families[0];
     const hobbies = d.hobbies.map((h) => C().hobbies.find((x) => x.id === h));
     return {
-      name: d.name.trim(), gender: d.gender, age: Number(d.age) || 20, origin: d.origin,
+      name: d.name.trim(), gender: d.gender, age: Number(d.age) || 20, origin: d.origin, parents: d.parents, attraction: d.attraction,
       district: d.district, job: job.id, jobLabel: job.label,
       family: fam.id, familyLabel: fam.label, familyName: fam.name || '', familyAff: fam.aff || {},
       hobbies: d.hobbies, hobbyLabels: hobbies.map((h) => h.label),
@@ -271,7 +271,10 @@
     body.append(el('h2', {}, 'Quién eres'),
       el('div', { class: 'form-grid' },
         field('Nombre', name), field('Género', gender, 'Los diálogos se adaptan a tu género.'),
-        field('Edad', age), field(`Barrio de ${o.label}`, district, 'Es donde empiezas en el mapa.')),
+        field('Edad', age), field(`Barrio de ${o.label}`, district, 'Es donde empiezas en el mapa.'),
+        field('Te atraen', el('div', { class: 'seg' }, C().attractions.map((g) =>
+          el('button', { class: draft.attraction === g.id ? 'active' : '', onclick: () => { draft.attraction = g.id; rerender(); } }, g.label))),
+        'Decide con quién puedes tener una relación de pareja (a partir de 18 años).')),
       el('h3', {}, 'A qué te dedicas'), job, nav());
     setTimeout(() => name.focus(), 0);
   }
@@ -393,6 +396,10 @@
     body.append(el('div', { class: 'option-grid' }, o.families.map((f) =>
       el('button', { class: `option${draft.family === f.id ? ' active' : ''}`, onclick: () => { draft.family = f.id; rerender(); } },
         el('strong', {}, tpl(f.label, draft)), el('small', {}, bonusText(f.stats))))));
+    body.append(el('h3', {}, 'Tus padres'),
+      el('p', { class: 'muted' }, 'Si te falta tu padre, tu madre o los dos, algunos personajes podrán convertirse en tu familia elegida.'),
+      el('div', { class: 'chips wrap' }, C().parents.map((x) =>
+        el('button', { class: `chip${draft.parents === x.id ? ' active' : ''}`, onclick: () => { draft.parents = x.id; rerender(); } }, tpl(x.label, draft)))));
     body.append(el('h3', {}, `Aficiones (elige hasta ${C().maxHobbies})`));
     body.append(el('div', { class: 'option-grid small' }, C().hobbies.map((h) => {
       const on = draft.hobbies.includes(h.id);
@@ -421,7 +428,10 @@
     const rows = [
       ['Nombre', p.name], ['Género', C().genders.find((g) => g.id === p.gender)?.label], ['Edad', p.age],
       ['Ciudad', `${C().origins[p.origin].label} · ${p.district}`], ['Profesión', tpl(p.jobLabel, p)],
-      ['Familia', tpl(p.familyLabel, p)], ['Aficiones', p.hobbyLabels.join(', ')],
+      ['Familia', tpl(p.familyLabel, p)],
+      ...(p.parents ? [['Padres', tpl(C().parents.find((x) => x.id === p.parents)?.label || '', p)]] : []),
+      ...(p.attraction ? [['Te atraen', C().attractions.find((x) => x.id === p.attraction)?.label || '']] : []),
+      ['Aficiones', p.hobbyLabels.join(', ')],
       ...(p.cls ? [
         ['Clase', tpl(C().classes.find((c) => c.id === p.cls)?.label || '', p)],
         ['Habilidades', ['Q', 'W', 'E', 'R'].map((k) => `${k}: ${C().abilities[k].find((a) => a.id === p.abilities?.[k])?.name || '—'}`).join(' · ')],

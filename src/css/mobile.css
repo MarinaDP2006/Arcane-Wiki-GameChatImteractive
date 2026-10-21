@@ -184,15 +184,21 @@ body.touch[data-city='zaun'] .touch-knob { background: radial-gradient(circle at
 /* Botones de los minijuegos de teclado (foso, regateo), abajo a la derecha */
 .mg-pad { position: absolute; right: 14px; bottom: 14px; z-index: 2; display: flex; gap: 10px; pointer-events: none; }
 .mg-pad.column { flex-direction: column; align-items: stretch; }
-.mg-pad.dpad { display: grid; grid-template-columns: repeat(3, 66px); grid-template-rows: repeat(2, 66px); }
+.mg-pad.dpad { display: grid; grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(2, 72px); }
 .mg-pad.dpad .mg-pad-btn:nth-child(1) { grid-area: 1 / 2; }
 .mg-pad.dpad .mg-pad-btn:nth-child(2) { grid-area: 2 / 1; }
 .mg-pad.dpad .mg-pad-btn:nth-child(3) { grid-area: 2 / 2; }
 .mg-pad.dpad .mg-pad-btn:nth-child(4) { grid-area: 2 / 3; }
 .mg-pad-btn {
-  pointer-events: auto; touch-action: none; min-width: 66px; height: 66px; padding: 0 1rem; border-radius: 16px; font-size: 1.7rem; font-weight: 700;
-  color: #1a1408; background: radial-gradient(circle at 35% 30%, #fff3c4, var(--gold) 55%, var(--gold2)); border: 2px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.4); opacity: 0.9;
+  pointer-events: auto; touch-action: none; position: relative; overflow: hidden; min-width: 70px; height: 70px; padding: 0 1rem; border-radius: 50%; font-size: 1.6rem; font-weight: 700;
+  color: #ffe9a8; text-shadow: 0 0 10px rgba(255, 200, 100, 0.8);
+  background: radial-gradient(circle at 50% 35%, #4a3c2c, #1a1410 70%); border: 2px solid #d8aa50;
+  box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.55), inset 0 0 0 5px rgba(216, 170, 80, 0.35), 0 6px 0 #3a2a14, 0 10px 22px rgba(0, 0, 0, 0.55);
+  opacity: 0.92; transition: transform 0.08s, box-shadow 0.08s;
 }
-.mg-pad.column .mg-pad-btn { height: 58px; font-size: 1.3rem; }
-.mg-pad-btn.on { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45); opacity: 1; }
+.mg-pad-btn span { position: relative; z-index: 1; }
+.mg-pad.column .mg-pad-btn { height: 60px; border-radius: 4px; font-size: 1.25rem; letter-spacing: 0.06em; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px); }
+.mg-pad-btn::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; background: rgba(255, 224, 138, 0.55); opacity: 0; }
+.mg-pad-btn.ripple::after { animation: mg-ripple 0.45s ease-out; }
+@keyframes mg-ripple { from { transform: scale(1); opacity: 0.9; } to { transform: scale(14); opacity: 0; } }
+.mg-pad-btn.on { transform: translateY(4px); box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.55), inset 0 0 0 5px rgba(216, 170, 80, 0.6), 0 2px 0 #3a2a14, 0 0 24px rgba(255, 200, 100, 0.55); opacity: 1; color: #fff; }

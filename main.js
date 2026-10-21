@@ -344,6 +344,28 @@ ipcMain.handle('map:open', (e, url) => {
   return true;
 });
 
+// ---------- IA para los chats (opcional) ----------
+// La petición sale desde aquí para no chocar con CORS (Ollama local, Gemini, Groq…).
+ipcMain.handle('ai:chat', async (_e, url, headers, body) => {
+  try {
+    const u = new URL(String(url));
+    if (!/^https?:$/.test(u.protocol)) return { error: 'Dirección no válida' };
+    const res = await fetch(u, {
+      method: 'POST',
+      headers: { ...(headers || {}), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {}),
+      signal: AbortSignal.timeout(90000),
+    });
+    const text = await res.text();
+    let data = {};
+    try { data = JSON.parse(text); } catch { data = { error: text.slice(0, 300) }; }
+    return { status: res.status, data };
+  } catch (err) {
+    const msg = err?.cause?.code === 'ECONNREFUSED' ? 'No hay nada escuchando en esa dirección (¿está Ollama abierto?)' : err?.name === 'TimeoutError' ? 'La IA ha tardado demasiado en responder' : String(err?.message || err);
+    return { error: msg };
+  }
+});
+
 // ---------- Ventana ----------
 ipcMain.handle('app:quit', () => app.quit());
 ipcMain.handle('app:fullscreen', (e) => {

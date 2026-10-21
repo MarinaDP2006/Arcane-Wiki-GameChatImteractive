@@ -6,10 +6,10 @@ const vm = require('vm');
 
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['wiki.js', 'creation.js', 'story.js', 'chat.js', 'world.js', 'atlas.js']) {
+for (const f of ['wiki.js', 'creation.js', 'story.js', 'chat.js', 'relations.js', 'world.js', 'atlas.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', f), 'utf8'), ctx, { filename: f });
 }
-const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS } = ctx.window;
+const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS, RELATIONS } = ctx.window;
 const errors = [];
 const chars = new Set(WIKI.personajes.map((p) => p.id));
 const allIds = new Set(WIKI.categories.flatMap((c) => WIKI[c.id].map((e) => e.id)));
@@ -123,6 +123,33 @@ for (const [id, d] of Object.entries(CHAT)) {
   }
 }
 
+// Relaciones y charla con respuestas variadas
+let variants = 0;
+const GENDERS = CREATION.genders.map((g) => g.id);
+for (const id of cast) {
+  const r = RELATIONS.chars[id];
+  if (!r) { errors.push(`relaciones: falta "${id}"`); continue; }
+  if (!['f', 'm'].includes(r.gender)) errors.push(`relaciones ${id}: género "${r.gender}"`);
+  r.romance.forEach((g) => { if (!GENDERS.includes(g)) errors.push(`relaciones ${id}: género de romance "${g}"`); });
+  if (r.romance.length && !r.rel.pareja?.yes) errors.push(`relaciones ${id}: puede tener pareja pero no tiene frases`);
+  if (r.romance.length && !r.rel.romper?.yes) errors.push(`relaciones ${id}: falta la frase para romper`);
+  if (r.family && !r.rel.familia?.yes) errors.push(`relaciones ${id}: familia elegida sin frases`);
+  if (r.sibling && !r.rel.hermandad?.yes) errors.push(`relaciones ${id}: hermandad sin frases`);
+  if (!r.rel.amistad?.yes) errors.push(`relaciones ${id}: falta amistad`);
+  if (!r.persona) errors.push(`relaciones ${id}: falta la personalidad para la IA`);
+  for (const t of RELATIONS.small) {
+    const v = r.small?.[t.id];
+    if (!v?.length) errors.push(`relaciones ${id}: sin respuestas para «${t.t}»`);
+    else variants += v.length;
+  }
+  for (const [k, list] of Object.entries(r.greet || {})) if (!RELATIONS.kinds[k] || !list.length) errors.push(`relaciones ${id}: saludo "${k}"`);
+  for (const [k, list] of Object.entries(r.hang || {})) if (!RELATIONS.kinds[k] || !list.every(Array.isArray)) errors.push(`relaciones ${id}: escenas "${k}"`);
+}
+for (const [fam, links] of Object.entries(RELATIONS.familyLinks)) {
+  if (!Object.values(CREATION.origins).some((o) => o.families.some((f) => f.id === fam))) errors.push(`relaciones: familia "${fam}" no existe en la creación`);
+  Object.entries(links).forEach(([id, [kind]]) => { if (!cast.has(id) || !RELATIONS.kinds[kind]) errors.push(`relaciones ${fam}: lazo con "${id}" (${kind})`); });
+}
+
 // Atlas de las Dos Ciudades
 for (const p of ATLAS.places) {
   if (p.codex && !allIds.has(p.codex)) errors.push(`atlas ${p.id}: entrada de Códice "${p.codex}" no existe`);
@@ -136,4 +163,4 @@ if (errors.length) {
   process.exit(1);
 }
 const nodes = STORY.chapters.reduce((a, c) => a + Object.keys(c.nodes).length, 0);
-console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con ${dlgOpts} opciones de diálogo y ${ATLAS.places.length} lugares en el Atlas.`);
+console.log(`✓ Datos correctos: ${STORY.chapters.length} capítulos, ${nodes} nodos, ${STORY.endings.length + (STORY.endings2 || []).length} finales, ${allIds.size} entradas de wiki, ${Object.keys(CHAT).length} personajes con ${dlgOpts} opciones de diálogo, ${ATLAS.places.length} lugares en el Atlas y ${variants} respuestas de charla.`);
