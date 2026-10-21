@@ -285,10 +285,24 @@
     else window.open(url, '_blank');
   };
 
+  // Al abrir el juego se baja sola, en segundo plano, la imagen de la Arcane Wiki de cada
+  // personaje y lugar que aún falte (lo mismo que el botón de Ajustes). Sin internet no pasa nada.
+  async function autoFandom() {
+    if (!window.arcane?.art?.fandom || !fandomItems().length) return;
+    try {
+      const r = await window.arcane.art.fandom(fandomItems());
+      if (r.done.length) {
+        await window.CustomArt.load();
+        toast(`Arte de la Arcane Wiki descargado: ${r.done.length} imágenes nuevas.`, 'good');
+      }
+    } catch { /* sin conexión */ }
+  }
+
   async function init() {
     App.settings = await store.getSettings();
     await window.CustomArt.load();
     window.arcane?.art?.guide(artGuide());
+    autoFandom();
     Audio2.configure(App.settings);
     // El audio web solo arranca tras un gesto del usuario.
     document.addEventListener('pointerdown', () => Audio2.ensureCtx(), { once: true });
