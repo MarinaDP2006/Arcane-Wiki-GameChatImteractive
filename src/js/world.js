@@ -501,12 +501,15 @@
         ctx.stroke();
       }
     }
-    const zaun = mapId === 'zaun';
-    const v = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.height * 0.35, canvas.width / 2, canvas.height / 2, canvas.height * 0.95);
-    v.addColorStop(0, 'transparent');
-    v.addColorStop(1, zaun ? 'rgba(0,20,10,0.55)' : 'rgba(40,24,0,0.3)');
-    ctx.fillStyle = v;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Con posprocesado la viñeta ya viene en la imagen 3D.
+    if (!r3d.post) {
+      const zaun = mapId === 'zaun';
+      const v = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, canvas.height * 0.35, canvas.width / 2, canvas.height / 2, canvas.height * 0.95);
+      v.addColorStop(0, 'transparent');
+      v.addColorStop(1, zaun ? 'rgba(0,20,10,0.55)' : 'rgba(40,24,0,0.3)');
+      ctx.fillStyle = v;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     if (obj) drawObjectiveArrow(obj, null);
     if (fade > 0) {
       ctx.fillStyle = `rgba(0,0,0,${fade})`;

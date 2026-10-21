@@ -343,7 +343,7 @@
       el('p', { class: 'muted' }, 'Practica sin límite. Las recompensas de estadísticas se ganan en los lugares del mapa.'),
       el('div', { class: 'arcade-grid' }, Object.entries(Minigames.GAMES).map(([id, g]) =>
         el('button', { class: 'arcade-card', onclick: async () => { box.style.visibility = 'hidden'; await Minigames.play(id, { bonus: mgBonus(id) }); box.style.visibility = ''; } },
-          el('span', { class: 'arcade-icon' }, g.icon), el('strong', {}, g.title), el('small', { class: 'muted' }, g.goal)))),
+          el('span', { class: 'arcade-icon', html: Minigames.emblem(id) }), el('strong', {}, g.title), el('small', { class: 'muted' }, g.goal)))),
       el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
   }
 
@@ -584,9 +584,11 @@
     }
   }
 
+  // Afinidad como fila de 10 marcas (rojas si es negativa).
   function heart(a) {
-    const lvl = a < 0 ? '' : a >= 8 ? '' : a >= 5 ? '' : a >= 2 ? '' : '';
-    return el('small', { class: 'aff' }, `${lvl} ${a}`);
+    return el('small', { class: `aff${a < 0 ? ' neg' : ''}`, title: `Afinidad ${a}/10` },
+      el('span', { class: 'aff-pips', style: `--p:${Math.min(10, Math.abs(a)) * 10}%` }),
+      el('b', {}, String(a)));
   }
 
   function renderMain() {
@@ -1062,12 +1064,6 @@
     return (data?.hub || []).filter((o) => !dlgHidden(o.req, id) && !seen[dlgKey(id, 'hub', o)]).length;
   }
 
-  function headLine(id) {
-    const fresh = freshTopics(id);
-    const role = window.WIKI.personajes.find((p) => p.id === id)?.role || '';
-    return `${role} · Afinidad ${affOf(id)}/10${fresh ? ` · ✦ ${fresh} tema${fresh > 1 ? 's' : ''} por descubrir` : ''}`;
-  }
-
   function renderChat(main) {
     if (!G.unlocked.length) {
       main.append(el('div', { class: 'wiki-empty' }, el('h2', {}, 'Aún no conoces a nadie'), el('p', {}, 'Juega la historia para desbloquear personajes con los que hablar.')));
@@ -1079,20 +1075,48 @@
       G.chats[id] = [{ s: id, t: tpl(greeting(id), G.player) }];
       talkState().at[id] = 'hub';
     }
+    const info = window.WIKI.personajes.find((p) => p.id === id);
+    const art = Portrait.customChar(id, true) || Portrait.charURL(id, 384, true);
+    // Comunicador: retrato grande con marco a la izquierda y la conversación a la derecha.
     main.append(
-      el('header', { class: 'scene-head' },
-        el('div', { class: 'row gap' },
-          el('span', { class: 'avatar', html: Portrait.forCharacter(id) }),
-          el('div', {}, el('h2', {}, charName(id)), el('small', { class: 'muted' }, headLine(id)))),
-        el('div', { class: 'row gap' },
-          el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, 'Códice'),
-          el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; talkState().at[id] = 'hub'; persist(); renderMain(); } }, 'Limpiar'))),
-      el('div', { id: 'chat-log', class: 'log' }),
-      el('div', { id: 'dlg-choices', class: 'choices' }));
+      el('div', { class: `chat-stage origin-${info?.origin === 'zaun' ? 'zaun' : 'piltover'}` },
+        el('aside', { class: 'chat-portrait' },
+          el('div', { class: 'cp-frame' },
+            el('img', { src: art, alt: '', draggable: 'false' }),
+            el('i', { class: 'cp-shine' })),
+          el('div', { class: 'cp-plate' },
+            el('h2', {}, charName(id)),
+            el('small', {}, info?.role || '')),
+          el('div', { class: 'cp-aff', id: 'chat-aff' }),
+          el('div', { class: 'cp-actions' },
+            el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, 'Códice'),
+            el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; talkState().at[id] = 'hub'; persist(); renderMain(); } }, 'Limpiar'))),
+        el('section', { class: 'chat-convo' },
+          el('header', { class: 'chat-head' },
+            el('span', { class: 'avatar sm', html: Portrait.forCharacter(id) }),
+            el('div', {}, el('b', {}, charName(id)), el('small', { id: 'chat-topics', class: 'muted' }))),
+          el('div', { id: 'chat-log', class: 'log' }),
+          el('div', { id: 'dlg-choices', class: 'choices' }))));
+    refreshChatHead(id);
     const log = $('#chat-log');
     for (const m of G.chats[id]) log.append(bubble(m.s, m.t, true));
     showDialog(id);
     log.scrollTop = log.scrollHeight;
+  }
+
+  // Afinidad y temas pendientes en la cabecera del comunicador.
+  function refreshChatHead(id) {
+    const a = affOf(id);
+    const aff = $('#chat-aff');
+    if (aff) {
+      aff.innerHTML = '';
+      aff.append(el('span', { class: 'cp-aff-label' }, 'Afinidad'),
+        el('span', { class: `cp-gems${a < 0 ? ' neg' : ''}` }, ...Array.from({ length: 10 }, (_, i) => el('i', { class: i < Math.abs(a) ? 'on' : '' }))),
+        el('b', {}, `${a}/10`));
+    }
+    const fresh = freshTopics(id);
+    const top = $('#chat-topics');
+    if (top) top.textContent = fresh ? `✦ ${fresh} tema${fresh > 1 ? 's' : ''} por descubrir` : 'Todo hablado por ahora';
   }
 
   function showDialog(id) {
@@ -1178,8 +1202,7 @@
     if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, [].concat(data.nodes[go].say));
     talking = false;
     if (tab === 'chats' && contact) {
-      const head = $('#play-main .scene-head small');
-      if (head) head.textContent = headLine(contact);
+      refreshChatHead(contact);
       showDialog(contact);
       const log = $('#chat-log');
       if (log) log.scrollTop = log.scrollHeight;
