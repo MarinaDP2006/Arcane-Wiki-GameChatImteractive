@@ -29,6 +29,7 @@
     };
     Object.entries(player.familyAff || {}).forEach(([k, v]) => { st.aff[k] = v; });
     if (player.family !== 'ninguna') st.flags.familia_famosa = true;
+    Relations.applyFamily(st);
     return st;
   }
 
@@ -94,6 +95,7 @@
     // Solo el reparto principal sale en el comunicador (partidas antiguas tenían a más gente).
     G.unlocked = G.unlocked.filter((id) => window.STORY.cast.includes(id));
     if (G.progress.started === undefined) G.progress.started = Boolean(G.progress.node);
+    Relations.applyFamily(G);
     tab = 'historia';
     contact = null;
     window.App.go('game');
@@ -580,7 +582,9 @@
         onclick: () => setTab('chats', id),
       },
       el('span', { class: 'avatar sm', html: Portrait.forCharacter(id) }),
-      el('span', { class: 'c-body' }, el('strong', {}, charName(id), window.CHAT[id] && freshTopics(id) ? el('em', { class: 'new', title: 'Temas nuevos' }, ' ✦') : null), heart(a))));
+      el('span', { class: 'c-body' }, el('strong', {}, charName(id), window.CHAT[id] && freshTopics(id) ? el('em', { class: 'new', title: 'Temas nuevos' }, ' ✦') : null),
+        Relations.status(G, id) ? el('small', { class: `c-rel rel-${Relations.status(G, id)}` }, `${window.RELATIONS.kinds[Relations.status(G, id)]?.icon || ''} ${tpl(Relations.label(G, id), G.player)}`) : null,
+        heart(a))));
     }
   }
 
@@ -1048,12 +1052,22 @@
     const data = window.CHAT[id];
     const at = talkState().at[id] || 'hub';
     if (at === 'bye') return [];
-    const base = at === 'hub' ? data.hub : data.nodes?.[at]?.opts || [];
+    let base = at === 'hub' ? data.hub : data.nodes?.[at]?.opts || [];
+    // Temas que se añaden a todos: charla con respuestas variadas y las relaciones.
+    if (at === '__charla') base = window.RELATIONS.small.map((x) => ({ ...x, __small: x.id }));
+    if (at === '__rel') base = Relations.relOptions(G, id, affOf(id));
+    if (at === 'hub') {
+      const extra = [{ t: 'Charlar un rato…', tone: 'amable', go: '__charla', __menu: true }];
+      const hang = Relations.hangLabel(G, id);
+      if (hang) extra.push({ t: hang, tone: 'amable', __hang: true });
+      if (Relations.status(G, id) || Relations.relOptions(G, id, affOf(id)).length) extra.push({ t: 'Lo nuestro…', tone: 'serio', go: '__rel', __menu: true });
+      base = [...base, ...extra];
+    }
     const seen = talkState().seen;
     const list = base.filter((o) => !dlgHidden(o.req, id) && !(o.once && seen[dlgKey(id, at, o)]))
       .map((o) => ({ ...o, __node: at }));
     if (at === 'hub') list.push({ t: 'Hasta luego.', tone: 'amable', go: 'bye', __node: at, __bye: true });
-    else if (!data.nodes[at].noBack) list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
+    else if (at.startsWith('__') || !data.nodes[at].noBack) list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
     return list;
   }
 
@@ -1088,13 +1102,17 @@
             el('h2', {}, charName(id)),
             el('small', {}, info?.role || '')),
           el('div', { class: 'cp-aff', id: 'chat-aff' }),
+          el('div', { class: 'cp-rel', id: 'chat-rel' }),
           el('div', { class: 'cp-actions' },
             el('button', { class: 'btn ghost small', onclick: () => openOverlay('codice', id) }, 'Códice'),
             el('button', { class: 'btn ghost small', onclick: () => { G.chats[id] = null; talkState().at[id] = 'hub'; persist(); renderMain(); } }, 'Limpiar'))),
         el('section', { class: 'chat-convo' },
           el('header', { class: 'chat-head' },
             el('span', { class: 'avatar sm', html: Portrait.forCharacter(id) }),
-            el('div', {}, el('b', {}, charName(id)), el('small', { id: 'chat-topics', class: 'muted' }))),
+            el('div', {}, el('b', {}, charName(id)), el('small', { id: 'chat-topics', class: 'muted' })),
+            el('div', { class: 'chat-mode', role: 'tablist' },
+              el('button', { class: `cm-btn${chatMode(id) === 'tree' ? ' on' : ''}`, onclick: () => setChatMode(id, 'tree') }, 'Opciones'),
+              el('button', { class: `cm-btn${chatMode(id) === 'ai' ? ' on' : ''}`, title: 'Escribe lo que quieras (IA)', onclick: () => setChatMode(id, 'ai') }, '✦ Libre'))),
           el('div', { id: 'chat-log', class: 'log' }),
           el('div', { id: 'dlg-choices', class: 'choices' }))));
     refreshChatHead(id);
@@ -1114,34 +1132,100 @@
         el('span', { class: `cp-gems${a < 0 ? ' neg' : ''}` }, ...Array.from({ length: 10 }, (_, i) => el('i', { class: i < Math.abs(a) ? 'on' : '' }))),
         el('b', {}, `${a}/10`));
     }
+    const rel = $('#chat-rel');
+    if (rel) {
+      const k = Relations.status(G, id);
+      rel.textContent = k ? `${window.RELATIONS.kinds[k]?.icon || ''} ${tpl(Relations.label(G, id), G.player)}` : '';
+      rel.className = `cp-rel${k ? ` rel-${k}` : ''}`;
+    }
     const fresh = freshTopics(id);
     const top = $('#chat-topics');
     if (top) top.textContent = fresh ? `✦ ${fresh} tema${fresh > 1 ? 's' : ''} por descubrir` : 'Todo hablado por ahora';
+  }
+
+  // Modo del comunicador: opciones escritas o chat libre con IA.
+  function chatMode(id) {
+    return talkState().mode?.[id] || 'tree';
+  }
+  function setChatMode(id, m) {
+    talkState().mode = { ...(talkState().mode || {}), [id]: m };
+    document.querySelectorAll('.chat-mode .cm-btn').forEach((b, i) => b.classList.toggle('on', (i === 1) === (m === 'ai')));
+    showDialog(id);
+    persist();
+  }
+
+  function showAIBox(id, box) {
+    box.classList.add('ai-box');
+    if (!window.AI.ready()) {
+      box.append(el('div', { class: 'ai-off' },
+        el('p', {}, `Con la IA puedes escribirle a ${charName(id)} lo que quieras y te responderá en su papel. Es gratis: actívala en Ajustes → «IA para los chats».`),
+        el('button', { class: 'btn small primary', onclick: openSettingsOverlay }, 'Abrir ajustes')));
+      return;
+    }
+    const input = el('textarea', { class: 'input ai-input', rows: 1, maxlength: 500, placeholder: `Escribe a ${charName(id)}…`,
+      onkeydown: (e) => { if (e.key !== 'Escape') e.stopPropagation(); if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } } });
+    const send = () => { const t = input.value.trim(); if (!t || talking) return; input.value = ''; sendAI(id, t); };
+    box.append(el('div', { class: 'ai-row' }, input, el('button', { class: 'btn primary ai-send', title: 'Enviar', onclick: send }, '➤')),
+      el('small', { class: 'muted ai-note' }, window.AI.cfg().provider === 'ollama' ? '✦ IA en tu ordenador: lo que escribas no sale de él' : `✦ ${window.AI.PROVIDERS[window.AI.cfg().provider].label} · lo que escribas se envía a ese servicio`));
+    if (!U.touch) setTimeout(() => input.focus(), 0);
+  }
+
+  async function sendAI(id, text) {
+    talking = true;
+    const thread = G.chats[id];
+    thread.push({ s: 'yo', t: text });
+    $('#chat-log')?.append(bubble('yo', text));
+    showDialog(id);
+    const log = $('#chat-log');
+    const typing = el('div', { class: 'msg them typing' }, el('div', { class: 'bubble' }, el('i'), el('i'), el('i')));
+    log?.append(typing);
+    if (log) log.scrollTop = log.scrollHeight;
+    try {
+      const r = await window.AI.reply(G, id);
+      typing.remove();
+      await speak(id, [{ s: id, t: r.text, raw: true }]);
+      // La afinidad cambia poco a poco: tres mensajes que le gusten = +1; dos que no = −1.
+      const c = (G.aiAff = G.aiAff || {})[id] || { pos: 0, neg: 0 };
+      if (r.aff > 0 && ++c.pos >= 3) { c.pos = 0; applyTalkFx(id, { aff: 1 }); }
+      if (r.aff < 0 && ++c.neg >= 2) { c.neg = 0; applyTalkFx(id, { aff: -1 }); }
+      G.aiAff[id] = c;
+    } catch (err) {
+      typing.remove();
+      const t = `(La IA no responde: ${err.message})`;
+      $('#chat-log')?.append(bubble('sistema', t));
+    }
+    talking = false;
+    if (tab === 'chats' && contact === id) { refreshChatHead(id); showDialog(id); }
+    renderContacts();
+    persist();
   }
 
   function showDialog(id) {
     const box = $('#dlg-choices');
     if (!box) return;
     box.innerHTML = '';
+    box.classList.remove('ai-box');
     if (talking) return;
+    if (chatMode(id) === 'ai') return showAIBox(id, box);
     if (talkState().at[id] === 'bye') {
       box.append(el('button', { class: 'choice', onclick: () => restartTalk(id) }, el('span', { class: 'num' }, 1), `Volver a hablar con ${charName(id)}`));
       return;
     }
     const seen = talkState().seen;
     dlgOptions(id).forEach((o, i) => {
-      const ok = dlgReq(o.req, id);
-      const isNew = !o.__bye && !o.__back && !seen[dlgKey(id, o.__node, o)];
+      const ok = dlgReq(o.req, id) && !o.busy;
+      const isNew = !o.__bye && !o.__back && !o.__menu && !o.__hang && !o.__small && !seen[dlgKey(id, o.__node, o)];
       box.append(el('button', {
-        class: `choice${ok ? '' : ' locked'}${!isNew && !o.__bye && !o.__back ? ' seen' : ''}`,
+        class: `choice${ok ? '' : ' locked'}${!isNew && !o.__bye && !o.__back && !o.__menu && !o.__hang && !o.__small ? ' seen' : ''}${o.__rel ? ` rel rel-${o.__rel}` : ''}`,
         disabled: !ok,
-        title: ok ? '' : 'No cumples el requisito',
+        title: ok ? '' : o.busy ? `Ya tienes pareja: ${charName(o.busy)}` : 'No cumples el requisito',
         onclick: () => sayOption(id, o),
       }, el('span', { class: 'num' }, i + 1),
       el('span', {},
         o.__back ? '↩ ' : o.__bye ? '' : TONES[o.tone] ? el('small', { class: `tone tone-${o.tone}` }, `${TONES[o.tone]} `) : '',
         tpl(o.t, G.player),
         o.req && reqLabel(o.req) ? el('em', { class: 'req' }, ` ${reqLabel(o.req)}`) : null,
+        o.busy ? el('em', { class: 'req' }, ` [Ya sales con ${charName(o.busy)}]`) : null,
         !ok ? el('em', {}, '') : null,
         isNew ? el('em', { class: 'new' }, ' ✦') : null)));
     });
@@ -1159,9 +1243,9 @@
     const thread = G.chats[id];
     for (const raw of lines) {
       const line = typeof raw === 'string' ? { s: id, t: raw } : raw;
-      const text = tpl(line.t, G.player);
+      const text = line.raw ? line.t : tpl(line.t, G.player);
       const log = contact === id && tab === 'chats' ? $('#chat-log') : null;
-      if (log && line.s !== 'narrador') {
+      if (log && line.s !== 'narrador' && !line.raw) {
         const typing = el('div', { class: 'msg them typing' }, el('div', { class: 'bubble' }, el('i'), el('i'), el('i')));
         log.append(typing);
         log.scrollTop = log.scrollHeight;
@@ -1186,18 +1270,37 @@
     const data = window.CHAT[id];
     const thread = G.chats[id];
     const text = tpl(o.t, G.player);
-    thread.push({ s: 'yo', t: text });
+    thread.push(o.__menu || o.__back || o.__bye || o.__hang ? { s: 'yo', t: text, m: 1 } : { s: 'yo', t: text });
     $('#chat-log')?.append(bubble('yo', text));
     showDialog(id);
 
     const key = dlgKey(id, o.__node, o);
     const first = !o.__bye && !o.__back && !talkState().seen[key];
     if (!o.__bye && !o.__back) talkState().seen[key] = true;
-    if (first && o.fx) applyTalkFx(id, o.fx);
+    if (first && o.fx && !(o.__small === 'cumplido' && affOf(id) < 0)) applyTalkFx(id, o.fx);
+    // Celos: tontear con alguien que no es tu pareja.
+    const mate = Relations.partner(G);
+    if (first && o.tone === 'coqueto' && mate && mate !== id && !o.__rel && G.unlocked.includes(mate)) {
+      applyFx({ aff: { [mate]: -1 } });
+      toast(`A ${charName(mate)} no le haría ninguna gracia oír eso (−1 afinidad)`, 'warn');
+    }
 
-    const said = o.__bye ? [pick(data.bye || ['Nos vemos.'])] : [].concat(o.say || []);
+    let said = o.__bye ? [pick(data.bye || ['Nos vemos.'])] : [].concat(o.say || []);
+    let go = o.go || (o.__node === 'hub' ? 'hub' : o.__node);
+    if (o.__small) said = Relations.small(id, o.__small) || ['(Se encoge de hombros.)'];
+    if (o.__hang) {
+      const h = Relations.hang(G, id);
+      said = h?.lines || [];
+      if (h?.aff) applyTalkFx(id, { aff: h.aff });
+    }
+    if (o.__rel) {
+      const r = Relations.ask(G, id, o.__rel, affOf(id));
+      said = r.lines;
+      if (r.kind) relToast(id, r.kind);
+      if (r.aff) applyFx({ aff: { [id]: r.aff } });
+      go = 'hub';
+    }
     await speak(id, said);
-    const go = o.go || (o.__node === 'hub' ? 'hub' : o.__node);
     talkState().at[id] = go;
     if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, [].concat(data.nodes[go].say));
     talking = false;
@@ -1209,6 +1312,13 @@
     }
     renderContacts();
     persist();
+  }
+
+  function relToast(id, kind) {
+    Audio2.sfx.unlock();
+    if (kind === 'romper') return toast(`Ya no sales con ${charName(id)} (−3 afinidad)`, 'warn');
+    const l = Relations.label(G, id);
+    toast(`${window.RELATIONS.kinds[kind]?.icon || '✦'} ${charName(id)}: ${tpl(l, G.player)}`, 'good');
   }
 
   // Efectos de una respuesta: afinidad (número = con quien hablas), reputación, estadísticas y flags.
@@ -1224,6 +1334,8 @@
   }
 
   function greeting(id) {
+    const r = Relations.greet(G, id);
+    if (r) return r;
     const g = window.CHAT[id]?.greet;
     if (!g) return 'Hola.';
     const a = affOf(id);
@@ -1258,7 +1370,7 @@
       G.unlocked.length ? el('div', { class: 'rel-grid' }, G.unlocked.map((id) =>
         el('button', { class: 'rel', onclick: () => setTab('chats', id) },
           el('span', { class: 'rel-art', html: Portrait.forCharacter(id) }),
-          el('span', {}, charName(id)), heart(affOf(id))))) : el('p', { class: 'muted' }, 'Todavía no conoces a nadie.'),
+          el('span', {}, charName(id), Relations.status(G, id) ? el('small', { class: `c-rel rel-${Relations.status(G, id)}` }, tpl(Relations.label(G, id), G.player)) : null), heart(affOf(id))))) : el('p', { class: 'muted' }, 'Todavía no conoces a nadie.'),
       el('h3', {}, 'Progreso'),
       el('p', {}, `${chapterById(G.progress.chapterId)?.title}${G.progress.finished ? ' (completado)' : ''}`),
       el('p', {}, `Finales conseguidos: ${G.endings.length}/${allEndings().length}`,
@@ -1306,7 +1418,7 @@
   document.addEventListener('keydown', (e) => {
     if (!G || window.App.view !== 'game') return;
     const k = e.key.toLowerCase();
-    if (k !== 'escape' && e.target.matches('input, textarea, select')) return;
+    if (k !== 'escape' && e.target.matches?.('input, textarea, select')) return;
     if (k === 'escape') {
       e.preventDefault();
       if (overlayKind || $('#overlay.show')) closeOverlay();

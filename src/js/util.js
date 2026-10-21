@@ -47,7 +47,7 @@
       job: player.jobLabel ? genderize(t(player.jobLabel), gi) : '',
       district: t(player.district || ''),
       family: t(player.familyName || ''),
-      hobby: t((player.hobbyLabels || [])[0] || ''),
+      hobby: t((player.hobbyLabels || [])[0] || '').replace(/^\p{Lu}(?=\p{Ll})/u, (c) => c.toLowerCase()),
     };
     return out.replace(/\{(name|job|district|family|hobby)\}/g, (_, k) => vars[k]);
   }

@@ -93,6 +93,39 @@
     }, 9000);
   }
 
+  // IA opcional para el chat libre con los personajes.
+  function aiSettings(set) {
+    const box = el('div', { class: 'ai-settings' });
+    const draw = () => {
+      const a = { provider: 'off', ...(App.settings.ai || {}) };
+      const P = window.AI.PROVIDERS;
+      const d = P[a.provider] || P.off;
+      const save = (patch) => set({ ai: { ...a, ...patch } }).then(draw);
+      const status = el('small', { class: 'muted ai-status' });
+      box.innerHTML = '';
+      box.append(
+        el('h3', {}, 'IA para los chats (opcional)'),
+        el('p', { class: 'muted small' }, 'Con la IA activada puedes escribir lo que quieras en el Comunicador y cada personaje te responde en su papel, recordando vuestra relación. Es gratis: elige un servicio y sigue los pasos. Los diálogos escritos siguen ahí siempre.'),
+        el('label', { class: 'field' }, el('span', {}, 'Servicio'),
+          el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
+            Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
+        a.provider !== 'off' ? el('p', { class: 'small ai-help' }, d.help) : null,
+        d.key ? el('label', { class: 'field' }, el('span', {}, 'Clave (API key)'),
+          el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.key || '', placeholder: 'Pega aquí tu clave', onchange: (e) => save({ key: e.target.value.trim() }) })) : null,
+        a.provider === 'custom' || a.provider === 'ollama' ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
+          el('input', { class: 'input', value: a.url || d.url, placeholder: 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+        a.provider !== 'off' ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
+          el('input', { class: 'input', value: a.model || d.model, onchange: (e) => save({ model: e.target.value.trim() }) })) : null,
+        a.provider !== 'off' ? el('div', { class: 'row gap' },
+          el('button', { class: 'btn small', onclick: async () => {
+            status.textContent = 'Probando…';
+            try { status.textContent = `✓ Funciona: «${await window.AI.test()}»`; } catch (err) { status.textContent = `✗ ${err.message}`; }
+          } }, 'Probar conexión'), status) : null);
+    };
+    draw();
+    return box;
+  }
+
   function renderSettings(root, onBack) {
     const s = App.settings;
     root.innerHTML = '';
@@ -131,6 +164,7 @@
         el('select', { class: 'input', onchange: (e) => set({ textSpeed: e.target.value }) },
           [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido']].map(([v, l]) => el('option', { value: v, selected: s.textSpeed === v }, l)))),
       toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
+      aiSettings(set),
       el('h3', {}, 'Acerca de'),
       el('p', { class: 'muted small' }, 'Juego de fans gratuito y sin ánimo de lucro: no se vende, no tiene anuncios ni compras. Las imágenes de personajes y lugares son de la Arcane Wiki (arcane.fandom.com) y la música se sintetiza en tiempo real.'),
       el('p', { class: 'muted small' }, 'Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.'),
