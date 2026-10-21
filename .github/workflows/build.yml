@@ -1,6 +1,8 @@
-# Compila el juego como ejecutable de escritorio para Windows y macOS.
-# - En cada push/PR: genera los instaladores y los deja como artefactos descargables.
+# Compila el juego para Windows, macOS y Android.
+# - En cada push/PR: genera los instaladores y el APK, y los deja como artefactos descargables.
 # - Al publicar una etiqueta v* (p. ej. v1.0.0): además crea una Release con los archivos.
+# - Android: si están los secretos de la llave de firma (ANDROID_KEYSTORE_BASE64, …), sale un APK
+#   firmado y el .aab para subir a Google Play. Sin ellos, sale un APK de prueba para instalar a mano.
 name: Compilar ejecutables
 
 on:
@@ -55,9 +57,76 @@ jobs:
             dist/*.zip
           if-no-files-found: error
 
+  # ubuntu-latest ya trae el SDK de Android (ANDROID_HOME); Gradle baja lo que falte.
+  android:
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Instalar dependencias
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+
+      - name: Validar datos del juego
+        run: npm run check
+
+      - name: Preparar el proyecto de Android
+        run: npm run android:sync
+
+      - name: Llave de firma
+        if: env.HAS_KEYSTORE == 'true'
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/arcane-upload.jks"
+
+      - name: Compilar APK y AAB firmados (Google Play)
+        if: env.HAS_KEYSTORE == 'true'
+        working-directory: android
+        run: ./gradlew --no-daemon assembleRelease bundleRelease
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/arcane-upload.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Compilar APK de prueba (sin llave de firma)
+        if: env.HAS_KEYSTORE != 'true'
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Poner nombre a los archivos
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          mkdir -p dist
+          for f in android/app/build/outputs/apk/release/*-release.apk; do [ -f "$f" ] && cp "$f" "dist/Arcane-$VERSION-android.apk"; done
+          for f in android/app/build/outputs/apk/debug/*-debug.apk; do [ -f "$f" ] && cp "$f" "dist/Arcane-$VERSION-android-prueba.apk"; done
+          for f in android/app/build/outputs/bundle/release/*.aab; do [ -f "$f" ] && cp "$f" "dist/Arcane-$VERSION-google-play.aab"; done
+          ls -la dist
+
+      - name: Subir APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcane-android
+          path: |
+            dist/*.apk
+            dist/*.aab
+          if-no-files-found: error
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [build, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

@@ -2,3 +2,8 @@ node_modules/
 dist/
 *.log
 .DS_Store
+www/
+android/app/release/
+*.keystore
+*.jks
+keystore.properties

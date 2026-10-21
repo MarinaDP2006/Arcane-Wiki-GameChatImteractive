@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Arcane</string>
+    <string name="title_activity_main">Arcane</string>
+    <string name="package_name">com.marinadp2006.arcanewikigame</string>
+    <string name="custom_url_scheme">com.marinadp2006.arcanewikigame</string>
+</resources>

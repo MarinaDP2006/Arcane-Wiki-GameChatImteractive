@@ -78,6 +78,8 @@
   };
 
   const desktop = window.arcane?.isDesktop;
+  // Pantalla táctil (móvil o tableta, o la app de Android).
+  const touch = Boolean(window.Capacitor?.isNativePlatform?.() || window.matchMedia?.('(pointer: coarse)').matches);
   const store = {
     async listSlots() {
       if (desktop) return window.arcane.saves.list();
@@ -192,17 +194,9 @@
     codice: [['mapa-piltover-zaun', 'webp']],
   };
 
-  // Los vídeos se reconocen por su nombre de archivo, con o sin espacios y mayúsculas.
-  const VIDEO_ALIASES = {
-    'intro-zaun': ['welcome-to-zaun', 'intro-zaun'],
-    'intro-piltover': ['welcome-to-piltover', 'intro-piltover'],
-    'historia-1': ['intros1', 'intro-s1'],
-    'temporada-2': ['intros2', 'intro-s2'],
-  };
-
   // Arte personal de la jugadora (carpeta «arte» en escritorio).
   window.CustomArt = {
-    files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {}, video: {} },
+    files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {} },
     report: { found: [], missing: [], borrowed: [], unknown: [] },
     async load() {
       if (window.arcane?.art) {
@@ -210,9 +204,6 @@
       } else {
         for (const [dir, list] of Object.entries(BUNDLED)) this.files[dir] = Object.fromEntries(list.map(([n, e]) => [n, `img/arte/${dir}/${n}.${e}`]));
       }
-      const vids = {};
-      for (const [k, url] of Object.entries(this.files.video || {})) vids[slug(k)] = url;
-      this.files.video = { ...this.files.video, ...vids };
       const { out, unknown, direct } = matchPlaces(this.files.lugares || {});
       const ids = Object.keys(window.Scenes?.THEMES || {});
       this.files.lugares = { ...this.files.lugares, ...out };
@@ -225,14 +216,9 @@
     },
     image(cat, id) {
       const f = this.files[cat]?.[id];
-      return f && !/\.(mp4|webm)$/i.test(f) ? f : null;
-    },
-    video(id) {
-      const V = this.files.video || {};
-      const f = V[id] || (VIDEO_ALIASES[id] || []).map((a) => V[a]).find(Boolean);
-      return f && /\.(mp4|webm)$/i.test(f) ? f : null;
+      return f || null;
     },
   };
 
-  window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, desktop };
+  window.U = { $, $$, el, esc, tpl, store, toast, sleep, pick, norm, genderIndex, desktop, touch };
 })();

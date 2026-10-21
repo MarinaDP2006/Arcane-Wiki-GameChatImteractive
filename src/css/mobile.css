@@ -1,0 +1,198 @@
+/* ============ Móvil y tableta (pantalla táctil) ============
+   Solo se aplica con body.touch (lo pone js/mobile.js). El escritorio no cambia. */
+
+.hud-ico { display: none; font-style: normal; }
+.touch-stick, .touch-act { display: none; }
+
+/* ---------- General ---------- */
+body.touch {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  /* Muescas y barras del sistema */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.touch input, .touch textarea { user-select: text; }
+.touch .view, .touch .overlay-scroll, .touch .log, .touch .contact-list, .touch .creator-body, .touch .action-menu,
+.touch .sheet, .touch #dlg-choices, .touch .wiki-list, .touch .wiki-detail {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+/* Barras de scroll finas y doradas */
+.touch ::-webkit-scrollbar { width: 4px; height: 4px; }
+.touch ::-webkit-scrollbar-thumb { background: rgba(227, 196, 90, 0.35); border-radius: 4px; }
+.touch ::-webkit-scrollbar-track { background: transparent; }
+
+/* Sin efectos de «hover» ni de inclinación que se quedan pegados al tocar */
+.touch .tilt3d { transform: none !important; }
+.touch .btn:hover:not(:disabled), .touch .hud-btn:hover, .touch .origin-card:hover, .touch .choice:hover:not(.locked) { transform: none; }
+.touch kbd { display: none !important; }
+
+/* Botones grandes, fáciles de tocar (mínimo 44 px) */
+.touch .btn, .touch .choice, .touch .tab, .touch .option, .touch .contact, .touch .home-btn, .touch .cine-skip { min-height: 44px; }
+.touch .btn.small { min-height: 40px; padding: 0.5rem 0.9rem; }
+.touch .choice { padding: 0.7rem 0.9rem; }
+.touch .choice:active:not(.locked), .touch .option:active, .touch .contact:active { background: rgba(227, 196, 90, 0.18); }
+.touch .input { min-height: 44px; font-size: 16px; }
+.touch .switch-row input { width: 26px; height: 26px; }
+.touch input[type=range] { height: 32px; }
+
+/* ---------- Mundo abierto ---------- */
+.touch .touch-stick {
+  display: block; position: absolute; z-index: 7; left: calc(18px + env(safe-area-inset-left)); bottom: calc(18px + env(safe-area-inset-bottom));
+  width: 128px; height: 128px; border-radius: 50%; touch-action: none;
+  background: radial-gradient(circle, rgba(13, 11, 20, 0.25) 40%, rgba(13, 11, 20, 0.6));
+  border: 2px solid rgba(227, 196, 90, 0.35); box-shadow: 0 0 24px rgba(0, 0, 0, 0.45), inset 0 0 18px rgba(227, 196, 90, 0.12);
+  opacity: 0.8; transition: opacity 0.2s;
+}
+.touch .touch-stick.on { opacity: 1; border-color: var(--accent, var(--gold)); }
+.touch .touch-knob {
+  position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff3c4, var(--gold) 45%, var(--gold2));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), 0 0 16px rgba(227, 196, 90, 0.4); pointer-events: none;
+}
+body.touch[data-city='zaun'] .touch-knob { background: radial-gradient(circle at 35% 30%, #d6fff1, var(--zaun) 45%, #13403a); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), 0 0 16px rgba(63, 191, 159, 0.45); }
+.touch .touch-act {
+  display: grid; place-items: center; position: absolute; z-index: 7; right: calc(22px + env(safe-area-inset-right)); bottom: calc(26px + env(safe-area-inset-bottom));
+  width: 84px; height: 84px; border-radius: 50%; font-size: 2.1rem; color: #1a1408; touch-action: manipulation;
+  background: radial-gradient(circle at 35% 30%, #fff3c4, var(--gold) 50%, var(--gold2)); border: 3px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55); opacity: 0.55; transition: opacity 0.2s, transform 0.1s;
+}
+.touch .touch-act.ready { opacity: 1; animation: act-pulse 1.4s ease-in-out infinite; }
+.touch .touch-act:active { transform: scale(0.92); }
+@keyframes act-pulse { 50% { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 0 10px rgba(227, 196, 90, 0.25); } }
+
+.touch .world-prompt { pointer-events: auto; cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 0.4rem; }
+.touch .world-prompt::after { content: '✦'; color: var(--gold); }
+
+/* Barra de botones del HUD: iconos grandes, en una sola fila */
+.touch .hud-ico { display: block; font-size: 1.35rem; line-height: 1; }
+.touch .hud-bottom { gap: 0.4rem; bottom: calc(12px + env(safe-area-inset-bottom)); }
+.touch .hud-btn { flex-direction: column; gap: 0.15rem; min-width: 58px; min-height: 54px; padding: 0.35rem 0.5rem; justify-content: center; }
+.touch .hud-label { font-size: 0.68rem; letter-spacing: 0.02em; color: var(--muted); }
+.touch .hud-btn:active { border-color: var(--gold); background: rgba(227, 196, 90, 0.2); }
+
+/* ---------- Ventanas (historia, chats, ficha, códice, pausa) a pantalla completa ---------- */
+.touch .overlay { backdrop-filter: none; }
+
+/* ---------- Teléfono (pantalla pequeña o bajita) ---------- */
+@media (max-height: 540px), (max-width: 760px) {
+  .touch .view { padding: 0.6rem; }
+  .touch .panel { padding: 0.8rem; }
+  .touch h2 { font-size: 1.15rem; }
+
+  /* Menú principal */
+  .touch .home-title { font-size: clamp(2.2rem, 9vh, 4rem); }
+  .touch .home-btn { padding-top: 0.55rem; padding-bottom: 0.55rem; }
+
+  /* Creador: dos columnas en horizontal, con el retrato pequeño a la derecha */
+  .touch .creator { max-width: none; }
+  .touch .steps { margin-bottom: 0.5rem; gap: 0.25rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .touch .steps::-webkit-scrollbar { display: none; }
+  .touch .steps li { font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+  .touch .steps li:not(.active) { font-size: 0; gap: 0; }
+  .touch .steps li span { width: 24px; height: 24px; font-size: 0.75rem; }
+  .touch .creator-grid { grid-template-columns: 1fr 190px; gap: 0.6rem; }
+  .touch .creator-body { max-height: calc(100dvh - 70px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  .touch .creator-body h2 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .touch .creator-stage { gap: 0.35rem; max-height: calc(100dvh - 70px); overflow: auto; }
+  .touch .splash { max-width: 190px; aspect-ratio: 3 / 4; height: auto; }
+  .touch .splash-plate { padding: 1.6rem 0.5rem 0.5rem; }
+  .touch .splash-plate strong { font-size: 1.05rem; }
+  .touch .creator-nav { position: sticky; bottom: -0.8rem; margin: 0.8rem -0.8rem -0.8rem; padding: 0.6rem 0.8rem; background: rgba(1, 10, 19, 0.95); border-top: 1px solid #785a28; z-index: 2; }
+  .touch .origin-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .touch .origin-card { min-height: 150px; padding: 0.8rem; }
+  .touch .origin-card h3 { font-size: 1.4rem; }
+  .touch .form-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .touch .option-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+
+  /* HUD del mundo, más compacto */
+  .touch .hud-top { top: calc(8px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left)); gap: 0.35rem; }
+  .touch .hud-card { padding: 0.35rem 0.6rem; max-width: 300px; font-size: 0.82rem; border-radius: 12px; }
+  .touch .hud-card .avatar { width: 36px; height: 36px; }
+  .touch .hud-stats { font-size: 0.72rem; gap: 0.4rem; }
+  .touch .objective { max-width: 260px; }
+  .touch .hud-mini { top: calc(8px + env(safe-area-inset-top)); right: calc(8px + env(safe-area-inset-right)); }
+  .touch #world-mini { width: 128px; height: auto; }
+  .touch #hud-codex { font-size: 0.7rem; }
+  .touch .hud-btn { min-width: 50px; min-height: 50px; padding: 0.3rem 0.4rem; }
+  .touch .hud-label { display: none; }
+  .touch .world-prompt { bottom: 76px; max-width: 46vw; white-space: normal; text-align: center; font-size: 0.9rem; }
+
+  /* Ventanas a pantalla completa */
+  .touch .overlay-panel { width: 100%; height: 100%; border-radius: 0; padding: 0.5rem 0.6rem; border-left: none; border-right: none; }
+  .touch .overlay-head { padding: 0 0.2rem 0.4rem; gap: 0.4rem; flex-wrap: nowrap; }
+  .touch .overlay-head h2 { font-size: 1.1rem; white-space: nowrap; }
+  .touch .overlay-scroll { padding: 0.8rem; }
+  .touch .codex-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .touch .codex-tabs::-webkit-scrollbar { display: none; }
+  .touch .codex-tabs .tab { white-space: nowrap; flex-shrink: 0; }
+  .touch .action-menu { width: min(560px, 94%); max-height: 94%; }
+
+  /* Historia y comunicador: lista de contactos a la izquierda, estrecha */
+  .touch .play { grid-template-columns: 190px 1fr; gap: 0.5rem; }
+  .touch .contacts { max-height: none; }
+  .touch .contact .avatar { width: 34px; height: 34px; }
+  .touch .scene-head { padding: 0.4rem 0.6rem; }
+  .touch .scene-head h2 { font-size: 1rem; }
+  .touch .log { padding: 0.6rem; gap: 0.45rem; }
+  .touch .msg { max-width: 92%; }
+  .touch .msg .bubble { padding: 0.5rem 0.75rem; font-size: 0.92rem; }
+  .touch .choices { padding: 0.5rem 0.6rem; max-height: 46%; overflow-y: auto; }
+  .touch .choice { font-size: 0.92rem; }
+
+  /* Ficha */
+  .touch .sheet { padding: 0.7rem; }
+  .touch .sheet-head { gap: 0.7rem; }
+  .touch .sheet-head h2 { font-size: 1.4rem; }
+  .touch .sheet-art { width: 96px; height: 96px; }
+  .touch .sheet-list { grid-template-columns: 110px 1fr; }
+
+  /* Códice y Atlas */
+  .touch .wiki-layout { grid-template-columns: 210px 1fr; }
+  .touch .wiki-detail { grid-column: auto; }
+  .touch .atlas-emblem { width: 56px; padding: 0.3rem; }
+  .touch .atlas-emblem span { display: none; }
+  .touch .atlas-stage { padding: 0.3rem; gap: 0.4rem; }
+
+  /* Cinemáticas */
+  .touch .cine-skip { right: calc(1rem + env(safe-area-inset-right)); top: calc(0.8rem + env(safe-area-inset-top)); }
+  .touch .cine-text { left: 6vw; bottom: 12vh; max-width: 70vw; }
+
+  /* Minijuegos */
+  .touch .mg-stage { inset: calc(6px + env(safe-area-inset-top)) calc(6px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(6px + env(safe-area-inset-left)); border-radius: 14px; }
+  .touch .mg-hud { padding: 0.4rem 0.7rem; min-height: 40px; font-size: 0.85rem; gap: 0.6rem; }
+  .touch .mg-meter { min-width: 150px; }
+  .touch .mg-card { width: min(560px, 92%); max-height: calc(100% - 16px); overflow: auto; padding: 0.8rem 1rem; }
+  .touch .mg-card p { margin: 0.35rem 0; font-size: 0.9rem; }
+  .touch .mg-card h2 { font-size: 1.3rem; }
+
+  /* Ajustes */
+  .touch .settings h3 { margin-top: 1rem; }
+}
+
+/* Teléfono en vertical: una columna */
+@media (max-width: 760px) and (orientation: portrait) {
+  .touch .creator-grid, .touch .origin-grid, .touch .form-grid, .touch .play, .touch .wiki-layout { grid-template-columns: 1fr; }
+  .touch .creator-stage { display: none; }
+  .touch .contacts { max-height: 170px; }
+}
+
+/* Botones de los minijuegos de teclado (foso, regateo), abajo a la derecha */
+.mg-pad { position: absolute; right: 14px; bottom: 14px; z-index: 2; display: flex; gap: 10px; pointer-events: none; }
+.mg-pad.column { flex-direction: column; align-items: stretch; }
+.mg-pad.dpad { display: grid; grid-template-columns: repeat(3, 66px); grid-template-rows: repeat(2, 66px); }
+.mg-pad.dpad .mg-pad-btn:nth-child(1) { grid-area: 1 / 2; }
+.mg-pad.dpad .mg-pad-btn:nth-child(2) { grid-area: 2 / 1; }
+.mg-pad.dpad .mg-pad-btn:nth-child(3) { grid-area: 2 / 2; }
+.mg-pad.dpad .mg-pad-btn:nth-child(4) { grid-area: 2 / 3; }
+.mg-pad-btn {
+  pointer-events: auto; touch-action: none; min-width: 66px; height: 66px; padding: 0 1rem; border-radius: 16px; font-size: 1.7rem; font-weight: 700;
+  color: #1a1408; background: radial-gradient(circle at 35% 30%, #fff3c4, var(--gold) 55%, var(--gold2)); border: 2px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.4); opacity: 0.9;
+}
+.mg-pad.column .mg-pad-btn { height: 58px; font-size: 1.3rem; }
+.mg-pad-btn.on { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.45); opacity: 1; }

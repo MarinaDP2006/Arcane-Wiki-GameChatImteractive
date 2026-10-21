@@ -136,5 +136,9 @@
     }, m.tempo);
   }
 
-  window.Audio2 = { configure, sfx, playMusic, stopMusic, ensureCtx };
+  // La app de móvil se calla al irse a segundo plano y vuelve a sonar al regresar.
+  const suspend = () => { if (A.ctx && A.ctx.state === 'running') A.ctx.suspend(); };
+  const resume = () => { if (A.ctx && A.ctx.state === 'suspended') A.ctx.resume(); };
+
+  window.Audio2 = { configure, sfx, playMusic, stopMusic, ensureCtx, suspend, resume };
 })();

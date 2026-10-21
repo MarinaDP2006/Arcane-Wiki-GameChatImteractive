@@ -172,7 +172,7 @@
       'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',
       '(«La Última Gota.jpg», «Puente del Progreso.png») o en inglés («The Last Drop.jpg»); da igual tildes y mayúsculas.',
       'En Ajustes → Arte personal verás qué lugares tienen imagen y cuáles faltan.',
-      'Formatos: imágenes .png .jpg .jpeg .webp · vídeos .mp4 .webm',
+      'Formatos: imágenes .png .jpg .jpeg .webp',
       'Reinicia el juego después de añadir archivos.',
       '',
       'avatares/     RETRATOS PARA TU PERSONAJE (cualquier nombre de archivo). Aparecen en la galería del creador.',
@@ -190,14 +190,7 @@
       'codice/       Ilustraciones del Códice (criaturas, tecnología, mundo y lugares)',
       ...['criaturas', 'tecnologia', 'mundo', 'lugares'].flatMap((c) => [`  -- ${W.categories.find((x) => x.id === c).label}`, ...W[c].map((e) => line(e.id, e.name))]),
       '',
-      'video/        Cinemáticas (sustituyen a las animadas; se pueden saltar con Esc)',
-      line('intro-zaun', 'Intro al empezar en Zaun'),
-      line('intro-piltover', 'Intro al empezar en Piltover'),
-      line('temporada-2', 'Apertura de la Temporada 2'),
-      ...chapters.map((c) => line(`capitulo-${c.id}`, c.title)),
-      ...endings.map((e) => line(`fin-${e.id}`, e.title)),
-      '',
-      'Ejemplos: personajes/jinx.png · lugares/ultima-gota.jpg · codice/hextec.png · video/intro-zaun.mp4',
+      'Ejemplos: personajes/jinx.png · lugares/ultima-gota.jpg · codice/hextec.png',
     ].join('\n');
   }
 
@@ -219,16 +212,16 @@
   }
 
   function artSettings(root, onBack) {
-    const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
+    const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
     const progress = el('div', { class: 'dl-progress hidden' }, el('i'), el('span'));
     return el('div', {},
       el('h3', {}, 'Arte personal'),
-      el('p', { class: 'muted' }, 'Pon tus imágenes y vídeos en la carpeta de arte y el juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
+      el('p', { class: 'muted' }, 'Pon tus imágenes en la carpeta de arte y el juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
       el('p', { class: 'small' }, `Archivos encontrados → ${counts}`),
       placesReport(),
       el('div', { class: 'row gap' },
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
-        ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'video'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
+        ...['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
         el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
       el('p', { class: 'muted small' }, `Todas las imágenes de personajes salen de la Arcane Wiki (arcane.fandom.com), no de Riot. Este botón descarga la imagen principal de la página de cada personaje (cuerpo) y de cada lugar que aún te falte; las caras del chat ya vienen con el juego. Solo baja lo que no tienes, no toca tus archivos. Los retratos de Riot que bajaban las versiones anteriores se apartan a la carpeta «_riot-retirado». Ahora faltan: ${fandomItems().length}.`),
       el('button', {

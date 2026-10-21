@@ -1,6 +1,5 @@
 // Cinemáticas: secuencias de planos pintados y animados con movimiento de cámara,
 // bandas de cine, títulos, subtítulos narrados y retratos que entran en escena.
-// Si existe un vídeo propio en la carpeta de arte con el mismo id, se reproduce ese.
 (function () {
   let active = null;
 
@@ -8,62 +7,9 @@
     return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
   }
 
-  // Reproduce un vídeo de la carpeta de arte. Devuelve false si no se puede ver (códec no
-  // compatible, archivo dañado o reproducción congelada) para usar la cinemática pintada.
-  function playVideo(url) {
-    return new Promise((resolve) => {
-      const box = document.createElement('div');
-      box.className = 'cine';
-      const v = document.createElement('video');
-      v.src = url;
-      v.autoplay = true;
-      v.playsInline = true;
-      v.preload = 'auto';
-      v.className = 'cine-video';
-      const skip = document.createElement('button');
-      skip.className = 'cine-skip';
-      skip.textContent = 'Saltar';
-      let lastTime = -1;
-      let still = 0;
-      let watch = 0;
-      const done = (ok = true) => {
-        if (!box.isConnected) return;
-        clearInterval(watch);
-        v.pause();
-        v.removeAttribute('src');
-        v.load();
-        box.remove();
-        window.removeEventListener('keydown', key, true);
-        resolve(ok);
-      };
-      const key = (e) => { e.stopPropagation(); if (['Escape', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); done(); } };
-      v.onended = () => done();
-      v.onerror = () => done(false);
-      // Sin imagen (por ejemplo, un vídeo HEVC que el ordenador no sabe decodificar): fuera.
-      v.onloadedmetadata = () => { if (!v.videoWidth) done(false); };
-      skip.onclick = (e) => { e.stopPropagation(); done(); };
-      box.addEventListener('click', () => done());
-      // Vigilante: si el vídeo no arranca o se queda congelado unos segundos, se cierra solo.
-      watch = setInterval(() => {
-        if (v.paused && v.readyState >= 2) v.play().catch(() => {});
-        if (v.currentTime === lastTime) still += 0.5;
-        else { still = 0; lastTime = v.currentTime; }
-        const started = v.currentTime > 0;
-        if (still >= (started ? 4 : 8)) done(started);
-        if (v.duration && v.currentTime >= v.duration - 0.05) done();
-      }, 500);
-      window.addEventListener('keydown', key, true);
-      box.append(v, skip);
-      document.body.append(box);
-      v.play().catch(() => { v.muted = true; v.play().catch(() => done(false)); });
-    });
-  }
-
   // shots: [{ scene, dur, title, kicker, lines: [], portrait, zoom: [a, b], pan: [[x,y],[x,y]] }]
-  async function play(shots, opts = {}) {
+  async function play(shots) {
     if (active) active.stop();
-    const vid = opts.videoId && window.CustomArt?.video(opts.videoId);
-    if (vid && (await playVideo(vid))) return undefined;
     if (!shots.length) return undefined;
 
     return new Promise((resolve) => {
@@ -189,7 +135,7 @@
   // Tarjeta de título de capítulo (un solo plano corto).
   function chapterCard(ch, scene) {
     const [num, name] = ch.title.split(' · ');
-    return play([{ scene, dur: 4.5, kicker: num, title: name || ch.title, lines: [ch.intro], zoom: [1.15, 1.0], pan: [[0.3, 0.1], [-0.3, -0.1]], align: 'center' }], { videoId: `capitulo-${ch.id}` });
+    return play([{ scene, dur: 4.5, kicker: num, title: name || ch.title, lines: [ch.intro], zoom: [1.15, 1.0], pan: [[0.3, 0.1], [-0.3, -0.1]], align: 'center' }]);
   }
 
   window.Cinematic = { play, chapterCard };

@@ -27,6 +27,7 @@
   let vel = { x: 0, y: 0 };
   let drag = null;
   const keys = new Set();
+  const stick = { x: 0, y: 0 }; // joystick táctil (móvil), de -1 a 1
   const imgCache = new Map();
 
   // ---------- Generación ----------
@@ -179,6 +180,8 @@
     if (keys.has('arrowright') || keys.has('d')) dx += 1;
     if (keys.has('arrowup') || keys.has('w')) dy -= 1;
     if (keys.has('arrowdown') || keys.has('s')) dy += 1;
+    const push = Math.min(1, Math.hypot(stick.x, stick.y));
+    if (!dx && !dy && push > 0.15) { dx = stick.x; dy = stick.y; }
     if (dx || dy) target = null;
     else if (target) {
       const tx = target.x - pos.x;
@@ -200,7 +203,7 @@
     const ox = pos.x;
     const oy = pos.y;
     if (len) {
-      const sp = SPEED * (keys.has('shift') ? 1.7 : 1) * (G.player.keystone === 'pies' ? 1.3 : 1) * dt;
+      const sp = SPEED * (keys.has('shift') || push > 0.92 ? 1.7 : 1) * (push > 0.15 && push <= 0.92 ? Math.max(0.45, push) : 1) * (G.player.keystone === 'pies' ? 1.3 : 1) * dt;
       const mx = (dx / len) * sp;
       const my = (dy / len) * sp;
       let moved = false;
@@ -916,8 +919,14 @@
       const id = ++loopId;
       requestAnimationFrame((t) => { last = t; frame(t, id); });
     },
-    stop() { running = false; keys.clear(); },
-    pause(v) { paused = v; keys.clear(); target = null; },
+    stop() { running = false; keys.clear(); stick.x = 0; stick.y = 0; },
+    pause(v) { paused = v; keys.clear(); target = null; stick.x = 0; stick.y = 0; },
+    // Controles táctiles (mobile.js).
+    stick(x, y) { stick.x = x; stick.y = y; if (x || y) target = null; },
+    interact,
+    canInteract: () => Boolean(nearest) && !paused,
+    rotate(d) { r3d?.rotate(d); },
+    zoom(f) { r3d?.zoom(f); },
     travel(toMap, atLoc) { setMap(toMap, atLoc); },
     locById,
     resize,
