@@ -22,7 +22,7 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 | Parte | Qué es |
 |---|---|
 | **Creador de personaje** | Eliges ciudad, nombre, clase, habilidades, retrato, familia, si tienes padres y quién te atrae. El botón *Aleatorio* lo rellena todo. |
-| **Mundo abierto en 3D** | Caminas por Piltover (dorada, al atardecer) y por Zaun (neones, niebla química y cables con bombillas) y cruzas el Puente del Progreso. La imagen lleva resplandor, gradación de color y reflejos para parecerse a la serie. |
+| **Mundo abierto en 3D** | Caminas por Piltover (dorada, al atardecer) y por Zaun (neones, niebla química y cables con bombillas) y cruzas el Puente del Progreso. La imagen lleva resplandor, gradación de color y reflejos para parecerse a la serie. Tu personaje y los de Arcane **andan y corren en 3D**. |
 | **Historia** | 8 capítulos por ciudad, un capítulo final con 4 finales y una **Temporada 2** con 3 finales más. |
 | **Comunicador** | Chats con los personajes que conoces, con su retrato grande en un marco de latón. Eliges qué decir y ellos reaccionan. *Charlar un rato…* tiene más de 300 respuestas que cambian cada vez. |
 | **Relaciones** | Según tu personaje puedes haceros amigos, mejores amigos, pareja (si os atraéis y tienes 18 años o más), hermandad o, si te faltan los padres, conseguir una figura paterna o materna (Vander, Silco, Ambessa, Cassandra, Heimerdinger, Sevika). Cada relación trae saludos y citas propias. |
@@ -124,6 +124,26 @@ Estos son los 16 personajes que hablan en la historia y en el comunicador.
 | Ekko | Cassandra | Kino |
 | Sevika | | |
 
+### Personajes en 3D
+
+En el mapa 3D tu personaje y los de Arcane **caminan y corren** (con **Mayús** o empujando el joystick hasta el borde).
+Cada uno lleva su pelo, su ropa, su cara pintada y sus marcas: el tatuaje de Vi, las pecas de Jinx, la cicatriz de Silco,
+el brazo de metal de Sevika, el sombrero de Caitlyn… Los de Arcane te miran cuando te acercas.
+Si el móvil va lento, se pueden quitar en **Ajustes → Mundo 3D** (vuelven los iconos redondos).
+
+**¿Quieres modelos de verdad, por ejemplo de [Mixamo](https://www.mixamo.com) (gratis)?** Ponlos en la carpeta `modelos` de tu carpeta de arte
+(en Ajustes → Arte personal hay un botón para abrirla) o en `src/models` para que vayan dentro del juego y de la app de Android:
+
+| Archivo | Para quién |
+|---|---|
+| `modelos/vi.glb`, `modelos/jinx.glb`… | Cada personaje (mismos nombres que en la guía de arte) |
+| `modelos/jugador.glb` | Tu personaje |
+| `modelos/generico.glb` | Quien no tenga modelo propio |
+| `modelos/animaciones/reposo.glb`, `andar.glb`, `correr.glb` | Animaciones para todos (Mixamo, marcando **In Place**) |
+
+Mixamo descarga en `.fbx`: ábrelo en [Blender](https://www.blender.org) (gratis) y expórtalo como **glTF binario (.glb)**.
+Si un modelo ya trae sus propias animaciones llamadas *idle*, *walk* o *run*, se usan esas.
+
 ## 6. Imágenes
 
 **Ya vienen dentro del juego**, no hace falta copiar nada: las caras y las imágenes de cuerpo entero de los personajes,
@@ -212,6 +232,9 @@ Si añades textos nuevos: `node scripts/i18n-extract.js`, traduce las líneas qu
 | `src/index.html` | La pantalla del juego |
 | `src/js/world.js` | El mundo abierto: mapa, movimiento y cámara |
 | `src/js/world3d.js` | Las ciudades en 3D y su posprocesado (resplandor, color, viñeta) |
+| `src/js/avatars3d.js` | Los personajes en 3D: muñecos pintados con animación de andar y correr, o modelos `.glb` de Mixamo |
+| `src/models/` | Modelos 3D incluidos con el juego (opcional, ver «Personajes en 3D») |
+| `src/vendor/three-gltf.js` | El lector de modelos `.glb` de Three.js |
 | `src/js/minigames.js` | Los 7 minijuegos y sus efectos (partículas, sacudidas, cuenta atrás) |
 | `src/js/game.js` | Historia, comunicador, ficha, actividades y Códice |
 | `src/js/creator.js` | El creador de personaje |

@@ -22,6 +22,10 @@ contextBridge.exposeInMainWorld('arcane', {
     mapImages: (region) => ipcRenderer.invoke('map:images', region),
     universe: (region) => ipcRenderer.invoke('map:universe', region),
   },
+  models: {
+    list: () => ipcRenderer.invoke('model:list'),
+    read: (name) => ipcRenderer.invoke('model:read', name),
+  },
   openMap: (url) => ipcRenderer.invoke('map:open', url),
   ai: (url, headers, body) => ipcRenderer.invoke('ai:chat', url, headers, body),
   settings: {

@@ -140,6 +140,8 @@
           for (let k = 6; k < w - 3; k += 12) { g.fillRect(x + dx + k, y + dy + 4, 2.5, 2.5); g.fillRect(x + dx + k, y + dy + h - 6, 2.5, 2.5); }
           g.fillStyle = t < 0.3 ? 'rgba(120,72,44,0.45)' : t < 0.55 ? 'rgba(60,84,78,0.4)' : t < 0.8 ? 'rgba(40,40,46,0.35)' : 'rgba(170,160,140,0.3)';
         }
+        g.fillStyle = 'rgba(120,92,52,0.22)';
+        g.fillRect(0, y, S, 1.5);
       }
       for (let i = 0; i < 3000; i++) {
         g.fillStyle = `rgba(${r() < 0.6 ? '30,24,18' : '200,190,170'},${0.05 + r() * 0.1})`;
@@ -1611,6 +1613,8 @@
       cam: { yaw: 0, pitch: 0.92, dist: 820, goalYaw: 0, goalPitch: 0.92, goalDist: 820, focus: new T.Vector3(), mouse: { x: 0, y: 0 } },
       host: null, w: 0, h: 0, spotT: 0,
     };
+    mat.customProgramCacheKey = () => `ground-${map.id}`;
+    return mat;
   }
 
   // Suelo con detalle cercano (adoquines o grava) que se repite por encima del dibujo grande.
@@ -1633,6 +1637,7 @@
 
   function setMap(map) {
     if (!R) return;
+    clearActors();
     R.map = map;
     R.loc = (id) => map.def.locations.find((l) => l.id === id);
     if (R.group) R.scene.remove(R.group);
@@ -1675,7 +1680,7 @@
     R.sun.intensity = L.sun[1];
     R.renderer.toneMappingExposure = L.exposure;
     R.dust.material.color.setHex(L.dust);
-    R.lantern.intensity = L.lantern ? 60000 : 0;
+    R.lanternBase = L.lantern ? 60000 : 0;
     R.cam.goalPitch = R.cam.pitch = L.pitch;
     R.spotT = 0;
   }
@@ -1746,7 +1751,9 @@
     const L = R.look;
     R.sun.position.set(C.focus.x + L.sunDir[0] * 1500, L.sunDir[1] * 1500, C.focus.z + L.sunDir[2] * 1500);
     R.sun.target.position.set(C.focus.x, 0, C.focus.z);
-    R.lantern.position.set(info.x, 90, info.y);
+    // Con personajes 3D el farol va más alto (si no, quema la cabeza del jugador) y más fuerte.
+    R.lantern.position.set(info.x, info.people ? 170 : 90, info.y);
+    R.lantern.intensity = (R.lanternBase || 0) * (info.people ? 2.4 : 1);
     R.spotT -= dt;
     if (R.spotT <= 0) { placeLights(C.focus.x, C.focus.z); R.spotT = 0.25; }
 
@@ -1830,6 +1837,7 @@
         m.s.material.opacity = Math.sin(m.life * Math.PI) * 0.5;
       }
     }
+    if (info.people) syncActors(info.people, dt, s);
     if (R.post) {
       try {
         R.post.render(R.scene, R.camera, L, s);
@@ -1840,6 +1848,36 @@
       }
     }
     R.renderer.render(R.scene, R.camera);
+  }
+
+  // ---------- Personajes 3D (avatars3d.js) ----------
+  // people: [{ key, id, player?, x, y, vx, vy, look? }]. Cada uno camina con su modelo y su
+  // animación; se crean al aparecer y se quitan cuando ya no están en el mapa.
+  function syncActors(people, dt, s) {
+    const A = (R.actors ||= new Map());
+    const seen = new Set();
+    for (const p of people) {
+      let av = A.get(p.key);
+      if (!av) {
+        av = window.Avatars3D.create(p);
+        av.yaw = av.rest = p.yaw ?? 0;
+        R.scene.add(av.holder);
+        A.set(p.key, av);
+      }
+      seen.add(p.key);
+      av.holder.position.set(p.x, 0, p.y);
+      const sp = Math.hypot(p.vx || 0, p.vy || 0);
+      let yaw = av.rest;
+      if (sp > 8) yaw = av.rest = Math.atan2(p.vx, p.vy);
+      else if (p.look) yaw = Math.atan2(p.look.x - p.x, p.look.y - p.y);
+      window.Avatars3D.update(av, dt, sp, yaw, s);
+    }
+    for (const [k, av] of A) if (!seen.has(k)) { window.Avatars3D.dispose(av); A.delete(k); }
+  }
+  function clearActors() {
+    if (!R?.actors) return;
+    for (const av of R.actors.values()) window.Avatars3D.dispose(av);
+    R.actors.clear();
   }
 
   // Coordenadas del mapa (x, y, altura) → píxeles de pantalla y escala (px por unidad).
@@ -1873,6 +1911,10 @@
       return true;
     },
     setMap,
+    // true si los personajes se dibujan en 3D (si no, world.js pinta los iconos redondos).
+    get actors() { return Boolean(window.Avatars3D) && window.App?.settings?.models3d !== false; },
+    // Vuelve a crear los personajes (después de cambiar de modelo o de aspecto).
+    resetActors() { clearActors(); window.Avatars3D?.reload(); },
     // Vuelve a cargar los fondos (después de bajar imágenes nuevas).
     reloadBackdrops() { if (R) Object.values(R.backdrops).forEach((f) => f()); },
     render,
@@ -1881,9 +1923,10 @@
     // true si la imagen pasa por el posprocesado (ya lleva viñeta propia).
     get post() { return Boolean(R?.post); },
     get yaw() { return R ? R.cam.yaw : 0; },
+    get dist() { return R ? R.cam.goalDist : 0; },
     rotate(d) { R.cam.goalYaw += d; },
     tilt(d) { R.cam.goalPitch = Math.min(1.3, Math.max(0.3, R.cam.goalPitch + d)); },
-    zoom(f) { R.cam.goalDist = Math.min(1600, Math.max(380, R.cam.goalDist * f)); },
+    zoom(f) { R.cam.goalDist = Math.min(1600, Math.max(R.actors?.size ? 240 : 380, R.cam.goalDist * f)); },
     mouse(x, y) { if (R) { R.cam.mouse.x = x; R.cam.mouse.y = y; } },
     // Llegada a una ciudad: la cámara baja desde el horizonte hasta el jugador.
     arrive(x, y) {

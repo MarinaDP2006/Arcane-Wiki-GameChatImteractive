@@ -141,7 +141,7 @@
       if (!loc || loc.map !== mapId) continue;
       const n = (byLoc[loc.id] = (byLoc[loc.id] || 0) + 1);
       const ang = n * 1.25 + 0.6;
-      out.push({ kind: 'char', id, name: window.WIKI.personajes.find((p) => p.id === id)?.name || id, x: loc.x + Math.cos(ang) * 125, y: loc.y + Math.sin(ang) * 100 });
+      out.push({ kind: 'char', id, name: window.WIKI.personajes.find((p) => p.id === id)?.name || id, x: loc.x + Math.cos(ang) * 125, y: loc.y + Math.sin(ang) * 100, yaw: Math.atan2(Math.cos(ang), Math.sin(ang)) });
     }
     return out;
   }
@@ -440,7 +440,14 @@
   // profundidad, los lugares (tarjeta sobre un poste), los personajes y el jugador.
   function draw3d(t) {
     const obj = objectiveLoc();
-    r3d.render(t, { x: G.world.x, y: G.world.y, vx: vel.x, vy: vel.y, codex: G.codex, obj: obj && obj.map === mapId ? obj.id : null });
+    const pos = G.world;
+    const list = npcs();
+    // Con personajes 3D, cada uno camina con su modelo; los de Arcane miran al jugador si se acerca.
+    const actors = r3d.actors ? [
+      ...list.map((n) => ({ key: n.id, id: n.id, x: n.x, y: n.y, yaw: n.yaw, look: Math.hypot(n.x - pos.x, n.y - pos.y) < 260 ? pos : null })),
+      { key: 'player', player: G.player, x: pos.x, y: pos.y, vx: vel.x, vy: vel.y, yaw: pos.dir != null ? Math.PI / 2 - pos.dir : 0 },
+    ] : null;
+    r3d.render(t, { x: pos.x, y: pos.y, vx: vel.x, vy: vel.y, codex: G.codex, obj: obj && obj.map === mapId ? obj.id : null, people: actors });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const items = [];
     const labels = [];
@@ -464,29 +471,44 @@
         if (isObj) label('★ OBJETIVO', top.x, top.y - 50 * k - 40, '#ffe08a');
       } });
     }
-    const people = npcs().map((n) => ({ img: charImg(n.id), x: n.x, y: n.y, name: n.name, ring: map.def.palette.glow, r: 24 }));
-    const pos = G.world;
-    const bounce = Math.abs(Math.sin(pos.walk || 0)) * 4;
-    people.push({ img: playerImg(), x: pos.x, y: pos.y, name: G.player.name, ring: '#ffe08a', r: PLAYER_R + 6, bounce });
-    for (const p of people) {
-      const foot = r3d.project(p.x, p.y, 0);
-      const head = r3d.project(p.x, p.y, 34 + (p.bounce || 0));
-      if (!foot || !head) continue;
-      const r = Math.max(10, p.r * head.k);
-      items.push({ d: head.d, person: true, fn: () => {
-        ctx.fillStyle = 'rgba(0,0,0,0.45)';
-        ctx.beginPath();
-        ctx.ellipse(foot.x, foot.y, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = p.ring;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(foot.x, foot.y);
-        ctx.lineTo(head.x, head.y + r);
-        ctx.stroke();
-        drawPerson(p.img, head.x, head.y, p.name, p.ring, r, false);
-      } });
-      labels.push({ d: head.d, fn: () => label(p.name, head.x, head.y - r - 14, p.ring) });
+    if (actors) {
+      // Solo el nombre encima de la cabeza (y la cara de quien tienes al lado para hablar).
+      for (const p of [...list.map((n) => ({ ...n, ring: map.def.palette.glow })), { id: null, name: G.player.name, x: pos.x, y: pos.y, ring: '#ffe08a', me: true }]) {
+        const h = window.Avatars3D.heightOf(p.id) + 8;
+        const head = r3d.project(p.x, p.y, h);
+        if (!head) continue;
+        const near = !p.me && nearest?.kind === 'char' && nearest.id === p.id;
+        labels.push({ d: head.d, fn: () => {
+          if (near) {
+            const r = Math.max(12, 16 * Math.min(1.4, head.k * 1.2));
+            drawPerson(charImg(p.id), head.x, head.y - r - 4, p.name, p.ring, r, false);
+          } else label(p.name, head.x, head.y - 8, p.ring);
+        } });
+      }
+    } else {
+      const people = list.map((n) => ({ img: charImg(n.id), x: n.x, y: n.y, name: n.name, ring: map.def.palette.glow, r: 24 }));
+      const bounce = Math.abs(Math.sin(pos.walk || 0)) * 4;
+      people.push({ img: playerImg(), x: pos.x, y: pos.y, name: G.player.name, ring: '#ffe08a', r: PLAYER_R + 6, bounce });
+      for (const p of people) {
+        const foot = r3d.project(p.x, p.y, 0);
+        const head = r3d.project(p.x, p.y, 34 + (p.bounce || 0));
+        if (!foot || !head) continue;
+        const r = Math.max(10, p.r * head.k);
+        items.push({ d: head.d, person: true, fn: () => {
+          ctx.fillStyle = 'rgba(0,0,0,0.45)';
+          ctx.beginPath();
+          ctx.ellipse(foot.x, foot.y, r * 0.9, r * 0.35, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = p.ring;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(foot.x, foot.y);
+          ctx.lineTo(head.x, head.y + r);
+          ctx.stroke();
+          drawPerson(p.img, head.x, head.y, p.name, p.ring, r, false);
+        } });
+        labels.push({ d: head.d, fn: () => label(p.name, head.x, head.y - r - 14, p.ring) });
+      }
     }
     // Los personajes siempre por delante de las tarjetas de los lugares
     items.sort((a, b) => (a.person === b.person ? b.d - a.d : a.person ? 1 : -1)).forEach((i) => i.fn());
@@ -915,6 +937,8 @@
       try { r3d = window.World3D?.mount(canvas.parentElement) ? window.World3D : null; } catch { r3d = null; }
       canvas.classList.toggle('over-3d', Boolean(r3d));
       if (r3d) bindCamera();
+      // Con personajes 3D la cámara empieza más cerca para que se vean bien.
+      if (r3d?.actors && r3d.dist > 620) r3d.zoom(620 / r3d.dist);
       canvas.addEventListener('click', onClick);
       if (!G.world.map) {
         const spawn = W().spawns[G.player.district] || (G.player.origin === 'zaun' ? 'callejones' : 'plaza');
