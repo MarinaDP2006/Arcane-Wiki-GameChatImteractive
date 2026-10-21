@@ -44,43 +44,6 @@ Lo que decides cambia a quién conoces, cómo te tratan y qué final consigues.
 > con **Code → Download ZIP**, descomprímelo y haz doble clic en `jugar-windows.bat` (Windows) o
 > `jugar-mac.command` (Mac). Más detalles en [Cómo instalarlo](#cómo-instalarlo).
 
-## Novedades de la v1.8.0
-
-- **Mundo abierto en 2D+3D:** la ciudad se ve en 3D con edificios, sombras, luces y niebla, y la cámara
-  sigue a tu personaje con un pequeño retardo, se balancea y se mueve con el ratón. Los personajes y las
-  tarjetas de los lugares se pintan en 2D encima. Al llegar a una ciudad la cámara baja desde el horizonte.
-- **Cámara libre:** rueda del ratón (o `+`/`−`) para acercar o alejar, `Q`/`R` para girar y botón derecho
-  arrastrando para girar e inclinar. Los edificios que tapan a tu personaje se vuelven transparentes.
-- **Dos ciudades distintas:** Piltover es dorada y soleada, con bulevares anchos, cúpulas, torres con
-  reloj, parques, dirigibles, el mar, las Hexpuertas y el Puente del Progreso. Zaun es un pozo oscuro de
-  callejones estrechos con pisos amontonados, neones que parpadean, tuberías gigantes, chimeneas con humo,
-  charcas químicas y las luces de Piltover allá arriba.
-- **Fondos de Universe:** alrededor de cada ciudad se ven las ilustraciones de su página de región en
-  [Universe de League of Legends](https://universe.leagueoflegends.com/en_US/region/piltover/). Se bajan
-  solas la primera vez que entras en cada ciudad (o con *Ajustes → Arte → Bajar fondos*) a
-  `arte\mapa\piltover` y `arte\mapa\zaun`; ahí puedes poner también tus propias imágenes.
-- Si el ordenador no tiene WebGL, el juego usa el mapa 2D de siempre.
-
-## Novedades de la v1.7.0
-
-- **Menú principal nuevo:** ilustraciones pintadas de Piltover y Zaun que se funden entre sí, el título
-  ARCANE y el menú a la izquierda. Sin subtítulo ni texto al pie.
-- **Vídeos en su momento:** *Welcome to Zaun* o *Welcome to Piltover* al terminar de crear tu personaje
-  (según tu ciudad), *IntroS1* cuando empieza la historia de la Temporada 1 e *IntroS2* al empezar la
-  Temporada 2.
-- **Mundo abierto:** en las calles solo están los personajes de Arcane (con su avatar de chat), sin
-  habitantes genéricos. Cada lugar se ve con su imagen enmarcada, los fragmentos del Códice son cristales
-  hextec y las farolas son hextec en Piltover y de quimtec en Zaun.
-- **Imágenes de la Arcane Wiki, no de Riot:** se quita la descarga de Data Dragon. Los retratos de Riot que
-  bajaron versiones anteriores se apartan solos a `arte\_riot-retirado` (no se borran).
-- **Historia:** en las escenas solo salen los avatares de chat de cada personaje, nunca retratos generados.
-
-## Novedades de la v1.6.0
-
-- **Avatares por género:** 8 retratos de mujer y 8 de hombre en el creador.
-- **16 personajes de Arcane** con su retrato; los secundarios ya no son personajes.
-- **Atlas interactivo** con el mapa de Piltover y Zaun y los símbolos de cada ciudad.
-
 ## Cómo se juega
 1. **Crea tu campeón** (al estilo de League of Legends), en 8 pasos:
    - **Origen e identidad**: ciudad, nombre, género, edad, profesión y barrio.
@@ -153,12 +116,6 @@ lugares explorados. A la izquierda está el símbolo de Piltover y a la derecha 
 púlsalos para ver todos los lugares de cada ciudad. La pestaña de la Wiki abre los
 mapas interactivos de la [Arcane Wiki](https://arcane.fandom.com/wiki/Special:AllMaps) (necesita
 internet; la dirección se cambia en *Ajustes*).
-
-### Conversaciones sin IA
-
-Desde la v1.5.0 el juego ya no usa Ollama ni ninguna IA: todas las conversaciones están
-escritas a mano en `src/data/chat.js`, con casi 250 respuestas posibles entre 16 personajes.
-Funciona sin internet y sin instalar nada aparte.
 
 ## Cómo instalarlo
 Hay dos formas: **descargar el juego ya compilado** (recomendado, no hace falta instalar nada más)
@@ -249,22 +206,10 @@ scripts/check.js         Validador de datos
 
 ---
 
-
 ## Arte y vídeos (v1.6.0)
-
 Las imágenes vienen dentro del juego: 16 retratos para elegir (8 de mujer y 8 de hombre, según el género
 que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa de Piltover y Zaun del
 Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
 (`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
-
-Los vídeos no se incluyen (pesan mucho). Copia estos cuatro en la carpeta `arte\video` de
-`%APPDATA%\Arcane Piltover y Zaun\` o en una carpeta `arte\video` junto al `.exe` del juego:
-
-| Archivo | Cuándo se reproduce |
-|---|---|
-| `Welcome to Zaun.mp4` | Al empezar con origen en Zaun |
-| `Welcome to Piltover.mp4` | Al empezar con origen en Piltover |
-| `IntroS1.mp4` | Al empezar el primer capítulo de la Temporada 1 |
-| `IntroS2.mp4` | Al empezar la Temporada 2 |
 
 Se pueden saltar con Esc, espacio o Intro.

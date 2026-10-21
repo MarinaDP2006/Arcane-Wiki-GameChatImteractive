@@ -10,6 +10,8 @@
   const LOC_DIST = 95;
 
   let canvas, ctx, mini, mctx;
+  let gl = null; // lienzo WebGL del mundo en 3D (debajo del lienzo 2D de etiquetas)
+  let use3d = false;
   let G = null;
   let cb = {};
   let running = false;
@@ -40,6 +42,24 @@
     };
   }
 
+  // Cada ciudad tiene su propio trazado:
+  // · Piltover: cuadrícula de bulevares anchos, manzanas grandes, torres con cúpulas y agujas
+  //   y el canal del río Pilt cruzado por tres puentes.
+  // · Zaun: callejas irregulares, chabolas apiladas en varios pisos, chimeneas y neones,
+  //   y el abismo químico entre los Callejones y el Sumidero, cruzado por pasarelas.
+  const LAYOUT = {
+    piltover: {
+      water: [{ x: 0, y: 1630, w: 3000, h: 90 }],
+      bridges: [{ x: 540, y: 1600, w: 120, h: 150 }, { x: 1440, y: 1600, w: 120, h: 150 }, { x: 2340, y: 1600, w: 120, h: 150 }],
+    },
+    zaun: {
+      water: [{ x: 0, y: 1430, w: 3000, h: 110 }],
+      bridges: [{ x: 360, y: 1400, w: 90, h: 170 }, { x: 1230, y: 1400, w: 90, h: 170 }, { x: 2060, y: 1400, w: 90, h: 170 }, { x: 2660, y: 1400, w: 90, h: 170 }],
+    },
+  };
+  const inRect = (x, y, q, m = 0) => x > q.x - m && x < q.x + q.w + m && y > q.y - m && y < q.y + q.h + m;
+  const rectsHit = (x, y, w, h, q, m = 0) => x < q.x + q.w + m && x + w > q.x - m && y < q.y + q.h + m && y + h > q.y - m;
+
   const cache = {};
   function buildMap(id) {
     if (cache[id]) return cache[id];
@@ -57,7 +77,9 @@
       const nx = Math.max(x, Math.min(c.x, x + bw));
       const ny = Math.max(y, Math.min(c.y, y + bh));
       return (nx - c.x) ** 2 + (ny - c.y) ** 2 < c.r * c.r;
-    });
+    }) || lay.water.some((q) => rectsHit(x, y, bw, bh, q, 30)) || lay.bridges.some((q) => rectsHit(x, y, bw, bh, { x: q.x, y: q.y - 90, w: q.w, h: q.h + 180 }, 40));
+    const pal = def.palette;
+    const pickc = (arr) => arr[Math.floor(r() * arr.length)];
     const buildings = [];
     const lots = [];
     for (let bx = 0; bx < w; bx += BLOCK) {
@@ -86,12 +108,143 @@
               roof: def.palette.roof[Math.floor(r() * def.palette.roof.length)],
               tall: r(), sign: r() < 0.35, chimney: r() < 0.4, style: r(),
             });
+    const add = (x, y, bw, bh, extra) => {
+      if (bw < 40 || bh < 40 || x < 10 || y < 10 || x + bw > w - 10 || y + bh > h - 10 || blocked(x, y, bw, bh)) return;
+      buildings.push({ x, y, w: bw, h: bh, color: pickc(pal.building), roof: pickc(pal.roof), tall: r(), sign: r() < 0.45, chimney: r() < 0.4, seed: Math.floor(r() * 1e6), ...extra });
+    };
+    let BLOCK = 300;
+    let STREET = 90;
+    if (id === 'piltover') {
+      for (let bx = 0; bx < w; bx += BLOCK) {
+        for (let by = 0; by < h; by += BLOCK) {
+          const docks = by >= 1700;
+          if (r() < (docks ? 0.45 : 0.1)) continue; // plaza o jardín
+          const x0 = bx + STREET / 2;
+          const y0 = by + STREET / 2;
+          const size = BLOCK - STREET;
+          if (r() < 0.45) {
+            // Un gran edificio por manzana: palacio, torre o cúpula
+            const pad = 8 + r() * 14;
+            const tower = r() < 0.22;
+            add(x0 + pad, y0 + pad, size - pad * 2, size - pad * 2, { ht: tower ? 260 + r() * 140 : 90 + r() * 90, kind: tower ? 'tower' : r() < 0.5 ? 'dome' : 'palace' });
+          } else {
+            const cell = size / 2;
+            for (let i = 0; i < 2; i++) {
+              for (let j = 0; j < 2; j++) {
+                if (r() < 0.15) continue;
+                const pad = 6 + r() * 8;
+                add(x0 + i * cell + pad, y0 + j * cell + pad, cell - pad * 2, cell - pad * 2, { ht: 60 + r() * 110, kind: r() < 0.5 ? 'spire' : 'house' });
+              }
+            }
           }
         }
+      }
+    } else {
+      // Zaun: filas y columnas de ancho variable, callejas estrechas y torcidas.
+      BLOCK = 0;
+      STREET = 0;
+      let by = 20;
+      while (by < h - 60) {
+        const rowH = 150 + r() * 120;
+        let bx = 20;
+        while (bx < w - 60) {
+          const colW = 140 + r() * 130;
+          const lane = 46 + r() * 34;
+          if (r() > 0.12) {
+            const jx = (r() - 0.5) * 24;
+            const jy = (r() - 0.5) * 24;
+            const tiers = 1 + Math.floor(r() * 3);
+            add(bx + jx, by + jy, colW - lane, rowH - lane, { ht: 45 + r() * 70, tiers, kind: 'stack' });
+          }
+          bx += colW;
+        }
+        by += rowH;
       }
     }
     cache[id] = { id, def, w, h, buildings, lots, BLOCK, STREET };
     return cache[id];
+  }
+
+  // Pinta el suelo de la ciudad en un lienzo (1 píxel = 2 unidades del mundo).
+  function paintGround(m) {
+    const S = 0.5;
+    const c = document.createElement('canvas');
+    c.width = Math.round(m.w * S);
+    c.height = Math.round(m.h * S);
+    const g = c.getContext('2d');
+    const P = m.def.palette;
+    const zaun = m.id === 'zaun';
+    const r = rng(m.def.seed + 99);
+    g.scale(S, S);
+    g.fillStyle = P.ground;
+    g.fillRect(0, 0, m.w, m.h);
+    // Manchas de pintura para que no quede plano
+    for (let i = 0; i < 260; i++) {
+      g.fillStyle = zaun ? `rgba(${60 + r() * 60},${120 + r() * 80},${90 + r() * 60},${0.03 + r() * 0.05})` : `rgba(${200 + r() * 55},${160 + r() * 60},${90 + r() * 40},${0.03 + r() * 0.05})`;
+      g.beginPath();
+      g.ellipse(r() * m.w, r() * m.h, 40 + r() * 160, 20 + r() * 90, r() * Math.PI, 0, Math.PI * 2);
+      g.fill();
+    }
+    for (const d of m.def.districts) {
+      const [x, y, w, h] = d.rect;
+      g.fillStyle = d.tint;
+      g.fillRect(x, y, w, h);
+    }
+    if (!zaun) {
+      // Bulevares adoquinados con aceras doradas
+      g.strokeStyle = P.street;
+      g.lineWidth = m.STREET - 14;
+      g.beginPath();
+      for (let x = 0; x <= m.w; x += m.BLOCK) { g.moveTo(x, 0); g.lineTo(x, m.h); }
+      for (let y = 0; y <= m.h; y += m.BLOCK) { g.moveTo(0, y); g.lineTo(m.w, y); }
+      g.stroke();
+      g.strokeStyle = 'rgba(227,196,90,0.18)';
+      g.lineWidth = 3;
+      g.setLineDash([26, 18]);
+      g.stroke();
+      g.setLineDash([]);
+    } else {
+      // Callejas: el suelo entre chabolas, con charcos verdes y mugre
+      for (let i = 0; i < 160; i++) {
+        g.fillStyle = `rgba(${80 + r() * 60},${200 + r() * 55},${120 + r() * 60},${0.04 + r() * 0.06})`;
+        g.beginPath();
+        g.ellipse(r() * m.w, r() * m.h, 10 + r() * 40, 6 + r() * 20, r() * Math.PI, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+    // Plazas pavimentadas alrededor de cada lugar
+    for (const l of m.def.locations) {
+      const gr = g.createRadialGradient(l.x, l.y, 20, l.x, l.y, 165);
+      gr.addColorStop(0, zaun ? 'rgba(63,191,159,0.22)' : 'rgba(240,215,150,0.28)');
+      gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr;
+      g.beginPath();
+      g.arc(l.x, l.y, 165, 0, Math.PI * 2);
+      g.fill();
+      g.strokeStyle = zaun ? 'rgba(63,191,159,0.35)' : 'rgba(227,196,90,0.4)';
+      g.lineWidth = 3;
+      g.beginPath();
+      g.arc(l.x, l.y, 130, 0, Math.PI * 2);
+      g.stroke();
+    }
+    // Agua: el canal de Piltover (azul) o el río químico de Zaun (verde)
+    for (const q of m.water) {
+      const gr = g.createLinearGradient(0, q.y, 0, q.y + q.h);
+      if (zaun) { gr.addColorStop(0, '#0a1a10'); gr.addColorStop(0.5, '#3fbf6a'); gr.addColorStop(1, '#0a1a10'); } else { gr.addColorStop(0, '#2a3a4a'); gr.addColorStop(0.5, '#3f7fa9'); gr.addColorStop(1, '#2a3a4a'); }
+      g.fillStyle = gr;
+      g.fillRect(q.x, q.y, q.w, q.h);
+      g.strokeStyle = zaun ? '#1a2a20' : '#c9b28a';
+      g.lineWidth = 8;
+      g.strokeRect(q.x - 4, q.y, q.w + 8, q.h);
+    }
+    for (const q of m.bridges) {
+      g.fillStyle = zaun ? '#2a2a30' : '#b8a27a';
+      g.fillRect(q.x, q.y + 20, q.w, q.h - 40);
+      g.strokeStyle = zaun ? '#3fbf9f' : '#e3c45a';
+      g.lineWidth = 4;
+      g.strokeRect(q.x, q.y + 20, q.w, q.h - 40);
+    }
+    return c;
   }
 
   // ---------- Imágenes de retrato ----------
@@ -153,6 +306,7 @@
   // ---------- Física ----------
   function collides(x, y) {
     if (x < PLAYER_R || y < PLAYER_R || x > map.w - PLAYER_R || y > map.h - PLAYER_R) return true;
+    if (map.water.some((q) => inRect(x, y, q, PLAYER_R)) && !map.bridges.some((q) => inRect(x, y, q))) return true;
     for (const b of map.buildings) {
       if (x + PLAYER_R > b.x && x - PLAYER_R < b.x + b.w && y + PLAYER_R > b.y && y - PLAYER_R < b.y + b.h) return true;
     }
@@ -261,40 +415,14 @@
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.translate(-cam.x, -cam.y);
 
-    // Barrios
+    // Suelo pintado (calles, plazas y agua)
+    ctx.drawImage(map.ground, 0, 0, map.w, map.h);
     for (const d of map.def.districts) {
       const [x, y, w, h] = d.rect;
-      ctx.fillStyle = d.tint;
-      ctx.fillRect(x, y, w, h);
       ctx.fillStyle = zaun ? 'rgba(160,255,220,0.07)' : 'rgba(255,240,200,0.08)';
       ctx.font = 'bold 54px Georgia, serif';
       ctx.textAlign = 'center';
       ctx.fillText(d.name.toUpperCase(), x + w / 2, y + h / 2);
-    }
-
-    // Calles
-    ctx.strokeStyle = P.street;
-    ctx.lineWidth = map.STREET - 20;
-    ctx.beginPath();
-    for (let x = 0; x <= map.w; x += map.BLOCK) { ctx.moveTo(x, 0); ctx.lineTo(x, map.h); }
-    for (let y = 0; y <= map.h; y += map.BLOCK) { ctx.moveTo(0, y); ctx.lineTo(map.w, y); }
-    ctx.stroke();
-    ctx.strokeStyle = zaun ? 'rgba(63,191,159,0.10)' : 'rgba(255,255,255,0.08)';
-    ctx.setLineDash([18, 22]);
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Tuberías de Zaun
-    if (zaun) {
-      ctx.strokeStyle = 'rgba(143,191,58,0.25)';
-      ctx.lineWidth = 9;
-      for (let i = 0; i < 6; i++) {
-        ctx.beginPath();
-        ctx.moveTo(0, 180 + i * 360);
-        ctx.bezierCurveTo(800, 100 + i * 360, 2000, 300 + i * 360, map.w, 200 + i * 360);
-        ctx.stroke();
-      }
     }
 
     // Edificios (solo los visibles)
@@ -727,6 +855,8 @@
     mctx.fillRect(0, 0, mini.width, mini.height);
     mctx.fillStyle = mapId === 'zaun' ? 'rgba(63,191,159,0.35)' : 'rgba(227,196,90,0.35)';
     for (const b of map.buildings) mctx.fillRect(b.x * s, b.y * s, Math.max(1, b.w * s), Math.max(1, b.h * s));
+    mctx.fillStyle = mapId === 'zaun' ? 'rgba(90,255,120,0.6)' : 'rgba(90,170,230,0.7)';
+    for (const q of map.water) mctx.fillRect(q.x * s, q.y * s, q.w * s, q.h * s);
     for (const l of map.def.locations) {
       mctx.fillStyle = obj && obj.id === l.id ? '#ffe08a' : '#ffffff';
       mctx.beginPath();
@@ -801,6 +931,7 @@
     const box = canvas.parentElement.getBoundingClientRect();
     canvas.width = Math.max(320, Math.floor(box.width));
     canvas.height = Math.max(240, Math.floor(box.height));
+    if (use3d) World3D.resize(canvas.width, canvas.height);
   }
 
   function onKey(e) {
@@ -870,6 +1001,7 @@
       G.world.y = s.y;
     }
     insideLoc = loc?.id || null;
+    if (use3d) World3D.setMap(map, art3d, G.world);
     particles = [];
     lastDistrict = '';
     fade = 1;
@@ -885,6 +1017,12 @@
       ctx = canvas.getContext('2d');
       mini = miniEl;
       mctx = mini?.getContext('2d');
+      // Lienzo 3D debajo del 2D; si el equipo no tiene WebGL, se queda el mapa 2D.
+      gl = canvas.parentElement.querySelector('.world-gl') || document.createElement('canvas');
+      gl.className = 'world-gl';
+      if (!gl.isConnected) canvas.before(gl);
+      use3d = Boolean(window.World3D?.init(gl));
+      canvas.classList.toggle('over3d', use3d);
       resize();
       r3d = window.World3D?.mount(canvas.parentElement) ? window.World3D : null;
       canvas.classList.toggle('over-3d', Boolean(r3d));
