@@ -10,10 +10,10 @@
 // y {g:masculino|femenino|neutro} para concordar con el género del jugador.
 window.STORY = {
   stats: {
-    ingenio: { label: 'Ingenio', icon: '🧠' },
-    carisma: { label: 'Carisma', icon: '💬' },
-    valor: { label: 'Valor', icon: '🔥' },
-    sigilo: { label: 'Sigilo', icon: '🌑' },
+    ingenio: { label: 'Ingenio', icon: 'Ing' },
+    carisma: { label: 'Carisma', icon: 'Car' },
+    valor: { label: 'Valor', icon: 'Val' },
+    sigilo: { label: 'Sigilo', icon: 'Sig' },
   },
 
   chapters: [
@@ -21,7 +21,7 @@ window.STORY = {
     {
       id: 'z1', route: 'zaun', title: 'Capítulo 1 · La Última Gota',
       intro: 'Zaun, años antes de la hextec. El humo verde sube por las grietas y en la taberna de Vander huele a cerveza y a problemas.',
-      unlocks: ['vander', 'vi', 'jinx', 'mylo', 'claggor'],
+      unlocks: ['vander', 'vi', 'jinx'],
       start: 'a',
       nodes: {
         a: { bg: 'ultima-gota', lines: [
@@ -47,11 +47,11 @@ window.STORY = {
         c: { bg: 'callejones', lines: [
           { s: 'jinx', t: '¡Hola! Soy Powder. ¿Sabes algo de cachivaches? Mi bomba no explota. Bueno, a veces sí. Cuando no debe.' },
           { s: 'vi', t: 'Powder, deja en paz a la gente. (Te mira.) Aunque… mañana subimos a Piltover. Una casa vacía en el barrio alto. Nos vendría bien alguien más.' },
-          { s: 'mylo', t: 'Más gente, menos botín. Yo solo lo digo.' },
-          { s: 'claggor', t: 'Mylo, cállate. Decide tú, {name}.' },
+          { s: 'narrador', t: 'Mylo: «Más gente, menos botín. Yo solo lo digo.»' },
+          { s: 'narrador', t: 'Claggor: «Mylo, cállate. Decide tú, {name}.»' },
         ], choices: [
-          { t: 'Unirte al golpe en Piltover.', next: 'd_golpe', fx: { aff: { vi: 2, mylo: 1 }, rep: { zaun: 1 }, flags: ['golpe'] } },
-          { t: 'Ayudar a Powder con su bomba (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'd_bomba', fx: { aff: { jinx: 3, claggor: 1 }, flags: ['bomba_powder'] } },
+          { t: 'Unirte al golpe en Piltover.', next: 'd_golpe', fx: { aff: { vi: 2 }, rep: { zaun: 1 }, flags: ['golpe'] } },
+          { t: 'Ayudar a Powder con su bomba (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'd_bomba', fx: { aff: { jinx: 3 }, flags: ['bomba_powder'] } },
           { t: 'Avisar a Vander de lo que traman.', next: 'd_aviso', fx: { aff: { vander: 2, vi: -2 }, flags: ['chivato'] } },
         ] },
         d_golpe: { bg: 'taller-jayce', lines: [
@@ -80,28 +80,28 @@ window.STORY = {
     {
       id: 'z2', route: 'zaun', title: 'Capítulo 2 · Humo y traición',
       intro: 'El robo ha despertado a Piltover. Los ejecutores bajan cada noche, y alguien en la sombra se aprovecha del caos.',
-      unlocks: ['benzo', 'ekko', 'silco'],
+      unlocks: ['ekko', 'silco'],
       start: 'a',
       nodes: {
         a: { bg: 'callejones', lines: [
-          { s: 'benzo', t: 'Tú eres amigo de Vander, ¿no? Entra. Mi tienda tiene más secretos que trastos.' },
+          { s: 'narrador', t: 'Benzo: «Tú eres amigo de Vander, ¿no? Entra. Mi tienda tiene más secretos que trastos.»' },
           { s: 'ekko', t: '¡Hala, mira esto! Benzo me deja arreglar el cacharro que encontré. Si funciona, vuela.' },
         ], choices: [
-          { t: 'Ayudar a Ekko a arreglarlo (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'b_ekko', fx: { aff: { ekko: 3, benzo: 1 } } },
-          { t: 'Preguntar a Benzo por el hombre de la cicatriz.', next: 'b_benzo', fx: { aff: { benzo: 2 }, flags: ['sabe_silco'] } },
+          { t: 'Ayudar a Ekko a arreglarlo (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'b_ekko', fx: { aff: { ekko: 3 } } },
+          { t: 'Preguntar a Benzo por el hombre de la cicatriz.', next: 'b_benzo', fx: { aff: {}, flags: ['sabe_silco'] } },
           { t: 'Bromear con Ekko sobre su peinado.', next: 'b_broma', fx: { aff: { ekko: 1 } } },
         ] },
         b_ekko: { bg: 'callejones', lines: [
           { s: 'narrador', t: 'Entre los dos, el cacharro despega un palmo del suelo antes de estrellarse contra una estantería.' },
           { s: 'ekko', t: '¡Ha volado! ¡Lo has visto! Algún día haré que vuele de verdad.' },
-          { s: 'benzo', t: 'Y algún día me pagarás la estantería, chaval.' },
+          { s: 'narrador', t: 'Benzo: «Y algún día me pagarás la estantería, chaval.»' },
         ], next: 'c' },
         b_benzo: { bg: 'callejones', lines: [
-          { s: 'benzo', t: '(Baja la voz.) Se llama Silco. Era como un hermano para Vander. Ahora compra ejecutores como quien compra pan. Ten cuidado.' },
+          { s: 'narrador', t: 'Benzo: «(Baja la voz.) Se llama Silco. Era como un hermano para Vander. Ahora compra ejecutores como quien compra pan. Ten cuidado.»' },
         ], next: 'c' },
         b_broma: { bg: 'callejones', lines: [
           { s: 'ekko', t: '¿Mi pelo? Es aerodinámico. Algún día lo entenderás.' },
-          { s: 'benzo', t: 'Tiene respuesta para todo. Como Vander a su edad.' },
+          { s: 'narrador', t: 'Benzo: «Tiene respuesta para todo. Como Vander a su edad.»' },
         ], next: 'c' },
         c: { bg: 'sumidero', lines: [
           { s: 'narrador', t: 'Esa noche, Vander desaparece. Dicen que se ha entregado a los ejecutores en el puente. Pero el puente está lleno de hombres de Silco.' },
@@ -138,7 +138,7 @@ window.STORY = {
     {
       id: 'z3', route: 'zaun', title: 'Capítulo 3 · Siete años después',
       intro: 'Siete años. Zaun brilla de violeta: el Brillo corre por las calles y Silco manda. Has sobrevivido. Ahora toca decidir para quién.',
-      unlocks: ['sevika', 'singed'],
+      unlocks: ['sevika'],
       start: 'a',
       nodes: {
         a: { bg: 'ultima-gota', lines: [
@@ -162,15 +162,15 @@ window.STORY = {
           { s: 'sevika', t: 'Mmm. No me fío de ti. Pero Silco sí, y eso me basta. Llévale esto a Singed.' },
         ], next: 'c' },
         c: { bg: 'sumidero', lines: [
-          { s: 'singed', t: 'Ah, el paquete. Déjalo ahí. (Algo gruñe tras una cortina.) No te preocupes por mi… paciente.' },
+          { s: 'narrador', t: 'Singed: «Ah, el paquete. Déjalo ahí. (Algo gruñe tras una cortina.) No te preocupes por mi… paciente.»' },
           { s: 'narrador', t: 'Una garra enorme araña los barrotes. Unos ojos casi humanos te miran con dolor.' },
         ], choices: [
-          { t: 'Preguntar quién es el «paciente» (Valor 2).', req: { stat: 'valor', min: 2 }, next: 'd_pregunta', fx: { aff: { singed: 1 }, flags: ['vio_bestia'] } },
+          { t: 'Preguntar quién es el «paciente» (Valor 2).', req: { stat: 'valor', min: 2 }, next: 'd_pregunta', fx: { aff: {}, flags: ['vio_bestia'] } },
           { t: 'Salir de allí cuanto antes.', next: 'd_sale' },
           { t: 'Robar una muestra de Brillo para estudiarla (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'd_roba', fx: { stats: { ingenio: 1 }, flags: ['muestra_brillo'] } },
         ] },
         d_pregunta: { bg: 'sumidero', lines: [
-          { s: 'singed', t: 'Alguien que se negó a morir. La ciencia no juzga, {name}. Solo observa.' },
+          { s: 'narrador', t: 'Singed: «Alguien que se negó a morir. La ciencia no juzga, {name}. Solo observa.»' },
           { s: 'narrador', t: 'Te llevas un escalofrío… y la sensación de que conoces esa mirada.' },
         ], next: 'e' },
         d_sale: { bg: 'callejones', lines: [
@@ -190,17 +190,17 @@ window.STORY = {
     {
       id: 'z4', route: 'zaun', title: 'Capítulo 4 · Luciérnagas',
       intro: 'Un cargamento de Brillo ha desaparecido. Dicen que las Luciérnagas han vuelto a atacar. Silco quiere nombres.',
-      unlocks: ['scar'],
+      unlocks: [],
       start: 'a',
       nodes: {
         a: { bg: 'arbol', lines: [
           { s: 'narrador', t: 'Una figura con máscara te intercepta en una aerotabla y te lleva, a ciegas, hasta un lugar imposible: un árbol gigante que brilla en la oscuridad.' },
-          { s: 'scar', t: 'Hemos visto con quién andas. Más te vale tener una buena razón para no tirarte al vacío.' },
+          { s: 'narrador', t: 'Scar: «Hemos visto con quién andas. Más te vale tener una buena razón para no tirarte al vacío.»' },
           { s: 'ekko', t: 'Tranquilo, Scar. {name} y yo nos conocemos. ¿Verdad que sí?' },
         ], choices: [
-          { t: '«Ekko, sigo de vuestro lado. Siempre lo estuve.»', next: 'b_lado', req: { notFlag: 'trabaja_silco' }, fx: { aff: { ekko: 2, scar: 1 }, rep: { zaun: 1 } } },
-          { t: '«Trabajo para Silco, pero quiero salir.» (Carisma 2)', req: { stat: 'carisma', min: 2 }, next: 'b_salir', fx: { aff: { ekko: 1, scar: -1 }, flags: ['quiere_salir'] } },
-          { t: 'Contarles lo que viste en el laboratorio de Singed.', req: { flag: 'vio_bestia' }, next: 'b_info', fx: { aff: { ekko: 2, scar: 2 }, flags: ['info_luciernagas'] } },
+          { t: '«Ekko, sigo de vuestro lado. Siempre lo estuve.»', next: 'b_lado', req: { notFlag: 'trabaja_silco' }, fx: { aff: { ekko: 2 }, rep: { zaun: 1 } } },
+          { t: '«Trabajo para Silco, pero quiero salir.» (Carisma 2)', req: { stat: 'carisma', min: 2 }, next: 'b_salir', fx: { aff: { ekko: 1 }, flags: ['quiere_salir'] } },
+          { t: 'Contarles lo que viste en el laboratorio de Singed.', req: { flag: 'vio_bestia' }, next: 'b_info', fx: { aff: { ekko: 2 }, flags: ['info_luciernagas'] } },
           { t: 'Memorizar el camino para vendérselo a Silco.', next: 'b_traicion', fx: { aff: { silco: 2, sevika: 1 }, rep: { zaun: -1 }, flags: ['traiciona_luciernagas'] } },
         ] },
         b_lado: { bg: 'arbol', lines: [
@@ -208,11 +208,11 @@ window.STORY = {
         ], next: 'c' },
         b_salir: { bg: 'arbol', lines: [
           { s: 'ekko', t: 'Salir de Silco no es fácil. Pero aquí todos hemos salido de algo. Ayúdanos y te ayudaremos.' },
-          { s: 'scar', t: 'Yo lo vigilaré. De cerca.' },
+          { s: 'narrador', t: 'Scar: «Yo lo vigilaré. De cerca.»' },
         ], next: 'c' },
         b_info: { bg: 'arbol', lines: [
           { s: 'ekko', t: '¿Una bestia en el laboratorio? Si Silco está creando monstruos… tenemos menos tiempo del que pensaba.' },
-          { s: 'scar', t: 'Vale. Retiro lo de tirarte al vacío.' },
+          { s: 'narrador', t: 'Scar: «Vale. Retiro lo de tirarte al vacío.»' },
         ], next: 'c' },
         b_traicion: { bg: 'arbol', lines: [
           { s: 'narrador', t: 'Sonríes, asientes y cuentas los pasos. Cada rama, cada puente de cuerda. Silco pagará bien por esto.' },
@@ -222,9 +222,9 @@ window.STORY = {
           { s: 'narrador', t: 'La noche del ataque. Un convoy de Brillo avanza por los callejones custodiado por los matones de Sevika.' },
           { s: 'ekko', t: 'A mi señal. ¡Luciérnagas, ahora!' },
         ], choices: [
-          { t: 'Pelear junto a las Luciérnagas (Valor 2).', req: { stat: 'valor', min: 2 }, next: 'd_pelea', fx: { aff: { ekko: 2, scar: 2, sevika: -2 }, rep: { zaun: 2 }, flags: ['heroe_luciernagas'] } },
+          { t: 'Pelear junto a las Luciérnagas (Valor 2).', req: { stat: 'valor', min: 2 }, next: 'd_pelea', fx: { aff: { ekko: 2, sevika: -2 }, rep: { zaun: 2 }, flags: ['heroe_luciernagas'] } },
           { t: 'Sabotear el convoy con química (Ingenio 3).', req: { stat: 'ingenio', min: 3 }, next: 'd_sabotaje', fx: { aff: { ekko: 3 }, rep: { zaun: 2 }, flags: ['heroe_luciernagas'] } },
-          { t: 'Avisar a Sevika en el último momento.', req: { flag: 'traiciona_luciernagas' }, next: 'd_aviso', fx: { aff: { sevika: 3, silco: 2, ekko: -5, scar: -5 }, flags: ['luciernagas_caen'] } },
+          { t: 'Avisar a Sevika en el último momento.', req: { flag: 'traiciona_luciernagas' }, next: 'd_aviso', fx: { aff: { sevika: 3, silco: 2, ekko: -5 }, flags: ['luciernagas_caen'] } },
           { t: 'Quedarte al margen y observar.', next: 'd_margen', fx: { aff: { ekko: -1 } } },
         ] },
         d_pelea: { bg: 'callejones', lines: [
@@ -261,7 +261,7 @@ window.STORY = {
         ], choices: [
           { t: '«Os llevaré hasta Jinx. Es lo que Vi necesita.»', next: 'b_jinx', fx: { aff: { vi: 2, jinx: 1 }, flags: ['guia_jinx'] } },
           { t: '«Silco está en La Última Gota. Os llevo.»', next: 'b_silco', fx: { aff: { caitlyn: 2 }, rep: { piltover: 1 }, flags: ['guia_silco'] } },
-          { t: '«¿Una ejecutora en Zaun? Ni hablar.» (desconfiar)', next: 'b_desconfia', fx: { aff: { caitlyn: -2, scar: 1 }, rep: { zaun: 1 } } },
+          { t: '«¿Una ejecutora en Zaun? Ni hablar.» (desconfiar)', next: 'b_desconfia', fx: { aff: { caitlyn: -2 }, rep: { zaun: 1 } } },
         ] },
         b_jinx: { bg: 'sumidero', lines: [
           { s: 'narrador', t: 'Les guías por los túneles donde Jinx tiene su escondite: dibujos de colores en las paredes, peluches con cabezas de muñeca y cohetes a medio montar.' },
@@ -406,7 +406,7 @@ window.STORY = {
     {
       id: 'p3', route: 'piltover', title: 'Capítulo 3 · Placa y pólvora',
       intro: 'Siete años después. Piltover vive su edad dorada. Pero alguien ataca los envíos hextec, y el Brillo sube por el puente.',
-      unlocks: ['caitlyn', 'marcus'],
+      unlocks: ['caitlyn'],
       start: 'a',
       nodes: {
         a: { bg: 'piltover', lines: [
@@ -414,7 +414,7 @@ window.STORY = {
           { s: 'caitlyn', t: 'Alguien está robando hextec y bajándola a Zaun. Y el sheriff Marcus no quiere que lo investigue.' },
         ], choices: [
           { t: 'Ayudar a Caitlyn a revisar los informes (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'b_informes', fx: { aff: { caitlyn: 3 }, flags: ['pistas_cait'] } },
-          { t: 'Hablar con Marcus para ganar tiempo (Carisma 2).', req: { stat: 'carisma', min: 2 }, next: 'b_marcus', fx: { aff: { marcus: 2, caitlyn: 1 } } },
+          { t: 'Hablar con Marcus para ganar tiempo (Carisma 2).', req: { stat: 'carisma', min: 2 }, next: 'b_marcus', fx: { aff: { caitlyn: 1 } } },
           { t: '«No me meto en asuntos de ejecutores.»', next: 'b_no', fx: { aff: { caitlyn: -2 } } },
         ] },
         b_informes: { bg: 'piltover', lines: [
@@ -422,7 +422,7 @@ window.STORY = {
           { s: 'caitlyn', t: 'Marcus… lo sabía.' },
         ], next: 'c' },
         b_marcus: { bg: 'piltover', lines: [
-          { s: 'marcus', t: 'La señorita Kiramman tiene buenas intenciones. Pero las buenas intenciones aquí matan gente. Dígale que lo deje.' },
+          { s: 'narrador', t: 'Marcus: «La señorita Kiramman tiene buenas intenciones. Pero las buenas intenciones aquí matan gente. Dígale que lo deje.»' },
           { s: 'narrador', t: 'Te fijas: le tiembla la mano al decirlo. Marcus no es un villano. Es un hombre asustado.' },
         ], next: 'c' },
         b_no: { bg: 'piltover', lines: [
@@ -436,7 +436,7 @@ window.STORY = {
         ], choices: [
           { t: '«Alguien que también quiere ver caer a Silco.»', next: 'd_silco', fx: { aff: { vi: 2 } } },
           { t: 'Hacer una broma sobre su tatuaje.', next: 'd_broma', fx: { aff: { vi: 1, caitlyn: 1 } } },
-          { t: 'Tratarla como a una presa peligrosa.', next: 'd_presa', fx: { aff: { vi: -3, marcus: 1 } } },
+          { t: 'Tratarla como a una presa peligrosa.', next: 'd_presa', fx: { aff: { vi: -3 } } },
         ] },
         d_silco: { bg: 'stillwater', lines: [
           { s: 'vi', t: 'Vale. Me caes bien. Un poco. No te emociones.' },
@@ -456,7 +456,7 @@ window.STORY = {
     {
       id: 'p4', route: 'piltover', title: 'Capítulo 4 · El Día del Progreso',
       intro: 'Las hexpuertas abren. Piltover celebra. En el laboratorio, Viktor tose sangre y Sky le sostiene la mano.',
-      unlocks: ['sky'],
+      unlocks: [],
       start: 'a',
       nodes: {
         a: { bg: 'hexpuertas', lines: [
@@ -466,16 +466,16 @@ window.STORY = {
           { s: 'mel', t: 'Disfrútalo. Los días de gloria son cortos y las facturas, largas.' },
         ], next: 'b' },
         b: { bg: 'academia', lines: [
-          { s: 'sky', t: 'Perdona, ¿puedes ayudarme? Es Viktor. No ha venido a la fiesta. Está en el laboratorio con… eso.' },
+          { s: 'narrador', t: 'Sky: «Perdona, ¿puedes ayudarme? Es Viktor. No ha venido a la fiesta. Está en el laboratorio con… eso.»' },
           { s: 'viktor', t: 'El Hexcore. Mira cómo se mueve. Aprende, {name}. Podría curar cualquier cosa. Incluso a mí.' },
         ], choices: [
-          { t: 'Animarle a seguir: «Si puede salvarte, hazlo».', next: 'c_sigue', fx: { aff: { viktor: 3, sky: 1, heimerdinger: -1 }, flags: ['impulsa_hexcore'] } },
-          { t: 'Pedirle que se detenga (Carisma 2).', req: { stat: 'carisma', min: 2 }, next: 'c_para', fx: { aff: { viktor: -1, sky: 2, heimerdinger: 2 }, flags: ['frena_hexcore'] } },
+          { t: 'Animarle a seguir: «Si puede salvarte, hazlo».', next: 'c_sigue', fx: { aff: { viktor: 3, heimerdinger: -1 }, flags: ['impulsa_hexcore'] } },
+          { t: 'Pedirle que se detenga (Carisma 2).', req: { stat: 'carisma', min: 2 }, next: 'c_para', fx: { aff: { viktor: -1, heimerdinger: 2 }, flags: ['frena_hexcore'] } },
           { t: 'Analizar el Hexcore tú mism{g:o|a|e} (Ingenio 3).', req: { stat: 'ingenio', min: 3 }, next: 'c_analiza', fx: { aff: { viktor: 2 }, stats: { ingenio: 1 }, flags: ['entiende_hexcore'] } },
         ] },
         c_sigue: { bg: 'academia', lines: [
           { s: 'viktor', t: 'Gracias. Todos quieren que espere. No tengo tiempo para esperar.' },
-          { s: 'sky', t: '(Te mira con preocupación.) Ojalá tengáis razón.' },
+          { s: 'narrador', t: 'Sky: «(Te mira con preocupación.) Ojalá tengáis razón.»' },
         ], next: 'd' },
         c_para: { bg: 'academia', lines: [
           { s: 'viktor', t: 'Hablas como Heimerdinger. (Suspira.) Lo pensaré. Por Sky.' },
@@ -582,29 +582,29 @@ window.STORY = {
     {
       id: 'z7', route: 'zaun', title: 'Capítulo 7 · Persecución en los tejados',
       intro: 'Los ejecutores barren Zaun puerta por puerta. Ekko necesita que alguien lleve un aviso al árbol… atravesando la ciudad por arriba.',
-      unlocks: ['marcus'],
+      unlocks: [],
       start: 'a',
       nodes: {
         a: { bg: 'tejados', lines: [
           { s: 'ekko', t: '(Por un tubo de mensajes.) {name}, los ejecutores van hacia el árbol. Alguien les ha dado la ruta. Tienes que avisar a Scar antes que ellos.' },
-          { s: 'marcus', t: '(Abajo, con un megáfono.) ¡Que nadie se mueva! ¡Por orden del Consejo!' },
+          { s: 'narrador', t: 'Marcus: «(Abajo, con un megáfono.) ¡Que nadie se mueva! ¡Por orden del Consejo!»' },
         ], choices: [
-          { t: 'Correr por los tejados.', next: 'b_llega', game: { id: 'tejados', win: 'b_llega', lose: 'b_atrapado', winFx: { aff: { ekko: 2, scar: 2 }, rep: { zaun: 1 }, flags: ['aviso_luciernagas'] } }, fx: {} },
-          { t: 'Distraer a Marcus para ganar tiempo (Valor 3).', req: { stat: 'valor', min: 3 }, next: 'b_distrae', fx: { aff: { ekko: 1, marcus: -1 }, flags: ['aviso_luciernagas'] } },
-          { t: 'Sobornar a un ejecutor (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'b_soborno', fx: { aff: { marcus: 1 }, rep: { piltover: 1 } } },
+          { t: 'Correr por los tejados.', next: 'b_llega', game: { id: 'tejados', win: 'b_llega', lose: 'b_atrapado', winFx: { aff: { ekko: 2 }, rep: { zaun: 1 }, flags: ['aviso_luciernagas'] } }, fx: {} },
+          { t: 'Distraer a Marcus para ganar tiempo (Valor 3).', req: { stat: 'valor', min: 3 }, next: 'b_distrae', fx: { aff: { ekko: 1 }, flags: ['aviso_luciernagas'] } },
+          { t: 'Sobornar a un ejecutor (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'b_soborno', fx: { aff: {}, rep: { piltover: 1 } } },
         ] },
         b_llega: { bg: 'arbol', lines: [
           { s: 'narrador', t: 'Saltas el último hueco y aterrizas en una rama del árbol. Scar ya está dando la alarma.' },
-          { s: 'scar', t: 'Lo has conseguido. Movemos a los críos ahora. Te debemos una, {name}.' },
+          { s: 'narrador', t: 'Scar: «Lo has conseguido. Movemos a los críos ahora. Te debemos una, {name}.»' },
         ], next: 'c' },
         b_distrae: { bg: 'callejones', lines: [
           { s: 'yo', t: '¡Eh, sheriff! ¿Busca a alguien de Zaun? ¡Pues aquí tiene a una persona de Zaun!' },
-          { s: 'marcus', t: '¡A por {g:él|ella|elle}!' },
+          { s: 'narrador', t: 'Marcus: «¡A por {g:él|ella|elle}!»' },
           { s: 'narrador', t: 'Media patrulla te persigue en dirección contraria al árbol. Ekko tiene su oportunidad.' },
         ], next: 'c' },
         b_soborno: { bg: 'callejones', lines: [
           { s: 'narrador', t: 'Unas monedas en el bolsillo correcto y el ejecutor «se equivoca» de calle. Marcus no se entera de nada.' },
-          { s: 'marcus', t: '(Más tarde, en voz baja.) Sé lo que has hecho. Y, entre tú y yo… gracias. No quiero más sangre en mis manos.' },
+          { s: 'narrador', t: 'Marcus: «(Más tarde, en voz baja.) Sé lo que has hecho. Y, entre tú y yo… gracias. No quiero más sangre en mis manos.»' },
         ], next: 'c' },
         b_atrapado: { bg: 'callejones', lines: [
           { s: 'narrador', t: 'Un tejado cede bajo tus pies. Caes justo delante de dos ejecutores.' },
@@ -624,23 +624,23 @@ window.STORY = {
       nodes: {
         a: { bg: 'sumidero', lines: [
           { s: 'narrador', t: 'Cristales rotos, jaulas abiertas y marcas de garras en el metal.' },
-          { s: 'singed', t: '(Aparece entre el vapor.) Mi paciente se ha marchado antes de terminar el tratamiento. Una pena. Estaba tan cerca…' },
+          { s: 'narrador', t: 'Singed: «(Aparece entre el vapor.) Mi paciente se ha marchado antes de terminar el tratamiento. Una pena. Estaba tan cerca…»' },
         ], choices: [
           { t: 'Sabotear sus máquinas de Brillo.', next: 'b_sabotaje', game: { id: 'circuito', win: 'b_sabotaje', lose: 'b_falla', winFx: { rep: { zaun: 2 }, flags: ['sabotaje_singed'] } }, fx: {} },
-          { t: 'Preguntarle quién era el paciente.', req: { flag: 'vio_bestia' }, next: 'b_verdad', fx: { aff: { singed: 1 }, flags: ['sabe_warwick'] } },
+          { t: 'Preguntarle quién era el paciente.', req: { flag: 'vio_bestia' }, next: 'b_verdad', fx: { aff: {}, flags: ['sabe_warwick'] } },
           { t: 'Robar sus notas sobre la gema (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_notas', fx: { flags: ['sabe_gema'] } },
           { t: 'Salir de allí cuanto antes.', next: 'c' },
         ] },
         b_sabotaje: { bg: 'sumidero', lines: [
           { s: 'narrador', t: 'Reconectas los tubos al revés. Las cubas de Brillo se cuajan en una pasta inerte. Meses de producción, perdidos.' },
-          { s: 'singed', t: 'Ingenioso. Silco no estará contento. Yo, en cambio… estoy impresionado.' },
+          { s: 'narrador', t: 'Singed: «Ingenioso. Silco no estará contento. Yo, en cambio… estoy impresionado.»' },
         ], next: 'c' },
         b_falla: { bg: 'sumidero', lines: [
           { s: 'narrador', t: 'Saltan chispas y una nube violeta te obliga a retroceder tosiendo.' },
-          { s: 'singed', t: 'La química no perdona la impaciencia. Vuelve cuando sepas lo que haces.' },
+          { s: 'narrador', t: 'Singed: «La química no perdona la impaciencia. Vuelve cuando sepas lo que haces.»' },
         ], next: 'c' },
         b_verdad: { bg: 'sumidero', lines: [
-          { s: 'singed', t: '¿Mi paciente? Alguien que lo dio todo por sus hijos. Le devolví la fuerza. No la memoria.' },
+          { s: 'narrador', t: 'Singed: «¿Mi paciente? Alguien que lo dio todo por sus hijos. Le devolví la fuerza. No la memoria.»' },
           { s: 'narrador', t: 'Un escalofrío. Sabes de quién habla. Y Vi no puede enterarse así.' },
         ], next: 'c' },
         b_notas: { bg: 'sumidero', lines: [
@@ -659,14 +659,14 @@ window.STORY = {
       nodes: {
         a: { bg: 'ejecutores', lines: [
           { s: 'caitlyn', t: 'Si Jinx tiene lo que creo, la próxima vez no habrá segundas oportunidades. Enséñame cómo disparas, {name}.' },
-          { s: 'loris', t: '(Con un bocadillo en la mano.) Yo apuesto por ti. Bueno, apuesto medio bocadillo.' },
+          { s: 'narrador', t: 'Loris: «(Con un bocadillo en la mano.) Yo apuesto por ti. Bueno, apuesto medio bocadillo.»' },
         ], choices: [
-          { t: 'Coger el rifle y entrar en la galería.', next: 'b_bien', game: { id: 'tiro', win: 'b_bien', lose: 'b_mal', winFx: { aff: { caitlyn: 3, loris: 2 }, rep: { piltover: 1 }, flags: ['tirador'] } }, fx: {} },
+          { t: 'Coger el rifle y entrar en la galería.', next: 'b_bien', game: { id: 'tiro', win: 'b_bien', lose: 'b_mal', winFx: { aff: { caitlyn: 3 }, rep: { piltover: 1 }, flags: ['tirador'] } }, fx: {} },
           { t: '«Prefiero la estrategia a las balas.» (Ingenio 3)', req: { stat: 'ingenio', min: 3 }, next: 'b_plan', fx: { aff: { caitlyn: 2 }, flags: ['plan_caitlyn'] } },
         ] },
         b_bien: { bg: 'ejecutores', lines: [
           { s: 'caitlyn', t: '(Baja los prismáticos.) Impresionante. Puede que hasta me hagas sombra.' },
-          { s: 'loris', t: '¡Medio bocadillo ganado! Bueno, me lo como yo, que tú estás ocupad{g:o|a|e}.' },
+          { s: 'narrador', t: 'Loris: «¡Medio bocadillo ganado! Bueno, me lo como yo, que tú estás ocupad{g:o|a|e}.»' },
         ], next: 'c' },
         b_mal: { bg: 'ejecutores', lines: [
           { s: 'caitlyn', t: 'Bueno… al menos no has dado a ningún civil. Mucho. Quédate a mi espalda cuando bajemos.' },
@@ -711,14 +711,14 @@ window.STORY = {
     {
       id: 'p8', route: 'piltover', title: 'Capítulo 8 · Vuelo sobre Zaun',
       intro: 'Desde una aerotabla, Zaun parece otra cosa: un mar de luces verdes, tuberías y vida.',
-      unlocks: ['scar'],
+      unlocks: [],
       start: 'a',
       nodes: {
         a: { bg: 'arbol', lines: [
           { s: 'ekko', t: 'Agárrate fuerte. Si te caes, no grites: atrae a los matones de Sevika.' },
-          { s: 'scar', t: 'Si se cae, que no sea encima de mí.' },
+          { s: 'narrador', t: 'Scar: «Si se cae, que no sea encima de mí.»' },
         ], choices: [
-          { t: 'Subir a la aerotabla.', next: 'b_ok', game: { id: 'aerotabla', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, scar: 2 }, rep: { zaun: 2 }, flags: ['explorado', 'alianza_luciernagas'] } }, fx: {} },
+          { t: 'Subir a la aerotabla.', next: 'b_ok', game: { id: 'aerotabla', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3 }, rep: { zaun: 2 }, flags: ['explorado', 'alianza_luciernagas'] } }, fx: {} },
           { t: 'Dejar que Ekko pilote mientras tú observas (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_mira', fx: { aff: { ekko: 1 }, flags: ['explorado'] } },
         ] },
         b_ok: { bg: 'zaun', lines: [
@@ -742,7 +742,7 @@ window.STORY = {
     {
       id: 'fin', route: 'ambas', title: 'Capítulo final · El Puente',
       intro: 'Las dos ciudades contienen el aliento. El Consejo vota la paz. Jinx tiene un cohete. Y tú estás en medio.',
-      unlocks: ['jinx', 'silco', 'jayce', 'mel', 'caitlyn', 'vi', 'ambessa', 'loris'],
+      unlocks: ['jinx', 'silco', 'jayce', 'mel', 'caitlyn', 'vi', 'ambessa'],
       start: 'a',
       nodes: {
         a: { bg: 'puente', lines: [
@@ -883,7 +883,7 @@ window.STORY = {
     {
       id: 't4', route: 't2', title: 'T2 · Capítulo 4 · La loba y la rosa',
       intro: 'Madre e hija frente a frente. Una ofrece ejércitos; la otra, una advertencia. Piltover tiene que elegir… y tú también.',
-      unlocks: [],
+      unlocks: ['maddie', 'kino'],
       start: 'a',
       nodes: {
         a: { bg: 'consejo', lines: [
@@ -954,7 +954,7 @@ window.STORY = {
           { s: 'ekko', t: 'Pero solo puedo traer de allí una cosa. Un recuerdo, una idea… algo que nos ayude aquí.' },
         ], choices: [
           { t: 'Viajar con Ekko a través de la grieta.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, heimerdinger: 2 }, flags: ['esperanza'] } }, fx: {} },
-          { t: 'Pedirle que no vaya: «Nuestro mundo nos necesita.»', next: 'b_queda', fx: { aff: { ekko: 1, scar: 2 } } },
+          { t: 'Pedirle que no vaya: «Nuestro mundo nos necesita.»', next: 'b_queda', fx: { aff: { ekko: 1 } } },
         ] },
         b_ok: { bg: 'callejones', lines: [
           { s: 'narrador', t: 'Al otro lado, Powder ríe en la barra de La Última Gota y Vi le revuelve el pelo. Es tan bonito que duele.' },
@@ -1087,7 +1087,7 @@ window.STORY = {
         { s: 'narrador', t: 'El cohete impacta, pero la sala está vacía. Nadie muere. Piltover te llama héroe.' },
         { s: 'jayce', t: 'Has salvado al Consejo, {name}. Pero me temo que esto significa guerra con Zaun.' },
         { s: 'mel', t: 'Los héroes son útiles. Hasta que dejan de serlo. Cuídate.' },
-        { s: 'loris', t: 'Oye, ¿tú no eras {g:el|la|le} de la evacuación? ¡Te invito a una cerveza!' },
+        { s: 'narrador', t: 'Loris: «Oye, ¿tú no eras {g:el|la|le} de la evacuación? ¡Te invito a una cerveza!»' },
         { s: 'narrador', t: 'Las puertas del puente se cierran. Desde arriba, Zaun parece más lejos que nunca.' },
       ],
     },

@@ -79,12 +79,15 @@
     window.App.go('game');
   }
 
-  const avatars = () => Object.entries(window.CustomArt.files.avatares || {}).filter(([, f]) => !/\.(mp4|webm)$/i.test(f));
+  // La galería se divide en mujer y hombre (archivos «mujer-N» y «hombre-N»); sin género o no binario salen todos.
+  const avatars = () => Object.entries(window.CustomArt.files.avatares || {})
+    .filter(([, f]) => !/\.(mp4|webm)$/i.test(f))
+    .filter(([n]) => !/^(mujer|hombre)-/.test(n) || !['mujer', 'hombre'].includes(draft.gender) || n.startsWith(`${draft.gender}-`));
 
   function statBars(stats) {
     return el('div', { class: 'stat-bars' }, Object.entries(window.STORY.stats).map(([k, meta]) =>
       el('div', { class: 'stat' },
-        el('span', {}, `${meta.icon} ${meta.label}`),
+        el('span', {}, meta.label),
         el('div', { class: 'bar' }, el('i', { style: `width:${Math.min(100, stats[k] * 20)}%` })),
         el('b', {}, stats[k]))));
   }
@@ -104,11 +107,11 @@
     return el('div', { class: `splash${draft.photo ? '' : ' empty'}`, id: 'splash', title: '¡Haz clic!', onclick: () => quip() },
       draft.photo
         ? el('img', { src: draft.photo, alt: 'Tu retrato' })
-        : el('div', { class: 'splash-empty' }, el('span', {}, '👤'), el('p', {}, step < 5 ? 'Tu retrato se elige en el paso «Retrato».' : 'Elige un retrato de la galería o sube tu foto.')),
+        : el('div', { class: 'splash-empty' }, el('span', {}, ''), el('p', {}, step < 5 ? 'Tu retrato se elige en el paso «Retrato».' : 'Elige un retrato de la galería o sube tu foto.')),
       el('div', { class: 'splash-plate' },
         draft.title ? el('small', {}, tpl(draft.title, draft)) : null,
         el('strong', { id: 'stage-name' }, draft.name || 'Sin nombre'),
-        el('span', {}, [cls ? `${cls.icon} ${tpl(cls.label, draft)}` : null, draft.origin ? C().origins[draft.origin].label : null].filter(Boolean).join(' · '))));
+        el('span', {}, [cls ? tpl(cls.label, draft) : null, draft.origin ? C().origins[draft.origin].label : null].filter(Boolean).join(' · '))));
   }
 
   function layout() {
@@ -120,7 +123,7 @@
     const side = el('div', { class: 'creator-stage' },
       el('div', { id: 'stage-splash' }, splash()),
       el('div', { class: 'row gap center' },
-        el('button', { class: 'btn small', onclick: randomize }, '🎲 Aleatorio')),
+        el('button', { class: 'btn small', onclick: randomize }, 'Aleatorio')),
       el('div', { id: 'stage-build' }, buildBar()),
       el('div', { id: 'stage-stats' }, statBars(computeStats(draft))));
     const body = el('div', { class: 'creator-body panel' });
@@ -148,7 +151,7 @@
     const cls = C().classes.find((c) => c.id === draft.cls);
     const ks = C().keystones.find((k) => k.id === draft.keystone);
     return el('div', { class: 'build-bar' },
-      el('div', { class: 'class-badge', style: cls ? `--c:${cls.color}` : '' }, cls ? `${cls.icon} ${tpl(cls.label, draft)}` : 'Sin clase', draft.title ? el('small', {}, tpl(draft.title, draft)) : null),
+      el('div', { class: 'class-badge', style: cls ? `--c:${cls.color}` : '' }, cls ? tpl(cls.label, draft) : 'Sin clase', draft.title ? el('small', {}, tpl(draft.title, draft)) : null),
       el('div', { class: 'ability-row' },
         cls ? abilityHex({ icon: cls.icon, name: cls.passive.name, desc: cls.passive.desc }, 'P', true) : null,
         ...['Q', 'W', 'E', 'R'].map((k) => abilityHex(C().abilities[k].find((a) => a.id === draft.abilities[k]), k)),
@@ -242,7 +245,7 @@
           rerender();
         },
       }, cv, el('div', { class: 'origin-info' }, el('h3', {}, o.label), el('p', {}, o.tagline),
-        el('small', {}, id === 'zaun' ? 'Empiezas con: Vander, Vi, Powder, Mylo, Claggor' : 'Empiezas con: Jayce, Viktor, Heimerdinger')));
+        el('small', {}, id === 'zaun' ? 'Empiezas con: Vander, Vi, Jinx' : 'Empiezas con: Jayce, Viktor, Heimerdinger')));
       grid.append(card);
       requestAnimationFrame(() => Scenes.mount(cv, id === 'zaun' ? 'zaun' : 'piltover'));
     }
@@ -316,7 +319,7 @@
       el('p', { class: 'muted' }, `Reparte ${total} puntos de aptitud y elige tu talento clave. Las estadísticas abren opciones en la historia.`));
     const rows = el('div', { class: 'alloc' }, Object.entries(window.STORY.stats).map(([k, m]) =>
       el('div', { class: 'alloc-row' },
-        el('span', {}, `${m.icon} ${m.label}`),
+        el('span', {}, m.label),
         el('button', { class: 'btn small', disabled: draft.alloc[k] <= 0, onclick: () => { draft.alloc[k]--; rerender(); } }, '−'),
         el('b', {}, `${stats[k]}${draft.alloc[k] ? ` (+${draft.alloc[k]})` : ''}`),
         el('button', { class: 'btn small', disabled: left <= 0 || draft.alloc[k] >= C().maxStatPerAllocation, onclick: () => { draft.alloc[k]++; Audio2.sfx.click(); rerender(); } }, '+'))));
@@ -338,16 +341,18 @@
     const file = el('input', { type: 'file', accept: 'image/*', class: 'hidden', onchange: (e) => loadPhoto(e.target.files[0]) });
     const choose = (url) => { draft.photo = url; Audio2.sfx.choice(); rerender(); };
     body.append(el('h2', {}, 'Tu retrato'),
-      el('p', { class: 'muted' }, 'Elige quién eres. Los retratos salen de la carpeta «avatares» de tu carpeta de arte: pon ahí las imágenes que quieras (mejor verticales, estilo Arcane).'),
+      el('p', { class: 'muted' }, draft.gender === 'mujer' || draft.gender === 'hombre'
+        ? `Elige quién eres entre los ocho retratos de ${draft.gender === 'mujer' ? 'mujer' : 'hombre'}. Si cambias de género en el primer paso, la galería cambia con él.`
+        : 'Elige quién eres entre los dieciséis retratos. Con el género «Mujer» u «Hombre» solo verás los ocho de cada uno.'),
       el('div', { class: 'row gap' },
-        el('button', { class: 'btn primary', onclick: () => file.click() }, '📷 Subir mi foto'),
-        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: () => window.arcane.art.open('avatares') }, '📂 Abrir carpeta avatares') : null,
-        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: async () => { await window.CustomArt.load(); rerender(); } }, '🔄 Recargar') : null,
+        el('button', { class: 'btn primary', onclick: () => file.click() }, 'Subir mi foto'),
+        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: () => window.arcane.art.open('avatares') }, 'Abrir carpeta avatares') : null,
+        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: async () => { await window.CustomArt.load(); rerender(); } }, 'Recargar') : null,
         file));
     if (!gallery.length) {
       body.append(el('div', { class: 'gallery-empty' },
         el('h3', {}, 'La galería está vacía'),
-        el('p', {}, 'Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) y pulsa 🔄 Recargar. También puedes subir tu foto.')));
+        el('p', {}, 'Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) y pulsa Recargar. También puedes subir tu foto.')));
     } else {
       body.append(el('div', { class: 'avatar-gallery' }, gallery.map(([name, url]) =>
         el('button', { class: `avatar-card${draft.photo === url ? ' active' : ''}`, title: name, onclick: () => choose(url) },

@@ -21,7 +21,7 @@
   }
 
   function art(entry, cat) {
-    if (!opts.known(entry.id)) return Portrait.emblem({ name: '???', colors: ['#2a2438', '#0d0b14'] }, '❔');
+    if (!opts.known(entry.id)) return Portrait.emblem({ name: '???', colors: ['#2a2438', '#0d0b14'] }, '');
     return cat === 'personajes' ? Portrait.forCharacter(entry.id) : Portrait.emblem(entry, iconFor(cat));
   }
 
@@ -65,7 +65,7 @@
       el('div', { class: 'wiki-card-body' },
         el('strong', {}, known ? entry.name : '???'),
         el('span', { class: 'tag' }, ORIGIN[entry.origin] || ''),
-        el('small', {}, known ? entry.role || window.WIKI.categories.find((c) => c.id === cat).label : '🔒 Sin descubrir'))));
+        el('small', {}, known ? entry.role || window.WIKI.categories.find((c) => c.id === cat).label : 'Sin descubrir'))));
     }
   }
 
@@ -81,7 +81,7 @@
     const { entry: e, cat } = found;
     box.innerHTML = '';
     if (!opts.known(e.id)) {
-      box.append(el('div', { class: 'wiki-empty' }, el('h2', {}, '🔒 Entrada sin descubrir'), el('p', {}, HINTS[cat])));
+      box.append(el('div', { class: 'wiki-empty' }, el('h2', {}, 'Entrada sin descubrir'), el('p', {}, HINTS[cat])));
       return;
     }
     const showSpoilers = window.App.settings.spoilers;
@@ -102,7 +102,7 @@
         class: `spoiler${showSpoilers ? ' revealed' : ''}`,
         title: 'Pulsa para revelar',
         onclick: (ev) => ev.currentTarget.classList.add('revealed'),
-      }, el('strong', {}, '⚠ Spoiler · Temporada 2: '), e.spoiler) : null,
+      }, el('strong', {}, 'Spoiler · Temporada 2: '), e.spoiler) : null,
       e.quote ? el('blockquote', {}, `«${e.quote}»`, el('small', {}, ' — frase inspirada en el personaje')) : null,
       rel.length ? el('h3', {}, 'Relaciones') : null,
       rel.length ? el('div', { class: 'relations' }, rel.map(({ entry: r, cat: rc }) =>
@@ -110,7 +110,7 @@
           el('span', { class: 'rel-art', html: art(r, rc) }), opts.known(r.id) ? r.name : '???'))) : null);
     if (cat === 'personajes' && window.CHAT[e.id] && opts.canTalk?.(e.id)) {
       box.append(el('div', { class: 'row gap' },
-        el('button', { class: 'btn small', onclick: () => opts.onTalk(e.id) }, '📡 Hablar por el comunicador')));
+        el('button', { class: 'btn small', onclick: () => opts.onTalk(e.id) }, 'Hablar por el comunicador')));
     }
   }
 

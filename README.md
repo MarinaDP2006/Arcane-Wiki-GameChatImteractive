@@ -214,3 +214,22 @@ scripts/check.js         Validador de datos
 ```
 
 ---
+
+
+## Arte y vídeos (v1.6.0)
+
+Las imágenes vienen dentro del juego: 16 retratos para elegir (8 de mujer y 8 de hombre, según el género
+que elijas), las caras de los 16 personajes, las fotos de los lugares, el mapa de Piltover y Zaun del
+Códice y los símbolos de cada ciudad. Si pones un archivo con el mismo nombre en tu carpeta de arte
+(`%APPDATA%\Arcane Piltover y Zaun\arte`), el tuyo sustituye al incluido.
+
+Los vídeos no se incluyen (pesan mucho). Copia estos cuatro en la carpeta `arte\video`:
+
+| Archivo | Cuándo se reproduce |
+|---|---|
+| `Welcome to Zaun.mp4` | Al empezar con origen en Zaun |
+| `Welcome to Piltover.mp4` | Al empezar con origen en Piltover |
+| `IntroS1.mp4` | Al entrar en la historia de la Temporada 1 |
+| `IntroS2.mp4` | Al empezar la Temporada 2 |
+
+Se pueden saltar con Esc, espacio o Intro.

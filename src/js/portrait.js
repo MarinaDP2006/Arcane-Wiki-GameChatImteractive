@@ -16,17 +16,9 @@
     vander: { skin: '#d8a888', face: 'redondo', eyes: 'cansados', eyeColor: '#5a4a3a', brows: 'gruesas', hair: '#c9c9c9', style: 'short', outfit: 'chaqueta', outfitColor: '#5a3a24', accents: ['beard'] },
     ekko: { skin: '#5a3a28', face: 'oval', eyes: 'almendra', eyeColor: '#3a2a1a', brows: 'medias', hair: '#f2f2f2', style: 'mohawk', outfit: 'chaqueta', outfitColor: '#2a6a5a', accents: ['paint'] },
     sevika: { skin: '#c9a080', face: 'angular', eyes: 'rasgados', eyeColor: '#5a3a3a', brows: 'gruesas', hair: '#5a4a5a', style: 'undercut', outfit: 'top', outfitColor: '#2a2a2a', accents: ['arm'], browAngle: 2 },
-    singed: { skin: '#c9c0a8', face: 'largo', eyes: 'cansados', eyeColor: '#8fbf3a', brows: 'finas', hair: '#d9d9d9', style: 'bald', outfit: 'bata', outfitColor: '#4a5a3a', accents: ['mask'] },
     ambessa: { skin: '#6b4430', face: 'angular', eyes: 'rasgados', eyeColor: '#7a4a1a', brows: 'gruesas', hair: '#1a1010', style: 'braids', outfit: 'uniforme', outfitColor: '#6a1a1a', accents: ['gold', 'scar'] },
-    marcus: { skin: '#d8b498', face: 'largo', eyes: 'cansados', eyeColor: '#4a4a3a', brows: 'medias', hair: '#2a2a2a', style: 'short', outfit: 'uniforme', outfitColor: '#2f4a8a', accents: ['mustache'] },
     cassandra: { skin: '#f0d0b8', face: 'oval', eyes: 'almendra', eyeColor: '#3a5ab0', brows: 'arqueadas', hair: '#3a2a2a', style: 'bun', outfit: 'vestido', outfitColor: '#2f4a8a', accents: ['gold'] },
-    mylo: { skin: '#d9b494', face: 'oval', eyes: 'almendra', eyeColor: '#4a3a2a', brows: 'medias', hair: '#3a2410', style: 'messy', outfit: 'chaqueta', outfitColor: '#6a5a3a', accents: [] },
-    claggor: { skin: '#a87a5a', face: 'redondo', eyes: 'almendra', eyeColor: '#3a2a1a', brows: 'gruesas', hair: '#1a1410', style: 'messy', outfit: 'mono', outfitColor: '#4a5a6a', accents: ['goggles'] },
-    benzo: { skin: '#6b4a34', face: 'redondo', eyes: 'cansados', eyeColor: '#3a2a1a', brows: 'gruesas', hair: '#d9d9d9', style: 'bald', outfit: 'mono', outfitColor: '#5a6a4a', accents: ['beard', 'glasses'] },
-    scar: { skin: '#b89070', face: 'angular', eyes: 'rasgados', eyeColor: '#2a3a2a', brows: 'gruesas', hair: '#2a2a2a', style: 'undercut', outfit: 'harapos', outfitColor: '#2a4a2a', shirt: '#2a5a3a', accents: ['scar', 'paint'] },
     isha: { skin: '#c9946a', face: 'redondo', eyes: 'grandes', eyeColor: '#5a3a1a', brows: 'finas', hair: '#7a4a2a', style: 'pigtails', outfit: 'harapos', outfitColor: '#c4602a', accents: ['goggles', 'freckles'] },
-    sky: { skin: '#f0d0b8', face: 'oval', eyes: 'grandes', eyeColor: '#5a7a4a', brows: 'finas', hair: '#3a2a1a', style: 'bob', outfit: 'bata', outfitColor: '#d9d4c8', accents: ['glasses'] },
-    loris: { skin: '#d9b498', face: 'redondo', eyes: 'almendra', eyeColor: '#4a3a2a', brows: 'medias', hair: '#5a3a1a', style: 'short', outfit: 'uniforme', outfitColor: '#2f4a8a', accents: ['mustache'] },
   };
 
   function bgFor(colors) {
