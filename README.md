@@ -117,7 +117,7 @@ Estos son los 16 personajes que hablan en la historia y en el comunicador.
 | IntroS1 | Al empezar el capítulo 1 de la Temporada 1 |
 | IntroS2 | Al empezar la Temporada 2 |
 
-También vienen incluidas las caras de los 16 personajes, los 16 retratos para elegir y las fotos de los lugares.
+También vienen incluidas las caras y las imágenes de cuerpo entero de los personajes, los 16 retratos para elegir, las fotos de los lugares y los fondos del mapa 3D de Piltover y Zaun.
 Al abrir el juego con internet, **se descargan solas** de la Arcane Wiki las imágenes que falten.
 Todos los vídeos se saltan con **Espacio**, **Esc** o **Intro**.
 

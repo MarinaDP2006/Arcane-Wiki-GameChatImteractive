@@ -267,7 +267,7 @@ function imageDataURL(file) {
 
 ipcMain.handle('map:images', (_e, region) => {
   if (!REGIONS.includes(region)) return { images: [], own: false };
-  const roots = [mapDir(region), ...besideRoots().map((r) => path.join(r, 'mapa', region))];
+  const roots = [mapDir(region), ...besideRoots().map((r) => path.join(r, 'mapa', region)), path.join(bundledRoot(), 'mapa', region)];
   const files = roots.filter((d) => fs.existsSync(d)).flatMap((d) => fs.readdirSync(d).filter((f) => /\.(png|jpe?g|webp)$/i.test(f)).sort().map((f) => path.join(d, f)));
   const own = files.length > 0;
   if (!own) {
