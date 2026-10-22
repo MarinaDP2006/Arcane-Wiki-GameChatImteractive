@@ -26,7 +26,7 @@ Lo que decides cambia cómo te tratan y qué final consigues.
 | **Historia** | 8 capítulos por ciudad, un capítulo final con 4 finales y una **Temporada 2** con 3 finales más. |
 | **Comunicador** | Chats con los personajes que conoces, con su retrato grande en un marco de latón. Eliges qué decir y ellos reaccionan. *Charlar un rato…* tiene más de 300 respuestas que cambian cada vez. |
 | **Relaciones** | Según tu personaje puedes haceros amigos, mejores amigos, pareja (si os atraéis y tienes 18 años o más), hermandad o, si te faltan los padres, conseguir una figura paterna o materna (Vander, Silco, Ambessa, Cassandra, Heimerdinger, Sevika). Cada relación trae saludos y citas propias. |
-| **Chat libre con IA** | Opcional y gratis, al estilo de Character AI: en **Ajustes → IA para los chats** eliges Google Gemini, Groq u OpenRouter (con clave gratis) u Ollama en tu PC (sin internet; recomendado `gemma3:4b`, o `gemma3:12b` con tarjeta gráfica). Cada personaje tiene sus propias instrucciones de cómo habla y cómo te trata (`src/data/ai-voices.js`). Luego en el Comunicador pulsas **✦ Libre** y escribes lo que quieras. |
+| **Chat libre con IA** | Opcional y gratis, al estilo de Character AI: en **Ajustes → IA para los chats** eliges OpenRouter (con clave gratis) u Ollama en tu PC (solo para jugar en PC o Mac, en móvil no será compatible esta opcion). Cada personaje tiene sus propias instrucciones de cómo habla y cómo te trata (`src/data/ai-voices.js`). Luego en el Comunicador pulsas **✦ Libre** y escribes lo que quieras. |
 | **Minijuegos** | Cada lugar tiene una actividad que mejora tus estadísticas, con cuenta atrás, chispas, humo, sacudidas y botones táctiles grandes en el móvil (con vibración). |
 | **Códice** | Enciclopedia del juego con el **Atlas de las Dos Ciudades** (20 lugares). |
 | **Ajustes** | 10 pestañas: gráficos (calidad, resolución, sombras, estilo pintado, brillo, FPS), audio (música y efectos por separado), lectura (velocidad y tamaño del texto), juego (dificultad de los minijuegos, minimapa, flecha del objetivo), controles, accesibilidad (menos movimiento, alto contraste, letra fácil de leer), IA, copias de seguridad y más. |
@@ -94,7 +94,7 @@ En *Actions* el juego llega dentro de un `.zip`: clic derecho → **Extraer todo
 | **H** | Historia |
 | **C** | Comunicador (chats) |
 | **F** | Ficha de tu personaje |
-| **K** | Códice |
+| **K** | Códice que abre el mapa interactivo oficial de LOL -> https://map.leagueoflegends.com/es_ES/|
 | **M** | Atlas de las Dos Ciudades |
 | **Espacio** | Saltar la escena |
 | **Esc** | Pausa o cerrar ventana |
@@ -132,8 +132,7 @@ Cada uno lleva su pelo, su ropa, su cara pintada y sus marcas: el tatuaje de Vi,
 el brazo de metal de Sevika, el sombrero de Caitlyn… Los de Arcane te miran cuando te acercas.
 Si el móvil va lento, se pueden quitar en **Ajustes → Mundo 3D** (vuelven los iconos redondos).
 
-**¿Quieres modelos de verdad, por ejemplo de [Mixamo](https://www.mixamo.com) (gratis)?** Ponlos en la carpeta `modelos` de tu carpeta de arte
-(en Ajustes → Arte personal hay un botón para abrirla) o en `src/models` para que vayan dentro del juego y de la app de Android:
+**¿Quieres modelos de verdad, por ejemplo de [Mixamo](https://www.mixamo.com) (gratis)?** Ponlos en la carpeta `modelos` de tu carpeta de arte (en Ajustes → Arte personal hay un botón para abrirla) o en `src/models` para que vayan dentro del juego y de la app de Android:
 
 | Archivo | Para quién |
 |---|---|
@@ -181,9 +180,6 @@ Si reinstalas el juego, tus partidas siguen ahí. La carpeta conserva el nombre 
 ---
 
 ## 9. Para programadores
-
-### Jugar desde el código
-
 | Paso | Qué hacer |
 |---|---|
 | 1 | Instala [Node.js](https://nodejs.org) (versión 20 o superior). |
