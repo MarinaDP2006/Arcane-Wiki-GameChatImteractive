@@ -1946,11 +1946,14 @@
       }
       seen.add(p.key);
       av.holder.position.set(p.x, 0, p.y);
-      const sp = Math.hypot(p.vx || 0, p.vy || 0);
+      // En modo exposición los NPC permanecen en su posición original y sin animación;
+      // el protagonista conserva sus controles y movimiento normal.
+      const staticNpc = !p.player && opt().staticNpcModels !== false;
+      const sp = staticNpc ? 0 : Math.hypot(p.vx || 0, p.vy || 0);
       let yaw = av.rest;
       if (sp > 8) yaw = av.rest = Math.atan2(p.vx, p.vy);
       else if (p.look) yaw = Math.atan2(p.look.x - p.x, p.look.y - p.y);
-      window.Avatars3D.update(av, dt, sp, yaw, s);
+      window.Avatars3D.update(av, dt, sp, yaw, s, staticNpc);
     }
     for (const [k, av] of A) if (!seen.has(k)) { window.Avatars3D.dispose(av); A.delete(k); }
   }
