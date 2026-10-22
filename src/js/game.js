@@ -437,7 +437,7 @@
           el('div', { class: 'atlas-copy' },
             el('h2', {}, p.name),
             hidden
-              ? el('p', { class: 'muted' }, 'Este lugar es un spoiler de la Temporada 2. Activa los spoilers en Ajustes para leerlo.')
+              ? el('p', { class: 'muted' }, 'Este lugar contiene detalles de la Parte II: Las consecuencias. Activa los spoilers en Ajustes para leerlo.')
               : el('p', {}, p.intro),
             hidden ? null : el('ul', { class: 'atlas-poi' }, p.poi.map(([t, d]) => el('li', {}, el('strong', {}, t), ` · ${d}`))),
             p.people.length ? el('h3', {}, 'Aquí puedes encontrar a') : null,
@@ -658,7 +658,7 @@
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
-        el('div', {}, el('small', { class: 'muted' }, G.progress.season === 2 ? 'Temporada 2' : G.progress.route === 'zaun' ? 'Ruta de Zaun' : 'Ruta de Piltover'), el('h2', {}, ch.title)),
+        el('div', {}, el('small', { class: 'muted' }, G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'zaun' ? 'Parte I · El inicio (Zaun)' : 'Parte I · El inicio (Piltover)'), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; } }, 'Saltar'))),
       el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
@@ -921,7 +921,7 @@
     box.innerHTML = '';
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
-        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Temporada 2') : null,
+        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Parte II · Las consecuencias') : null,
         talkable().length ? el('button', { class: 'btn', onclick: () => setTab('chats', talkable()[0]) }, 'Seguir chateando con los personajes') : null,
         el('button', { class: 'btn', onclick: () => setTab('ficha') }, 'Ver mi ficha'),
         el('button', { class: 'btn ghost', onclick: replayRoute }, 'Rejugar la ruta con este personaje')));
@@ -1066,7 +1066,7 @@
     G.progress.finished = true;
     talk(false);
     await Cinematic.play([
-      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Temporada 2' : 'Fin de la Temporada 1', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
+      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
     ]);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
@@ -1077,7 +1077,7 @@
       pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${alive.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     }
-    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Temporada 2 te espera.'}`);
+    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Parte II · Las consecuencias te espera.'}`);
     $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     scrollLog();
     renderContacts();
@@ -1087,7 +1087,7 @@
 
   // Temporada 2: continúa la partida con las consecuencias de la primera.
   async function startSeason2() {
-    if (!window.App.settings.spoilers && !confirm('La Temporada 2 contiene spoilers de la segunda temporada de Arcane. ¿Quieres continuar?')) return;
+    if (!window.App.settings.spoilers && !confirm('La Parte II · Las consecuencias contiene acontecimientos importantes de Arcane. ¿Quieres continuar?')) return;
     const route = S().routes.t2;
     G.flags[`s1_${G.endings[G.endings.length - 1] || 'humo'}`] = true;
     G.progress = { route: 't2', season: 2, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false };
@@ -1097,7 +1097,7 @@
     await persist();
     closeOverlay();
     await Cinematic.play([
-      { scene: 'puente-zaun', dur: 6, kicker: 'Grietas & Gears', title: 'Temporada 2', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
+      { scene: 'puente-zaun', dur: 6, kicker: 'Grietas & Gears', title: 'Parte II · Las consecuencias', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
       { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
       { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
       { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
