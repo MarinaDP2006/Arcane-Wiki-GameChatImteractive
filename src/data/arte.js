@@ -71,5 +71,13 @@ window.ART_BUNDLED = {
   },
   "codice": {
     "mapa-piltover-zaun": "img/arte/codice/mapa-piltover-zaun.webp"
-  }
+  },
+  "mapa/piltover": {},
+  "mapa/zaun": {},
+  "personajes/s1": {},
+  "personajes/s2": {},
+  "caras/s1": {},
+  "caras/s2": {},
+  "lugares/s1": {},
+  "lugares/s2": {}
 };

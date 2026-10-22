@@ -1,0 +1,9 @@
+{
+  "appId": "com.marinadp2006.arcanewikigame",
+  "appName": "Grietas & Gears",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true
+  }
+}

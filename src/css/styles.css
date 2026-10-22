@@ -1121,6 +1121,32 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .piltover-interior-objective { color: #fce5a1; font-weight: 700; }
 .piltover-interior-hud button { pointer-events: auto; margin-left: auto; }
 @media (max-width: 600px) { .piltover-interior-hud { padding: 10px; } .piltover-interior-hud p { font-size: 11px; } }
+/* Escenarios 2D con fotogramas de Arcane (scenes2d.js). */
+.scene2d { position: fixed; inset: 0; z-index: 1200; overflow: hidden; background: #07090a; touch-action: none; cursor: grab; user-select: none; }
+.scene2d:active { cursor: grabbing; }
+.scene2d-stage { position: absolute; left: 0; top: 0; will-change: transform; }
+.scene2d-img { width: 100%; height: 100%; object-fit: cover; display: block; filter: contrast(1.06) saturate(1.08); transform-origin: 50% 50%; pointer-events: none; }
+.scene2d-zaun .scene2d-img { filter: contrast(1.08) saturate(1.1) hue-rotate(-4deg); }
+.scene2d-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.scene2d-shade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 55%, transparent 45%, rgba(0, 0, 0, 0.55) 100%), linear-gradient(transparent 70%, rgba(0, 0, 0, 0.45)); }
+.scene2d-zaun .scene2d-shade { background: radial-gradient(ellipse at 50% 55%, transparent 40%, rgba(2, 14, 10, 0.65) 100%), linear-gradient(rgba(20, 60, 40, 0.12), transparent 40%, rgba(0, 0, 0, 0.5)); }
+.scene2d-piltover .scene2d-shade { background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(30, 20, 5, 0.45) 100%), linear-gradient(rgba(255, 220, 160, 0.10), transparent 45%, rgba(0, 0, 0, 0.35)); }
+.scene2d-hud { position: absolute; }
+.scene2d-spot { position: absolute; width: 64px; height: 64px; margin: -32px 0 0 -32px; border: 0; padding: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+.scene2d-spot span { position: absolute; inset: 14px; border-radius: 50%; background: radial-gradient(circle, #e8ffff 0 18%, #6fe3ff 32%, rgba(80, 200, 255, 0.35) 55%, transparent 72%); box-shadow: 0 0 22px 6px rgba(90, 210, 255, 0.55); animation: scene2d-pulse 1.8s ease-in-out infinite; }
+.scene2d-spot::before { content: ''; position: absolute; inset: 2px; border-radius: 50%; border: 2px solid rgba(160, 235, 255, 0.75); animation: scene2d-ring 1.8s ease-out infinite; }
+.scene2d-goal span { background: radial-gradient(circle, #fff6dc 0 18%, #ffcf6a 34%, rgba(255, 180, 70, 0.4) 55%, transparent 72%); box-shadow: 0 0 26px 8px rgba(255, 190, 90, 0.6); }
+.scene2d-goal::before { border-color: rgba(255, 215, 140, 0.8); }
+.scene2d-spot:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+@keyframes scene2d-pulse { 50% { transform: scale(1.18); opacity: 0.85; } }
+@keyframes scene2d-ring { from { transform: scale(0.6); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+.scene2d-card { position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); max-width: min(680px, 90vw); padding: 16px 22px; color: #f4ecd8; font-size: 16px; line-height: 1.45; background: linear-gradient(rgba(14, 12, 20, 0.92), rgba(8, 8, 12, 0.94)); border: 1px solid rgba(214, 180, 110, 0.55); border-radius: 6px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); pointer-events: none; }
+.scene2d-zaun .scene2d-card { border-color: rgba(120, 220, 140, 0.5); }
+.scene2d-arrow { position: absolute; top: 50%; transform: translateY(-50%); font-size: 54px; color: rgba(255, 255, 255, 0.0); text-shadow: 0 0 12px rgba(0, 0, 0, 0.8); pointer-events: none; transition: color 0.4s; }
+.scene2d-arrow.on { color: rgba(255, 255, 255, 0.45); }
+.scene2d-arrow-l { left: 10px; } .scene2d-arrow-r { right: 10px; }
+body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before { animation: none; }
+@media (max-width: 600px) { .scene2d-card { font-size: 14px; } .scene2d-spot { width: 76px; height: 76px; margin: -38px 0 0 -38px; } }
 
 /* Ajustes: pantalla negra uniforme, tanto desde el menú como durante la partida. */
 #view-settings { background: #000 !important; background-image: none !important; }

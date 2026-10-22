@@ -212,6 +212,17 @@
 
   /** Responde a la interacción del jugador con un lugar. */
   function onLocation(loc, inside = false) {
+    // Primero se entra en el lugar: su fotograma de Arcane en 2D, con una pista que investigar
+    // la primera vez en cada capítulo. Al pulsar la luz del objetivo se abren sus acciones.
+    if (!inside && window.Scenes2D?.has(loc.id)) {
+      const seen = `visto:${G.progress.chapterId}:${loc.id}`;
+      World.pause(true);
+      const ok = window.Scenes2D.enterPlace(loc, Boolean(G.acts[seen]),
+        () => { G.acts[seen] = true; World.pause(false); onLocation(loc, true); },
+        () => World.pause(false));
+      if (ok) return;
+      World.pause(false);
+    }
     // Los escenarios 3D están retirados: las acciones se abren directamente en el lugar.
     if (loc.id === objectiveId()) G.acts[`interior:${G.progress.chapterId}`] = true;
     const acts = locationActions(loc);
