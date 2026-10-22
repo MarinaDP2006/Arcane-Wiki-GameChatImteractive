@@ -198,14 +198,18 @@
 
   // Arte personal de la jugadora (carpeta «arte» en escritorio).
   window.CustomArt = {
+    season() {
+      const id = window.Game?.current?.()?.progress?.chapterId || '';
+      return /^t\d+$|^fin2$/.test(id) ? 's2' : 's1';
+    },
     files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {} },
     report: { found: [], missing: [], borrowed: [], unknown: [] },
     async load() {
       if (window.arcane?.art) {
         try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
       } else {
-        // Navegador y Android: el arte incluido (lista generada en src/data/arte.js).
-        for (const dir of Object.keys(this.files)) this.files[dir] = { ...(window.ART_BUNDLED?.[dir] || {}) };
+        // Navegador y Android: recursos empaquetados, incluidas las carpetas por temporada.
+        for (const dir of new Set([...Object.keys(this.files), ...Object.keys(window.ART_BUNDLED || {})])) this.files[dir] = { ...(window.ART_BUNDLED?.[dir] || {}) };
       }
       const { out, unknown, direct } = matchPlaces(this.files.lugares || {});
       const ids = Object.keys(window.Scenes?.THEMES || {});
@@ -218,6 +222,13 @@
       };
     },
     image(cat, id) {
+      if (['personajes', 'caras', 'lugares'].includes(cat)) {
+        const season = this.season();
+        const seasonal = this.files[`${cat}/${season}`]?.[id] || window.ART_BUNDLED?.[`${cat}/${season}`]?.[id];
+        if (seasonal) return seasonal;
+        // Nunca usar retratos o escenarios de T1 como imágenes de T2.
+        if (season === 's2') return null;
+      }
       const f = this.files[cat]?.[id];
       return f || null;
     },
