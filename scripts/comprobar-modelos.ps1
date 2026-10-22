@@ -5,6 +5,7 @@ param(
 )
 
 Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 # Resume modelos, texturas y animaciones internas de un ZIP sin descomprimirlo.
 function Revisar-ModeloZip {
