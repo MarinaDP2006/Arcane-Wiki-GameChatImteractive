@@ -81,7 +81,7 @@ for (const [r, ids] of Object.entries(STORY.routes)) {
       if (deaths[l.s] && before.has(deaths[l.s])) errors.push(`${chId}.${nid}: habla ${l.s}, que murió en ${deaths[l.s]}`);
     });
     if (r === 't2' && chId === ids[ids.length - 1]) (STORY.endings2 || []).forEach((e) => e.lines.forEach((l) => {
-      if (deaths[l.s] && (before.has(deaths[l.s]) || deaths[l.s] === chId)) errors.push(`final ${e.id}: habla ${l.s}, que ya ha muerto`);
+      if (deaths[l.s] && (before.has(deaths[l.s]) || deaths[l.s] === chId) && !(l.cond?.flag && STORY.rescues?.[l.s] === l.cond.flag)) errors.push(`final ${e.id}: habla ${l.s}, que ya ha muerto`);
     }));
   });
 }
