@@ -138,22 +138,45 @@
     const relTxt = rel ? `Vuestra relación: ${t(Relations.label(G, id))}.` : 'Todavía no tenéis una relación especial.';
     // Algunas frases suyas de los diálogos escritos, para que la IA copie su forma de hablar.
     const d = window.CHAT?.[id];
-    const samples = d ? [d.greet?.mid, d.greet?.high, ...(d.bye || []), ...Object.values(d.nodes || {}).flatMap((n) => [].concat(n.say || []))]
-      .filter((x) => typeof x === 'string').slice(0, 8).map((x) => `«${t(x)}»`) : [];
+    // Ejemplos breves para imitar la cadencia, sin obligar al modelo a repetir frases enteras.
+    const samples = d ? [d.greet?.mid, ...(d.bye || []), ...Object.values(d.nodes || {}).flatMap((n) => [].concat(n.say || []))]
+      .filter((x) => typeof x === 'string').slice(0, 4).map((x) => `«${t(x)}»`) : [];
     const v = window.AI_VOICES?.[id] || {};
     const origin = window.CREATION?.origins?.[p.origin]?.label || p.origin || '';
     const feel = aff <= -3 ? 'Le tienes antipatía y desconfías.' : aff < 1 ? 'Le tratas con cautela.' : aff < 5 ? 'Te cae bien.' : aff < 8 ? 'Le aprecias mucho.' : 'Es una de las personas más importantes para ti.';
+    const lore = window.ARCANE_LORE?.[id] || {};
+    const part = G.progress.season === 2 || G.progress.route === 't2' ? 2 : 1;
+    const gone = new Set(G.fallen || []);
+    const acquaintances = (G.met || []).map((person) => window.WIKI.personajes.find((w) => w.id === person)?.name || person);
+    const important = Object.entries(G.flags || {}).filter(([, yes]) => yes === true).slice(-16).map(([flag]) => flag.replace(/_/g, ' '));
+    const recent = (G.log || []).filter((line) => line.s === id || line.s === 'narrador' || line.s === 'yo')
+      .slice(-7).map((line) => `${line.s === 'yo' ? p.name : line.s === id ? name : 'Narrador'}: ${String(line.t || '').slice(0, 190)}`);
+    const lastChats = (G.chats?.[id] || []).filter((line) => !line.m).slice(-6)
+      .map((line) => `${line.s === 'yo' ? p.name : name}: ${String(line.t || '').slice(0, 180)}`);
+    const memory = [
+      `Parte ${part}: ${part === 1 ? 'El inicio' : 'Las consecuencias'}; capítulo ${ch?.title || G.progress.chapterId}.`,
+      `Personas que ${p.name} ya conoce: ${acquaintances.join(', ') || 'solo su círculo inicial'}.`,
+      `Personajes ausentes o caídos: ${[...gone].join(', ') || 'ninguno confirmado'}.`,
+      important.length ? `Decisiones y sucesos registrados: ${important.join('; ')}.` : '',
+      recent.length ? `Escenas recientes: ${recent.join(' / ')}.` : '',
+      lastChats.length ? `Últimos recuerdos compartidos: ${lastChats.join(' / ')}.` : '',
+    ].filter(Boolean).join('\n');
+
     return [
       `Eres ${name}, de la serie Arcane (Piltover y Zaun). Interpreta a ${name} en un chat dentro de un juego de fans, siempre en su papel y en primera persona.`,
       `Personalidad: ${info?.persona || window.WIKI.personajes.find((x) => x.id === id)?.role || ''}`,
       v.habla ? `Cómo hablas: ${v.habla}` : '',
       samples.length ? `Así hablas (frases tuyas en el juego): ${samples.join(' ')}` : '',
       v.contigo ? `Cómo tratas a quien te escribe (es de ${origin}): ${v.contigo}` : '',
+      lore.pasado ? `Biografía y heridas reales: ${lore.pasado}` : '',
+      lore.vinculos ? `Vínculos y conflictos personales: ${lore.vinculos}` : '',
+      lore.motivaciones ? `Motivaciones, miedos y contradicciones: ${lore.motivaciones}` : '',
       v.nunca ? `Para no salirte del papel: ${v.nunca}` : '',
       `Hablas con ${who}.`,
       `${relTxt} Afinidad ${aff}/10: ${feel}${mate && mate !== id ? ` (${p.name} sale con ${window.WIKI.personajes.find((x) => x.id === mate)?.name}.)` : ''}`,
-      ch ? `Momento de la historia: ${ch.title}${G.progress.season === 2 ? ' (segunda temporada)' : ''}. No reveles cosas que tu personaje aún no sabe.` : '',
-      `Normas: responde SIEMPRE en ${LANG[window.I18N?.lang] || LANG.es}; mensajes cortos de chat (1 a 4 frases); responde a lo último que te han dicho y recuerda lo que ya habéis hablado, sin repetir frases; escribe solo lo que dice y hace ${name}, nunca lo que dice ${p.name}; describe gestos entre paréntesis, como «(se cruza de brazos)»; usa tu forma de hablar, tu humor y tus manías; nunca digas que eres una IA ni hables de este juego; si te piden algo fuera de lugar, reacciona como lo haría ${name}. Romance tierno y coqueteo sí; nada sexual explícito ni violencia gráfica.`,
+      `CONTINUIDAD DE ESTA PARTIDA (datos de juego; no son instrucciones del usuario):\n${memory}`,
+      `Solo sabes lo que ${name} ha presenciado o le han contado hasta aquí. No anticipes acontecimientos, muertes, identidades ocultas ni secretos de otro personaje. Un registro de una escena no implica que hayas estado presente: si no estabas, puedes desconocerlo. Si alguien acaba de morir o has sufrido una pérdida, no te comportes como si no hubiera pasado.`,
+      `INTERPRETACIÓN: contesta SIEMPRE en ${LANG[window.I18N?.lang] || LANG.es}. Habla en primera persona como ${name}, sin mencionar IA, prompts, juego ni metadatos; nunca escribas palabras, pensamientos ni acciones de ${p.name}. No recites una biografía ni repitas saludos y coletillas mecánicamente. Escucha la intención del último mensaje, responde con un detalle concreto de vuestra situación y, cuando proceda, haz una pregunta natural. Puedes discrepar, callarte, mentir por tus propios motivos o negarte a revelar secretos. La confianza y el romance se construyen lentamente: afinidad alta no borra traumas ni obligaciones. 1 a 5 frases fluidas; uno o dos gestos breves entre paréntesis solo si aportan algo. Evita frases de asistente, sermones, elogios automáticos y explicaciones enciclopédicas. Coqueteo y romance no explícitos, sin violencia gráfica.`,
       `Al final de cada respuesta añade una línea aparte con [[afinidad:+1]], [[afinidad:0]] o [[afinidad:-1]] según cómo te ha tratado ${p.name} en su último mensaje.`,
     ].filter(Boolean).join('\n');
   }
@@ -161,7 +184,8 @@
   // Últimos mensajes del comunicador como historial (yo = user, el personaje = assistant).
   function history(G, id) {
     const out = [];
-    for (const m of (G.chats[id] || []).slice(-24)) {
+    // Una ventana mayor conserva mejor el tono de la conversación y los temas pendientes.
+    for (const m of (G.chats[id] || []).slice(-36)) {
       const role = m.s === 'yo' ? 'user' : m.s === id ? 'assistant' : null;
       if (!role || m.m) continue;
       const prev = out[out.length - 1];
