@@ -223,6 +223,21 @@
       World.pause(false);
       return toast('No se ha podido abrir este lugar en 3D. Comprueba WebGL.', 'warn');
     }
+    // Piltover exige entrar e investigar en 3D antes de resolver objetivos o hablar.
+    if (!inside && G.world.map === 'piltover' && window.PiltoverInteriors?.has(loc.id)) {
+      World.pause(true);
+      try {
+        const ok = window.PiltoverInteriors.enter(loc.id,
+          () => onLocation(loc, true),
+          () => World.pause(false));
+        if (ok) return;
+      } catch (err) {
+        console.error('Error al abrir interior de Piltover:', err);
+        window.PiltoverInteriors.close();
+      }
+      World.pause(false);
+      return toast('No se ha podido abrir este lugar de Piltover en 3D. Comprueba WebGL.', 'warn');
+    }
     const acts = locationActions(loc);
     if (!acts.length) return toast(`${loc.name}: aquí no hay nada que hacer ahora mismo.`);
     if (acts.length === 1) return acts[0].run();
