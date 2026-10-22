@@ -1,12 +1,13 @@
-# Herramienta manual: descarga imágenes de la Arcane Wiki (Fandom) en la rama elegida.
-# Lee tools/pedido.json de esa rama y sube el resultado a la carpeta salida/ de la misma rama.
+# Herramienta manual: explora o descarga imágenes de la Arcane Wiki (Fandom) con
+# scripts/arte-wiki.py y guarda el resultado en la rama «arte-candidatos» (carpeta salida/)
+# para revisarlo antes de pasar nada al juego.
 name: Descargar arte de Arcane
 on:
   workflow_dispatch:
     inputs:
-      rama:
-        description: Rama con tools/pedido.json donde se guardan los resultados
-        default: claude/project-thread-ua2svc
+      pedido:
+        description: 'Pedido en JSON (ver scripts/arte-wiki.py)'
+        required: true
 permissions:
   contents: write
 concurrency: arte
@@ -15,16 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.rama }}
       - run: pip install --quiet pillow
-      - run: python3 tools/arte.py
-      - name: Guardar resultados en la rama
+      - name: Explorar o descargar
         env:
-          RAMA: ${{ inputs.rama }}
+          PEDIDO: ${{ inputs.pedido }}
+        run: python3 scripts/arte-wiki.py
+      - name: Guardar resultados en la rama arte-candidatos
         run: |
+          mv salida /tmp/salida
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          if git fetch -q --depth=1 origin arte-candidatos; then git checkout -q -B arte-candidatos FETCH_HEAD; else git checkout -q --orphan arte-candidatos; git rm -rqf .; fi
+          mkdir -p "salida/run-${GITHUB_RUN_NUMBER}" && cp -r /tmp/salida/. "salida/run-${GITHUB_RUN_NUMBER}/"
           git add salida
-          git commit -m "arte: resultados del pedido" || exit 0
-          for i in 1 2 3; do git pull --rebase -q origin "$RAMA" && git push origin "HEAD:$RAMA" && break; sleep 5; done
+          git commit -qm "arte: resultados del pedido ${GITHUB_RUN_NUMBER}"
+          git push -q origin arte-candidatos
