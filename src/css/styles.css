@@ -1121,3 +1121,10 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .piltover-interior-objective { color: #fce5a1; font-weight: 700; }
 .piltover-interior-hud button { pointer-events: auto; margin-left: auto; }
 @media (max-width: 600px) { .piltover-interior-hud { padding: 10px; } .piltover-interior-hud p { font-size: 11px; } }
+
+/* Ajustes: pantalla negra uniforme, tanto desde el menú como durante la partida. */
+#view-settings { background: #000 !important; background-image: none !important; }
+#view-settings::before, #view-settings::after { background-image: none !important; }
+#view-settings .settings { background: #000; }
+.overlay.show:has(.settings) { background: #000 !important; backdrop-filter: none !important; }
+.overlay.show:has(.settings) .overlay-scroll { background: #000 !important; }
