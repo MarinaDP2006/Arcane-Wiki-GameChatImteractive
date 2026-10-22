@@ -63,6 +63,44 @@
     }
   }
 
+  // Consecuencias: las escenas posteriores deben recordar la supervivencia.
+  for (const line of chapter('t5').nodes.f.lines) {
+    if (/Jinx coge la granada rosa|Odiaba el frío|Jinx se entrega en la jefatura/i.test(line.t)) {
+      line.cond = { notFlag: 'salva_isha' };
+    }
+  }
+  chapter('t5').nodes.f.lines.unshift(
+    { s: 'jinx', t: '(Isha dormita con la cabeza apoyada en su hombro.) Casi la pierdo. Ni una broma. Hoy no.', cond: { flag: 'salva_isha' } },
+  );
+  for (const line of chapter('t1').nodes.a.lines) {
+    if (/ataúdes|Era tu tía|Mi madre quería la paz/i.test(line.t)) {
+      line.cond = { ...(line.cond || {}), notFlag: 'salva_cassandra' };
+    }
+  }
+  chapter('t1').nodes.a.lines.unshift(
+    { s: 'caitlyn', t: '(Con la voz agotada.) Mi madre sigue recuperándose. No habría salido a tiempo del Consejo si tú no hubieras estado allí.', cond: { flag: 'salva_cassandra' } },
+  );
+  // El final de la Parte I reconoce que Cassandra y Silco no murieron.
+  for (const ending of S.endings) for (const line of ending.lines) {
+    if (/Cassandra.*(?:muert|qued[oó]|busca|no la encuentra)|mi madre estaba en esa sala/i.test(line.t)) {
+      line.cond = { ...(line.cond || {}), notFlag: 'salva_cassandra' };
+    }
+    if (/Lo hemos hecho.*Silco|lo has visto, Silco/i.test(line.t)) {
+      line.cond = { ...(line.cond || {}), notFlag: 'salva_silco' };
+    }
+  }
+  for (const line of chapter('fin2').nodes.a.lines) {
+    if (/granada rosa de Isha/i.test(line.t)) line.cond = { ...(line.cond || {}), notFlag: 'salva_isha' };
+  }
+  chapter('fin2').nodes.a.lines.unshift({
+    s: 'narrador', t: 'Isha espera en el refugio de las Luciérnagas, lejos del frente. Jinx lucha para tener un lugar al que volver.', cond: { flag: 'salva_isha' },
+  });
+  for (const line of S.endings2.flatMap((ending) => ending.lines)) {
+    if (/Isha.*(?:granada rosa|en memoria)|placa con muchos nombres/i.test(line.t)) {
+      line.cond = { ...(line.cond || {}), notFlag: 'salva_isha' };
+    }
+  }
+
   // Parte II: una decisión de precisión en la batalla puede evitar que Jayce
   // y Viktor desaparezcan en el núcleo. No se garantiza que recuperen su vínculo.
   choice('fin2', 'a', { t: 'Desactivar los conductos del Hexcore y abrir una salida para Jayce y Viktor (Ingenio 4).',
