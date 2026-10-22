@@ -80,6 +80,8 @@ function createWindow() {
 // en lugar del arte pintado que genera. No se distribuye nada con el juego.
 // «escenas» es el nombre antiguo de «lugares» y se sigue leyendo.
 const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice'];
+// Imágenes por temporada de Arcane: lugares/s1, lugares/s2, personajes/s1... (mandan sobre las generales).
+const SEASON_DIRS = ['lugares', 'personajes', 'caras'].flatMap((d) => [`${d}/s1`, `${d}/s2`]);
 const ART_EXT = /\.(png|jpe?g|webp|gif)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
@@ -159,7 +161,7 @@ ipcMain.handle('art:list', () => {
   retireRiotArt();
   const out = {};
   const roots = besideRoots();
-  for (const d of ART_DIRS) {
+  for (const d of [...ART_DIRS, ...SEASON_DIRS]) {
     out[d] = Object.assign({}, listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
   }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };

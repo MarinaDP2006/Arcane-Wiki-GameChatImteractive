@@ -1,20 +1,7 @@
 # Imágenes y ubicaciones de Arcane
 
-Las imágenes **que tú subiste** en `avatares/`, `caras/` y los retratos originales se conservan intactas.
+- `piltover/s1`, `piltover/s2`, `zaun/s1`, `zaun/s2`: escenarios auténticos de la serie, uno por lugar y temporada, **sin personajes**. Son concept art oficial de fondos de Fortiche (publicado en la wiki oficial de League of Legends), arte oficial de ubicaciones de Riot y fotogramas de la serie. Los créditos y enlaces de cada archivo están en `../FUENTES.json`.
+- Se recortaron las franjas de marca de agua y los rótulos de copyright, y se descartaron las imágenes que tenían gente (por ejemplo, la vista de los Callejones de T1, que tenía transeúntes).
+- `piltover/lugares`, `zaun/lugares`, `otros/` y las carpetas `atlas/` son los recursos que **ya estaban en el repositorio** y se conservan sin cambios.
 
-Se han eliminado los 32 archivos de nombre `universe-01.jpg` a `universe-08.jpg` (16 por ruta de arte, con sus duplicados en el juego).
-
-Las imágenes actuales de `mapa/piltover/lugares/` y `mapa/zaun/lugares/` son recursos que **ya estaban en el repositorio**. No se presentan como fotogramas oficiales verificados de la serie.
-
-Para localizar fotogramas auténticos de cada lugar, consultar las galerías y fuentes de referencia:
-- [Arcane oficial: imágenes de episodios](https://www.arcane.com/en-us/)
-- [Arcane Wiki: ubicaciones](https://arcane.fandom.com/wiki/Category:Locations)
-- [Piltover en Arcane, con galería](https://wiki.leagueoflegends.com/en-us/Universe:Piltover)
-
-## Piltover
-Academia, sala del Consejo, laboratorio Hextech, Hexpuertas, mansión Kiramman, prisión Stillwater, puente del Progreso, muelles, talleres y distritos.
-
-## Zaun
-La Última Gota, Los Callejones, refugio de las Luciérnagas, tienda de Benzo, fábrica de Shimmer, comuna de Viktor, ciudad subterránea y distritos.
-
-No se han añadido imágenes descargadas de terceros sin verificar su correspondencia y derechos de uso.
+Arcane © Riot Games / Fortiche Production. Uso no comercial de fan.

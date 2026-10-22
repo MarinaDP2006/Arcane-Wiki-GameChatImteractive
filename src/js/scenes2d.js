@@ -209,15 +209,28 @@
     puente: ['piltover', A + 'lugares/piltover.webp', [0.25, 0.8], [0.62, 0.45], 'El Puente del Progreso, entre el oro y la niebla.', 'Un sello desgastado en una caseta indica quién controlaba el paso.'],
     'mansion-kiramman': ['piltover', A + 'lugares/mansion-kiramman.png', [0.8, 0.75], [0.35, 0.4], 'Jardines, retratos y secretos de familia.', 'Una carta sin enviar habla de un trato con el Consejo.'],
   };
+  /**
+   * Imagen del lugar para la temporada que se está jugando (lugares/s1 o lugares/s2, que vienen
+   * de arcaneData/arte/mapa/<ciudad>/<temporada>). En T2 nunca se usa una imagen de T1: si falta,
+   * se entra directamente a las acciones del lugar.
+   */
+  function imageFor(id, fallback) {
+    const A = window.CustomArt;
+    if (!A) return fallback;
+    const season = A.season();
+    const own = A.files[`lugares/${season}`]?.[id] || window.ART_BUNDLED?.[`lugares/${season}`]?.[id];
+    if (own) return own;
+    return season === 's2' ? null : fallback;
+  }
   /** ¿Tiene este lugar escenario 2D? */
   function has(id) { return Boolean(PLACES[id]); }
   /** Abre el escenario 2D de un lugar del mapa; skipClue si ya se investigó. */
   function enterPlace(loc, skipClue, onGoal, onExit) {
     const p = PLACES[loc.id];
     if (!p) return false;
-    return open({ city: p[0], title: loc.name, desc: p[4], image: p[1], clue: { x: p[2][0], y: p[2][1], text: p[5] },
+    return open({ city: p[0], title: loc.name, desc: p[4], image: imageFor(loc.id, p[1]), clue: { x: p[2][0], y: p[2][1], text: p[5] },
       goal: { x: p[3][0], y: p[3][1] }, focus: (skipClue ? p[3] : p[2])[0], skipClue }, onGoal, onExit);
   }
 
-  window.Scenes2D = { open, close, has, enterPlace, PLACES };
+  window.Scenes2D = { open, close, has, enterPlace, imageFor, PLACES };
 })();

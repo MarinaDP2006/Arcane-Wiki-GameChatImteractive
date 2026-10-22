@@ -1,0 +1,1085 @@
+{
+ "creditos": "Arcane © Riot Games / Fortiche Production. Uso no comercial de fan, según la política de contenido de fans de Riot Games (\"Legal Jibber Jabber\"). Las imágenes se han reducido y recortado; no se han generado ni retocado con IA.",
+ "lugares": [
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "artesanos",
+   "nombre": "Distrito de artesanos",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/artesanos.webp",
+   "copia_juego": "src/img/arte/lugares/s1/artesanos.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_01.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_01.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    942
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "hexpuertas",
+   "nombre": "Hexpuertas",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/hexpuertas.webp",
+   "copia_juego": "src/img/arte/lugares/s1/hexpuertas.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_Hexgates.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_Hexgates.jpg",
+   "tipo": "arte oficial de ubicación (Riot Games)",
+   "subido_por": "Tesla Effect",
+   "tamano_original": [
+    1920,
+    809
+   ],
+   "recorte": null,
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "muelle-stillwater",
+   "nombre": "Muelles / pasillos de Stillwater",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/muelle-stillwater.webp",
+   "copia_juego": "src/img/arte/lugares/s1/muelle-stillwater.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E08_Concept_08.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E08_Concept_08.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    897
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "piltover",
+   "nombre": "Vista de Piltover",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/piltover.webp",
+   "copia_juego": "src/img/arte/lugares/s1/piltover.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_02.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_02.jpg",
+   "tipo": "arte oficial de ubicación (Riot Games)",
+   "subido_por": "Tesla Effect",
+   "tamano_original": [
+    3840,
+    1609
+   ],
+   "recorte": null,
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "plaza",
+   "nombre": "Plaza / calles de Piltover",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/plaza.webp",
+   "copia_juego": "src/img/arte/lugares/s1/plaza.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_08.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_08.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    987
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "puente",
+   "nombre": "Puente del Progreso (lado Piltover)",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/puente.webp",
+   "copia_juego": "src/img/arte/lugares/s1/puente.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_Bridge.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_Bridge.jpg",
+   "tipo": "arte oficial de ubicación (Riot Games)",
+   "subido_por": "Tesla Effect",
+   "tamano_original": [
+    1700,
+    915
+   ],
+   "recorte": null,
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "stillwater",
+   "nombre": "Prisión de Stillwater",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/stillwater.webp",
+   "copia_juego": "src/img/arte/lugares/s1/stillwater.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_Stillwater_Hold.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_Stillwater_Hold.jpg",
+   "tipo": "arte oficial de ubicación (Riot Games)",
+   "subido_por": "Tesla Effect",
+   "tamano_original": [
+    1920,
+    814
+   ],
+   "recorte": null,
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "piltover",
+   "lugar": "taller-jayce",
+   "nombre": "Taller / laboratorio de Jayce",
+   "archivo": "arcaneData/arte/mapa/piltover/s1/taller-jayce.webp",
+   "copia_juego": "src/img/arte/lugares/s1/taller-jayce.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E01_Concept_12.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E01_Concept_12.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    904
+   ],
+   "recorte": "recortado el rótulo de copyright inferior",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "arbol",
+   "nombre": "Árbol del refugio de las Luciérnagas",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/arbol.webp",
+   "copia_juego": "src/img/arte/lugares/s1/arbol.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Zaun_Arcane_Firelight_Tree_02.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Zaun_Arcane_Firelight_Tree_02.jpg",
+   "tipo": "arte oficial de ubicación (Riot Games)",
+   "subido_por": "Poke6668",
+   "tamano_original": [
+    1914,
+    782
+   ],
+   "recorte": null,
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "fabrica",
+   "nombre": "Fábrica / tuberías industriales",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/fabrica.webp",
+   "copia_juego": "src/img/arte/lugares/s1/fabrica.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E05_Concept_10.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E05_Concept_10.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    904
+   ],
+   "recorte": "recortado el rótulo de copyright inferior",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "mercado",
+   "nombre": "Mercado de Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/mercado.webp",
+   "copia_juego": "src/img/arte/lugares/s1/mercado.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_07.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_07.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    3840,
+    1948
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "puente-zaun",
+   "nombre": "Puente / paso hacia Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/puente-zaun.webp",
+   "copia_juego": "src/img/arte/lugares/s1/puente-zaun.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E08_Concept_04.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E08_Concept_04.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    1080
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "sumidero",
+   "nombre": "Sumidero / túneles profundos",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/sumidero.webp",
+   "copia_juego": "src/img/arte/lugares/s1/sumidero.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E07_Concept_15.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E07_Concept_15.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    1197
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "tejados",
+   "nombre": "Tejados de Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/tejados.webp",
+   "copia_juego": "src/img/arte/lugares/s1/tejados.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E05_Concept_05.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E05_Concept_05.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    2500,
+    1790
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "ultima-gota",
+   "nombre": "La Última Gota",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/ultima-gota.webp",
+   "copia_juego": "src/img/arte/lugares/s1/ultima-gota.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E09_Concept_10.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E09_Concept_10.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    733
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "ciudad": "zaun",
+   "lugar": "zaun",
+   "nombre": "Vista de Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s1/zaun.webp",
+   "copia_juego": "src/img/arte/lugares/s1/zaun.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E05_Concept_06.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E05_Concept_06.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    2500,
+    1538
+   ],
+   "recorte": "recortado el lado izquierdo (mural con figura) y la franja negra",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "artesanos",
+   "nombre": "Distrito de artesanos",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/artesanos.webp",
+   "copia_juego": "src/img/arte/lugares/s2/artesanos.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E09_Concept_26.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E09_Concept_26.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1920,
+    974
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "consejo",
+   "nombre": "Sala del Consejo",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/consejo.webp",
+   "copia_juego": "src/img/arte/lugares/s2/consejo.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_19.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_19.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    917
+   ],
+   "recorte": "la sala destruida tras el atentado de T2",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "hexpuertas",
+   "nombre": "Hexpuertas",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/hexpuertas.webp",
+   "copia_juego": "src/img/arte/lugares/s2/hexpuertas.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E08_Concept_10.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E08_Concept_10.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    826
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "mansion-kiramman",
+   "nombre": "Mansión Kiramman",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/mansion-kiramman.webp",
+   "copia_juego": "src/img/arte/lugares/s2/mansion-kiramman.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E01_Concept_09.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E01_Concept_09.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    779
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "muelle-stillwater",
+   "nombre": "Muelles / pasillos de Stillwater",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/muelle-stillwater.webp",
+   "copia_juego": "src/img/arte/lugares/s2/muelle-stillwater.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_02.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_02.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    2048,
+    871
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "piltover",
+   "nombre": "Vista de Piltover",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/piltover.webp",
+   "copia_juego": "src/img/arte/lugares/s2/piltover.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_01.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_01.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    3840,
+    1898
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "plaza",
+   "nombre": "Plaza / calles de Piltover",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/plaza.webp",
+   "copia_juego": "src/img/arte/lugares/s2/plaza.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E01_Concept_01.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E01_Concept_01.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    3840,
+    1731
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "stillwater",
+   "nombre": "Prisión de Stillwater",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/stillwater.webp",
+   "copia_juego": "src/img/arte/lugares/s2/stillwater.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_19.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_19.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    879
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "piltover",
+   "lugar": "taller-jayce",
+   "nombre": "Taller / laboratorio de Jayce",
+   "archivo": "arcaneData/arte/mapa/piltover/s2/taller-jayce.webp",
+   "copia_juego": "src/img/arte/lugares/s2/taller-jayce.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_07.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_07.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    873
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "zaun",
+   "lugar": "callejones",
+   "nombre": "Los Callejones",
+   "archivo": "arcaneData/arte/mapa/zaun/s2/callejones.webp",
+   "copia_juego": "src/img/arte/lugares/s2/callejones.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E02_Concept_11.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E02_Concept_11.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    2048,
+    1195
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "zaun",
+   "lugar": "escondite-jinx",
+   "nombre": "Escondite de Jinx",
+   "archivo": "arcaneData/arte/mapa/zaun/s2/escondite-jinx.webp",
+   "copia_juego": "src/img/arte/lugares/s2/escondite-jinx.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E05_Concept_10.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E05_Concept_10.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    3000,
+    1381
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "zaun",
+   "lugar": "invernadero",
+   "nombre": "Invernadero / comuna de Viktor",
+   "archivo": "arcaneData/arte/mapa/zaun/s2/invernadero.webp",
+   "copia_juego": "src/img/arte/lugares/s2/invernadero.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E06_Concept_25.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E06_Concept_25.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    815
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "zaun",
+   "lugar": "mercado",
+   "nombre": "Mercado de Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s2/mercado.webp",
+   "copia_juego": "src/img/arte/lugares/s2/mercado.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_13.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_13.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    832
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "zaun",
+   "lugar": "puente-zaun",
+   "nombre": "Puente / paso hacia Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s2/puente-zaun.webp",
+   "copia_juego": "src/img/arte/lugares/s2/puente-zaun.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_11.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_11.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    916
+   ],
+   "recorte": "recortado el lado derecho (mural con figura)",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "ciudad": "zaun",
+   "lugar": "tejados",
+   "nombre": "Tejados de Zaun",
+   "archivo": "arcaneData/arte/mapa/zaun/s2/tejados.webp",
+   "copia_juego": "src/img/arte/lugares/s2/tejados.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_22.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_22.jpg",
+   "tipo": "concept art oficial de Fortiche (fondo del episodio)",
+   "subido_por": "TheGreatMustard",
+   "tamano_original": [
+    1920,
+    816
+   ],
+   "recorte": "franja inferior de marca de agua",
+   "credito": "Riot Games / Fortiche (Arcane)"
+  }
+ ],
+ "personajes": [
+  {
+   "temporada": "s1",
+   "personaje": "jinx",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/jinx.webp",
+   "copia_juego": "src/img/arte/personajes/s1/jinx.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Jinx_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/b/b5/Jinx_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1208,
+    1208
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "vi",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/vi.webp",
+   "copia_juego": "src/img/arte/personajes/s1/vi.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Vi_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/5/51/Vi_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1208,
+    1208
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "caitlyn",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/caitlyn.webp",
+   "copia_juego": "src/img/arte/personajes/s1/caitlyn.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Caitlyn_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/c/c9/Caitlyn_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1208,
+    1208
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "ekko",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/ekko.webp",
+   "copia_juego": "src/img/arte/personajes/s1/ekko.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Ekko_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/7/72/Ekko_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1208,
+    1208
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "jayce",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/jayce.webp",
+   "copia_juego": "src/img/arte/personajes/s1/jayce.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Jayce_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/3/3d/Jayce_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1071,
+    1066
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "viktor",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/viktor.webp",
+   "copia_juego": "src/img/arte/personajes/s1/viktor.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Viktor_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/0/09/Viktor_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1073,
+    1074
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "mel",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/mel.webp",
+   "copia_juego": "src/img/arte/personajes/s1/mel.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Mel_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/8/83/Mel_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1077,
+    1073
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "heimerdinger",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/heimerdinger.webp",
+   "copia_juego": "src/img/arte/personajes/s1/heimerdinger.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Heimerdinger_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/e/e3/Heimerdinger_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1208,
+    1208
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "silco",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/silco.webp",
+   "copia_juego": "src/img/arte/personajes/s1/silco.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Silco_Season_1_Episode_7_001.png",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/7/78/Silco_Season_1_Episode_7_001.png/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Rwtia64",
+   "tamano_original": [
+    1920,
+    814
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "sevika",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/sevika.webp",
+   "copia_juego": "src/img/arte/personajes/s1/sevika.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Sevika_Icon.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/6/67/Sevika_Icon.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1066,
+    1060
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "vander",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/vander.webp",
+   "copia_juego": "src/img/arte/personajes/s1/vander.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Vander_Season_1_Episode_1_001.png",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/7/7a/Vander_Season_1_Episode_1_001.png/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Rwtia64",
+   "tamano_original": [
+    1920,
+    814
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "ambessa",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/ambessa.webp",
+   "copia_juego": "src/img/arte/personajes/s1/ambessa.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Ambessa_Season_1_Episode_8_001.png",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/2/2a/Ambessa_Season_1_Episode_8_001.png/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Rwtia64",
+   "tamano_original": [
+    1920,
+    814
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s1",
+   "personaje": "cassandra",
+   "archivo": "arcaneData/arte/personajes/referencias/s1/cassandra.webp",
+   "copia_juego": "src/img/arte/personajes/s1/cassandra.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Cassandra_Season_1_Episode_8_001.png",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/6/69/Cassandra_Season_1_Episode_8_001.png/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Rwtia64",
+   "tamano_original": [
+    1920,
+    814
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "jinx",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/jinx.webp",
+   "copia_juego": "src/img/arte/personajes/s2/jinx.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:JinxEP9.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/a/a4/JinxEP9.jpg/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Vaderxl",
+   "tamano_original": [
+    1534,
+    1534
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "vi",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/vi.webp",
+   "copia_juego": "src/img/arte/personajes/s2/vi.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:ViFinaleArmor.png",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/3/38/ViFinaleArmor.png/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Vaderxl",
+   "tamano_original": [
+    1275,
+    1602
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "caitlyn",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/caitlyn.webp",
+   "copia_juego": "src/img/arte/personajes/s2/caitlyn.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:CaitlynS2EP5.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/3/36/CaitlynS2EP5.jpg/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Vaderxl",
+   "tamano_original": [
+    1515,
+    1518
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "ekko",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/ekko.webp",
+   "copia_juego": "src/img/arte/personajes/s2/ekko.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Ekko_Arcane_6_Render.png",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Ekko_Arcane_6_Render.png",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Poke140054",
+   "tamano_original": [
+    550,
+    615
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "jayce",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/jayce.webp",
+   "copia_juego": "src/img/arte/personajes/s2/jayce.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Jayce_Promo2.jpeg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/b/bf/Jayce_Promo2.jpeg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1024,
+    1280
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "viktor",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/viktor.webp",
+   "copia_juego": "src/img/arte/personajes/s2/viktor.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Viktor_Season_2_Act_2_2.webp",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/b/be/Viktor_Season_2_Act_2_2.webp/revision/latest",
+   "tipo": "fotograma de la serie",
+   "subido_por": "Highwaytohellx",
+   "tamano_original": [
+    1562,
+    661
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "mel",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/mel.webp",
+   "copia_juego": "src/img/arte/personajes/s2/mel.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Mel_Promo2.jpeg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/5/50/Mel_Promo2.jpeg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1638,
+    2048
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "heimerdinger",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/heimerdinger.webp",
+   "copia_juego": "src/img/arte/personajes/s2/heimerdinger.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Heimer_Promo2.jpeg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/4/46/Heimer_Promo2.jpeg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1638,
+    2048
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "sevika",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/sevika.webp",
+   "copia_juego": "src/img/arte/personajes/s2/sevika.webp",
+   "fuente": "https://wiki.leagueoflegends.com/en-us/File:Sevika_Arcane_S2_Promo_01.jpg",
+   "url_original": "https://wiki.leagueoflegends.com/en-us/images/Sevika_Arcane_S2_Promo_01.jpg",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Martin ormazabal",
+   "tamano_original": [
+    1836,
+    2295
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "ambessa",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/ambessa.webp",
+   "copia_juego": "src/img/arte/personajes/s2/ambessa.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:AmbessaS2ACT1-3.jpg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/1/14/AmbessaS2ACT1-3.jpg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Vaderxl",
+   "tamano_original": [
+    1552,
+    1552
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  },
+  {
+   "temporada": "s2",
+   "personaje": "isha",
+   "archivo": "arcaneData/arte/personajes/referencias/s2/isha.webp",
+   "copia_juego": "src/img/arte/personajes/s2/isha.webp",
+   "fuente": "https://arcane.fandom.com/wiki/File:Isha_Current.jpeg",
+   "url_original": "https://static.wikia.nocookie.net/arcane/images/b/b4/Isha_Current.jpeg/revision/latest",
+   "tipo": "retrato o póster promocional oficial",
+   "subido_por": "Cactussandwing",
+   "tamano_original": [
+    1342,
+    1144
+   ],
+   "credito": "Riot Games / Fortiche (Arcane)"
+  }
+ ],
+ "pendientes": {
+  "lugares": [
+   {
+    "temporada": "s1",
+    "ciudad": "piltover",
+    "lugar": "academia",
+    "nombre": "Academia de Piltover"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "piltover",
+    "lugar": "consejo",
+    "nombre": "Sala del Consejo"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "piltover",
+    "lugar": "ejecutores",
+    "nombre": "Cuartel de los ejecutores"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "piltover",
+    "lugar": "mansion-kiramman",
+    "nombre": "Mansión Kiramman"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "zaun",
+    "lugar": "callejones",
+    "nombre": "Los Callejones"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "zaun",
+    "lugar": "escondite-jinx",
+    "nombre": "Escondite de Jinx"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "zaun",
+    "lugar": "foso",
+    "nombre": "El Foso"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "zaun",
+    "lugar": "invernadero",
+    "nombre": "Invernadero / comuna de Viktor"
+   },
+   {
+    "temporada": "s1",
+    "ciudad": "zaun",
+    "lugar": "tienda-benzo",
+    "nombre": "Tienda de Benzo"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "piltover",
+    "lugar": "academia",
+    "nombre": "Academia de Piltover"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "piltover",
+    "lugar": "ejecutores",
+    "nombre": "Cuartel de los ejecutores"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "piltover",
+    "lugar": "puente",
+    "nombre": "Puente del Progreso (lado Piltover)"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "arbol",
+    "nombre": "Árbol del refugio de las Luciérnagas"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "fabrica",
+    "nombre": "Fábrica / tuberías industriales"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "foso",
+    "nombre": "El Foso"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "sumidero",
+    "nombre": "Sumidero / túneles profundos"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "tienda-benzo",
+    "nombre": "Tienda de Benzo"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "ultima-gota",
+    "nombre": "La Última Gota"
+   },
+   {
+    "temporada": "s2",
+    "ciudad": "zaun",
+    "lugar": "zaun",
+    "nombre": "Vista de Zaun"
+   }
+  ],
+  "personajes": [
+   {
+    "temporada": "s1",
+    "personaje": "isha",
+    "motivo": "no aparece en T1"
+   },
+   {
+    "temporada": "s1",
+    "personaje": "maddie",
+    "motivo": "no aparece en T1"
+   },
+   {
+    "temporada": "s1",
+    "personaje": "kino",
+    "motivo": "no aparece en T1"
+   },
+   {
+    "temporada": "s2",
+    "personaje": "silco",
+    "motivo": "muere al final de T1"
+   },
+   {
+    "temporada": "s2",
+    "personaje": "vander",
+    "motivo": "muere en T1 (lo que vuelve es Warwick): en T2 no se usa su retrato"
+   },
+   {
+    "temporada": "s2",
+    "personaje": "cassandra",
+    "motivo": "muere al final de T1"
+   },
+   {
+    "temporada": "s2",
+    "personaje": "maddie",
+    "motivo": "pendiente: no se encontró imagen verificable de esta temporada"
+   },
+   {
+    "temporada": "s2",
+    "personaje": "kino",
+    "motivo": "pendiente: no se encontró imagen verificable de esta temporada"
+   }
+  ]
+ }
+}

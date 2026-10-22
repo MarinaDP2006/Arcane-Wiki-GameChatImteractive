@@ -226,8 +226,9 @@
         const season = this.season();
         const seasonal = this.files[`${cat}/${season}`]?.[id] || window.ART_BUNDLED?.[`${cat}/${season}`]?.[id];
         if (seasonal) return seasonal;
-        // Nunca usar retratos o escenarios de T1 como imágenes de T2.
-        if (season === 's2') return null;
+        // Nunca usar retratos o escenarios de T1 como imágenes de T2. Las caras que sube la
+        // jugadora (caras/) no tienen temporada y se usan siempre.
+        if (season === 's2' && cat !== 'caras') return null;
       }
       const f = this.files[cat]?.[id];
       return f || null;

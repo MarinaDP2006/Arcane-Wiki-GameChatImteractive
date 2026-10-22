@@ -12,3 +12,9 @@ keystore.properties
 
 # Partidas exportadas: son personales, no se suben
 grietas-partida-*.json
+
+# Partidas personales: nunca se suben a GitHub (solo el LEEME de la carpeta de resúmenes).
+arcaneData/partidas/
+arcaneData/partidas guardadas/*
+!arcaneData/partidas guardadas/LEEME.md
+arcaneData/ajustes.json

@@ -375,7 +375,6 @@
       '',
       'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',
       '(«La Última Gota.jpg», «Puente del Progreso.png») o en inglés («The Last Drop.jpg»); da igual tildes y mayúsculas.',
-      'En Ajustes → Arte personal verás qué lugares tienen imagen y cuáles faltan.',
       'Formatos: imágenes .png .jpg .jpeg .webp',
       'Reinicia el juego después de añadir archivos.',
       '',
@@ -404,23 +403,6 @@
     ].join('\n');
   }
 
-  // Lista de lugares: cuáles tienen imagen, cuáles toman la de su gemelo y cuáles faltan.
-  function placesReport() {
-    const r = window.CustomArt.report;
-    const total = Object.keys(Scenes.THEMES).length;
-    const name = (id) => Object.values(window.WORLD.maps).flatMap((m) => m.locations).find((l) => l.id === id)?.name
-      || window.WIKI.lugares.find((l) => l.id === id)?.name || id;
-    const chip = (id, cls, title) => el('span', { class: `tag ${cls}`, title }, `${name(id)} · ${id}`);
-    return el('details', { class: 'places-report', open: r.missing.length || r.unknown.length ? true : null },
-      el('summary', {}, `Lugares con imagen: ${r.found.length + r.borrowed.length}/${total}${r.missing.length ? ` · faltan ${r.missing.length}` : ' · ¡completo!'}`),
-      r.found.length ? el('div', { class: 'chips' }, r.found.map((id) => chip(id, 'ok', 'Tu imagen'))) : null,
-      r.borrowed.length ? el('p', { class: 'muted small' }, 'Usan la imagen de su lugar gemelo (pon una propia si quieres):') : null,
-      r.borrowed.length ? el('div', { class: 'chips' }, r.borrowed.map((id) => chip(id, 'warn', 'Imagen prestada'))) : null,
-      r.missing.length ? el('p', { class: 'muted small' }, 'Faltan (se ve el fondo pintado del juego). Guarda la imagen con el nombre de la derecha:') : null,
-      r.missing.length ? el('div', { class: 'chips' }, r.missing.map((id) => chip(id, 'bad', `lugares/${id}.jpg`))) : null,
-      r.unknown.length ? el('p', { class: 'muted small' }, `No sé a qué lugar corresponden estos archivos (renómbralos con un nombre de la guía): ${r.unknown.join(', ')}`) : null);
-  }
-
   /** Construye las opciones de arte personal. */
   function artSettings(root, onBack) {
     const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
@@ -430,7 +412,6 @@
       el('h3', {}, 'Arte personal'),
       el('p', { class: 'muted' }, 'Pon tus imágenes y modelos ZIP, FBX o GLB en la carpeta de arte. El juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
       el('p', { class: 'small' }, `Archivos encontrados → ${counts}`, models),
-      placesReport(),
       el('div', { class: 'row gap' },
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
         ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'modelos'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
