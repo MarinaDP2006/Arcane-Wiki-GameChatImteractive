@@ -12,6 +12,7 @@ const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
 const SETTINGS_FILE = () => path.join(app.getPath('userData'), 'ajustes.json');
 const SLOTS = ['1', '2', '3'];
 
+/** Lee datos JSON del disco y devuelve un valor alternativo ante errores. */
 function readJSON(file, fallback) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -20,16 +21,19 @@ function readJSON(file, fallback) {
   }
 }
 
+/** Crea carpetas y escribe datos JSON de forma legible. */
 function writeJSON(file, data) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
 }
 
+/** Valida la ranura y obtiene la ruta de una partida. */
 function slotFile(slot) {
   if (!SLOTS.includes(String(slot))) throw new Error('Ranura no válida');
   return path.join(SAVE_DIR(), `ranura-${slot}.json`);
 }
 
+/** Crea la ventana segura de Electron y configura su comportamiento. */
 function createWindow() {
   const win = new BrowserWindow({
     width: 1360,
@@ -75,6 +79,7 @@ const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice'];
 const ART_EXT = /\.(png|jpe?g|webp|gif)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
+/** Prepara las carpetas de recursos visuales personales. */
 function ensureArtDir() {
   for (const d of ART_DIRS) fs.mkdirSync(path.join(artRoot(), d), { recursive: true });
   fs.mkdirSync(path.join(artRoot(), 'modelos', 'animaciones'), { recursive: true });
@@ -84,6 +89,7 @@ function ensureArtDir() {
 const ART_ALIASES = { ambressa: 'ambessa', kiraman: 'cassandra', kiramman: 'cassandra', 'cassandra-kiramman': 'cassandra', powder: 'jinx', violet: 'vi',
   heirmendinger: 'heimerdinger', heimendinger: 'heimerdinger', heimer: 'heimerdinger' };
 
+/** Enumera el contenido de una carpeta autorizada. */
 function listDir(dir) {
   const out = {};
   if (!fs.existsSync(dir)) return out;
@@ -178,6 +184,7 @@ const MODEL_ALIASES = { ...ART_ALIASES, cait: 'caitlyn', heimer: 'heimerdinger',
 const MODEL_EXT = /\.(glb|fbx|zip)$/i;
 const TEX_EXT = /\.(png|jpe?g|tga|bmp|webp|tiff?|dds)$/i;
 
+/** Identifica un personaje a partir del nombre de su archivo de modelo. */
 function modelName(base) {
   const n = base.replace(MODEL_EXT, '').toLowerCase();
   if (MODEL_IDS.includes(n)) return n;
@@ -200,6 +207,7 @@ function findModel(dir, depth = 0) {
   return null;
 }
 
+/** Enumera los modelos tridimensionales disponibles. */
 function modelFiles() {
   const out = {};
   const add = (name, file, root) => { out[name] = { file, root: root || path.dirname(file) }; };
