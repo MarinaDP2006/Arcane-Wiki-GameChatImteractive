@@ -1,5 +1,7 @@
-// Motor del mundo abierto: Piltover y Zaun con movimiento libre, colisiones, cámara,
-// minimapa, personajes de Arcane, lugares con su imagen y cristales hextec.
+// Motor del mundo abierto: Piltover y Zaun, cámara, minimapa, personajes de Arcane, lugares
+// con su imagen y cristales hextec. No hay avatar del jugador: se navega con el ratón (o
+// tocando la pantalla), haciendo clic en el suelo para mover la vista o en un personaje o
+// lugar para ir hasta él e interactuar.
 // Con WebGL la ciudad se dibuja en 3D (world3d.js) y este lienzo pinta encima, en 2D,
 // los personajes, las tarjetas de los lugares y los rótulos. Sin WebGL se usa el mapa 2D.
 (function () {
@@ -19,6 +21,7 @@
   let mapId = null;
   let map = null; // datos del mapa + edificios generados
   let target = null; // destino del clic
+  let pending = null; // personaje o lugar pulsado: se abre al llegar la cámara
   let particles = [];
   let nearest = null;
   let insideLoc = null;
@@ -27,7 +30,6 @@
   let vel = { x: 0, y: 0 };
   let drag = null;
   const keys = new Set();
-  const stick = { x: 0, y: 0 }; // joystick táctil (móvil), de -1 a 1
   const imgCache = new Map();
 
   // ---------- Generación ----------
@@ -120,11 +122,6 @@
     const url = window.CustomArt?.image('lugares', l.id) || (ATLAS_IMG[l.id] && `img/atlas/${ATLAS_IMG[l.id]}.webp`);
     return url ? svgImage(`l:${l.id}`, url) : null;
   }
-  /** Obtiene la imagen del protagonista. */
-  function playerImg() {
-    const url = Portrait.playerURL(G.player, 96);
-    return svgImage(`p:${url.length}:${url.slice(-32)}`, url);
-  }
 
   // ---------- Entidades dinámicas ----------
   function locById(id) {
@@ -135,11 +132,25 @@
     return null;
   }
 
-  /** Calcula qué personajes desbloqueados aparecen en el distrito. */
+  // Personajes con modelo 3D propio (carpeta de modelos). Solo esos aparecen en el mapa.
+  let models = new Set();
+  let modelsAt = -Infinity;
+  /** Refresca cada pocos segundos la lista de modelos (por si se añaden archivos). */
+  function withModel(id) {
+    const now = performance.now();
+    if (now - modelsAt > 5000 && window.Avatars3D) {
+      modelsAt = now;
+      window.Avatars3D.listModels().then((set) => { models = set; }).catch(() => {});
+    }
+    return models.has(id);
+  }
+
+  /** Calcula qué personajes desbloqueados (y con modelo 3D) aparecen en el distrito. */
   function npcs() {
     const out = [];
     const byLoc = {};
     for (const id of G.unlocked) {
+      if (!withModel(id)) continue;
       if ((W().absent[id] || []).includes(G.progress.chapterId)) continue;
       if ((G.fallen || []).includes(id)) continue;
       const loc = locById(W().homes[id]);
@@ -179,56 +190,31 @@
     return { x, y };
   }
 
-  /** Actualiza el movimiento, las interacciones y el descubrimiento del mundo. */
+  /** Desliza la cámara hacia el destino del clic y gestiona interacciones y descubrimientos. */
   function update(dt) {
     const pos = G.world;
-    let dx = 0;
-    let dy = 0;
-    if (keys.has('arrowleft') || keys.has('a')) dx -= 1;
-    if (keys.has('arrowright') || keys.has('d')) dx += 1;
-    if (keys.has('arrowup') || keys.has('w')) dy -= 1;
-    if (keys.has('arrowdown') || keys.has('s')) dy += 1;
-    const push = Math.min(1, Math.hypot(stick.x, stick.y));
-    if (!dx && !dy && push > 0.15) { dx = stick.x; dy = stick.y; }
-    if (dx || dy) target = null;
-    else if (target) {
-      const tx = target.x - pos.x;
-      const ty = target.y - pos.y;
-      const d = Math.hypot(tx, ty);
-      if (d < 6) target = null;
-      else { dx = tx / d; dy = ty / d; }
-    }
-    if (r3d && (dx || dy) && !target) {
-      // Con la cámara girada, las flechas se mueven según lo que se ve en pantalla.
-      const a = r3d.yaw;
-      [dx, dy] = [dx * Math.cos(a) + dy * Math.sin(a), -dx * Math.sin(a) + dy * Math.cos(a)];
-    }
     if (r3d) {
       if (keys.has('q')) r3d.rotate(-1.6 * dt);
       if (keys.has('r')) r3d.rotate(1.6 * dt);
     }
-    const len = Math.hypot(dx, dy);
     const ox = pos.x;
     const oy = pos.y;
-    if (len) {
-      const sp = SPEED * (keys.has('shift') || push > 0.92 ? 1.7 : 1) * (push > 0.15 && push <= 0.92 ? Math.max(0.45, push) : 1) * (G.player.keystone === 'pies' ? 1.3 : 1) * dt;
-      const mx = (dx / len) * sp;
-      const my = (dy / len) * sp;
-      // Colisiones por pasos cortos: al correr o perder FPS no se atraviesan fachadas.
-      // Mantiene deslizamiento en esquinas, de modo que explorar con WASD se siente continuo.
-      const steps = Math.max(1, Math.ceil(Math.hypot(mx, my) / (PLAYER_R * 0.6)));
-      let moved = false;
-      for (let step = 0; step < steps; step++) {
-        const sx = mx / steps;
-        const sy = my / steps;
-        if (!collides(pos.x + sx, pos.y)) { pos.x += sx; moved = true; }
-        if (!collides(pos.x, pos.y + sy)) { pos.y += sy; moved = true; }
+    if (target) {
+      const tx = target.x - pos.x;
+      const ty = target.y - pos.y;
+      const d = Math.hypot(tx, ty);
+      // Sin avatar no hay colisiones: la vista vuela por encima de los edificios, rápida al
+      // principio y frenando al llegar.
+      const step = Math.min(d, Math.max(SPEED, d * 3) * dt);
+      if (d < 6) {
+        target = null;
+        const p = pending;
+        pending = null;
+        if (p) open(p);
+      } else {
+        pos.x = Math.max(0, Math.min(map.w, pos.x + (tx / d) * step));
+        pos.y = Math.max(0, Math.min(map.h, pos.y + (ty / d) * step));
       }
-      if (!moved) target = null;
-      pos.dir = Math.atan2(dy, dx);
-      const stride = Math.floor((pos.walk || 0) / Math.PI);
-      pos.walk = (pos.walk || 0) + dt * 10;
-      if (moved && Math.floor(pos.walk / Math.PI) !== stride) Audio2.step?.(mapId, keys.has('shift') || push > 0.92);
     }
     if (dt) { vel.x += ((pos.x - ox) / dt - vel.x) * 0.1; vel.y += ((pos.y - oy) / dt - vel.y) * 0.1; }
 
@@ -411,14 +397,6 @@
     // Personajes de Arcane
     for (const n of npcs()) drawPerson(charImg(n.id), n.x, n.y, n.name, P.glow, 24, true);
 
-    // Jugador
-    const pos = G.world;
-    const bounce = Math.abs(Math.sin(pos.walk || 0)) * 3;
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.beginPath();
-    ctx.ellipse(pos.x, pos.y + PLAYER_R + 4, PLAYER_R, 5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    drawPerson(playerImg(), pos.x, pos.y - bounce, G.player.name, '#ffe08a', PLAYER_R + 4, true);
     if (target) {
       ctx.strokeStyle = 'rgba(255,224,138,0.6)';
       ctx.beginPath();
@@ -456,16 +434,13 @@
   }
 
   // Dibujo en 2D+3D: la ciudad la pinta world3d.js y aquí se pintan encima, ordenados por
-  // profundidad, los lugares (tarjeta sobre un poste), los personajes y el jugador.
+  // profundidad, los lugares (tarjeta sobre un poste) y los personajes.
   function draw3d(t) {
     const obj = objectiveLoc();
     const pos = G.world;
     const list = npcs();
-    // Con personajes 3D, cada uno camina con su modelo; los de Arcane miran al jugador si se acerca.
-    const actors = r3d.actors ? [
-      ...list.map((n) => ({ key: n.id, id: n.id, x: n.x, y: n.y, yaw: n.yaw, look: Math.hypot(n.x - pos.x, n.y - pos.y) < 260 ? pos : null })),
-      { key: 'player', player: G.player, x: pos.x, y: pos.y, vx: vel.x, vy: vel.y, yaw: pos.dir != null ? Math.PI / 2 - pos.dir : 0 },
-    ] : null;
+    // Con personajes 3D, cada uno con su modelo; miran hacia la vista cuando se acerca.
+    const actors = r3d.actors ? list.map((n) => ({ key: n.id, id: n.id, x: n.x, y: n.y, yaw: n.yaw, look: Math.hypot(n.x - pos.x, n.y - pos.y) < 260 ? pos : null })) : null;
     r3d.render(t, { x: pos.x, y: pos.y, vx: vel.x, vy: vel.y, codex: G.codex, obj: obj && obj.map === mapId ? obj.id : null, people: actors });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const items = [];
@@ -492,11 +467,11 @@
     }
     if (actors) {
       // Solo el nombre encima de la cabeza (y la cara de quien tienes al lado para hablar).
-      for (const p of [...list.map((n) => ({ ...n, ring: map.def.palette.glow })), { id: null, name: G.player.name, x: pos.x, y: pos.y, ring: '#ffe08a', me: true }]) {
+      for (const p of list.map((n) => ({ ...n, ring: map.def.palette.glow }))) {
         const h = window.Avatars3D.heightOf(p.id) + 8;
         const head = r3d.project(p.x, p.y, h);
         if (!head) continue;
-        const near = !p.me && nearest?.kind === 'char' && nearest.id === p.id;
+        const near = nearest?.kind === 'char' && nearest.id === p.id;
         labels.push({ d: head.d, fn: () => {
           if (near) {
             const r = Math.max(12, 16 * Math.min(1.4, head.k * 1.2));
@@ -506,8 +481,6 @@
       }
     } else {
       const people = list.map((n) => ({ img: charImg(n.id), x: n.x, y: n.y, name: n.name, ring: map.def.palette.glow, r: 24 }));
-      const bounce = Math.abs(Math.sin(pos.walk || 0)) * 4;
-      people.push({ img: playerImg(), x: pos.x, y: pos.y, name: G.player.name, ring: '#ffe08a', r: PLAYER_R + 6, bounce });
       for (const p of people) {
         const foot = r3d.project(p.x, p.y, 0);
         const head = r3d.project(p.x, p.y, 34 + (p.bounce || 0));
@@ -844,12 +817,17 @@
     }
   }
 
-  /** Activa la interacción con el personaje o lugar cercano. */
-  function interact() {
-    if (!nearest || paused) return;
+  /** Abre la conversación con un personaje o las acciones de un lugar. */
+  function open(thing) {
+    if (paused) return;
     Audio2.sfx.click();
-    if (nearest.kind === 'char') cb.onTalk?.(nearest.id);
-    else if (nearest.kind === 'loc') cb.onLocation?.(nearest);
+    if (thing.kind === 'char') cb.onTalk?.(thing.id);
+    else if (thing.kind === 'loc') cb.onLocation?.(thing);
+  }
+
+  /** Activa la interacción con el personaje o lugar del centro de la vista. */
+  function interact() {
+    if (nearest) open(nearest);
   }
 
   // ---------- Bucle ----------
@@ -899,7 +877,6 @@
     const k = e.key.toLowerCase();
     if (e.type === 'keydown') {
       if (paused) return;
-      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
       if (k === 'e' || k === 'enter') return interact();
       if (r3d && (k === '+' || k === '=')) r3d.zoom(0.85);
       if (r3d && k === '-') r3d.zoom(1.18);
@@ -907,19 +884,63 @@
     } else keys.delete(k);
   }
 
-  /** Procesa clics para mover o interactuar. */
+  /** Personaje o lugar que hay bajo un punto de la pantalla (los personajes primero). */
+  function thingAt(sx, sy) {
+    let best = null;
+    let bestD = Infinity;
+    const cam = r3d ? null : camera();
+    for (const n of npcs()) {
+      let c;
+      let rad;
+      if (r3d) {
+        const h = r3d.actors ? window.Avatars3D.heightOf(n.id) : 34;
+        const mid = r3d.project(n.x, n.y, h * 0.55);
+        if (!mid) continue;
+        c = mid;
+        rad = Math.max(26, h * 0.6 * mid.k);
+      } else {
+        c = { x: n.x - cam.x, y: n.y - cam.y };
+        rad = 30;
+      }
+      const d = Math.hypot(c.x - sx, c.y - sy);
+      if (d < rad && d < bestD) { best = { kind: 'char', ...n }; bestD = d; }
+    }
+    if (best) return best;
+    for (const l of map.def.locations) {
+      let c;
+      let k = 1;
+      if (r3d) {
+        c = r3d.project(l.x, l.y, 105);
+        if (!c) continue;
+        k = Math.min(1.6, Math.max(0.45, c.k * 0.8));
+      } else c = { x: l.x - cam.x, y: l.y - cam.y };
+      if (Math.abs(c.x - sx) < 74 * k && Math.abs(c.y - sy) < 50 * k) {
+        const d = Math.hypot(c.x - sx, c.y - sy);
+        if (d < bestD) { best = { kind: 'loc', ...l }; bestD = d; }
+      }
+    }
+    return best;
+  }
+
+  /** Clic (o toque): en un personaje o lugar, va hasta él y lo abre; en el suelo, mueve la vista. */
   function onClick(e) {
     if (paused) return;
     if (e.button !== 0) return;
     const r = canvas.getBoundingClientRect();
-    if (r3d) target = r3d.pick(e.clientX - r.left, e.clientY - r.top);
+    const sx = e.clientX - r.left;
+    const sy = e.clientY - r.top;
+    const thing = thingAt(sx, sy);
+    if (thing) {
+      pending = thing;
+      target = { x: thing.x, y: thing.y };
+      return;
+    }
+    pending = null;
+    if (r3d) target = r3d.pick(sx, sy);
     else {
       const cam = camera();
-      target = { x: e.clientX - r.left + cam.x, y: e.clientY - r.top + cam.y };
+      target = { x: sx + cam.x, y: sy + cam.y };
     }
-    if (!target) return;
-    // Clic sobre algo cercano al jugador = interactuar.
-    if (nearest && Math.hypot((nearest.x ?? 0) - target.x, (nearest.y ?? 0) - target.y) < (r3d ? 60 : 40)) { target = null; interact(); }
   }
 
   // Ratón en 3D: rueda = zoom, botón derecho arrastrando = girar e inclinar la cámara.
@@ -996,10 +1017,8 @@
       const id = ++loopId;
       requestAnimationFrame((t) => { last = t; frame(t, id); });
     },
-    stop() { running = false; keys.clear(); stick.x = 0; stick.y = 0; },
-    pause(v) { paused = v; keys.clear(); target = null; stick.x = 0; stick.y = 0; },
-    // Controles táctiles (mobile.js).
-    stick(x, y) { stick.x = x; stick.y = y; if (x || y) target = null; },
+    stop() { running = false; keys.clear(); },
+    pause(v) { paused = v; keys.clear(); target = null; pending = null; },
     interact,
     canInteract: () => Boolean(nearest) && !paused,
     rotate(d) { r3d?.rotate(d); },
