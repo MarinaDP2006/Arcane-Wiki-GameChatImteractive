@@ -42,6 +42,7 @@
   }
 
   const cache = {};
+  /** Construye y guarda edificios y datos de colisión de un distrito. */
   function buildMap(id) {
     if (cache[id]) return cache[id];
     const def = W().maps[id];
@@ -114,10 +115,12 @@
     fabrica: 'shimmer-factory', foso: 'undercity', tejados: 'zaun', 'ultima-gota': 'the-last-drop', callejones: 'the-lanes',
     'tienda-benzo': 'benzos-pawn-shop', mercado: 'undercity', sumidero: 'zaun', 'escondite-jinx': 'the-lanes', arbol: 'firelight-sanctuary',
   };
+  /** Obtiene la imagen asociada a un lugar. */
   function placeImg(l) {
     const url = window.CustomArt?.image('lugares', l.id) || (ATLAS_IMG[l.id] && `img/atlas/${ATLAS_IMG[l.id]}.webp`);
     return url ? svgImage(`l:${l.id}`, url) : null;
   }
+  /** Obtiene la imagen del protagonista. */
   function playerImg() {
     const url = Portrait.playerURL(G.player, 96);
     return svgImage(`p:${url.length}:${url.slice(-32)}`, url);
@@ -132,6 +135,7 @@
     return null;
   }
 
+  /** Calcula qué personajes desbloqueados aparecen en el distrito. */
   function npcs() {
     const out = [];
     const byLoc = {};
@@ -146,6 +150,7 @@
     return out;
   }
 
+  /** Resuelve la ubicación del objetivo activo. */
   function objectiveLoc() {
     const id = cb.objective?.();
     return id ? locById(id) : null;
@@ -160,6 +165,7 @@
     return false;
   }
 
+  /** Busca una posición libre próxima a un obstáculo. */
   function freeSpot(x, y) {
     if (!collides(x, y)) return { x, y };
     for (let rad = 20; rad < 400; rad += 20) {
@@ -172,6 +178,7 @@
     return { x, y };
   }
 
+  /** Actualiza el movimiento, las interacciones y el descubrimiento del mundo. */
   function update(dt) {
     const pos = G.world;
     let dx = 0;
@@ -254,6 +261,7 @@
     if (fade > 0) fade = Math.max(0, fade - dt * 1.5);
   }
 
+  /** Calcula el desplazamiento de la cámara en el mapa 2D. */
   function camera() {
     const x = Math.max(0, Math.min(map.w - canvas.width, G.world.x - canvas.width / 2));
     const y = Math.max(0, Math.min(map.h - canvas.height, G.world.y - canvas.height / 2));
@@ -269,6 +277,7 @@
     canvas.parentElement?.querySelector('.world-3d')?.remove();
   }
 
+  /** Dibuja el escenario usando el modo 3D o el respaldo 2D. */
   function draw(t) {
     if (r3d) {
       try { return draw3d(t); } catch (err) { drop3d(err); }
@@ -675,6 +684,7 @@
     ctx.restore();
   }
 
+  /** Traza una figura hexagonal. */
   function hexPath(r) {
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
@@ -684,6 +694,7 @@
     ctx.closePath();
   }
 
+  /** Dibuja un rótulo contextual legible. */
   function label(text, x, y, color) {
     ctx.font = 'bold 15px system-ui, sans-serif';
     ctx.textAlign = 'center';
@@ -695,6 +706,7 @@
     ctx.fillText(text, x, y + 2);
   }
 
+  /** Traza un rectángulo redondeado en el lienzo. */
   function roundRect(x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -705,6 +717,7 @@
     ctx.closePath();
   }
 
+  /** Dibuja a un personaje en el mapa 2D. */
   function drawPerson(img, x, y, name, ring, r, showName) {
     ctx.save();
     ctx.beginPath();
@@ -723,6 +736,7 @@
     if (showName || (nearest && nearest.name === name)) label(name, x, y - r - 14, ring);
   }
 
+  /** Señala el objetivo cuando está fuera de la vista. */
   function drawObjectiveArrow(obj, cam) {
     if (obj.map !== mapId) {
       // El objetivo está en la otra ciudad: señalamos el puente.
@@ -733,6 +747,7 @@
     arrowTo(obj.x, obj.y, cam, obj.name);
   }
 
+  /** Dibuja una flecha apuntando a un destino. */
   function arrowTo(x, y, cam, text) {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
@@ -765,6 +780,7 @@
     label(text, ex, ey - 22, '#ffe08a');
   }
 
+  /** Actualiza el minimapa y sus marcadores. */
   function drawMini(obj) {
     if (!mctx) return;
     const s = mini.width / map.w;
@@ -814,6 +830,7 @@
   }
 
   let lastDistrict = '';
+  /** Actualiza el nombre del distrito visible. */
   function updateDistrict() {
     const d = map.def.districts.find(({ rect: [x, y, w, h] }) => G.world.x >= x && G.world.x < x + w && G.world.y >= y && G.world.y < y + h);
     const name = `${map.def.label} · ${d ? d.name : ''}`;
@@ -824,6 +841,7 @@
     }
   }
 
+  /** Activa la interacción con el personaje o lugar cercano. */
   function interact() {
     if (!nearest || paused) return;
     Audio2.sfx.click();
@@ -837,6 +855,7 @@
   let fpsEl = null;
   let fpsN = 0;
   let fpsT = 0;
+  /** Muestra el rendimiento en fotogramas por segundo. */
   function fpsMeter(t) {
     if (!opt().showFps) { fpsEl?.remove(); fpsEl = null; return; }
     if (!fpsEl) { fpsEl = document.createElement('div'); fpsEl.className = 'fps-meter'; document.body.append(fpsEl); }
@@ -844,6 +863,7 @@
     if (t - fpsT >= 500) { fpsEl.textContent = `${Math.round((fpsN * 1000) / (t - fpsT))} FPS`; fpsN = 0; fpsT = t; }
   }
 
+  /** Ejecuta el bucle del juego sin duplicar fotogramas. */
   function frame(t, id) {
     if (!running || id !== loopId) return;
     const dt = Math.min(0.05, (t - last) / 1000 || 0);
@@ -862,6 +882,7 @@
     }
   }
 
+  /** Adapta el lienzo a las dimensiones de la pantalla. */
   function resize() {
     if (!canvas) return;
     const box = canvas.parentElement.getBoundingClientRect();
@@ -869,6 +890,7 @@
     canvas.height = Math.max(240, Math.floor(box.height));
   }
 
+  /** Procesa las pulsaciones de teclado. */
   function onKey(e) {
     if (!running || e.target.matches?.('input, textarea, select')) return;
     const k = e.key.toLowerCase();
@@ -882,6 +904,7 @@
     } else keys.delete(k);
   }
 
+  /** Procesa clics para mover o interactuar. */
   function onClick(e) {
     if (paused) return;
     if (e.button !== 0) return;
@@ -921,6 +944,7 @@
   window.addEventListener('blur', () => keys.clear());
   window.addEventListener('resize', resize);
 
+  /** Cambia de distrito y prepara su representación. */
   function setMap(id, atLocId) {
     mapId = id;
     map = buildMap(id);
