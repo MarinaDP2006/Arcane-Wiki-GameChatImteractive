@@ -4,6 +4,7 @@
   const { $, el, esc, tpl, store, toast, sleep, pick } = U;
   const S = () => window.STORY;
 
+  let lastPlayTick = Date.now();
   let G = null; // estado de la partida en curso
   let slot = null;
   let busy = false; // reproduciendo líneas de la historia
@@ -26,7 +27,7 @@
   function newState(player, stats) {
     const route = S().routes[player.origin];
     const st = {
-      version: 1, player, stats,
+      version: 1, player, stats, playTimeSeconds: 0,
       aff: {}, rep: { zaun: player.origin === 'zaun' ? 1 : 0, piltover: player.origin === 'piltover' ? 1 : 0 },
       flags: {}, unlocked: [], chats: {}, log: [], endings: [], met: [], fallen: [],
       world: { map: null, x: 0, y: 0 }, codex: [], visited: [], acts: {},
@@ -42,6 +43,9 @@
   /** Guarda los datos actuales de la partida. */
   async function persist() {
     if (!G || !slot) return;
+    const now = Date.now();
+    if (window.App?.view === 'game') G.playTimeSeconds = (G.playTimeSeconds || 0) + Math.max(0, Math.min(60, (now - lastPlayTick) / 1000));
+    lastPlayTick = now;
     G.progress.chapterTitle = chapterById(G.progress.chapterId)?.title || '';
     G.log = G.log.slice(-400);
     await store.save(slot, G);
@@ -97,6 +101,7 @@
     if (!data) return toast('No se pudo cargar la partida', 'warn');
     slot = s;
     G = data;
+    lastPlayTick = Date.now();
     // Partidas antiguas sin mundo abierto.
     G.world = G.world || { map: null, x: 0, y: 0 };
     G.codex = G.codex || [];

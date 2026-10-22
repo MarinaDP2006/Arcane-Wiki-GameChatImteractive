@@ -11,6 +11,8 @@ app.setPath('userData', process.env.GRIETAS_DATOS || path.join(app.getPath('appD
 const Modelos = require('./modelos');
 
 const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
+// Solo metadatos de las partidas. No se guardan decisiones, chats ni estadísticas aquí.
+const SAVE_SUMMARY_DIR = () => path.join(app.getPath('userData'), 'arcaneData', 'partidas guardadas');
 const SETTINGS_FILE = () => path.join(app.getPath('userData'), 'ajustes.json');
 const SLOTS = ['1', '2', '3'];
 
@@ -371,6 +373,14 @@ function writeSave(slot, data) {
     // Solo conserva copias válidas; una partida corrupta no reemplaza un respaldo correcto.
     if (readJSON(file, null) !== null) fs.copyFileSync(file, file + '.bak');
     fs.renameSync(tmp, file);
+    const saved = readJSON(file, null);
+    if (saved) writeJSON(path.join(SAVE_SUMMARY_DIR(), `ranura-${slot}.json`), {
+      'Nombre personaje': saved.player?.name || '',
+      'Fecha': saved.savedAt || '',
+      'Tiempo de juego': saved.playTimeSeconds || 0,
+      'Nivel en historia': saved.progress?.chapterTitle || saved.progress?.chapterId || '',
+      'Ciudad': saved.player?.origin === 'zaun' ? 'Zaun' : saved.player?.origin === 'piltover' ? 'Piltover' : '',
+    });
   } finally {
     if (fs.existsSync(tmp)) fs.rmSync(tmp, { force: true });
   }
@@ -385,6 +395,7 @@ ipcMain.handle('save:list', () =>
       origin: data?.player?.origin ?? null,
       chapter: data?.progress?.chapterTitle ?? null,
       savedAt: data?.savedAt ?? null,
+      playTimeSeconds: data?.playTimeSeconds ?? 0,
     };
   })
 );
@@ -396,6 +407,7 @@ ipcMain.handle('save:write', (_e, slot, data) => {
 ipcMain.handle('save:delete', (_e, slot) => {
   fs.rmSync(slotFile(slot), { force: true });
   fs.rmSync(slotFile(slot) + '.bak', { force: true });
+  fs.rmSync(path.join(SAVE_SUMMARY_DIR(), `ranura-${slot}.json`), { force: true });
   return true;
 });
 

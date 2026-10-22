@@ -95,7 +95,7 @@
       if (desktop) return window.arcane.saves.list();
       return ['1', '2', '3'].map((slot) => {
         const d = LS.get(`arcane-slot-${slot}`, null);
-        return { slot, empty: !d, name: d?.player?.name, origin: d?.player?.origin, chapter: d?.progress?.chapterTitle, savedAt: d?.savedAt };
+        return { slot, empty: !d, name: d?.player?.name, origin: d?.player?.origin, chapter: d?.progress?.chapterTitle, savedAt: d?.savedAt, playTimeSeconds: d?.playTimeSeconds || 0 };
       });
     },
     async load(slot) {
