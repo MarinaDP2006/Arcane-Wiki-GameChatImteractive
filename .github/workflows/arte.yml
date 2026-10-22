@@ -3,6 +3,10 @@
 name: Descargar arte de Arcane
 on:
   workflow_dispatch:
+    inputs:
+      rama:
+        description: Rama con tools/pedido.json donde se guardan los resultados
+        default: claude/project-thread-ua2svc
 permissions:
   contents: write
 concurrency: arte
@@ -11,12 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.rama }}
       - run: pip install --quiet pillow
       - run: python3 tools/arte.py
       - name: Guardar resultados en la rama
+        env:
+          RAMA: ${{ inputs.rama }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
           git add salida
           git commit -m "arte: resultados del pedido" || exit 0
-          for i in 1 2 3; do git pull --rebase -q origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done
+          for i in 1 2 3; do git pull --rebase -q origin "$RAMA" && git push origin "HEAD:$RAMA" && break; sleep 5; done
