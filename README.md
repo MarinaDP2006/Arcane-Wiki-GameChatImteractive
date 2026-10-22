@@ -15,7 +15,7 @@ Si aún no hay una versión publicada, abre [Actions](https://github.com/MarinaD
 
 ## Modelos personales de tus seis personajes
 
-El juego acepta modelos `.zip`, `.fbx` y `.glb` con texturas. Puedes dejarlos quietos y con sus colores en **Ajustes → Gráficos → NPC quietos y a color**; tu personaje mantiene su movimiento. Copia los ZIP en la carpeta que abre **Ajustes → Arte personal → modelos** y ponles nombres reconocibles: `vi.zip`, `jinx.zip`, `caitlyn.zip`, etc. No hay que subir tus ZIP privados a GitHub.
+El juego acepta modelos `.zip`, `.fbx`, `.obj` y `.glb` con texturas (los ZIP pueden llevar otro ZIP dentro). Los prepara una sola vez en la caché `arte\modelos\_cache` de tu carpeta de datos, sin tocar los originales. Los archivos `.blend` hay que exportarlos antes a `.glb` desde Blender. Puedes dejarlos quietos y con sus colores en **Ajustes → Gráficos → NPC quietos y a color**; tu personaje mantiene su movimiento. Copia los ZIP en la carpeta que abre **Ajustes → Arte personal → modelos** y ponles nombres reconocibles: `vi.zip`, `jinx.zip`, `caitlyn.zip`, etc. No hay que subir tus ZIP privados a GitHub.
 
 **[Guía paso a paso para los seis ZIP y pruebas Windows](GUIA-MODELOS-3D-Y-PRUEBAS.md)**.
 

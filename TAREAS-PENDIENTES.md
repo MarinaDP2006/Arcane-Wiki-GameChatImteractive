@@ -35,6 +35,19 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [ ] Confirmar ejecución verde de Windows Actions y descargar y probar el instalador.
 - [ ] Validar todas las rutas de historia con una partida de principio a fin.
 
+## Integración de los seis modelos y prueba en Windows (22/10/2026, v1.18.0)
+- [x] Analizados los seis ZIP: Caitlyn y Mel (FBX con texturas), Jinx y Viktor (OBJ dentro de otro ZIP), Ekko y Vi (solo `.blend`).
+- [x] Nueva caché persistente de modelos (`modelos.js`): texturas reducidas, ZIP internos, `.obj` convertido a binario; los originales no se tocan.
+- [x] Emparejado de texturas con nombres recortados o distintos y colores de respaldo por personaje; ninguna pieza queda negra.
+- [x] Bustos sobre pedestal (Mel).
+- [x] Comprobado en el juego real: Caitlyn, Mel, Jinx y Viktor aparecen a color en sus lugares; hablar con ellos (E) abre su diálogo; WASD mueve al jugador.
+- [x] Guardado comprobado: escribe la ranura y su `.bak`, y se relee la misma posición.
+- [x] Corregido: el avatar de partidas antiguas apuntaba a la carpeta de la instalación «Arcane Piltover y Zaun» y no se cargaba.
+- [x] `GRIETAS_DATOS` permite probar con una carpeta de datos distinta sin tocar las partidas reales.
+- [x] `npm ci`, `npm run check` y `npm run dist:win` correctos en Windows 11 (instalador y portable generados).
+- [ ] Ekko y Vi: exportar sus `.blend` a `.glb` desde Blender (el juego no puede leer `.blend`).
+- [ ] Probar el instalador en otro equipo Windows y una partida completa por cada ruta.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.

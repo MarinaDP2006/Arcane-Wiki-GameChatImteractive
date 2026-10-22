@@ -514,19 +514,200 @@
   // Imágenes de un modelo .fbx: se buscan por el nombre del archivo, vengan de donde vengan
   // (los .fbx suelen guardar la ruta del ordenador de quien los hizo).
   const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', bmp: 'image/bmp' };
-  const baseName = (u) => decodeURIComponent(String(u).split(/[\\/]/).pop() || '').toLowerCase();
-  /** Interpreta un modelo en formato FBX. */
-  function parseFBX(data, textures) {
+  const baseName = (u) => { let s = String(u); try { s = decodeURIComponent(s); } catch { /* nombre con % suelto */ } return (s.split(/[\\/]/).pop() || '').toLowerCase(); };
+  // Nombre comparable de una textura: sin carpeta, sin extensión, sin sufijos «.001» de Blender
+  // y sin espacios ni guiones («hair 2.png» y «hair_2.png» son la misma imagen).
+  const texKey = (u) => baseName(u).replace(/(\.\d{3})+$/, '').replace(/\.[a-z0-9]{2,4}$/, '').replace(/[^a-z0-9]/g, '');
+
+  /** Convierte las texturas recibidas en direcciones blob: que Three.js puede cargar. */
+  function textureURLs(textures) {
     const urls = {};
-    for (const [n, b] of Object.entries(textures)) {
-      const ext = n.split('.').pop();
+    for (const [n, b] of Object.entries(textures || {})) {
+      const ext = n.split('.').pop().toLowerCase();
       urls[baseName(n)] = URL.createObjectURL(new Blob([b], { type: MIME[ext] || 'application/octet-stream' }));
     }
+    return urls;
+  }
+
+  /**
+   * Busca la textura que pide un modelo aunque el nombre no coincida exactamente: algunos ZIP
+   * recortan los nombres («…_BaseCo.png» en vez de «…_BaseColor.png») o cambian los espacios.
+   */
+  function findTexture(urls, wanted) {
+    const exact = urls[baseName(wanted)];
+    if (exact) return exact;
+    const key = texKey(wanted);
+    if (!key) return null;
+    let best = null;
+    let bestLen = 0;
+    for (const [n, url] of Object.entries(urls)) {
+      const k = texKey(n);
+      if (k === key) return url;
+      const shorter = Math.min(k.length, key.length);
+      if (shorter >= 10 && (key.startsWith(k) || k.startsWith(key)) && shorter > bestLen) { best = url; bestLen = shorter; }
+    }
+    return best;
+  }
+
+  /** Espera a que el gestor de carga termine de leer todas las texturas (o a un tiempo máximo). */
+  function waitTextures(manager, ms = 20000) {
+    return new Promise((ok) => {
+      let started = false;
+      const prevStart = manager.onStart;
+      manager.onStart = (...a) => { started = true; prevStart?.(...a); };
+      manager.onLoad = () => ok();
+      setTimeout(() => { if (!started) ok(); }, 0);
+      setTimeout(ok, ms);
+    });
+  }
+
+  /** Interpreta un modelo en formato FBX y espera a que sus texturas estén cargadas. */
+  async function parseFBX(data, textures) {
+    const urls = textureURLs(textures);
     const manager = new T.LoadingManager();
-    manager.setURLModifier((u) => (/^(blob|data):/.test(u) ? u : urls[baseName(u)] || urls[baseName(u).replace(/\.[^.]+$/, '.png')] || u));
+    // Una imagen que no está en el ZIP se sustituye por un píxel neutro en lugar de dejar el
+    // material negro; después fixMaterials le busca otra textura o un color del personaje.
+    manager.setURLModifier((u) => (/^(blob|data):/.test(u) ? u : findTexture(urls, u) || MISSING_PIXEL));
     const buf = data.buffer ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) : data;
+    const done = waitTextures(manager);
     const group = new window.THREE_FBX.FBXLoader(manager).parse(buf, '');
-    return { scene: group, animations: group.animations || [] };
+    await done;
+    return { scene: group, animations: group.animations || [], urls };
+  }
+  // Píxel de 1×1 que marca una textura que faltaba (se detecta por su tamaño).
+  const MISSING_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
+
+  /**
+   * Monta un modelo .obj que el juego ya convirtió a binario («malla», ver modelos.js): una
+   * pieza por objeto y material para que cada una reciba su textura o su color.
+   */
+  function parseMesh(data, parts) {
+    const buf = data.buffer ? data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) : data;
+    const group = new T.Group();
+    for (const p of parts || []) {
+      const n = p.vertices;
+      const g = new T.BufferGeometry();
+      g.setAttribute('position', new T.BufferAttribute(new Float32Array(buf, p.offset, n * 3), 3));
+      g.setAttribute('uv', new T.BufferAttribute(new Float32Array(buf, p.offset + n * 12, n * 2), 2));
+      if (p.normals) g.setAttribute('normal', new T.BufferAttribute(new Float32Array(buf, p.offset + n * 20, n * 3), 3));
+      else g.computeVertexNormals();
+      const m = new T.MeshStandardMaterial({ name: p.mtl, color: 0xffffff, roughness: 0.8, metalness: 0 });
+      const mesh = new T.Mesh(g, m);
+      mesh.name = p.obj;
+      group.add(mesh);
+    }
+    return group;
+  }
+
+  // ---------- Materiales a color ----------
+  // Palabras que no dicen nada de a qué parte pertenece una textura o un material.
+  const STOP = new Set(['low', 'high', 'lod', 'lp', 'hp', 'material', 'mat', 'default', 'mesh', 'object', 'plane', 'cube', 'circle', 'cylinder', 'cone', 'sphere', 'nurbspath', 'path', 'retopo', 'png', 'jpg', 'jpeg',
+    'basecolor', 'base', 'color', 'colour', 'col', 'diffuse', 'albedo', 'texture', 'tex', 'map', 'final', 'new', 'copy']);
+  // Texturas que no son de color (relieve, rugosidad, brillo…): nunca se usan como color.
+  const NOT_COLOR = /(normal|_n$|rough|metal|_ao$|ambient|occlusion|mask|emissive|emission|_e$|spec|_s$|_s@|@channels|height|bump|opacity|alpha|gloss|displace)/i;
+  /** Separa un nombre en palabras útiles («ViktorHead_Low_lambert1» → viktor, head). */
+  const words = (s) => String(s || '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase().split(/[^a-z]+/)
+    .filter((w) => w.length >= 3 && !STOP.has(w) && !/^lambert|^blinn|^phong|^sg$/.test(w));
+
+  /** Elige la textura de color más parecida al nombre del material y de la pieza. */
+  function guessTexture(urls, names) {
+    const want = names.flatMap(words);
+    if (!want.length) return null;
+    let best = null;
+    let bestScore = 0;
+    for (const [n, url] of Object.entries(urls)) {
+      const stem = n.replace(/\.[^.]+$/, '');
+      if (NOT_COLOR.test(stem)) continue;
+      const have = words(stem);
+      let score = 0;
+      for (const w of want) {
+        if (have.includes(w)) score += 2;
+        else if (w.length >= 4 && have.some((h) => h.startsWith(w) || w.startsWith(h) || h.includes(w))) score += 1;
+      }
+      if (score > bestScore) { best = url; bestScore = score; }
+    }
+    return best;
+  }
+
+  /** Textura de color general del modelo (cuerpo o vestuario), para piezas sin nombre claro. */
+  function mainTexture(urls) {
+    for (const [n, url] of Object.entries(urls)) {
+      const stem = n.replace(/\.[^.]+$/, '');
+      if (!NOT_COLOR.test(stem) && /body|costume|outfit|cloth|main|atlas/i.test(stem)) return url;
+    }
+    return null;
+  }
+
+  // Color de respaldo según la parte del cuerpo, con la paleta del retrato del personaje.
+  function fallbackColor(names, spec) {
+    const s = names.join(' ').toLowerCase();
+    if (/lash|pesta/.test(s)) return 0x1a1418;
+    if (/brow|ceja/.test(s)) return shade(spec.hair, 0.8).getHex();
+    if (/hair|pelo|braid|trenza|bang|flequillo/.test(s)) return new T.Color(spec.hair).getHex();
+    if (/lens|glass|cristal|wet/.test(s)) return 0xbcd6e6;
+    if (/eye|ojo|iris|pupil/.test(s)) return 0xf2efe9;
+    if (/skin|piel|body|head|face|cara|arm|hand|leg|neck|nail|cuerpo/.test(s)) return new T.Color(spec.skin).getHex();
+    if (/pant|lower|shoe|boot|bota|leg|trouser|falda|skirt/.test(s)) return new T.Color(spec.bottom).getHex();
+    if (/gun|rifle|metal|arma|weapon|brace|ferro/.test(s)) return 0x6c6a72;
+    return new T.Color(spec.top).getHex();
+  }
+
+  const loadedPixel = (tex) => {
+    const img = tex?.image;
+    return Boolean(img && (img.width || img.naturalWidth) > 1);
+  };
+
+  /**
+   * Deja todos los materiales del modelo a color y sin piezas negras: quita las texturas que no
+   * se pudieron cargar, asigna por nombre las texturas del ZIP que el modelo no enlazaba y, si
+   * no hay ninguna, usa un color de respaldo del personaje. No modifica los archivos originales.
+   */
+  function fixMaterials(model, urls, spec) {
+    const loader = new T.TextureLoader();
+    const cache = new Map();
+    const load = (url) => {
+      if (!cache.has(url)) {
+        const t = loader.load(url);
+        t.colorSpace = T.SRGBColorSpace;
+        t.anisotropy = 4;
+        cache.set(url, t);
+      }
+      return cache.get(url);
+    };
+    const main = mainTexture(urls || {});
+    model.traverse((o) => {
+      if (!o.isMesh) return;
+      o.material = [].concat(o.material).map((m) => {
+        if (!m) return m;
+        // Las texturas que faltaban (píxel neutro) se retiran para no oscurecer el material.
+        for (const k of ['map', 'normalMap', 'bumpMap', 'specularMap', 'emissiveMap', 'alphaMap', 'aoMap', 'roughnessMap', 'metalnessMap', 'lightMap', 'displacementMap']) {
+          if (m[k] && !loadedPixel(m[k])) m[k] = null;
+        }
+        const names = [m.name, o.name, o.parent?.name].filter(Boolean);
+        if (!m.map && urls) {
+          const hairOrEye = /hair|pelo|eye|ojo|lash|brow|lens|glass/i.test(names.join(' '));
+          const url = guessTexture(urls, names) || (!hairOrEye && o.geometry?.attributes?.uv ? main : null);
+          if (url) m.map = load(url);
+        }
+        if (m.map) {
+          m.color?.setRGB(1, 1, 1);
+          m.map.colorSpace = T.SRGBColorSpace;
+        } else if (m.color) {
+          // Sin textura: se respeta un color propio del archivo si lo tiene; si es negro, blanco
+          // o gris por defecto, se pinta con el color de esa parte del personaje.
+          const c = m.color;
+          const grey = Math.abs(c.r - c.g) < 0.04 && Math.abs(c.g - c.b) < 0.04;
+          if (grey) c.setHex(fallbackColor(names, spec));
+        }
+        // Los brillos emisivos de exportación (blancos) lavan el color: se apagan si no hay mapa.
+        if (m.emissive && !m.emissiveMap && m.emissive.getHex() !== 0) m.emissive.setHex(0);
+        if (m.isMeshPhongMaterial && m.shininess > 60) m.shininess = 30;
+        if (/lens|glass|cristal/i.test(names.join(' '))) { m.transparent = true; m.opacity = Math.min(m.opacity ?? 1, 0.35); }
+        m.needsUpdate = true;
+        return m;
+      });
+      if (o.material.length === 1) o.material = o.material[0];
+    });
   }
 
   /** Interpreta un modelo en formato GLB. */
@@ -557,6 +738,8 @@
       if (!buf) return null;
       if (buf.kind === 'zip') return parseZip(buf.data, name);
       if (buf.kind === 'fbx') return parseFBX(buf.data, buf.textures || {});
+      if (buf.kind === 'malla') return { scene: parseMesh(buf.data, buf.parts), animations: [], urls: textureURLs(buf.textures) };
+      if (buf.kind === 'glb') return parseGLB(buf.data.buffer ? buf.data.buffer.slice(buf.data.byteOffset, buf.data.byteOffset + buf.data.byteLength) : buf.data, name);
       return parseGLB(buf, name);
     })().catch((err) => { console.warn(`Modelo ${name}:`, err); return null; });
     parsed.set(name, p);
@@ -596,10 +779,12 @@
   }
 
   /** Construye un avatar a partir de un modelo externo. */
-  async function buildGLB(names, scale) {
+  async function buildGLB(names, scale, spec) {
     let gltf = null;
     for (const n of names) { gltf = await loadGLB(n); if (gltf) break; }
     if (!gltf) return null;
+    // Los materiales se corrigen una sola vez sobre el modelo leído; los clones los comparten.
+    if (!gltf.fixed) { fixMaterials(gltf.scene, gltf.urls, spec); gltf.fixed = true; }
     const model = window.THREE_GLTF.SkeletonUtils.clone(gltf.scene);
     let rigged = false;
     model.traverse((o) => {
@@ -612,7 +797,7 @@
         for (const m of [].concat(o.material)) {
           if (!m) continue;
           // Mantener la textura original en color: el tinte del FBX puede oscurecerla.
-          if (m.map) { m.color?.setRGB(1, 1, 1); m.map.colorSpace = T.SRGBColorSpace; m.map.needsUpdate = true; }
+          if (m.map) { m.color?.setRGB(1, 1, 1); m.map.colorSpace = T.SRGBColorSpace; if (m.map.image) m.map.needsUpdate = true; }
           if (m.opacity === 0) m.opacity = 1;
           if (m.transparent && m.opacity >= 1 && m.alphaTest === 0) m.transparent = false;
           // Los modelos siguen recibiendo luz y sombras sin quedar negros por el material importado.
@@ -623,11 +808,25 @@
     });
     const box = new T.Box3().setFromObject(model);
     const size = box.getSize(new T.Vector3());
-    const k = size.y > 0 ? (H * scale) / size.y : 1;
+    // Un busto (solo cabeza y torso, más ancho que alto en proporción) no se estira hasta la
+    // altura de una persona: se coloca sobre un pedestal, como una escultura del personaje.
+    const bust = size.y > 0 && size.y / Math.max(size.x, size.z, 1e-6) < 1.3;
+    const plinth = bust ? H * scale * 0.55 : 0;
+    const k = size.y > 0 ? (H * scale * (bust ? 0.45 : 1)) / size.y : 1;
     model.scale.multiplyScalar(k);
-    model.position.y -= box.min.y * k;
+    model.position.y += plinth - box.min.y * k;
+    // Se centra en horizontal para que gire sobre sí mismo al mirar al jugador.
+    model.position.x -= ((box.min.x + box.max.x) / 2) * k;
+    model.position.z -= ((box.min.z + box.max.z) / 2) * k;
     const root = new T.Group();
     root.add(model);
+    if (bust) {
+      const stone = new T.MeshStandardMaterial({ color: 0x8a8174, map: brushTex(), roughness: 0.9 });
+      const r0 = Math.max(size.x, size.z) * k * 0.32;
+      const base = mesh(new T.CylinderGeometry(r0, r0 * 1.15, plinth, 20).translate(0, plinth / 2, 0), stone);
+      base.receiveShadow = true;
+      root.add(base);
+    }
     const mixer = new T.AnimationMixer(model);
     const own = {};
     for (const clip of gltf.animations || []) for (const [k2, re] of Object.entries(CLIPS)) if (!own[k2] && re.test(clip.name)) own[k2] = clip;
@@ -693,7 +892,7 @@
     // En el móvil solo el jugador proyecta sombra (ahorra mucho trabajo a la gráfica).
     const shadows = !(window.U?.touch && !player);
     if (!shadows) holder.traverse((o) => { o.castShadow = false; });
-    buildGLB(player ? ['jugador', 'generico'] : [id, 'generico'], spec.build.scale || 1).then((g) => {
+    buildGLB(player ? ['jugador', 'generico'] : [id, 'generico'], spec.build.scale || 1, spec).then((g) => {
       if (!g || av.disposed) return;
       holder.remove(av.root);
       Object.assign(av, g, { J: null });

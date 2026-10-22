@@ -6,7 +6,9 @@ const { pathToFileURL } = require('url');
 
 // La app se llama «Grietas & Gears», pero las partidas, ajustes y arte siguen en la carpeta de siempre
 // (%APPDATA%\Arcane Piltover y Zaun), así no se pierde nada al actualizar.
-app.setPath('userData', path.join(app.getPath('appData'), 'Arcane Piltover y Zaun'));
+// GRIETAS_DATOS permite probar el juego con otra carpeta sin tocar las partidas reales.
+app.setPath('userData', process.env.GRIETAS_DATOS || path.join(app.getPath('appData'), 'Arcane Piltover y Zaun'));
+const Modelos = require('./modelos');
 
 const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
 const SETTINGS_FILE = () => path.join(app.getPath('userData'), 'ajustes.json');
@@ -181,8 +183,9 @@ ipcMain.handle('art:guide', (_e, text) => {
 // de siempre y de la carpeta de arte de AppData, que manda sobre las demás.
 const MODEL_IDS = ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino', 'jugador', 'generico'];
 const MODEL_ALIASES = { ...ART_ALIASES, cait: 'caitlyn', heimer: 'heimerdinger', player: 'jugador', generic: 'generico' };
-const MODEL_EXT = /\.(glb|fbx|zip)$/i;
-const TEX_EXT = /\.(png|jpe?g|tga|bmp|webp|tiff?|dds)$/i;
+const MODEL_EXT = /\.(glb|fbx|obj|zip)$/i;
+// Carpeta persistente donde se guardan los modelos ya preparados (texturas reducidas).
+const modelCache = () => path.join(artRoot(), 'modelos', '_cache');
 
 /** Identifica un personaje a partir del nombre de su archivo de modelo. */
 function modelName(base) {
@@ -200,7 +203,7 @@ function modelName(base) {
 function findModel(dir, depth = 0) {
   let list;
   try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return null; }
-  const f = list.find((e) => e.isFile() && /\.glb$/i.test(e.name)) || list.find((e) => e.isFile() && /\.fbx$/i.test(e.name));
+  const f = list.find((e) => e.isFile() && /\.glb$/i.test(e.name)) || list.find((e) => e.isFile() && /\.fbx$/i.test(e.name)) || list.find((e) => e.isFile() && /\.obj$/i.test(e.name));
   if (f) return path.join(dir, f.name);
   if (depth > 3) return null;
   for (const e of list) if (e.isDirectory()) { const r = findModel(path.join(dir, e.name), depth + 1); if (r) return r; }
@@ -216,6 +219,7 @@ function modelFiles() {
     try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
     for (const e of list) {
       const full = path.join(dir, e.name);
+      if (e.name === '_cache') continue; // copias preparadas, no son modelos nuevos
       if (e.isFile() && MODEL_EXT.test(e.name)) add(pre ? `${pre}${e.name.replace(MODEL_EXT, '').toLowerCase()}` : modelName(e.name), full);
       else if (e.isDirectory() && !pre && e.name.toLowerCase() === 'animaciones') walk(full, 'animaciones/');
       else if (e.isDirectory() && !pre) {
@@ -240,32 +244,36 @@ function modelFiles() {
 
 const bytes = (buf) => new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
 
-// Un .glb se devuelve tal cual; un .fbx suelto va con las imágenes de su carpeta (texturas)
-// y un .zip entero, que se abre en la ventana del juego.
+// Estado del último intento de cada modelo (para la pantalla de ajustes y los registros).
+const modelStatus = {};
+
+// Un .glb suelto se devuelve tal cual. Los ZIP, FBX y OBJ pasan antes por la caché de
+// modelos (modelos.js): se abren una vez, se reducen sus texturas y se guardan preparados.
 ipcMain.handle('model:list', () => Object.keys(modelFiles()));
-ipcMain.handle('model:read', (_e, name) => {
-  const m = modelFiles()[String(name)];
+ipcMain.handle('model:status', () => modelStatus);
+ipcMain.handle('model:read', async (_e, name) => {
+  const id = String(name);
+  const m = modelFiles()[id];
   if (!m) return null;
-  const data = bytes(fs.readFileSync(m.file));
-  if (/\.glb$/i.test(m.file)) return data;
-  if (/\.zip$/i.test(m.file)) return { kind: 'zip', name: path.basename(m.file), data };
-  const textures = {};
-  let total = 0;
-  const walk = (dir, depth) => {
-    let list;
-    try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
-    for (const e of list) {
-      const full = path.join(dir, e.name);
-      if (e.isDirectory() && depth < 3) walk(full, depth + 1);
-      else if (e.isFile() && TEX_EXT.test(e.name) && total < 160e6) {
-        const b = fs.readFileSync(full);
-        total += b.length;
-        textures[e.name.toLowerCase()] = bytes(b);
-      }
+  if (/\.glb$/i.test(m.file)) return bytes(fs.readFileSync(m.file));
+  try {
+    fs.mkdirSync(modelCache(), { recursive: true });
+    const prep = await Modelos.prepare(id, m.file, m.root, modelCache(), nativeImage);
+    if (prep.error) {
+      modelStatus[id] = { ok: false, file: m.file, error: prep.error };
+      console.warn(`Modelo ${id}: ${prep.error === 'blend' ? 'solo hay un archivo de Blender (.blend); expórtalo como .glb o .fbx' : 'no hay ningún .glb, .fbx ni .obj'}`);
+      return null;
     }
-  };
-  walk(m.root, 0);
-  return { kind: 'fbx', name: path.basename(m.file), data, textures };
+    const out = Modelos.readPrepared(prep);
+    modelStatus[id] = { ok: true, file: m.file, kind: out.kind, textures: Object.keys(out.textures || {}).length };
+    out.data = bytes(out.data);
+    for (const k of Object.keys(out.textures || {})) out.textures[k] = bytes(out.textures[k]);
+    return out;
+  } catch (err) {
+    modelStatus[id] = { ok: false, file: m.file, error: String(err?.message || err) };
+    console.warn(`Modelo ${id}:`, err);
+    return null;
+  }
 });
 
 // ---------- Imágenes del mapa 3D ----------

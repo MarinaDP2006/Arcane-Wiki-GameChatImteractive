@@ -25,6 +25,7 @@ jobs:
         shell: pwsh
         run: |
           node --check main.js
+          node --check modelos.js
           node --check preload.js
           node --check src/js/world3d.js
           node --check src/js/world.js

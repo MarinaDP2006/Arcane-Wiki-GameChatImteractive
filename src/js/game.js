@@ -98,6 +98,10 @@
     G.acts = G.acts || {};
     // Solo el reparto principal sale en el comunicador (partidas antiguas tenían a más gente).
     G.unlocked = G.unlocked.filter((id) => window.STORY.cast.includes(id));
+    // Las partidas de la versión «Arcane Piltover y Zaun» guardaban el avatar con la ruta de
+    // aquella instalación; se apunta al mismo avatar dentro del juego actual.
+    const oldPhoto = /^file:.*\/src\/img\/arte\/(.+)$/.exec(G.player?.photo || '');
+    if (oldPhoto) G.player.photo = `img/arte/${decodeURIComponent(oldPhoto[1])}`;
     if (G.progress.started === undefined) G.progress.started = Boolean(G.progress.node);
     Relations.applyFamily(G);
     tab = 'historia';

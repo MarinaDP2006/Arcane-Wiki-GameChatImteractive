@@ -4,7 +4,27 @@
 
 La rama `main` incluye código para reconocer archivos `.zip`, `.fbx` y `.glb` de personajes, además de un modo por defecto **«NPC quietos y a color»**. Esta configuración deja al jugador moverse, pero no ejecuta animaciones del modelo importado de los personajes secundarios. La posición e interacción de cada personaje se conservan.
 
-**No se han incluido tus seis archivos ZIP** porque aún no se han facilitado: los archivos personales se cargan desde tu propio ordenador. No modifiques ni borres las imágenes o las partidas antiguas. La apariencia final depende de la estructura y las texturas de cada ZIP.
+**Tus seis ZIP no se suben a GitHub**: se leen desde tu ordenador. No modifiques ni borres las imágenes o las partidas antiguas.
+
+### Desde la versión 1.18.0
+
+- El juego encuentra los ZIP en `Documentos\LOL-Game_Arcane\arcaneData\arte\personajes\3d models` (cualquier carpeta `arte` de Documentos hasta dos niveles, con una subcarpeta de personajes cuyo nombre contenga «3d») y también en `%APPDATA%\Arcane Piltover y Zaun\arte\modelos`.
+- La primera vez que aparece un personaje, el juego **prepara su ZIP una sola vez** y guarda el resultado en la carpeta persistente `%APPDATA%\Arcane Piltover y Zaun\arte\modelos\_cache`: reduce las texturas a 2048 px (color) o 1024 px (resto), abre los ZIP que hay dentro de otro ZIP y convierte los `.obj` a un formato binario rápido. Tus ZIP originales no se modifican. Puedes borrar `_cache` cuando quieras: se vuelve a crear sola.
+- Se admiten `.glb`, `.fbx` y ahora también `.obj`. Las texturas se enlazan aunque el nombre esté recortado (`…_BaseCo.png`) o cambie el espacio por guion bajo (`hair 2.png` / `hair_2.png`). Las piezas sin textura reciben un color de respaldo del personaje (pelo, piel, ropa), nunca negro.
+- Un modelo que solo es un busto (por ejemplo, el de Mel) se muestra sobre un pedestal en lugar de estirarse a tamaño persona.
+
+### Resultado con tus seis ZIP (comprobado el 22/10/2026)
+
+| Personaje | Contenido del ZIP | Resultado en el juego |
+|---|---|---|
+| Caitlyn | `PoseCait.fbx` + 25 texturas de 4096 px | Modelo real a color, con rifle, en la Jefatura de los Ejecutores |
+| Mel | `mel.fbx` (busto) + 5 texturas | Busto a color sobre pedestal en la Sala del Consejo |
+| Jinx | ZIP interno con `jinx.obj` + 6 texturas | Modelo real a color; el pelo, cejas y pestañas (sin textura) usan su azul |
+| Viktor | ZIP interno con `ViktorBody.obj` + 8 texturas | Modelo real a color en la Academia |
+| Ekko | Solo `FirelightEkko.blend` | El juego no puede leer `.blend`: usa su muñeco 3D de respaldo |
+| Vi | Solo un `.blend` | Igual que Ekko: muñeco 3D de respaldo |
+
+Para que Ekko y Vi usen su modelo real, abre su `.blend` en Blender, elige **Archivo → Exportar → glTF 2.0 (.glb)** con «Incluir texturas» y guarda `ekko.glb` y `vi.glb` en la carpeta `modelos`. Los modelos importados están quietos en su pose original (en algunos casos en «T»), porque los archivos no traen animaciones.
 
 ## Cómo importar los seis ZIP sin Blender
 

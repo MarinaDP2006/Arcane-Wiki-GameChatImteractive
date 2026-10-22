@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('arcane', {
   models: {
     list: () => ipcRenderer.invoke('model:list'),
     read: (name) => ipcRenderer.invoke('model:read', name),
+    status: () => ipcRenderer.invoke('model:status'),
   },
   ai: (url, headers, body) => ipcRenderer.invoke('ai:chat', url, headers, body),
   aiGet: (url) => ipcRenderer.invoke('ai:get', url),
