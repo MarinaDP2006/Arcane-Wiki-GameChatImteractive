@@ -19,7 +19,7 @@
   /** Permite que el personaje sobreviva al capítulo señalado cuando exista su bandera. */
   S.rescues = {
     silco: 'salva_silco', cassandra: 'salva_cassandra', isha: 'salva_isha',
-    heimerdinger: 'salva_heimerdinger', jayce: 'salva_jayce_viktor',
+    jayce: 'salva_jayce_viktor',
     viktor: 'salva_jayce_viktor', jinx: 'salva_jinx',
   };
 
