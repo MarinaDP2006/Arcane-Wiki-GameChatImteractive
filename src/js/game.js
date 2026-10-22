@@ -102,6 +102,11 @@
     G.codex = G.codex || [];
     G.visited = G.visited || [];
     G.acts = G.acts || {};
+    // Las partidas anteriores a la ampliación conservan su capítulo por ID; el índice
+    // debe recalcularse porque ahora existen episodios nuevos antes de cada final.
+    const savedRoute = S().routes[G.progress?.route] || [];
+    const savedIndex = savedRoute.indexOf(G.progress?.chapterId);
+    if (savedIndex >= 0) G.progress.chapterIdx = savedIndex;
     // Solo el reparto principal sale en el comunicador (partidas antiguas tenían a más gente).
     G.unlocked = G.unlocked.filter((id) => window.STORY.cast.includes(id));
     // Partidas anteriores a los primeros encuentros y a las muertes del canon.
@@ -1103,7 +1108,7 @@
       { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
     ]);
     Audio2.playMusic('final');
-    toast(`Temporada 2 · Objetivo: ve a ${objectiveName()}`, 'good');
+    toast(`Parte II · Las consecuencias: ve a ${objectiveName()}`, 'good');
     updateHud();
   }
 
