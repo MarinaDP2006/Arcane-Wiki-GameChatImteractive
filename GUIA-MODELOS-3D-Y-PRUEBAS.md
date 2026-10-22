@@ -21,10 +21,10 @@ La rama `main` incluye código para reconocer archivos `.zip`, `.fbx` y `.glb` d
 | Mel | `mel.fbx` (busto) + 5 texturas | Busto a color sobre pedestal en la Sala del Consejo |
 | Jinx | ZIP interno con `jinx.obj` + 6 texturas | Modelo real a color; el pelo, cejas y pestañas (sin textura) usan su azul |
 | Viktor | ZIP interno con `ViktorBody.obj` + 8 texturas | Modelo real a color en la Academia |
-| Ekko | Solo `FirelightEkko.blend` | El juego no puede leer `.blend`: usa su muñeco 3D de respaldo |
-| Vi | Solo un `.blend` | Igual que Ekko: muñeco 3D de respaldo |
+| Ekko | Solo `FirelightEkko.blend` | Convertido con Blender a `ekko.glb` (copia, girado para mirar de frente), con su aerotabla, en El Árbol de las Luciérnagas |
+| Vi | Solo un `.blend` (exportación «NSFW») | Convertido con Blender a `vi.glb` solo con la ropa visible y los colores de su textura original, en Los Callejones |
 
-Para que Ekko y Vi usen su modelo real, abre su `.blend` en Blender, elige **Archivo → Exportar → glTF 2.0 (.glb)** con «Incluir texturas» y guarda `ekko.glb` y `vi.glb` en la carpeta `modelos`. Los modelos importados están quietos en su pose original (en algunos casos en «T»), porque los archivos no traen animaciones.
+`ekko.glb` y `vi.glb` ya están en `%APPDATA%Arcane Piltover y Zaunartemodelos` y tienen prioridad sobre los ZIP. Si los pierdes o quieres repetirlo, usa `scriptsexportar-blend-a-glb.py` con Blender sobre una copia del `.blend` (las instrucciones están al principio del archivo). Los modelos importados están quietos en su pose original (en algunos casos en «T»), porque los archivos no traen animaciones.
 
 ## Cómo importar los seis ZIP sin Blender
 

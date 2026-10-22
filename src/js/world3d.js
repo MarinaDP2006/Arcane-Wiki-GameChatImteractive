@@ -1754,7 +1754,7 @@
     R.sun.intensity = L.sun[1];
     R.renderer.toneMappingExposure = L.exposure;
     R.dust.material.color.setHex(L.dust);
-    R.lanternBase = L.lantern ? 60000 : 0;
+    R.lanternBase = L.lantern ? 32000 : 0;
     R.cam.goalPitch = R.cam.pitch = L.pitch;
     R.spotT = 0;
   }
@@ -1833,7 +1833,8 @@
     R.sun.target.position.set(C.focus.x, 0, C.focus.z);
     // Con personajes 3D el farol va más alto (si no, quema la cabeza del jugador) y más fuerte.
     R.lantern.position.set(info.x, info.people ? 170 : 90, info.y);
-    R.lantern.intensity = (R.lanternBase || 0) * (info.people ? 2.4 : 1);
+    // En Zaun el farol saturaba de luz a los personajes cercanos al acercar la cámara: se suaviza.
+    R.lantern.intensity = (R.lanternBase || 0) * (info.people ? 1.1 : 1);
     R.spotT -= dt;
     if (R.spotT <= 0) { placeLights(C.focus.x, C.focus.z); R.spotT = 0.25; }
 

@@ -34,6 +34,19 @@ La estética está inspirada en la serie. No se incluyen ni se prometen modelos 
 
 Se mantienen en `%APPDATA%\\Arcane Piltover y Zaun\\partidas`, incluso tras actualizar o reinstalar el juego. No borres esa carpeta si deseas conservar tus partidas.
 
+## Recuperar una partida
+
+Cada ranura tiene una copia anterior `ranura-N.json.bak` en `%APPDATA%\Arcane Piltover y Zaun\partidas`. Si el archivo principal se daña, el juego carga la copia automáticamente. Para volver a una copia a mano: cierra el juego, copia antes la carpeta `partidas` a otro sitio, y renombra `ranura-N.json.bak` como `ranura-N.json`.
+
+## Ejecutar desde VS Code
+
+1. Abre la carpeta del proyecto en VS Code (Archivo → Abrir carpeta).
+2. Abre una terminal (Terminal → Nuevo terminal) y escribe `npm ci` la primera vez.
+3. Escribe `npm start` para jugar, o haz doble clic en `PROBAR-JUEGO-WINDOWS.bat` desde el Explorador.
+4. Para crear el instalador y el portable, haz doble clic en `CREAR-EXE-WINDOWS.bat`; los archivos quedan en `dist`.
+
+Para probar sin tocar tus partidas reales, antes de `npm start` escribe en PowerShell `$env:GRIETAS_DATOS="C:\ruta\a\carpeta-de-prueba"`.
+
 ## Desarrollo (Windows)
 
 Instala Node.js y ejecuta desde el repositorio:

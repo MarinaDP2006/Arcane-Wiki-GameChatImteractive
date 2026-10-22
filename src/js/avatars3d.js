@@ -514,6 +514,7 @@
   // Imágenes de un modelo .fbx: se buscan por el nombre del archivo, vengan de donde vengan
   // (los .fbx suelen guardar la ruta del ordenador de quien los hizo).
   const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', bmp: 'image/bmp' };
+  // Nombre del archivo (sin carpeta y en minúsculas) de una ruta o dirección de textura.
   const baseName = (u) => { let s = String(u); try { s = decodeURIComponent(s); } catch { /* nombre con % suelto */ } return (s.split(/[\\/]/).pop() || '').toLowerCase(); };
   // Nombre comparable de una textura: sin carpeta, sin extensión, sin sufijos «.001» de Blender
   // y sin espacios ni guiones («hair 2.png» y «hair_2.png» son la misma imagen).
@@ -652,6 +653,11 @@
     return new T.Color(spec.top).getHex();
   }
 
+  /**
+   * Indica si una textura llegó a cargar una imagen real (no el píxel que marca una que faltaba).
+   * @param {THREE.Texture} tex textura del material
+   * @returns {boolean} true si tiene una imagen de más de 1 píxel
+   */
   const loadedPixel = (tex) => {
     const img = tex?.image;
     return Boolean(img && (img.width || img.naturalWidth) > 1);
@@ -665,6 +671,7 @@
   function fixMaterials(model, urls, spec) {
     const loader = new T.TextureLoader();
     const cache = new Map();
+    // Carga una textura de color una sola vez aunque la compartan varias piezas del modelo.
     const load = (url) => {
       if (!cache.has(url)) {
         const t = loader.load(url);
@@ -778,6 +785,26 @@
     return out;
   }
 
+  /**
+   * Tamaño del cuerpo de un modelo sin contar las piezas planas (una aerotabla, una alfombra o
+   * una base), que harían parecer ancho a un personaje de pie.
+   * @param {THREE.Object3D} model modelo ya leído
+   * @returns {THREE.Vector3} ancho (x), alto (y) y fondo (z)
+   */
+  function bodySize(model) {
+    const total = new T.Box3();
+    const part = new T.Box3();
+    const s = new T.Vector3();
+    model.updateMatrixWorld(true);
+    model.traverse((o) => {
+      if (!o.isMesh) return;
+      part.setFromObject(o).getSize(s);
+      if (s.y < 0.2 * Math.max(s.x, s.z)) return; // pieza plana
+      total.union(part);
+    });
+    return total.isEmpty() ? new T.Box3().setFromObject(model).getSize(new T.Vector3()) : total.getSize(new T.Vector3());
+  }
+
   /** Construye un avatar a partir de un modelo externo. */
   async function buildGLB(names, scale, spec) {
     let gltf = null;
@@ -810,7 +837,8 @@
     const size = box.getSize(new T.Vector3());
     // Un busto (solo cabeza y torso, más ancho que alto en proporción) no se estira hasta la
     // altura de una persona: se coloca sobre un pedestal, como una escultura del personaje.
-    const bust = size.y > 0 && size.y / Math.max(size.x, size.z, 1e-6) < 1.3;
+    const body = bodySize(model);
+    const bust = body.y > 0 && body.y / Math.max(body.x, body.z, 1e-6) < 1.3;
     const plinth = bust ? H * scale * 0.55 : 0;
     const k = size.y > 0 ? (H * scale * (bust ? 0.45 : 1)) / size.y : 1;
     model.scale.multiplyScalar(k);

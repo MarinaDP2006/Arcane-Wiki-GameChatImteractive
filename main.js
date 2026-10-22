@@ -255,7 +255,10 @@ ipcMain.handle('model:read', async (_e, name) => {
   const id = String(name);
   const m = modelFiles()[id];
   if (!m) return null;
-  if (/\.glb$/i.test(m.file)) return bytes(fs.readFileSync(m.file));
+  if (/\.glb$/i.test(m.file)) {
+    modelStatus[id] = { ok: true, file: m.file, kind: 'glb' };
+    return bytes(fs.readFileSync(m.file));
+  }
   try {
     fs.mkdirSync(modelCache(), { recursive: true });
     const prep = await Modelos.prepare(id, m.file, m.root, modelCache(), nativeImage);

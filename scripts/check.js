@@ -158,6 +158,29 @@ for (const p of ATLAS.places) {
   if (p.x < 0 || p.x > 100 || p.y < 0 || p.y > 100) errors.push(`atlas ${p.id}: fuera del mapa`);
 }
 
+// Historia completa: cada nodo debe poder alcanzarse desde el inicio de su capítulo
+// (siguiendo «next», las opciones y los resultados de los minijuegos).
+for (const ch of STORY.chapters) {
+  const seen = new Set();
+  const pend = [ch.start];
+  while (pend.length) {
+    const id = pend.pop();
+    if (seen.has(id) || !ch.nodes[id]) continue;
+    seen.add(id);
+    const n = ch.nodes[id];
+    if (n.next) pend.push(n.next);
+    for (const c of n.choices || []) pend.push(c.next, ...(c.game ? [c.game.win, c.game.lose] : []));
+  }
+  Object.keys(ch.nodes).filter((id) => !seen.has(id)).forEach((id) => errors.push(`${ch.id}.${id}: escena inalcanzable desde "${ch.start}"`));
+}
+// Los finales que dependen de flags solo se alcanzan si alguna decisión activa esas flags.
+const storySrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'story.js'), 'utf8');
+for (const e of [...STORY.endings, ...(STORY.endings2 || [])]) {
+  for (const [, flag] of String(e.test).matchAll(/flags\.(\w+)/g)) {
+    if (!FLAG_SET.has(flag) && !new RegExp(`flags:\\s*\\[[^\\]]*'${flag}'`).test(storySrc)) errors.push(`final ${e.id}: la flag "${flag}" nunca se activa`);
+  }
+}
+
 // Todo el arte incluido debe estar en la lista que usan el navegador y Android.
 try { require('child_process').execFileSync(process.execPath, [path.join(__dirname, 'art-manifest.js'), '--check'], { stdio: 'pipe' }); } catch { errors.push('src/data/arte.js está desactualizado: ejecuta node scripts/art-manifest.js'); }
 

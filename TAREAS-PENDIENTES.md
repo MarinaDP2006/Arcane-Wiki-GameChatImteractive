@@ -45,7 +45,13 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [x] Corregido: el avatar de partidas antiguas apuntaba a la carpeta de la instalación «Arcane Piltover y Zaun» y no se cargaba.
 - [x] `GRIETAS_DATOS` permite probar con una carpeta de datos distinta sin tocar las partidas reales.
 - [x] `npm ci`, `npm run check` y `npm run dist:win` correctos en Windows 11 (instalador y portable generados).
-- [ ] Ekko y Vi: exportar sus `.blend` a `.glb` desde Blender (el juego no puede leer `.blend`).
+- [x] Ekko y Vi: copias de sus `.blend` exportadas con Blender a `ekko.glb` y `vi.glb` (Vi solo con ropa) en la carpeta persistente de modelos.
+- [x] Corregido: la política de seguridad (CSP) bloqueaba las texturas incrustadas de cualquier `.glb`, que salían sin color dentro del juego.
+- [x] Corregido: en Zaun el farol del jugador quemaba de luz a los personajes al acercar la cámara.
+- [x] Corregido: con npm 11, `npm ci` no descargaba Electron y `npm start` fallaba; ahora lo hace `scripts/asegurar-electron.js` (postinstall).
+- [x] `npm run check` comprueba además que todas las escenas son alcanzables y que las flags de cada final se activan en alguna decisión.
+- [x] Probados `PROBAR-JUEGO-WINDOWS.bat` (abre el juego) y `CREAR-EXE-WINDOWS.bat` (genera los dos .exe).
+- [x] Probados: partida nueva desde el creador, recuperación desde `.bak` con la ranura principal dañada y apertura de partidas antiguas.
 - [ ] Probar el instalador en otro equipo Windows y una partida completa por cada ruta.
 
 ## Pendiente prioritario
