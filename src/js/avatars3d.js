@@ -215,9 +215,12 @@
     if (player) {
       const L = player.look || {};
       const top = L.outfitColor || '#4a3a5a';
+      // Ropa deducida del retrato del creador: cada prenda se viste en 3D a lo Arcane.
+      const outfit = L.outfit || 'chaqueta';
+      const bottom = outfit === 'mono' ? top : outfit === 'uniforme' ? shade(top, 0.7).getHex() : outfit === 'chaqueta' || outfit === 'top' ? 0x2c2a30 : shade(top, 0.45).getHex();
       return {
-        id: null, look: L, skin: L.skin || '#e8b394', hair: L.hair || '#2a1e18', style: L.style || 'short', top, bottom: shade(top, 0.45).getHex(),
-        accents: [...(L.accents || [])], build: { coat: OUTFIT_COAT[L.outfit] },
+        id: null, look: L, skin: L.skin || '#e8b394', hair: L.hair || '#2a1e18', style: L.style || 'short', top, bottom, shirt: L.shirt || '#3a3040',
+        accents: [...(L.accents || [])], build: { coat: OUTFIT_COAT[L.outfit], outfit, bareArms: outfit === 'top', lightCoat: outfit === 'bata' },
       };
     }
     const p = window.WIKI?.personajes.find((x) => x.id === id) || {};
@@ -347,6 +350,105 @@
     }
   }
 
+  /**
+   * Prendas del protagonista deducidas de su retrato: cinturón, solapas, peto, bufanda,
+   * hombreras, vendas… Se añaden sobre el muñeco para que la silueta recuerde a la serie.
+   */
+  function wear(spec, J, M, wide, r, P) {
+    const B = spec.build;
+    const has = (x) => spec.accents.includes(x);
+    const brass = new T.MeshStandardMaterial({ color: 0xc89b4a, metalness: 0.8, roughness: 0.35, map: brushTex() });
+    const leather = mat(0x3a2a22, { roughness: 0.55 });
+    const wrap = mat(0xd9ccb0);
+    const shirt = mat(spec.shirt);
+    const put = (parent, geo, m, x, y, z, rx = 0, ry = 0, rz = 0) => {
+      const o = mesh(geo, m); o.position.set(x, y, z); o.rotation.set(rx, ry, rz); parent.add(o); return o;
+    };
+    const belt = () => {
+      put(P.hips, new T.CylinderGeometry(4 * wide, 4 * wide, 1.3, 16).scale(1, 1, 0.62), leather, 0, 1.6, 0);
+      put(P.hips, new T.BoxGeometry(1.6, 1.3, 0.5), brass, 0, 1.6, 2.55);
+    };
+    const wraps = () => { for (const h of [J.handL, J.handR]) if (h && h.material !== M.arm) put(h, new T.CylinderGeometry(1.25, 1.15, 1.6, 10), wrap, 0, 0.9, 0); };
+    const cuffs = (m) => { for (const e of [J.elL, J.elR]) put(e, new T.TorusGeometry(1.25, 0.45, 6, 14), m, 0, 0, 0, Math.PI / 2); };
+    const pouches = () => { for (const sx of [-1, 1]) put(P.hips, new T.BoxGeometry(1.8, 2.2, 1.4), leather, sx * 3.4 * wide, 0.2, 2); };
+    switch (B.outfit) {
+      case 'chaqueta':
+        // Chaqueta de cuero abierta con solapas, camisa debajo y mangas remangadas.
+        put(P.torso, new T.BoxGeometry(2.2 * wide, 10, 0.4), shirt, 0, 5.5, 2.75, -0.08);
+        for (const sx of [-1, 1]) put(P.torso, new T.BoxGeometry(1.5, 6, 0.4), M.dark, sx * 1.9 * wide, 8.6, 2.9, -0.15, 0, sx * 0.35);
+        put(P.neck, new T.TorusGeometry(2.4, 0.6, 6, 16, Math.PI * 1.3), M.top, 0, 0, 0, Math.PI / 2, 0, Math.PI * 0.85);
+        cuffs(M.top); belt(); wraps();
+        break;
+      case 'top':
+        // Top de tirantes, pantalón de faena con bolsillos y vendas en las manos (estilo Vi).
+        for (const sx of [-1, 1]) put(P.torso, new T.BoxGeometry(0.6, 3.5, 3.2), M.top, sx * 2.6 * wide, 11.6, 0);
+        for (const k of [J.hipL, J.hipR]) put(k, new T.BoxGeometry(1.2, 3, 2.6), M.dark, (k === J.hipL ? -1 : 1) * 1.9, -5, 0.3);
+        belt(); wraps();
+        break;
+      case 'mono':
+        // Peto de taller con tirantes sobre camisa y bolsas de herramientas.
+        P.torso.children[0].material = shirt;
+        put(P.torso, new T.BoxGeometry(5.6 * wide, 6.5, 0.5), M.top, 0, 3.6, 2.6);
+        for (const sx of [-1, 1]) put(P.torso, new T.BoxGeometry(0.9, 6.8, 0.4), M.top, sx * 2.1 * wide, 9.6, 2.45, 0.25);
+        for (const sx of [-1, 1]) put(P.torso, new T.CylinderGeometry(0.4, 0.4, 0.3, 8), brass, sx * 2.1 * wide, 6.6, 2.95, Math.PI / 2);
+        for (const k of [J.kneeL, J.kneeR]) put(k, new T.BoxGeometry(2.4, 2.4, 0.4), M.dark, 0, -1, 1.5);
+        pouches(); cuffs(shirt);
+        break;
+      case 'harapos':
+        // Ropa de la calle: bufanda anudada, remiendos y vendas.
+        put(P.neck, new T.TorusGeometry(2, 0.95, 8, 16), M.dark, 0, 0.5, 0, Math.PI / 2);
+        put(P.torso, new T.BoxGeometry(1.4, 6, 0.5), M.dark, 1.6, 8.5, 2.9, -0.3, 0, -0.15);
+        put(P.torso, new T.BoxGeometry(2.2, 2, 0.3), mat(shade(spec.top, 1.3)), -1.9 * wide, 5, 2.75, 0, 0, 0.2);
+        put(J.hipR, new T.BoxGeometry(2, 2, 0.3), mat(shade(spec.bottom, 1.5)), 0, -4, 2);
+        wraps(); belt();
+        break;
+      case 'abrigo':
+        // Abrigo de Piltover: cuello alto, botonadura y ribetes dorados.
+        for (let y = 2.5; y < 11; y += 2.2) put(P.torso, new T.SphereGeometry(0.4, 8, 6), brass, 0.9, y, 2.8 - y * 0.03);
+        put(P.torso, new T.BoxGeometry(0.25, 11, 0.3), brass, 0.25, 6, 2.8, -0.06);
+        put(P.neck, new T.CylinderGeometry(2.4, 2.1, 2.6, 14, 1, true), M.top, 0, 0.9, 0);
+        if (J.coat) put(P.hips, new T.TorusGeometry(6.2 * wide, 0.25, 4, 30, Math.PI * 2 - 1), brass, 0, -10.9, 0, Math.PI / 2, 0, 0.5 - Math.PI / 2);
+        for (const e of [J.elL, J.elR]) put(e, new T.TorusGeometry(1.2, 0.3, 6, 14), brass, 0, -6.2, 0, Math.PI / 2);
+        break;
+      case 'uniforme':
+        // Ejecutor: hombreras, placa dorada, cinturón y guanteletes.
+        for (const sh of [J.shL, J.shR]) put(sh, new T.SphereGeometry(2.3, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), M.dark, 0, -0.3, 0);
+        put(P.torso, new T.CylinderGeometry(0.9, 0.9, 0.3, 6), brass, -1.8 * wide, 9, 2.8, Math.PI / 2);
+        for (const e of [J.elL, J.elR]) if (e.children[0]?.material !== M.arm) put(e, new T.CylinderGeometry(1.35, 1.2, 4, 10), M.dark, 0, -4.5, 0);
+        belt();
+        break;
+      case 'vestido':
+        // Vestido de gala: corsé, mangas abullonadas y collar.
+        put(P.torso, new T.CylinderGeometry(3.7 * wide, 3.6 * wide, 4.5, 16).scale(1, 1, 0.74), M.dark, 0, 2.3, 0);
+        for (const sh of [J.shL, J.shR]) put(sh, new T.SphereGeometry(1.9, 12, 8), M.top, 0, -0.8, 0);
+        put(P.neck, new T.TorusGeometry(1.6, 0.25, 6, 18), brass, 0, 0.2, 0.2, Math.PI / 2 + 0.3);
+        break;
+      case 'bata':
+        // Bata de laboratorio: solapas, bolsillo con plumas y gafas protectoras al cuello.
+        put(P.torso, new T.BoxGeometry(2.4 * wide, 10, 0.4), shirt, 0, 5.5, 2.75, -0.08);
+        for (const sx of [-1, 1]) put(P.torso, new T.BoxGeometry(1.4, 7, 0.4), M.top, sx * 1.9 * wide, 8, 2.9, -0.15, 0, sx * 0.3);
+        put(P.torso, new T.BoxGeometry(1.8, 2, 0.4), M.top, -2.1 * wide, 7.5, 2.9);
+        for (let i = 0; i < 2; i++) put(P.torso, new T.CylinderGeometry(0.15, 0.15, 2.4, 6), i ? brass : leather, -2.4 * wide + i * 0.6, 8.6, 3);
+        break;
+    }
+    if (has('mask')) {
+      // Máscara de gas de Zaun con dos filtros verdes.
+      put(P.head, new T.BoxGeometry(r * 1.2, r * 0.75, r * 0.6), mat(0x4a5a3a), 0, -r * 0.4, r * 0.75);
+      const glow = new T.MeshStandardMaterial({ color: 0x8fbf3a, emissive: 0x5a8a1a, emissiveIntensity: 1.2 });
+      for (const sx of [-1, 1]) put(P.head, new T.CylinderGeometry(r * 0.24, r * 0.24, r * 0.5, 10), glow, sx * r * 0.5, -r * 0.55, r * 1.0, Math.PI / 2 - 0.3);
+    }
+    if (has('paint')) {
+      // Pintura luminosa en los brazos, como las marcas de Jinx en la segunda temporada.
+      const neon = new T.MeshStandardMaterial({ color: 0x5affd0, emissive: 0x5affd0, emissiveIntensity: 1.6 });
+      for (const e of [J.elL, J.elR]) for (let i = 0; i < 2; i++) put(e, new T.TorusGeometry(1.15, 0.12, 4, 14), neon, 0, -2 - i * 2.2, 0, Math.PI / 2 + 0.3);
+    }
+    if (has('glasses')) {
+      const frame = mat(0x1e1814);
+      for (const sx of [-1, 1]) put(P.head, new T.TorusGeometry(r * 0.27, 0.12, 6, 16), frame, sx * r * 0.36, r * 0.12, r * 0.93);
+    }
+    if (has('piercing')) put(P.head, new T.TorusGeometry(0.35, 0.09, 6, 10), brass, r * 0.92, -r * 0.05, 0, 0, Math.PI / 2);
+  }
+
   /** Construye el avatar articulado de respaldo a partir de piezas 3D. */
   function buildDoll(spec) {
     const B = spec.build;
@@ -390,7 +492,7 @@
       // Falda del abrigo o vestido: abierta, para que se vean las piernas al andar.
       const len = B.coat === 'dress' ? 19 : 12;
       const coat = mesh(new T.CylinderGeometry(4.2 * wide, (B.coat === 'dress' ? 7.5 : 6.2) * wide, len, 16, 1, true, B.coat === 'dress' ? 0 : 0.5, B.coat === 'dress' ? Math.PI * 2 : Math.PI * 2 - 1).translate(0, -len / 2, 0),
-        B.coat === 'dress' ? M.top : M.dark);
+        B.coat === 'dress' || B.lightCoat ? M.top : M.dark);
       coat.material = coat.material.clone();
       coat.material.side = T.DoubleSide;
       coat.position.y = 1;
@@ -432,7 +534,8 @@
       const sh = new T.Group();
       sh.position.set(side * (4.3 * wide + 0.9), 11.6, 0);
       torso.add(sh);
-      const m = side > 0 ? M.arm : M.top;
+      const sleeve = B.bareArms ? M.skin : M.top;
+      const m = side > 0 && metal ? M.arm : sleeve;
       sh.add(limb(7.6, 1.45, 1.2, m));
       const elbow = new T.Group();
       elbow.position.y = -7.6;
@@ -441,10 +544,12 @@
       const hand = mesh(new T.SphereGeometry(1.25, 10, 8), side > 0 && metal ? M.arm : M.skin);
       hand.position.y = -7.4;
       elbow.add(hand);
+      J[side < 0 ? 'handL' : 'handR'] = hand;
       J[side < 0 ? 'shL' : 'shR'] = sh;
       J[side < 0 ? 'elL' : 'elR'] = elbow;
     }
     accessories(spec, r, head, neck, M);
+    if (B.outfit) wear(spec, J, M, wide, r, { torso, hips, head, neck });
 
     root.scale.setScalar((B.scale || 1) * DOLL);
     Object.assign(J, { body, hips, torso, head, chest });

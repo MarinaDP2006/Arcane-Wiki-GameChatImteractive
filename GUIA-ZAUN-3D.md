@@ -27,7 +27,7 @@ Esto evita completar una misión de los lugares implementados pulsando «Continu
 ## Limitaciones conocidas y mejoras posteriores
 
 - Los seis espacios son **geometría procedimental de Three.js**, no modelos 3D exactos de los fotogramas. Reproducen elementos arquitectónicos y paletas cromáticas, pero el acabado no es todavía una copia del 100 % ni tiene texturas artesanales o interiores de varias plantas realmente conectadas.
-- La exploración interior utiliza una cámara propia que acompaña al jugador; no incorpora todavía un avatar visible en tercera persona dentro de esas escenas.
+- Desde v1.22.0 tu protagonista se ve en tercera persona (muñeco con tu aspecto y ropa deducida del retrato, o `modelos/jugador.glb`), choca con la arquitectura y puede moverse con clic/toque. Los edificios tienen texturas de pincel, ventanas encendidas, chimeneas con humo, faroles, tendederos, botelleros y tanques de cultivo (ver `src/js/interior-kit.js`).
 - Los edificios exteriores siguen usando mayoritariamente el generador urbano existente, con nuevos arcos de entrada de colores. Queda trabajo para recrear cada fachada con nivel de detalle equivalente al de las referencias.
 - Las pistas son objetos interactivos físicos y diferentes en su descripción, pero requieren más animaciones y lógica de misiones para convertirse en rompecabezas complejos.
 - Probar en Windows que la entrada no queda bloqueada por geometría, que los seis espacios funcionan y que los capítulos avanzan al salir.

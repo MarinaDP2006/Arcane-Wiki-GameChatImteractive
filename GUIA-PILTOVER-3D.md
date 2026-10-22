@@ -33,10 +33,18 @@ El botón de Historia ya no inicia directamente capítulos de las ubicaciones ex
 
 El módulo de Zaun sigue intacto. No se han eliminado imágenes, audio, capítulos, personajes ni guardados.
 
+## Protagonista y edificios (v1.22.0)
+
+- Tu protagonista camina por el escenario en tercera persona: es el muñeco 3D de `avatars3d.js` con tu piel, pelo, peinado, ojos y accesorios del creador, y la ropa se deduce del retrato (chaqueta de cuero con solapas, abrigo de Piltover con botonadura dorada, uniforme con hombreras, vestido con corsé, bata, peto de taller, ropa de la calle con bufanda, top con vendas). Si existe `modelos/jugador.glb`, se usa ese modelo.
+- Movimiento con WASD/flechas o con clic/toque en el suelo; clic en la pista o el objetivo cuando estás cerca equivale a pulsar E.
+- Los edificios chocan: no se atraviesan mesas, columnas ni muros; los peldaños bajos se suben solos (escalinata de Stillwater, plataformas).
+- Texturas de pincel generadas (piedra, metal, madera), columnas, estandartes, ventanas con arco, cúpulas y agujas, farolas, dirigibles, núcleo hextec, sombras del sol y polvo dorado en el aire.
+- Stillwater y el Puente se rehicieron para que la pista y el objetivo queden sobre la explanada o el tablero (antes quedaban dentro de la geometría).
+- Código común en `src/js/interior-kit.js`.
+
 ## Límites y comprobaciones que faltan
 
 - Los escenarios son **procedimentales**, sin modelos arquitectónicos artesanales, texturas pintadas específicas, o navegación vertical en varias plantas. No es posible certificar que sean una recreación idéntica a los fotogramas.
-- La cámara interior permite explorar, pero falta representar el avatar del jugador con su modelo 3D dentro de los espacios.
 - Los objetivos son exploración y examen de pistas; todavía no hay puzles singulares con herramientas para cada lugar.
 - Debe probarse en Windows que el acceso desde el mundo abierto no queda bloqueado, las pistas se pueden encontrar, el botón E cierra correctamente y la historia sigue con cada elección.
 - Las actividades secundarias y el comunicador global siguen siendo accesibles fuera del sistema de interiores; el requisito de entrar se aplica a las acciones contextuales de las ubicaciones.
