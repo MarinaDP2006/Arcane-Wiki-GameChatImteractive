@@ -77,6 +77,15 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [ ] Revisar textos secundarios que todavía mencionen «temporada» y otras traducciones.
 - [ ] Considerar una campaña alternativa original independiente del canon, si se desea reemplazar completamente el argumento, sin eliminar el actual.
 
+## Historia alternativa: el jugador cambia los destinos
+- [x] Añadidas ramas de rescate para Silco, Cassandra, Isha, Jinx y Jayce/Viktor con requisitos y consecuencias persistentes.
+- [x] `syncFallen` respeta las salvaciones; los personajes que siguen vivos permanecen disponibles en el comunicador.
+- [x] Final alternativo «Las vidas que elegiste» y contexto de IA consciente de los rescates.
+- [x] Validador estructural: 30 capítulos, 266 nodos, 8 finales y 300 opciones escritas, sin errores de datos en la prueba simulada.
+- [ ] Revisar a fondo la continuidad de otras escenas secundarias y añadir rutas alternativas para más personajes si procede.
+- [ ] Hacer partidas completas en Windows, incluida carga de partidas previas, y comprobar gráficamente cada rescate.
+- [ ] Verificar que ningún diálogo de IA ni ficha contextual presenta como fallecido a alguien rescatado.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.
