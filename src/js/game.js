@@ -206,7 +206,18 @@
   }
 
   /** Responde a la interacción del jugador con un lugar. */
-  function onLocation(loc) {
+  function onLocation(loc, inside = false) {
+    // En Zaun ya no se completan las misiones desde un menú exterior: hay que
+    // recorrer físicamente el escenario y alcanzar su punto de interacción.
+    if (!inside && G.world.map === 'zaun' && window.ZaunInteriors?.has(loc.id)) {
+      World.pause(true);
+      const ok = window.ZaunInteriors.enter(loc.id,
+        () => onLocation(loc, true),
+        () => World.pause(false));
+      if (ok) return;
+      World.pause(false);
+      return toast('No se ha podido abrir este lugar en 3D. Comprueba WebGL.', 'warn');
+    }
     const acts = locationActions(loc);
     if (!acts.length) return toast(`${loc.name}: aquí no hay nada que hacer ahora mismo.`);
     if (acts.length === 1) return acts[0].run();
