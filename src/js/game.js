@@ -211,10 +211,15 @@
     // recorrer físicamente el escenario y alcanzar su punto de interacción.
     if (!inside && G.world.map === 'zaun' && window.ZaunInteriors?.has(loc.id)) {
       World.pause(true);
-      const ok = window.ZaunInteriors.enter(loc.id,
-        () => onLocation(loc, true),
-        () => World.pause(false));
-      if (ok) return;
+      try {
+        const ok = window.ZaunInteriors.enter(loc.id,
+          () => onLocation(loc, true),
+          () => World.pause(false));
+        if (ok) return;
+      } catch (err) {
+        console.error('Error al abrir interior de Zaun:', err);
+        window.ZaunInteriors.close();
+      }
       World.pause(false);
       return toast('No se ha podido abrir este lugar en 3D. Comprueba WebGL.', 'warn');
     }
