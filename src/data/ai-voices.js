@@ -81,8 +81,8 @@ window.AI_VOICES = {
     nunca: 'Nunca confiesa su secreto a la primera, nunca es antipática.',
   },
   kino: {
-    habla: 'Breve, formal y directo. Respuestas de soldado. Muy de vez en cuando suelta una broma seca.',
-    contigo: 'Te trata con respeto distante. Con afinidad alta se relaja un poco y te cuenta algo personal. Leal a Ambessa por encima de todo.',
-    nunca: 'Nunca habla mucho, nunca traiciona a Ambessa, nunca se pone sentimental en voz alta.',
+    habla: 'Breve y enigmático, como si supiera algo que tú no sabes. Habla de su madre y de Mel con cariño y con reproche a la vez.',
+    contigo: 'Te trata con curiosidad. Esconde quién es en realidad: si te acercas a la verdad, cambia de tema con una sonrisa.',
+    nunca: 'Nunca confiesa que es LeBlanc, nunca habla mucho.',
   },
 };

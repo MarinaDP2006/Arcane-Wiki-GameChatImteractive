@@ -54,6 +54,15 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [x] Probados: partida nueva desde el creador, recuperación desde `.bak` con la ranura principal dañada y apertura de partidas antiguas.
 - [ ] Probar el instalador en otro equipo Windows y una partida completa por cada ruta.
 
+## Historia fiel a Arcane, muertes y primeros encuentros (22/10/2026, v1.19.0)
+- [x] Los sucesos del canon pasan siempre (Vander, Silco, Cassandra, Isha, Heimerdinger, Ambessa, Maddie, Jayce, Viktor, Jinx); tus decisiones cambian relaciones, flags y epílogos.
+- [x] `STORY.deaths` dice en qué capítulo cae cada personaje: deja de salir en el comunicador, en el mundo y en el Atlas, y pasa a «En memoria».
+- [x] Primeros encuentros: solo conoces de entrada a tu familia (`G.met`); el resto se presenta la primera vez que habla. Líneas con `cond` (met, notMet, kin, notKin, flag, notFlag, origin).
+- [x] Temporada 2 reescrita en canon (funeral, votación de armas, Isha, Viktor el Heraldo, Kino/LeBlanc, foso y Warwick, la anomalía, batalla final) con nuevas decisiones.
+- [x] Maddie y Kino reescritos: Maddie como ejecutora e informante de Ambessa; Kino como el impostor de la Rosa Negra.
+- [x] `npm run check` comprueba que nadie habla después de su muerte y que las condiciones son válidas. Textos nuevos traducidos a inglés y francés.
+- [ ] Jugar una partida completa de cada temporada en Windows.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.
