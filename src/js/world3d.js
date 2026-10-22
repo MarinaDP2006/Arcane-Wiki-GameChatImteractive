@@ -1730,6 +1730,26 @@
       grp.add(outer);
       grp.add(map.id === 'zaun' ? buildZaun(map, R) : buildPiltover(map, R));
       buildCommon(map, R, grp);
+      // Entradas volumétricas reconocibles que marcan los seis interiores de Zaun.
+      if (map.id === 'zaun') {
+        const colors = { callejones: 0x7dd65c, arbol: 0xe4a95c, fabrica: 0x9364ed, 'ultima-gota': 0xf0b34e, sumidero: 0xac53d4, invernadero: 0x92ed6c };
+        for (const loc of map.def.locations) {
+          if (!colors[loc.id]) continue;
+          const entry = new T.Group();
+          entry.position.set(loc.x, 0, loc.y);
+          const frameMat = new T.MeshStandardMaterial({ color: 0x766f62, metalness: 0.74, roughness: 0.45 });
+          const glow = new T.MeshBasicMaterial({ color: colors[loc.id] });
+          for (const x of [-17, 17]) {
+            const pillar = new T.Mesh(new T.CylinderGeometry(3, 4, 41, 8), frameMat);
+            pillar.position.set(x, 20, 0); entry.add(pillar);
+          }
+          const arch = new T.Mesh(new T.BoxGeometry(40, 6, 9), frameMat);
+          arch.position.y = 42; entry.add(arch);
+          const marker = new T.Mesh(new T.IcosahedronGeometry(6, 1), glow);
+          marker.position.y = 52; entry.add(marker);
+          grp.add(entry);
+        }
+      }
       buildBackdrop(map, grp);
       R.groups[map.id] = { grp, dyn: R.dyn };
     }
