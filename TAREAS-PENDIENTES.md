@@ -11,6 +11,10 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [x] Ajustar atmósfera 3D de Piltover/Zaun (color, niebla, contraste, bloom) y seguimiento de cámara.
 - [x] Documentar descarga, desarrollo y guardado para Windows.
 
+## Nueva corrección (22/10/2026)
+- [x] Movimiento con colisiones subdivididas por fotograma para no atravesar edificios al correr o sufrir caídas de FPS.
+- [x] Se mantienen íntegros los recursos gráficos y las imágenes existentes.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.
