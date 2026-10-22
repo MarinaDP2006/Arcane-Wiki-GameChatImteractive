@@ -72,7 +72,3 @@ npm run dist:win
 ```
 
 Los archivos resultantes quedan en `dist/`. El workflow de GitHub Actions ejecuta `npm ci`, valida los datos, comprueba la sintaxis del motor, diálogos, avatares y ajustes, y exige los dos ejecutables antes de publicar el artefacto. No es una prueba de uso en todos los equipos: conviene verificar instalación, arranque, movimientos, diálogos y carga/guardado en un Windows real.
-
-## Estado de plataformas
-
-La distribución mantenida es **solo Windows (x64)**. Se han retirado los comandos y flujos de compilación para macOS y Android. La interacción principal utiliza teclado y ratón.
