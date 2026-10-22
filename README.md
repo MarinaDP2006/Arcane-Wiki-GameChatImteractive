@@ -53,6 +53,8 @@ Las partidas exportadas son tuyas: no las subas al repositorio.
 
 Desde la versión 1.24.0 el APK de prueba se firma siempre con la misma llave, así que las nuevas versiones se instalan encima de la anterior sin perder las partidas de la tableta.
 
+Guía completa (incluido cómo rescatar la partida de un APK antiguo): [partidas-guardadas-guia.md](partidas-guardadas-guia.md).
+
 ## Recuperar una partida
 
 Cada ranura tiene una copia anterior `ranura-N.json.bak` en `%APPDATA%\Arcane Piltover y Zaun\partidas`. Si el archivo principal se daña, el juego carga la copia automáticamente. Para volver a una copia a mano: cierra el juego, copia antes la carpeta `partidas` a otro sitio, y renombra `ranura-N.json.bak` como `ranura-N.json`.
