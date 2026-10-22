@@ -38,6 +38,23 @@ Se conserva la estructura original de acontecimientos de Arcane y el mundo ya cr
 
 Los perfiles son **resúmenes originales escritos para este videojuego**, no diálogos copiados de la serie.
 
+## Historia alternativa: los personajes pueden sobrevivir
+
+La campaña ya no tiene muertes completamente inevitables. Se añade `src/data/alternate-fates.js`, cargado después de `story-expansion.js`, que extiende los nodos originales sin eliminar rutas ni escenas previas.
+
+- **Silco** puede sobrevivir si intervienes en la merienda y evitas el disparo (Valor 3).
+- **Cassandra** puede sobrevivir si organizas una evacuación reforzada del Consejo (Valor 3).
+- **Isha** puede salvarse si bloqueas el Brillo a tiempo durante el encuentro con Warwick (Ingenio 3).
+- **Jinx** puede escapar del enfrentamiento final si habéis construido suficiente confianza (Afinidad 5).
+- **Jayce y Viktor** pueden salir vivos del Hexcore si logras aislar sus conductos (Ingenio 4).
+- Hay un final nuevo, **«Las vidas que elegiste»**, que recuerda tus rescates.
+
+Cada salvación activa un indicador persistente. El motor de juego `syncFallen()` lo respeta al actualizar los personajes vivos, el comunicador y sus apariciones. `src/js/ai.js` informa al modelo de las vidas salvadas para evitar que vuelva a la continuidad original.
+
+**Alcance actual:** se han implementado estas cinco situaciones de rescate (seis personajes, porque Jayce y Viktor se salvan juntos). Otras muertes y desenlaces siguen dependiendo del argumento previo. Algunas escenas secundarias pueden requerir nuevas condiciones de continuidad tras pruebas completas. No se garantiza la supervivencia universal de todo el reparto.
+
+Los IDs de capítulos, rutas y las partidas anteriores permanecen compatibles. Para probar diferentes desenlaces, utiliza una partida nueva o una copia de una ranura existente. No sobreescribas partidas personales para experimentar con finales.
+
 ## Validación y pruebas pendientes
 
 La carga y sintaxis de doce archivos de datos y de IA se han comprobado en un evaluador JavaScript, así como la existencia de treinta capítulos, la integridad de las rutas, las transiciones entre nodos y dieciocho indicadores nuevos de decisiones. No se han ejecutado partidas completas ni se ha generado aquí un instalador Windows para esta revisión.
