@@ -207,39 +207,8 @@
 
   /** Responde a la interacción del jugador con un lugar. */
   function onLocation(loc, inside = false) {
-    // En Zaun ya no se completan las misiones desde un menú exterior: hay que
-    // recorrer físicamente el escenario y alcanzar su punto de interacción.
-    if (!inside && G.world.map === 'zaun' && window.ZaunInteriors?.has(loc.id)) {
-      World.pause(true);
-      try {
-        const ok = window.ZaunInteriors.enter(loc.id,
-          () => onLocation(loc, true),
-          () => World.pause(false));
-        if (ok) return;
-      } catch (err) {
-        console.error('Error al abrir interior de Zaun:', err);
-        window.ZaunInteriors.close();
-      }
-      World.pause(false);
-      return toast('No se ha podido abrir este lugar en 3D. Comprueba WebGL.', 'warn');
-    }
-    // Piltover exige entrar e investigar en 3D antes de resolver objetivos o hablar.
-    if (!inside && G.world.map === 'piltover' && window.PiltoverInteriors?.has(loc.id)) {
-      World.pause(true);
-      try {
-        const ok = window.PiltoverInteriors.enter(loc.id,
-          () => onLocation(loc, true),
-          () => World.pause(false));
-        if (ok) return;
-      } catch (err) {
-        console.error('Error al abrir interior de Piltover:', err);
-        window.PiltoverInteriors.close();
-      }
-      World.pause(false);
-      return toast('No se ha podido abrir este lugar de Piltover en 3D. Comprueba WebGL.', 'warn');
-    }
-    // Se marca el capítulo explorado solo después de completar el recorrido interior.
-    if (inside && loc.id === objectiveId()) G.acts[`interior:${G.progress.chapterId}`] = true;
+    // Los escenarios 3D están retirados: las acciones se abren directamente en el lugar.
+    if (loc.id === objectiveId()) G.acts[`interior:${G.progress.chapterId}`] = true;
     const acts = locationActions(loc);
     if (!acts.length) return toast(`${loc.name}: aquí no hay nada que hacer ahora mismo.`);
     if (acts.length === 1) return acts[0].run();
@@ -554,7 +523,7 @@
       showNotice('Controles', [
         'Moverse: toca el mapa para mover la vista, o toca un personaje o un lugar para ir hasta él y abrirlo.',
         'Hablar, entrar o usar: botón ✦ de abajo a la derecha, o toca el aviso que sale en pantalla.',
-        'Cámara 3D: pellizca con dos dedos para acercar o alejar, y gira los dos dedos para rotar la vista.',
+        'Mapa 2D: pulsa sobre un lugar o personaje para acercarte e interactuar.',
         'Los botones de abajo abren la historia, el comunicador, la ficha, el Códice, el Atlas y la pausa. El botón «atrás» del móvil cierra ventanas y pausa.',
         'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
       ].join('\n'));
@@ -563,7 +532,7 @@
     showNotice('Controles', [
       'Moverse: haz clic en el mapa para mover la vista, o en un personaje o un lugar para ir hasta él y abrirlo.',
       'Interactuar / hablar / entrar: E o Intro.',
-      'Cámara 3D: rueda del ratón (o + y −) para acercar o alejar, Q y R para girar, botón derecho arrastrando para girar e inclinar.',
+      'Mapa 2D: haz clic para desplazarte y explorar Piltover o Zaun.',
       'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
@@ -574,7 +543,7 @@
     // Evita iniciar o continuar capítulos de un edificio desde el botón H del mapa
     // sin haber investigado antes su espacio 3D, también en partidas nuevas.
     const required = objectiveId();
-    const isExplorable = Boolean(window.PiltoverInteriors?.has(required) || window.ZaunInteriors?.has(required));
+    const isExplorable = false; // No se requiere un recorrido 3D para avanzar.
     if (!G.progress.finished && isExplorable && !G.acts[`interior:${G.progress.chapterId}`]) {
       toast(`Entra en ${objectiveName()} e investiga primero su interior.`, 'warn');
       return;

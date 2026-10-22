@@ -29,7 +29,7 @@
       host = el('div', { class: 'scene3d-backdrop scene3d-host' });
       view.prepend(host);
     }
-    if (!window.Scene3D?.mount(host, shot)) host.remove();
+    host.remove(); // Fondos 3D desactivados para evitar errores gráficos.
     tiltAll(view);
   }
   App.backdrop3d = backdrop3d;

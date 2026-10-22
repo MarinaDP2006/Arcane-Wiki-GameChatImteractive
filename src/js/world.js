@@ -150,7 +150,7 @@
     const out = [];
     const byLoc = {};
     for (const id of G.unlocked) {
-      if (!withModel(id)) continue;
+      // Mostrar personajes desbloqueados aunque no exista un archivo GLB.
       if ((W().absent[id] || []).includes(G.progress.chapterId)) continue;
       if ((G.fallen || []).includes(id)) continue;
       const loc = locById(W().homes[id]);
@@ -1002,7 +1002,7 @@
       mini = miniEl;
       mctx = mini?.getContext('2d');
       resize();
-      try { r3d = window.World3D?.mount(canvas.parentElement) ? window.World3D : null; } catch { r3d = null; }
+      r3d = null; // Escenarios tridimensionales retirados: mapa 2D estable.
       canvas.classList.toggle('over-3d', Boolean(r3d));
       if (r3d) bindCamera();
       // Con personajes 3D la cámara empieza más cerca para que se vean bien.
