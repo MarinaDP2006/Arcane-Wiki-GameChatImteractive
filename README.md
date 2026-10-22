@@ -42,6 +42,17 @@ La estética está inspirada en la serie. No se incluyen ni se prometen modelos 
 
 Se mantienen en `%APPDATA%\\Arcane Piltover y Zaun\\partidas`, incluso tras actualizar o reinstalar el juego. No borres esa carpeta si deseas conservar tus partidas.
 
+## Llevar tu partida de la tableta al PC (o al revés)
+
+En Android las partidas se guardan dentro de la propia app (no en una carpeta visible), así que no se comparten solas con Windows. Para moverlas:
+
+1. En **Partidas**, pulsa **Exportar** en la ranura. En Android se abre el menú Compartir: guárdala en Drive, envíatela por correo o usa «Guardar en Archivos». En Windows eliges dónde guardar el archivo `grietas-partida-….json`.
+2. En el otro dispositivo, pulsa **Importar** en una ranura y elige ese archivo. También vale una `ranura-N.json` copiada de `%APPDATA%\Arcane Piltover y Zaun\partidas`.
+
+Las partidas exportadas son tuyas: no las subas al repositorio.
+
+Desde la versión 1.24.0 el APK de prueba se firma siempre con la misma llave, así que las nuevas versiones se instalan encima de la anterior sin perder las partidas de la tableta.
+
 ## Recuperar una partida
 
 Cada ranura tiene una copia anterior `ranura-N.json.bak` en `%APPDATA%\Arcane Piltover y Zaun\partidas`. Si el archivo principal se daña, el juego carga la copia automáticamente. Para volver a una copia a mano: cierra el juego, copia antes la carpeta `partidas` a otro sitio, y renombra `ranura-N.json.bak` como `ranura-N.json`.

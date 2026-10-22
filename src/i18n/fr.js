@@ -3921,5 +3921,12 @@ window.I18N_DATA.fr = {
   "✦ Personajes desbloqueados para chatear: {0}": "✦ Personnages débloqués pour discuter : {0}",
   "✦ {0} tema{1} por descubrir": "✦ {0} sujet{1} à découvrir",
   "✦ {0} · lo que escribas se envía a ese servicio": "✦ {0} · ce que tu écris est envoyé à ce service",
-  "⧉ Abrir en ventana": "⧉ Ouvrir dans une fenêtre"
+  "⧉ Abrir en ventana": "⧉ Ouvrir dans une fenêtre",
+  "Exportar": "Exporter",
+  "Importar": "Importer",
+  "Partida exportada": "Partie exportée",
+  "No se pudo exportar la partida": "Impossible d'exporter la partie",
+  "Ese archivo no es una partida de Grietas & Gears": "Ce fichier n'est pas une partie de Grietas & Gears",
+  "Partida de {0} importada en la ranura {1}": "Partie de {0} importée dans l'emplacement {1}",
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?"
 };

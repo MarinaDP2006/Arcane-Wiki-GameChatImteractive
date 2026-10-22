@@ -71,6 +71,8 @@
           s.empty
             ? el('button', { class: 'btn primary', onclick: () => newGame(s.slot) }, 'Nueva partida')
             : el('button', { class: 'btn primary', onclick: () => loadGame(s.slot) }, 'Continuar'),
+          !s.empty ? el('button', { class: 'btn ghost', onclick: () => exportSlot(s) }, 'Exportar') : null,
+          el('button', { class: 'btn ghost', onclick: () => importSlot(s) }, 'Importar'),
           !s.empty ? el('button', {
             class: 'btn ghost', onclick: async () => {
               if (!confirm(`¿Borrar la partida de ${s.name}? No se puede deshacer.`)) return;
@@ -78,6 +80,67 @@
               renderMenu();
             },
           }, 'Borrar') : null))))));
+  }
+
+  /** Nombre del archivo de una partida exportada (sin caracteres raros para Android ni Windows). */
+  function saveFileName(s) {
+    const name = String(s.name || 'partida').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w-]+/g, '_');
+    return `grietas-partida-${name}-${new Date().toISOString().slice(0, 10)}.json`;
+  }
+
+  /** Guarda una ranura en un archivo para seguir la partida en otro dispositivo. */
+  async function exportSlot(s) {
+    const file = saveFileName(s);
+    try {
+      if (window.arcane?.saves?.exportFile) {
+        if (await window.arcane.saves.exportFile(s.slot, file)) toast('Partida exportada', 'good');
+        return;
+      }
+      const data = await store.load(s.slot);
+      if (!data) return toast('No se pudo cargar la partida', 'warn');
+      const text = JSON.stringify({ formato: 'grietas-partida', version: 1, exportadaEl: new Date().toISOString(), partida: data });
+      const cap = window.Capacitor;
+      const { Filesystem, Share } = cap?.Plugins || {};
+      if (cap?.isNativePlatform?.() && Filesystem && Share) {
+        // Android: se escribe en la caché de la app y se abre el menú Compartir
+        // (Drive, correo, «Guardar en Archivos», Quick Share...).
+        const { uri } = await Filesystem.writeFile({ path: file, data: text, directory: 'CACHE', encoding: 'utf8' });
+        await Share.share({ title: 'Partida de Grietas & Gears', files: [uri], dialogTitle: 'Guardar o enviar la partida' }).catch(() => {});
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      a.download = file;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    } catch (err) {
+      console.error(err);
+      toast('No se pudo exportar la partida', 'warn');
+    }
+  }
+
+  /** Lee un archivo exportado (o una ranura-N.json copiada a mano) y lo pone en esta ranura. */
+  function importSlot(s) {
+    const input = el('input', { type: 'file', accept: '.json,application/json,text/plain,*/*', class: 'hidden' });
+    input.onchange = async () => {
+      const f = input.files[0];
+      input.remove();
+      if (!f) return;
+      let data = null;
+      try {
+        const raw = JSON.parse(await f.text());
+        data = raw?.formato === 'grietas-partida' ? raw.partida : raw;
+      } catch {
+        data = null;
+      }
+      if (!data?.player || !data?.progress) return toast('Ese archivo no es una partida de Grietas & Gears', 'warn');
+      if (!s.empty && !confirm((window.I18N?.t || ((x) => x))(`La ranura ${s.slot} tiene la partida de ${s.name}. ¿Reemplazarla por la de ${data.player.name}?`))) return;
+      await store.save(s.slot, data);
+      toast(`Partida de ${data.player.name} importada en la ranura ${s.slot}`, 'good');
+      renderMenu();
+    };
+    document.body.append(input);
+    input.click();
   }
 
   /** Inicia una nueva historia con el personaje creado. */
