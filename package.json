@@ -9,20 +9,10 @@
   "scripts": {
     "start": "electron .",
     "check": "node scripts/check.js",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win",
-    "dist:mac": "electron-builder --mac",
-    "android:web": "node scripts/build-mobile.js",
-    "android:sync": "node scripts/build-mobile.js && cap sync android",
-    "android:open": "cap open android",
-    "android:apk": "npm run android:sync && cd android && ./gradlew assembleRelease",
-    "android:aab": "npm run android:sync && cd android && ./gradlew bundleRelease"
+    "dist": "electron-builder --win",
+    "dist:win": "electron-builder --win"
   },
   "devDependencies": {
-    "@capacitor/android": "^8.5.3",
-    "@capacitor/app": "^8.1.2",
-    "@capacitor/cli": "^8.5.3",
-    "@capacitor/core": "^8.5.3",
     "electron": "^44.9.1",
     "electron-builder": "^26.15.3"
   },
@@ -66,26 +56,6 @@
     },
     "portable": {
       "artifactName": "Grietas-and-Gears-${version}-portable.${ext}"
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "universal"
-          ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "universal"
-          ]
-        }
-      ],
-      "category": "public.app-category.role-playing-games",
-      "artifactName": "Grietas-and-Gears-${version}-${arch}.${ext}",
-      "icon": "build/icon.png",
-      "identity": null
     }
   }
 }
