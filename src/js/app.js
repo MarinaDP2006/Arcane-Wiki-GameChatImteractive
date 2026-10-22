@@ -262,18 +262,12 @@
         el('h3', {}, 'Calidad'),
         select('quality', 'Calidad gráfica', 'Baja va fluido en ordenadores y móviles modestos; Ultra pide una buena tarjeta gráfica.',
           [['baja', 'Baja'], ['media', 'Media'], ['alta', 'Alta'], ['ultra', 'Ultra']]),
-        slider('renderScale', 'Resolución del mundo 3D', 'Bájala si el mapa va a tirones.', 0.5, 1.25, 0.05, pct),
         toggle('shadows', 'Sombras', 'Sombras de edificios y personajes (no se usan en calidad Baja).'),
         toggle('postfx', 'Efectos de cámara', 'Resplandor de luces, gradación de color estilo Arcane y viñeta.'),
-        toggle('paintStyle', 'Estilo pintado (Arcane)', 'El mundo 3D se ve como pintado a mano, con pinceladas y contornos de tinta. Las pinceladas se ven en calidad Alta y Ultra.'),
         toggle('particles', 'Partículas', 'Polvo dorado en Piltover y esporas de neón en Zaun.'),
         toggle('cameraSway', 'Balanceo de cámara', 'La cámara respira un poco y sigue al ratón.'),
         slider('brightness', 'Brillo', null, 0.6, 1.4, 0.05, pct),
         toggle('showFps', 'Mostrar FPS', 'Contador de fotogramas por segundo en una esquina.'),
-        el('h3', {}, 'Mundo 3D'),
-        row('Personajes en 3D', 'Tu personaje y los personajes de Arcane aparecen como modelos tridimensionales. Puedes usar modelos propios en ZIP, FBX o GLB.',
-          el('input', { type: 'checkbox', checked: s.models3d !== false, onchange: (e) => { set({ models3d: e.target.checked }); window.World3D?.resetActors(); } })),
-        toggle('staticNpcModels', 'NPC quietos y a color', 'Los personajes de Arcane con modelos 3D permanecen en su lugar y muestran las texturas originales. Tu personaje sigue moviéndose. Es la opción recomendada para modelos ZIP sin animaciones.'),
       ],
       audio: () => [
         el('h3', {}, 'Volumen'),
@@ -400,7 +394,7 @@
       'codice/       Ilustraciones del Códice (criaturas, tecnología, mundo y lugares)',
       ...['criaturas', 'tecnologia', 'mundo', 'lugares'].flatMap((c) => [`  -- ${W.categories.find((x) => x.id === c).label}`, ...W[c].map((e) => line(e.id, e.name))]),
       '',
-      'modelos/      PERSONAJES 3D (.zip, .fbx, .glb) para el mapa. Se pueden dejar quietos y a color en Gráficos.',
+      'modelos/      Modelos de personajes para una futura modalidad 3D; actualmente se usa el mapa 2D.',
       '              Un archivo por personaje: vi.zip, jinx.zip, caitlyn.zip, etc. ZIP con FBX + texturas o GLB.',
       '              ti y generico.glb para quien no tenga el suyo. Si falta, se usa el muñeco pintado del juego.',
       '  animaciones/ reposo.glb, andar.glb y correr.glb (Mixamo, marca «In Place»). Valen para todos los modelos de Mixamo.',
@@ -441,7 +435,7 @@
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
         ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'modelos'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
         el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); window.World3D?.resetActors(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
-      el('p', { class: 'muted small' }, 'Todo el arte viene dentro del juego y funciona sin internet. Lo que pongas en tu carpeta de arte (también mapa/piltover y mapa/zaun para los fondos del mundo 3D) sustituye al incluido.'));
+      el('p', { class: 'muted small' }, 'Todo el arte viene dentro del juego y funciona sin internet. Puedes añadir imágenes a tu carpeta de arte, separadas por Piltover y Zaun.'));
   }
 
   /** Inicializa el menú y carga los ajustes guardados. */
