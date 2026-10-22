@@ -344,9 +344,29 @@ ipcMain.handle('app:fullscreen', (e) => {
 });
 
 // ---------- Partidas ----------
+/** Lee la ranura y recupera la última copia de seguridad si el archivo principal está dañado. */
+function readSave(slot) {
+  const file = slotFile(slot);
+  return readJSON(file, null) || readJSON(file + '.bak', null);
+}
+
+/** Guarda una partida de forma atómica y conserva su versión anterior como copia .bak. */
+function writeSave(slot, data) {
+  const file = slotFile(slot);
+  const tmp = file + '.' + process.pid + '.tmp';
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  try {
+    fs.writeFileSync(tmp, JSON.stringify({ ...data, savedAt: new Date().toISOString() }, null, 2), 'utf8');
+    // Solo conserva copias válidas; una partida corrupta no reemplaza un respaldo correcto.
+    if (readJSON(file, null) !== null) fs.copyFileSync(file, file + '.bak');
+    fs.renameSync(tmp, file);
+  } finally {
+    if (fs.existsSync(tmp)) fs.rmSync(tmp, { force: true });
+  }
+}
 ipcMain.handle('save:list', () =>
   SLOTS.map((slot) => {
-    const data = readJSON(slotFile(slot), null);
+    const data = readSave(slot);
     return {
       slot,
       empty: !data,
@@ -357,13 +377,14 @@ ipcMain.handle('save:list', () =>
     };
   })
 );
-ipcMain.handle('save:load', (_e, slot) => readJSON(slotFile(slot), null));
+ipcMain.handle('save:load', (_e, slot) => readSave(slot));
 ipcMain.handle('save:write', (_e, slot, data) => {
-  writeJSON(slotFile(slot), { ...data, savedAt: new Date().toISOString() });
+  writeSave(slot, data);
   return true;
 });
 ipcMain.handle('save:delete', (_e, slot) => {
   fs.rmSync(slotFile(slot), { force: true });
+  fs.rmSync(slotFile(slot) + '.bak', { force: true });
   return true;
 });
 
