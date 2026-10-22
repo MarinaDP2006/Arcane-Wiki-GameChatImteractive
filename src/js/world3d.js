@@ -11,6 +11,7 @@
   // Edición Windows: las opciones gráficas gobiernan la calidad, no el dispositivo táctil.
   const LOW = false;
 
+  /** Genera una secuencia pseudoaleatoria estable para construir el mismo escenario cada vez. */
   function rng(seed) {
     let a = seed >>> 0;
     return () => {
@@ -263,6 +264,7 @@
     return { map: canvasTex(S, S, paint(false), true), glow: canvasTex(S, S, paint(true), true) };
   }
 
+  /** Construye texturas de resplandor para fuentes luminosas. */
   function glowTex(rgb) {
     return canvasTex(128, 128, (g) => {
       const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
@@ -274,6 +276,7 @@
     });
   }
 
+  /** Crea una textura transparente para representar humo. */
   function smokeTex() {
     return canvasTex(128, 128, (g) => {
       const r = rng(5);
@@ -402,6 +405,7 @@
 
   // Letreros de neón con texto (Zaun).
   const SIGNS = ['BAR', 'CHEM', 'RAMEN', 'HOTEL', 'TALLER', 'BENZO', 'NEÓN', 'CLÍNICA', 'FORJA', 'ZAUN', 'ÚLTIMA GOTA', 'PIEZAS', 'LUZ', 'NOODLES', 'BAÑOS', '24H'];
+  /** Dibuja la textura de los letreros de la ciudad. */
   function signTex(text, rgb) {
     const w = 64 + text.length * 34;
     return canvasTex(w, 96, (g) => {
@@ -635,6 +639,7 @@
 
   // Los edificios entre la cámara y el jugador se recortan para que siempre se vea la calle.
   const cut = { uFocus: { value: new T.Vector3() }, uCut: { value: 150 } };
+  /** Prepara la geometría de un volumen recortado. */
   function cutaway(mat) {
     mat.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, cut);
@@ -656,6 +661,7 @@
     return mat;
   }
 
+  /** Crea un sprite luminoso que se integra en la escena. */
   function glowSprite(tex, size, opacity = 1) {
     const s = new T.Sprite(new T.SpriteMaterial({ map: tex, blending: T.AdditiveBlending, depthWrite: false, transparent: true, opacity }));
     s.scale.set(size, size, 1);
@@ -677,6 +683,7 @@
 
   // ---------- Construcción de cada ciudad ----------
   const GOLD = 0xd8aa50;
+  /** Construye los edificios, monumentos y detalles exclusivos de Piltover. */
   function buildPiltover(map, R) {
     const grp = new T.Group();
     const r = rng(map.def.seed * 31);
@@ -962,6 +969,7 @@
     return grp;
   }
 
+  /** Construye la arquitectura industrial, tuberías y luces de Zaun. */
   function buildZaun(map, R) {
     const grp = new T.Group();
     const r = rng(map.def.seed * 17);
@@ -1337,6 +1345,7 @@
     zaun: ['zaun', 'ultima-gota', 'comuna-viktor'].map((id) => `img/arte/lugares/${id}.webp`),
   };
   let edgeAlpha = null;
+  /** Obtiene las imágenes que sirven como fondo lejano del escenario. */
   async function backdropImages(id) {
     const api = window.arcane?.art;
     if (api?.mapImages) {
@@ -1349,6 +1358,7 @@
     return bundled.length ? bundled.slice(0, 8) : BACKDROP_FALLBACK[id] || [];
   }
 
+  /** Construye el horizonte y paisaje que rodean al mapa. */
   function buildBackdrop(map, grp) {
     const ring = new T.Group();
     ring.position.set(map.w / 2, 0, map.h / 2);
@@ -1357,6 +1367,7 @@
     fillBackdrop(map, ring);
   }
 
+  /** Actualiza y distribuye los elementos del fondo ambiental. */
   function fillBackdrop(map, ring) {
     const zaun = map.id === 'zaun';
     edgeAlpha ||= canvasTex(256, 256, (g) => {
@@ -1397,6 +1408,7 @@
   // Escena en HDR → resplandor (brillos difuminados a media y cuarta resolución) → mezcla con
   // tono fílmico, gradación de color de cada ciudad, viñeta, grano y textura de lienzo.
   const FSQ_VS = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+  /** Configura el posprocesado de luz, color, grano y estilo pictórico. */
   function createPost(renderer) {
     if (!renderer.capabilities.isWebGL2) return null;
     const type = T.HalfFloatType;
@@ -1600,6 +1612,7 @@
     R.w = 0; // fuerza a recalcular el tamaño con la nueva resolución
   }
 
+  /** Inicializa WebGL, escena, luces, cámara y recursos necesarios. */
   function create() {
     const canvas = document.createElement('canvas');
     canvas.className = 'world-3d';
@@ -1695,6 +1708,7 @@
     return mat;
   }
 
+  /** Carga una ciudad, configura su atmósfera y reutiliza los modelos creados. */
   function setMap(map) {
     if (!R) return;
     clearActors();
@@ -1745,6 +1759,7 @@
     R.spotT = 0;
   }
 
+  /** Adapta la resolución de WebGL y la cámara al espacio disponible. */
   function resize() {
     const w = R.host.clientWidth;
     const h = R.host.clientHeight;
@@ -1783,6 +1798,7 @@
     });
   }
 
+  /** Actualiza la cámara, las luces, el ambiente y dibuja cada fotograma. */
   function render(t, info) {
     if (!R || !R.map) return;
     resize();
@@ -1938,6 +1954,7 @@
     }
     for (const [k, av] of A) if (!seen.has(k)) { window.Avatars3D.dispose(av); A.delete(k); }
   }
+  /** Retira los personajes 3D al cambiar de escena. */
   function clearActors() {
     if (!R?.actors) return;
     for (const av of R.actors.values()) window.Avatars3D.dispose(av);
@@ -1956,6 +1973,7 @@
   // Píxeles de pantalla → punto del suelo en coordenadas del mapa.
   const ray = new T.Raycaster();
   const plane = new T.Plane(new T.Vector3(0, 1, 0), 0);
+  /** Proyecta un clic de pantalla sobre el suelo del escenario. */
   function pick(sx, sy) {
     ray.setFromCamera(new T.Vector2((sx / R.w) * 2 - 1, -(sy / R.h) * 2 + 1), R.camera);
     const hit = ray.ray.intersectPlane(plane, new T.Vector3());
