@@ -90,11 +90,11 @@ window.WORLD = {
   // Dónde arranca cada capítulo de la historia.
   chapterLocations: {
     z1: 'ultima-gota', z2: 'tienda-benzo', z3: 'ultima-gota', z4: 'mercado', z5: 'callejones',
-    z6: 'foso', z7: 'tejados', z8: 'sumidero',
+    z6: 'foso', z7: 'tejados', z8: 'sumidero', z9: 'ultima-gota', z10: 'puente',
     p1: 'academia', p2: 'consejo', p3: 'ejecutores', p4: 'hexpuertas', p5: 'puente',
-    p6: 'ejecutores', p7: 'academia', p8: 'arbol',
+    p6: 'ejecutores', p7: 'academia', p8: 'arbol', p9: 'consejo', p10: 'mansion-kiramman',
     fin: { zaun: 'puente-zaun', piltover: 'puente' },
-    t1: 'consejo', t2: 'escondite-jinx', t3: 'fabrica', t4: 'consejo', t5: 'sumidero', t6: 'arbol', fin2: 'puente',
+    t1: 'consejo', t2: 'escondite-jinx', t3: 'fabrica', t4: 'consejo', t5: 'sumidero', t6: 'arbol', t7: 'puente-zaun', t8: 'consejo', fin2: 'puente',
   },
 
   // Lugar de aparición según el barrio elegido al crear el personaje.
