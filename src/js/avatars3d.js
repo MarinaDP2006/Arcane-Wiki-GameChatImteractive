@@ -19,6 +19,7 @@
 
   // ---------- Textura de pincel (para que la ropa no parezca plástico) ----------
   let brush = null;
+  /** Genera una textura de pinceladas para los materiales de los personajes. */
   function brushTex() {
     if (brush) return brush;
     const c = document.createElement('canvas');
@@ -51,6 +52,7 @@
   // Cara pintada (ojos, cejas, boca y marcas de cada personaje) sobre fondo transparente.
   // Se envuelve en la parte delantera de la cabeza: el centro del lienzo mira al frente.
   const faceCache = new Map();
+  /** Dibuja los rasgos faciales que corresponden al personaje. */
   function faceTex(spec) {
     const L = spec.look;
     const acc = spec.accents;
@@ -208,6 +210,7 @@
 
   const shade = (hex, k) => new T.Color(hex).multiplyScalar(k);
 
+  /** Devuelve las características físicas del personaje elegido. */
   function specFor(id, player) {
     if (player) {
       const L = player.look || {};
@@ -232,6 +235,7 @@
   function mat(color, extra = {}) {
     return new T.MeshStandardMaterial({ color, map: brushTex(), roughness: 0.85, metalness: 0, ...extra });
   }
+  /** Crea una malla y la prepara para recibir luz y sombras. */
   function mesh(geo, m, cast = true) {
     const x = new T.Mesh(geo, m);
     x.castShadow = cast;
@@ -243,6 +247,7 @@
     return mesh(new T.CylinderGeometry(r0, r1, len, 10).translate(0, -len / 2, 0), m);
   }
 
+  /** Genera el peinado correspondiente al personaje. */
   function hairFor(style, r, m, skinM) {
     const g = new T.Group();
     const cap = (k = 1.08, cut = 0.5) => {
@@ -295,6 +300,7 @@
     return g;
   }
 
+  /** Coloca ropa y accesorios característicos en el avatar. */
   function accessories(spec, r, head, neck, M) {
     const has = (x) => spec.accents.includes(x);
     if (has('hat')) {
@@ -341,6 +347,7 @@
     }
   }
 
+  /** Construye el avatar articulado de respaldo a partir de piezas 3D. */
   function buildDoll(spec) {
     const B = spec.build;
     const wide = B.wide || 1;
@@ -484,6 +491,7 @@
   const parsed = new Map();
   const desktop = () => Boolean(window.arcane?.models);
 
+  /** Enumera los modelos 3D compatibles disponibles en el proyecto. */
   async function listModels() {
     if (index) return index;
     try {
@@ -492,6 +500,7 @@
     return index;
   }
 
+  /** Lee el archivo tridimensional elegido para el personaje. */
   async function readModel(name) {
     if (desktop()) {
       const buf = await window.arcane.models.read(name);
@@ -506,6 +515,7 @@
   // (los .fbx suelen guardar la ruta del ordenador de quien los hizo).
   const MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', bmp: 'image/bmp' };
   const baseName = (u) => decodeURIComponent(String(u).split(/[\\/]/).pop() || '').toLowerCase();
+  /** Interpreta un modelo en formato FBX. */
   function parseFBX(data, textures) {
     const urls = {};
     for (const [n, b] of Object.entries(textures)) {
@@ -519,6 +529,7 @@
     return { scene: group, animations: group.animations || [] };
   }
 
+  /** Interpreta un modelo en formato GLB. */
   function parseGLB(buf, name) {
     return new Promise((ok) => new window.THREE_GLTF.GLTFLoader().parse(buf, '', ok, (err) => { console.warn(`Modelo ${name}:`, err); ok(null); }));
   }
@@ -536,6 +547,7 @@
     return parseFBX(files[fbx], tex);
   }
 
+  /** Carga el modelo GLB y sus recursos gráficos. */
   function loadGLB(name) {
     if (parsed.has(name)) return parsed.get(name);
     const p = (async () => {
@@ -554,6 +566,7 @@
   // Mixamo llama a los huesos «mixamorig:Hips», «mixamorig1:Hips»… Se quitan los prefijos
   // para que las animaciones de un archivo valgan para cualquier personaje.
   const bone = (n) => n.replace(/^mixamorig\d*[:_]?/i, '');
+  /** Prepara una animación para evitar movimientos incompatibles. */
   function cleanClip(clip) {
     const c = clip.clone();
     c.tracks = c.tracks.filter((tr) => !/\.scale$/.test(tr.name) || !/hips/i.test(tr.name));
@@ -570,6 +583,7 @@
   }
 
   const CLIPS = { idle: /idle|reposo|quiet|breath|stand/i, walk: /walk|andar|caminar/i, run: /run|correr|sprint|jog/i };
+  /** Obtiene animaciones reutilizables de movimiento. */
   async function sharedClips() {
     const out = {};
     for (const [k, files] of Object.entries({ idle: ['reposo', 'idle'], walk: ['andar', 'walk'], run: ['correr', 'run'] })) {
@@ -581,6 +595,7 @@
     return out;
   }
 
+  /** Construye un avatar a partir de un modelo externo. */
   async function buildGLB(names, scale) {
     let gltf = null;
     for (const n of names) { gltf = await loadGLB(n); if (gltf) break; }
@@ -624,6 +639,7 @@
     return { root, model, mixer, actions, kind: Object.keys(actions).length ? 'glb' : 'static' };
   }
 
+  /** Actualiza la animación de un avatar GLB en cada fotograma. */
   function animateGLB(av, dt, speed) {
     const A = av.actions;
     // Solo trae una animación de estar quieto: se usa siempre y al andar se balancea entero.
@@ -646,6 +662,7 @@
     av.mixer.update(dt);
   }
 
+  /** Añade movimiento básico a modelos sin animación esquelética. */
   function animateStatic(av, dt, speed) {
     const amp = Math.min(1, speed / 110);
     av.amp = (av.amp ?? 0) + (amp - (av.amp ?? 0)) * Math.min(1, dt * 8);
@@ -688,6 +705,7 @@
     else animateDoll(av, dt, speed, t);
   }
 
+  /** Libera recursos del avatar al salir del escenario. */
   function dispose(av) {
     av.disposed = true;
     av.holder.parent?.remove(av.holder);
