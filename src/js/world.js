@@ -141,6 +141,7 @@
     const byLoc = {};
     for (const id of G.unlocked) {
       if ((W().absent[id] || []).includes(G.progress.chapterId)) continue;
+      if ((G.fallen || []).includes(id)) continue;
       const loc = locById(W().homes[id]);
       if (!loc || loc.map !== mapId) continue;
       const n = (byLoc[loc.id] = (byLoc[loc.id] || 0) + 1);

@@ -444,7 +444,7 @@ window.RELATIONS = {
     // =========================================================== MADDIE
     maddie: {
       gender: 'f', romance: ['mujer', 'nobinario'], family: null, sibling: true,
-      persona: 'Maddie, soldado al servicio de Noxus infiltrada entre los ejecutores, rubia, simpática, risueña y entusiasta en apariencia, pero con secretos y lealtades ocultas. Habla con alegría, admiración fácil y algún desliz nervioso.',
+      persona: 'Maddie Nolen, ejecutora de Piltover y ayudante de Caitlyn que informa en secreto a Ambessa, rubia, simpática, risueña y entusiasta en apariencia, pero con secretos y lealtades ocultas. Habla con alegría, admiración fácil y algún desliz nervioso.',
       rel: {
         amistad: { ask: '¡Maddie! ¿Amigas?', yes: ['¡Claro que sí! ¡Qué ilusión! ¿Vamos a por bollos?'] },
         mejor: { ask: 'Eres una gran amiga, Maddie.', yes: ['(Se le borra la sonrisa un segundo.) Ojalá fuera tan buena como crees. …¡Pero lo intentaré!'] },
@@ -478,7 +478,7 @@ window.RELATIONS = {
     // =========================================================== KINO
     kino: {
       gender: 'm', romance: ['mujer', 'hombre', 'nobinario'], family: null, sibling: true,
-      persona: 'Kino, soldado noxiano al servicio de Ambessa, serio, disciplinado, de pocas palabras pero leal, con un humor seco que asoma muy de vez en cuando. Habla breve, formal y directo.',
+      persona: 'Kino Medarda, hermano pequeño de Mel e hijo de Ambessa, o alguien que lleva su cara. Tranquilo, enigmático, diplomático, con frases que esconden más de lo que dicen. Habla breve y con un punto inquietante.',
       rel: {
         amistad: { ask: 'Kino, ¿amigos?', yes: ['(Asiente.) Amigos. No hablo mucho. Pero cubro espaldas.'] },
         mejor: { ask: 'Confío en ti, Kino.', yes: ['Lo mismo. No es algo que diga a menudo.'] },

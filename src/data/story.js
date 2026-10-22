@@ -2,10 +2,15 @@
 //
 // Nodo: { bg, lines: [{ s: hablante, t: texto }], choices?: [...], next?: id, end?: true }
 //   s: id de personaje del reparto (STORY.cast), 'narrador' o 'yo' (el jugador).
-//      Los secundarios de la serie (Mylo, Claggor, Benzo, Singed, Marcus, Scar…) no hablan:
+//      Los secundarios de la serie (Mylo, Claggor, Benzo, Singed, Marcus, Scar, LeBlanc…) no hablan:
 //      el narrador cuenta lo que hacen o dicen.
+//   cond (opcional): la línea solo sale si se cumple. { flag } | { notFlag } |
+//      { met: id } | { notMet: id } (ya conoces o aún no conoces a ese personaje) |
+//      { kin: id } | { notKin: id } (es o no de tu familia, según la creación) | { origin: 'zaun'|'piltover' }.
+//      Así los primeros encuentros con gente de fuera de tu familia son de verdad primeros.
 // Elección: { t, next, req?, fx? }
 //   req: { stat: 'ingenio'|'carisma'|'valor'|'sigilo', min } | { flag } | { notFlag } | { aff: [id, min] }
+//        | { met } | { notMet } | { kin } | { notKin } | { origin } (como en cond: si no se cumplen, se ocultan)
 //   fx:  { aff: { id: n }, rep: { zaun: n, piltover: n }, stats: { stat: n }, flags: [..] }
 //
 // Plantillas en el texto: {name}, {job}, {district}, {family}, {hobby},
@@ -22,6 +27,22 @@ window.STORY = {
   // Son los 16 protagonistas cuyas caras están en arte/caras.
   cast: ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino'],
 
+  // Muertes del canon de Arcane: capítulo al final del cual el personaje deja de estar.
+  // Desde entonces no habla en la historia ni en el comunicador (sale en «En memoria»).
+  deaths: {
+    vander: 'z2', // muere en la fábrica (lo que vuelve es Warwick, que ya no es él)
+    silco: 'fin', // Jinx le dispara en la merienda
+    cassandra: 'fin', // el cohete de Jinx cae sobre el Consejo
+    kino: 't4', // el verdadero Kino murió hace años: el de Noxus era LeBlanc
+    isha: 't5', // se sacrifica contra Warwick
+    heimerdinger: 't6', // se queda en la anomalía para que Ekko vuelva
+    ambessa: 'fin2', // la Rosa Negra la mata; muere en brazos de Mel
+    maddie: 'fin2', // la barrera de Mel le devuelve su propia bala
+    jayce: 'fin2', // desaparece con Viktor en el corazón del Hexcore
+    viktor: 'fin2',
+    jinx: 'fin2', // cae con Warwick; nadie encuentra su cuerpo
+  },
+
   chapters: [
     // ======================= RUTA ZAUN =======================
     {
@@ -31,11 +52,16 @@ window.STORY = {
       start: 'a',
       nodes: {
         a: { bg: 'ultima-gota', lines: [
-          { s: 'narrador', t: 'Empujas la puerta de La Última Gota. Te conocen en {district}: eres {name}, {job}. Hoy vienes a por un encargo… o a por un trago.' },
-          { s: 'narrador', t: 'Detrás de la barra, un hombretón con las manos llenas de cicatrices seca vasos que ya están secos. Todo Zaun sabe quién es: Vander, el que lideró la revuelta del puente.' },
-          { s: 'vander', t: '{name}. Siéntate. La primera ronda la pago yo, la segunda te la cobro con favores.' },
+          { s: 'narrador', t: 'Empujas la puerta de La Última Gota. En {district} te conocen como {name}, {job}, pero nunca habías cruzado esta puerta. Hoy vienes a por un encargo… o a por un trago.', cond: { notKin: 'vander' } },
+          { s: 'narrador', t: 'Detrás de la barra, un hombretón con las manos llenas de cicatrices seca vasos que ya están secos. Todo Zaun sabe quién es: Vander, el que lideró la revuelta del puente.', cond: { notKin: 'vander' } },
+          { s: 'vander', t: '(Te mira de arriba abajo.) No te había visto nunca por aquí. En mi barra no bebe nadie sin nombre.', cond: { notKin: 'vander' } },
+          { s: 'yo', t: '{name}. De {district}. Me gano la vida como puedo.', cond: { notKin: 'vander' } },
+          { s: 'vander', t: '{name}. Siéntate. La primera ronda la pago yo, la segunda te la cobro con favores.', cond: { notKin: 'vander' } },
+          { s: 'narrador', t: 'Empujas la puerta de La Última Gota, la única casa que has tenido desde que Vander te recogió de la calle. Huele a cerveza, a serrín y a hogar.', cond: { kin: 'vander' } },
+          { s: 'vander', t: '(Sin levantar la vista de los vasos.) Llegas tarde a cenar, {name}. Te he guardado guiso. Del bueno.', cond: { kin: 'vander' } },
           { s: 'vander', t: 'Aquí abajo hay una regla, y en mi barra se cumple: nada de Brillo, nada de peleas y nada de ejecutores. Lo demás, lo hablamos.' },
-          { s: 'vander', t: 'Bueno. Cuéntame qué te trae a mi taberna.' },
+          { s: 'vander', t: 'Bueno. Cuéntame qué te trae a mi taberna.', cond: { notKin: 'vander' } },
+          { s: 'vander', t: '(Te mira por encima del trapo.) Tienes esa cara de cuando algo te ronda la cabeza. Suéltalo.', cond: { kin: 'vander' } },
         ], choices: [
           { t: '«Busco trabajo honrado. Si es que eso existe aquí abajo.»', next: 'b', fx: { aff: { vander: 2 } } },
           { t: '«He oído que tus chavales planean algo gordo.»', next: 'b2', fx: { aff: { vander: -1, vi: 1 } } },
@@ -46,7 +72,8 @@ window.STORY = {
           { s: 'vander', t: 'Hace años yo también buscaba otra cosa. Quería que Piltover nos mirase a la cara. Lo conseguí, ¿sabes cómo? Llenando el puente de cadáveres.' },
           { s: 'yo', t: 'Y desde entonces sirves cerveza.' },
           { s: 'vander', t: '(Sonríe a medias.) Desde entonces cuido de los que quedaron. Ayúdame con las cajas del sótano y hablamos de ese trabajo.' },
-          { s: 'narrador', t: 'Mientras cargas cajas, una niña de pelo azul te espía desde las escaleras con un cachivache que pita. Cuando la miras, se esconde. Mal.' },
+          { s: 'narrador', t: 'Mientras cargas cajas, una niña de pelo azul te espía desde las escaleras con un cachivache que pita. Cuando la miras, se esconde. Mal.', cond: { notKin: 'jinx' } },
+          { s: 'narrador', t: 'Mientras cargas cajas, Powder te tira tuercas desde las escaleras para que le hagas caso. Falla todas. Bueno, casi todas.', cond: { kin: 'jinx' } },
         ], next: 'b_vander' },
         b2: { bg: 'ultima-gota', lines: [
           { s: 'vander', t: '(Deja el vaso con un golpe seco.) Mis chavales no planean nada. Y tú tampoco.' },
@@ -75,9 +102,11 @@ window.STORY = {
           { s: 'vander', t: 'Así que le paré yo. En el río. (Te sirve otra ronda sin preguntar.) Esa historia no la cuentes por ahí.' },
         ], next: 'c' },
         c: { bg: 'callejones', lines: [
-          { s: 'jinx', t: '¡Hola! Soy Powder. ¿Sabes algo de cachivaches? Mi bomba no explota. Bueno, a veces sí. Cuando no debe.' },
+          { s: 'jinx', t: '¡Hola! Soy Powder. ¿Sabes algo de cachivaches? Mi bomba no explota. Bueno, a veces sí. Cuando no debe.', cond: { notKin: 'jinx' } },
+          { s: 'jinx', t: '¡{name}! Por fin. Mi bomba no explota. Bueno, a veces sí. Cuando no debe. Tú eres de la familia, tienes que ayudarme.', cond: { kin: 'jinx' } },
           { s: 'jinx', t: 'Esta se llama Crujidora. Bueno, aún no tiene nombre. Las cosas que no funcionan no se merecen nombre, dice Mylo.' },
-          { s: 'vi', t: 'Powder, deja en paz a la gente. (Te mira de arriba abajo.) Así que tú eres {name}. Vander habla bien de ti. Eso es raro.' },
+          { s: 'vi', t: 'Powder, deja en paz a la gente. (Te mira de arriba abajo.) Así que tú eres {name}. Soy Vi. Vander habla bien de ti. Eso es raro.', cond: { notKin: 'vi' } },
+          { s: 'vi', t: 'Powder, deja respirar a {name}, que acaba de llegar. (Te da un golpe en el hombro.) Hoy te necesito. A ti, no a tus excusas.', cond: { kin: 'vi' } },
           { s: 'vi', t: 'Mira, voy a ir al grano. Mañana subimos a Piltover. Una casa vacía en el barrio alto, llena de cosas que nadie echará de menos. Nos vendría bien alguien más.' },
           { s: 'narrador', t: 'Mylo se cruza de brazos y refunfuña que más gente es menos botín. Claggor le da un codazo sin apartar la vista de sus planos.' },
           { s: 'jinx', t: 'Yo también voy. ¿A que sí, Vi? ¿A que sí?' },
@@ -154,9 +183,11 @@ window.STORY = {
       start: 'a',
       nodes: {
         a: { bg: 'callejones', lines: [
-          { s: 'narrador', t: 'La tienda de empeños de Benzo es un laberinto de trastos, relojes rotos y piezas de máquinas que nadie sabe para qué sirven. Benzo te deja pasar con un gesto: los amigos de Vander son amigos suyos.' },
+          { s: 'narrador', t: 'La tienda de empeños de Benzo es un laberinto de trastos, relojes rotos y piezas de máquinas que nadie sabe para qué sirven. Benzo te deja pasar con un gesto: los amigos de Vander son amigos suyos.', cond: { notKin: 'ekko' } },
+          { s: 'narrador', t: 'La tienda de Benzo es tu casa: trastos, relojes rotos y un crío que no para de inventar cosas en el suelo.', cond: { kin: 'ekko' } },
           { s: 'ekko', t: '¡Hala, mira esto! Benzo me deja arreglar el cacharro que encontré en el vertedero. Si funciona, vuela.' },
-          { s: 'ekko', t: 'Soy Ekko. Bueno, ya lo sabes, todo el mundo lo sabe. Soy el que va con Powder. O sea, ella va conmigo. Más o menos.' },
+          { s: 'ekko', t: '(Te mira con curiosidad.) Tú no eres de por aquí. Soy Ekko. Ayudo a Benzo y voy con Powder a todas partes. O sea, ella va conmigo. Más o menos.', cond: { notKin: 'ekko' } },
+          { s: 'ekko', t: 'Y no me mires así, que hoy barres tú. Yo tengo un experimento. Prioridades.', cond: { kin: 'ekko' } },
         ], choices: [
           { t: 'Ayudar a Ekko a arreglarlo (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'b_ekko', fx: { aff: { ekko: 3 } } },
           { t: 'Preguntar a Benzo por el hombre de la cicatriz.', next: 'b_benzo', fx: { aff: {}, flags: ['sabe_silco'] } },
@@ -239,10 +270,30 @@ window.STORY = {
           { s: 'vi', t: '¡Eres un gafe, Powder! ¡Un gafe!' },
         ], next: 'f' },
         f: { bg: 'sumidero', lines: [
-          { s: 'narrador', t: 'Vi le da una bofetada y sale corriendo. Powder se queda arrodillada en el agua, temblando.' },
+          { s: 'narrador', t: 'Vi le da una bofetada y se aleja tambaleándose entre el humo. No llega lejos: dos hombres de Silco la rodean y se la llevan a rastras. Powder se queda arrodillada en el agua, temblando.' },
           { s: 'narrador', t: 'Una mano huesuda se apoya en su hombro. Es Silco, herido, con el ojo rojo brillando en la penumbra.' },
           { s: 'silco', t: 'Shh. Ya está. Ella te ha abandonado. Yo nunca lo haré.' },
-          { s: 'narrador', t: 'Los ejecutores se llevan a Vi a rastras. Silco se lleva a Powder en brazos. Y tú te quedas {g:solo|sola|sole} en el humo… con una decisión por delante.' },
+          { s: 'narrador', t: 'Silco se lleva a Powder en brazos. A Vi la meten en un carro que sube hacia el puente. Y tú te quedas {g:solo|sola|sole} en el humo, con tiempo para una sola cosa.' },
+        ], choices: [
+          { t: 'Seguir el carro que se lleva a Vi.', next: 'f_vi', fx: { aff: { vi: 2 }, flags: ['sigue_vi'] } },
+          { t: 'Ir a por Powder antes de que Silco se la lleve.', next: 'f_powder', fx: { aff: { jinx: 2, silco: 1 }, flags: ['vio_silco_powder'] } },
+          { t: 'Quedarte junto al cuerpo de Vander.', next: 'f_vander', fx: { aff: { vander: 1 }, flags: ['vio_cuerpo_vander'] } },
+        ] },
+        f_vi: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Corres detrás del carro hasta el puente. Allí, a la luz de las farolas, el sheriff Marcus recibe a Vi de manos de los hombres de Silco y firma algo sin mirarla.' },
+          { s: 'narrador', t: 'Vi te ve un segundo entre los barrotes. No grita. Solo mueve los labios: «Powder».' },
+          { s: 'narrador', t: 'Ahora sabes adónde va: Stillwater. Y sabes que Silco y los ejecutores comparten algo más que el puente.' },
+        ], end: true },
+        f_powder: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Llegas cuando Silco ya la tiene en brazos. Te mira por encima de la cabeza de Powder, tranquilo, como quien mira un mueble.' },
+          { s: 'silco', t: 'Vete a casa, chaval{g:|a|e}. Ella ya tiene a alguien que no la abandona.' },
+          { s: 'jinx', t: '(Con la cara hundida en su abrigo, sin mirarte.) Vi se ha ido. Todos se van.' },
+          { s: 'narrador', t: 'No puedes hacer nada. Pero Powder te ha visto venir a por ella. Algunas cosas no se olvidan.' },
+        ], end: true },
+        f_vander: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Te arrodillas junto a Vander. Tiene las manos todavía cerradas, como si siguiera protegiendo a alguien.' },
+          { s: 'narrador', t: 'Antes del amanecer llegan unos hombres con batas y una camilla. Uno lleva gafas de cristal verde: Singed. Se llevan el cuerpo sin decir adónde.' },
+          { s: 'narrador', t: 'No es un entierro. Es una recogida. Y eso se te queda clavado durante años.' },
         ], end: true },
       },
     },
@@ -316,7 +367,7 @@ window.STORY = {
         e: { bg: 'callejones', lines: [
           { s: 'narrador', t: 'Una explosión de colores rompe la noche. Risas. Una chica de trenzas azules salta de un tejado a otro con un lanzacohetes con cara de tiburón.' },
           { s: 'jinx', t: '¿{name}? ¡No puede ser! ¡Estás viv{g:o|a|e}! ¿Has venido a jugar? Mira, este es Fishbones. Saluda, Fishbones.', cond: { flag: 'con_powder' } },
-          { s: 'jinx', t: '¿Y tú quién eres? Da igual. ¡Pareces divertid{g:o|a|e}! Te llamaré «Cosa».', cond: { notFlag: 'con_powder' } },
+          { s: 'jinx', t: '¿{name}? Mmm… Tú estabas en la taberna. Antes. Antes de todo. ¡Has crecido! Yo también. Te llamaré «Cosa», por los viejos tiempos.', cond: { notFlag: 'con_powder' } },
           { s: 'jinx', t: '(Se queda quieta de golpe y se tapa una oreja, como si alguien le hablara muy cerca.) Callaos. Callaos, que estoy hablando yo.' },
           { s: 'jinx', t: '(Vuelve a sonreír como si nada.) ¡Bueno! Tengo que irme. Si ves a Silco, dile que el almacén ya estaba feo.' },
           { s: 'narrador', t: 'Powder ya no existe. Ahora se hace llamar Jinx. Como la palabra que Vi le gritó aquella noche.' },
@@ -417,6 +468,7 @@ window.STORY = {
           { s: 'narrador', t: 'La reconoces por la forma de andar, como si fuera a pegarse con el mundo. Tiene el pelo rosa, más músculo y un tatuaje en la cara: «VI».' },
           { s: 'vi', t: '¿{name}? (Te abraza tan fuerte que crujen tus costillas.) Pensé que no quedaba nadie.' },
           { s: 'vi', t: 'Aunque sigo acordándome de quién fue con el cuento a Vander, ¿eh?', cond: { flag: 'chivato' } },
+          { s: 'vi', t: 'Te vi en el puente aquella noche, corriendo detrás del carro. Eras la única persona que vino a por mí.', cond: { flag: 'sigue_vi' } },
           { s: 'vi', t: 'Siete años. Siete años en Stillwater pensando en esa noche. En lo que le dije a Powder.' },
           { s: 'caitlyn', t: '(Se acerca con un rifle a la espalda y un abrigo que grita «Piltover».) Caitlyn Kiramman. Encantada. Vi dice que conoces Zaun mejor que nadie. Necesitamos encontrar a Silco.' },
           { s: 'vi', t: 'Tranqui, es buena gente. Para ser de arriba. La llamo Cupcake. Le encanta.' },
@@ -528,7 +580,9 @@ window.STORY = {
         ], next: 'c' },
         c: { bg: 'taller-jayce', lines: [
           { s: 'narrador', t: 'El taller de Jayce es un caos de pizarras, cristales rotos y una pared con un agujero del tamaño de una puerta. Huele a quemado.' },
-          { s: 'jayce', t: '¿Vienes a cerrarme el taller tú también? Adelante. Que vean cómo entierran el futuro de Piltover.' },
+          { s: 'jayce', t: '¿Vienes a cerrarme el taller tú también? Adelante. Que vean cómo entierran el futuro de Piltover.', cond: { notKin: 'jayce' } },
+          { s: 'jayce', t: '(Se limpia el hollín de la cara.) Jayce Talis. Sí, el del apartamento que voló. No hace falta que lo digas.', cond: { notKin: 'jayce' } },
+          { s: 'jayce', t: '¿{name}? ¿El decano te ha mandado a ti a cerrarme el taller? A mi propi{g:o|a|e} prim{g:o|a|e}. Genial. La familia, siempre la primera en llegar.', cond: { kin: 'jayce' } },
           { s: 'jayce', t: 'Cuando era niño, una maga me salvó la vida en una tormenta de nieve. Desde entonces solo quiero una cosa: que la magia sea de todos. No solo de unos pocos.' },
           { s: 'jayce', t: 'Solo necesito estabilizar las runas. Y nadie quiere ayudarme. Me han robado la mitad del material y la otra mitad me la van a confiscar.' },
         ], choices: [
@@ -581,6 +635,7 @@ window.STORY = {
         a: { bg: 'consejo', lines: [
           { s: 'narrador', t: 'La Sala del Consejo es un círculo de mármol y madera noble bajo una cúpula de cristal. Siete sillas. Siete familias. Ningún asiento para Zaun.' },
           { s: 'mel', t: 'Tú debes de ser {name}. He oído cosas interesantes de ti. Sobre todo, que sabes estar en la habitación correcta.' },
+          { s: 'cassandra', t: '(En voz baja, sin mirarte.) Ponte recta, {name}. En esta sala, una Kiramman no se encorva. Ni sus sobrinos.', cond: { kin: 'cassandra' } },
           { s: 'cassandra', t: 'Consejera Medarda, aquí se viene a votar, no a reclutar.' },
           { s: 'mel', t: 'Consejera Kiramman, todo voto empieza con una conversación. Usted lo sabe mejor que nadie: su familia lleva generaciones conversando.' },
           { s: 'cassandra', t: '(Con una sonrisa de hielo.) Y por eso seguimos aquí.' },
@@ -653,7 +708,8 @@ window.STORY = {
       nodes: {
         a: { bg: 'piltover', lines: [
           { s: 'narrador', t: 'Siete años de hextec. Piltover brilla: farolas azules, dirigibles, puertas automáticas. Y en las esquinas, carteles que piden «orden».' },
-          { s: 'caitlyn', t: 'Tú conociste a mi madre en el Consejo, ¿verdad? Bien. Necesito a alguien que no lleve placa… o que no tenga miedo de ensuciarla.' },
+          { s: 'caitlyn', t: '(Te tiende la mano, firme.) Caitlyn Kiramman. Tú conociste a mi madre en el Consejo, ¿verdad? Bien. Necesito a alguien que no lleve placa… o que no tenga miedo de ensuciarla.', cond: { notKin: 'caitlyn' } },
+          { s: 'caitlyn', t: '{name}. Familia o no, hoy te necesito como alguien que no lleve placa… o que no tenga miedo de ensuciarla.', cond: { kin: 'caitlyn' } },
           { s: 'caitlyn', t: 'Alguien está robando hextec y bajándola a Zaun. Y el sheriff Marcus no quiere que lo investigue. Me ha puesto a patrullar el barrio de los museos. El de los museos.' },
           { s: 'caitlyn', t: 'Si algo me enseñó mi padre es que, cuando alguien insiste tanto en que no mires, es justo ahí donde hay que mirar.' },
         ], choices: [
@@ -834,6 +890,8 @@ window.STORY = {
           { s: 'ekko', t: '¿Vi? ¿Estás viva? ¿Siete años desaparecida… y vuelves con ejecutores a mi casa?' },
           { s: 'vi', t: '¿Ekko? ¡Mírate! La última vez que te vi me llegabas por aquí.' },
           { s: 'ekko', t: 'La última vez que te vi, Vander estaba vivo. Han cambiado muchas cosas.' },
+          { s: 'ekko', t: '(Te señala con el bate.) ¿Y tú quién eres? Habla rápido. Aquí arriba los desconocidos no duran.', cond: { notMet: 'ekko' } },
+          { s: 'yo', t: '{name}. Vengo con ellas. Y no, no llevo placa.', cond: { notMet: 'ekko' } },
         ], choices: [
           { t: '«Venimos a parar a Silco. Igual que tú.»', next: 'd_alianza', fx: { aff: { ekko: 3 }, rep: { zaun: 1 }, flags: ['alianza_luciernagas'] } },
           { t: 'Proponer un pacto Piltover-Luciérnagas (Carisma 3).', req: { stat: 'carisma', min: 3 }, next: 'd_pacto', fx: { aff: { ekko: 3, caitlyn: 2 }, rep: { zaun: 2, piltover: 1 }, flags: ['alianza_luciernagas', 'pacto'] } },
@@ -982,6 +1040,7 @@ window.STORY = {
         ], choices: [
           { t: 'Sabotear sus máquinas de Brillo.', next: 'b_sabotaje', game: { id: 'circuito', win: 'b_sabotaje', lose: 'b_falla', winFx: { rep: { zaun: 2 }, flags: ['sabotaje_singed'] } }, fx: {} },
           { t: 'Preguntarle quién era el paciente.', req: { flag: 'vio_bestia' }, next: 'b_verdad', fx: { aff: {}, flags: ['sabe_warwick'] } },
+          { t: 'Preguntarle qué hizo con el cuerpo de Vander.', req: { flag: 'vio_cuerpo_vander' }, next: 'b_verdad', fx: { flags: ['sabe_warwick'] } },
           { t: 'Robar sus notas sobre la gema (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_notas', fx: { flags: ['sabe_gema'] } },
           { t: 'Salir de allí cuanto antes.', next: 'b2' },
         ] },
@@ -1165,17 +1224,21 @@ window.STORY = {
     {
       id: 'fin', route: 'ambas', title: 'Capítulo final · El Puente',
       intro: 'Las dos ciudades contienen el aliento. El Consejo vota la paz. Jinx tiene un cohete. Y tú estás en medio.',
-      unlocks: ['jinx', 'silco', 'jayce', 'mel', 'caitlyn', 'vi', 'ambessa'],
+      unlocks: ['jinx', 'jayce', 'mel', 'caitlyn', 'vi'],
       start: 'a0',
       nodes: {
         a0: { bg: 'escondite-jinx', lines: [
           { s: 'narrador', t: 'La noche antes. En el escondite de Jinx hay una mesa larga con un mantel de cuadros, tazas desparejadas y velas. Una merienda.' },
           { s: 'narrador', t: 'Vi está atada a una silla. Caitlyn, a otra, amordazada. En la cabecera, Silco, atado también, con la cara amoratada.' },
+          { s: 'narrador', t: 'Al hombre de la cabecera solo lo conocías por los carteles: el ojo rojo, la cicatriz. Silco, el dueño de Zaun, atado como un regalo.', cond: { notMet: 'silco' } },
           { s: 'jinx', t: '(Con una tetera en la mano.) ¡Bienvenidos a la merienda familiar! ¿Azúcar? ¿Pólvora? ¿Las dos cosas?' },
           { s: 'vi', t: 'Powder, por favor. Esto no tiene que acabar así.' },
           { s: 'jinx', t: 'Shh. Shh. Hoy es el día en que todos dejamos de mentir. Silco, tú primero.' },
           { s: 'silco', t: '(Con sangre en el labio.) Jinx… ella no es tu familia. Te abandonó.' },
-          { s: 'jinx', t: '(Se gira hacia ti, que estás en la puerta.) ¡Y mira quién ha venido! Siéntate, {name}. Hay sitio para todos.' },
+          { s: 'jinx', t: '(Se gira hacia ti, que estás en la puerta.) ¡Y mira quién ha venido! Siéntate, {name}. Hay sitio para todos.', cond: { met: 'jinx' } },
+          { s: 'jinx', t: '(Se gira hacia ti, que estás en la puerta.) ¡Anda! Una cara nueva. Tú eres la sombra que va con mi hermana. ¿Cómo te llamas?', cond: { notMet: 'jinx' } },
+          { s: 'yo', t: '{name}.', cond: { notMet: 'jinx' } },
+          { s: 'jinx', t: '{name}. Suena a nombre de lápida. ¡Es broma! Siéntate, hay sitio para todos.', cond: { notMet: 'jinx' } },
         ], choices: [
           { t: 'Sentarte a la mesa con calma.', next: 'a1', fx: { aff: { jinx: 2 } } },
           { t: 'Intentar desatar a Vi a escondidas (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'a1', fx: { aff: { vi: 2 } } },
@@ -1208,17 +1271,20 @@ window.STORY = {
           { s: 'jinx', t: '(Se le quiebra la voz.) Si no lo lanzo… ¿quién soy? Silco se ha ido. Vander se ha ido. Mylo, Claggor… Todos se van.' },
           { s: 'yo', t: 'Quien tú quieras ser. Esa es la parte divertida.' },
           { s: 'jinx', t: '(Se ríe entre lágrimas.) Eso es muy cursi, {name}. Muy, muy cursi.' },
+          { s: 'jinx', t: '(Te aprieta la mano un segundo. Luego te suelta y se sube a la plataforma.) Pero Jinx no sabe parar. Lo siento. De verdad que lo siento.' },
         ], next: 'c' },
         b_sabotaje: { bg: 'puente', lines: [
           { s: 'narrador', t: 'Mientras Jinx canta una nana desafinada, desconectas un cable. Luego otro. El zumbido de la gema baja de tono.' },
           { s: 'jinx', t: '¿Qué haces? ¡Oye! ¡Ese es mi cable favorito!' },
           { s: 'jinx', t: '(Te mira con los ojos muy abiertos y, para tu sorpresa, se ríe.) Vale. Vale. Eres buen{g:o|a|e}. Muy buen{g:o|a|e}. Me caes mejor que antes.' },
+          { s: 'narrador', t: 'Entonces saca la gema del cohete, la encaja en Fishbones y se lo cuelga al hombro. Has parado el cohete. A Jinx, no. Pero has ganado unos minutos que alguien, arriba, puede aprovechar.' },
         ], next: 'c' },
         b_evacua: { bg: 'consejo', lines: [
           { s: 'narrador', t: 'Irrumpes en la Sala del Consejo gritando. Los consejeros te miran como si estuvieras loco.' },
           { s: 'cassandra', t: '¿Qué significa esto? Estamos votando la paz.' },
           { s: 'narrador', t: 'Jayce te reconoce. Mel duda un segundo… y ordena desalojar.' },
           { s: 'jayce', t: '¡Fuera todos! ¡Ya!' },
+          { s: 'cassandra', t: '(Desde la puerta, empujando a los demás consejeros hacia la escalera.) ¡Vamos, vamos! Yo salgo la última. Es mi sala.' },
         ], next: 'c' },
         b_deja: { bg: 'puente', lines: [
           { s: 'narrador', t: 'Te das la vuelta. A veces la historia se escribe con fuego. Esperas que no sea con el tuyo.' },
@@ -1235,69 +1301,99 @@ window.STORY = {
     },
 
     // ======================= TEMPORADA 2 =======================
+    // Sigue la segunda temporada de Arcane. Los que mueren (STORY.deaths) dejan de hablar
+    // a partir del capítulo siguiente; tus decisiones cambian quién confía en ti y cómo acaba tu historia.
     {
       id: 't1', route: 't2', title: 'T2 · Capítulo 1 · Cenizas',
-      intro: 'El humo del ataque aún no se ha disipado. Piltover llora a sus consejeros y exige un culpable. Todas las miradas apuntan hacia abajo.',
-      unlocks: [],
+      intro: 'El humo del ataque aún no se ha disipado. Piltover entierra a sus consejeros y exige un culpable. Todas las miradas apuntan hacia abajo.',
+      unlocks: ['ambessa', 'jayce', 'mel', 'sevika'],
       start: 'a',
       nodes: {
-        a: { bg: 'consejo', lines: [
-          { s: 'narrador', t: 'La Sala del Consejo es un esqueleto de vigas y cristales rotos. Entre los escombros, Caitlyn da órdenes con una voz que ya no tiembla.' },
-          { s: 'cassandra', t: '(Con el brazo en cabestrillo, mirando los asientos vacíos.) Siete sillas. Ahora sobran cuatro. Conocía a sus hijos, {name}. A sus nietos.' },
-          { s: 'caitlyn', t: '{name}. Necesito saber de qué lado estás. Vamos a bajar a por Jinx. Con todo.', cond: { notFlag: 's1_zaun_libre' } },
-          { s: 'caitlyn', t: '{name}. Sé lo que hiciste en el puente. Aun así… necesito a alguien que conozca Zaun. No me hagas arrepentirme.', cond: { flag: 's1_zaun_libre' } },
-          { s: 'vi', t: '(A su lado, con el uniforme de ejecutora que le queda raro, como un disfraz.) Esto no es venganza, Cait. Dime que no lo es.' },
+        a: { bg: 'mansion-kiramman', lines: [
+          { s: 'narrador', t: 'Llueve sobre el cementerio de Piltover. Cuatro ataúdes con el escudo del Consejo. Uno lleva el emblema azul de los Kiramman.' },
+          { s: 'narrador', t: 'Era tu tía. Todavía esperas oírla decirte que te pongas recta.', cond: { kin: 'cassandra' } },
+          { s: 'caitlyn', t: '(Recta como un rifle, sin una lágrima.) Mi madre quería la paz con Zaun. Zaun le respondió con un cohete.' },
+          { s: 'caitlyn', t: '{name}. Vamos a bajar a por Jinx. Con todo. Necesito saber de qué lado estás.', cond: { notFlag: 's1_zaun_libre' } },
+          { s: 'caitlyn', t: '{name}. Sé lo que hiciste en el puente. Aun así, necesito a alguien que conozca Zaun. No me hagas arrepentirme.', cond: { flag: 's1_zaun_libre' } },
+          { s: 'vi', t: '(A su lado, con un uniforme de ejecutora que le queda como un disfraz.) Esto no es venganza, Cait. Dime que no lo es.' },
           { s: 'caitlyn', t: 'Es justicia, Vi. Y si se parece a la venganza, es porque llevan años siendo la misma cosa.' },
         ], choices: [
-          { t: 'Unirte a la cacería de Caitlyn.', next: 'b_caza', fx: { aff: { caitlyn: 2, vi: 1, jinx: -2 }, rep: { piltover: 2, zaun: -2 }, flags: ['caza_jinx'] } },
-          { t: 'Avisar a Jinx en secreto.', next: 'b_aviso', fx: { aff: { jinx: 3, caitlyn: -3 }, rep: { zaun: 2 }, flags: ['protege_jinx'] } },
+          { t: 'Ponerte el uniforme y unirte a la cacería.', next: 'b_caza', fx: { aff: { caitlyn: 2, vi: 1, jinx: -2 }, rep: { piltover: 2, zaun: -2 }, flags: ['caza_jinx', 'bando_piltover'] } },
+          { t: 'Bajar esa misma noche a avisar a Jinx.', next: 'b_aviso', fx: { aff: { jinx: 3, caitlyn: -3 }, rep: { zaun: 2 }, flags: ['protege_jinx', 'bando_zaun'] } },
           { t: 'Pedir que se escuche a Zaun antes de bajar (Carisma 3).', req: { stat: 'carisma', min: 3 }, next: 'b_media', fx: { aff: { caitlyn: 1, vi: 2 }, rep: { zaun: 1, piltover: 1 }, flags: ['mediador'] } },
+          { t: '«No pienso elegir bando. Iré por mi cuenta.»', next: 'b_libre', fx: { stats: { sigilo: 1 }, flags: ['por_libre'] } },
         ] },
         b_caza: { bg: 'ejecutores', lines: [
           { s: 'caitlyn', t: 'Bien. Cada puerta de Zaun se abrirá. Por las buenas o por las malas.' },
-          { s: 'vi', t: '(En voz baja.) Prométeme que, si la encontramos, me dejarás hablar con ella primero.' },
+          { s: 'narrador', t: 'Te dan una placa y una chaqueta azul. Pesan más de lo que parecen.' },
+          { s: 'vi', t: '(En voz baja.) Prométeme que, si la encontramos, me dejaréis hablar con ella primero.' },
           { s: 'caitlyn', t: '(No responde. Carga el rifle.)' },
         ], next: 'b2' },
-        b_aviso: { bg: 'callejones', lines: [
-          { s: 'narrador', t: 'Esa noche dejas un mensaje garabateado en la pared del escondite: «Vienen a por ti. Todos».' },
+        b_aviso: { bg: 'escondite-jinx', lines: [
+          { s: 'narrador', t: 'Esa noche bajas sin escolta y dejas un mensaje garabateado en la pared del escondite: «Vienen a por ti. Todos».' },
           { s: 'jinx', t: '(Desde las sombras, una risita.) Qué detalle. Nadie me había avisado antes de una fiesta.' },
-          { s: 'jinx', t: '(Sale a la luz. Tiene los ojos rojos de no dormir.) ¿Sabes qué es lo peor? Que no quería que muriera nadie de los de abajo. Solo los de arriba. Y aun así, los que lo pagan son los de siempre.' },
+          { s: 'jinx', t: '(Sale a la luz. Tiene los ojos rojos de no dormir.) ¿Sabes qué es lo peor? Que yo solo quería que me miraran. Y los que lo pagan son los de siempre. Los de abajo.' },
         ], next: 'b2' },
         b_media: { bg: 'consejo', lines: [
           { s: 'yo', t: 'Si bajáis a romper puertas, cada niño de Zaun crecerá odiando el uniforme. Y la próxima bomba la pondrá él.' },
-          { s: 'cassandra', t: '(Mira a su hija.) Escúchale, Caitlyn. Tu padre habría dicho lo mismo.' },
+          { s: 'vi', t: '(Te mira con algo parecido al alivio.) Escúchale, Cait. Por una vez, escucha a alguien que conoce las dos orillas.' },
           { s: 'caitlyn', t: '(Un largo silencio.) Tienes un día para encontrar a alguien con quien hablar allí abajo. Un día.' },
         ], next: 'b2' },
-        b2: { bg: 'ultima-gota', lines: [
-          { s: 'narrador', t: 'Abajo, La Última Gota es ahora el cuartel de Sevika. Sin Silco, los químbarones se pelean por las sobras y ella intenta mantener Zaun de una pieza.' },
-          { s: 'sevika', t: '(Con el cigarro apagado entre los dientes.) Silco está muerto. Jinx se ha esfumado. Y Piltover baja a cazarnos a todos por lo que hizo una sola cría.' },
-          { s: 'sevika', t: 'Si vienes de parte de arriba, {name}, dilo ya. Me ahorrarás el trabajo de sacártelo.' },
+        b_libre: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Dejas a Caitlyn con la palabra en la boca y cruzas el puente sin mirar atrás. Arriba te llamarán cobarde. Abajo, sospechos{g:o|a|e}.' },
+          { s: 'vi', t: '(Te alcanza en mitad del puente.) Haces bien. Yo no puedo. Si me voy, Cait se queda sola con todo esto.' },
+        ], next: 'b2' },
+        b2: { bg: 'consejo', lines: [
+          { s: 'narrador', t: 'Lo que queda del Consejo se reúne en una sala prestada. Jayce Talis ocupa el centro. Lleva días sin dormir.' },
+          { s: 'jayce', t: '(Te tiende la mano.) Jayce Talis. Caitlyn dice que conoces Zaun. Aquí arriba eso vale más que un asiento.', cond: { notMet: 'jayce' } },
+          { s: 'mel', t: 'Mel Medarda. Sobreviví al cohete y nadie sabe cómo. Yo tampoco. (Esconde las manos.) Encantada.', cond: { notMet: 'mel' } },
+          { s: 'jayce', t: 'Mañana voto armar a los ejecutores con hextec. Viktor me odiaría por ello. Ni siquiera me habla desde el ataque.' },
+          { s: 'jayce', t: 'Tú no tienes asiento, {name}, pero tienes algo que aquí falta: ojos en las dos ciudades. ¿Qué votarías tú?' },
         ], choices: [
-          { t: '«Vengo a evitar una guerra. Ayúdame.»', next: 'b3', fx: { aff: { sevika: 1 }, rep: { zaun: 1 } } },
-          { t: '«Vengo a avisarte: Caitlyn no va a parar.»', next: 'b3', fx: { aff: { sevika: 2 } } },
-          { t: '«Vengo de parte de nadie. Como siempre.»', next: 'b3', fx: { stats: { sigilo: 1 } } },
+          { t: '«Vota que sí. Si Jinx vuelve, necesitaréis algo más que porras.»', next: 'b3', fx: { aff: { jayce: 1, caitlyn: 1 }, rep: { piltover: 1 }, flags: ['armas_si'] } },
+          { t: '«Vota que no. Las armas de hoy son las guerras de mañana.»', next: 'b3', fx: { aff: { jayce: 1 }, rep: { zaun: 1 }, flags: ['armas_no'] } },
+          { t: '«Pon una condición: que Zaun tenga voz en este Consejo.» (Carisma 2)', req: { stat: 'carisma', min: 2 }, next: 'b3', fx: { aff: { mel: 2, jayce: 1 }, rep: { zaun: 1, piltover: 1 }, flags: ['voz_zaun'] } },
         ] },
-        b3: { bg: 'ultima-gota', lines: [
-          { s: 'sevika', t: 'Silco me dejó un despacho y un montón de deudas. Y una ciudad que no sabe qué hacer sin alguien que le diga a quién odiar.' },
-          { s: 'sevika', t: '(Golpea la mesa con el brazo de metal.) Yo no soy Silco. Pero tampoco voy a dejar que la Kiramman nos pase por encima.' },
+        b3: { bg: 'consejo', lines: [
+          { s: 'narrador', t: 'El Consejo vota. Las armas hextec se aprueban por mayoría.' },
+          { s: 'jayce', t: '(Al salir.) Te escuché, {name}. Y aun así voté que sí. Espero equivocarme.', cond: { flag: 'armas_no' } },
+          { s: 'jayce', t: 'Gracias por decirlo claro. Aquí todos hablan en susurros.', cond: { flag: 'armas_si' } },
+          { s: 'mel', t: 'Se han reído de tu condición. Yo no. Guárdate esa idea, {name}: algún día habrá una silla de Zaun en esta sala.', cond: { flag: 'voz_zaun' } },
+          { s: 'narrador', t: 'Al fondo de la sala, una mujer alta con armadura noxiana aplaude despacio. Mel se queda rígida.' },
+          { s: 'ambessa', t: 'Ambessa Medarda. La madre de Mel. Una ciudad herida necesita un puño firme, {name}. Noxus puede prestárselo.' },
+          { s: 'mel', t: '(Sin mirarla.) Mi madre no presta nada. Cobra intereses.' },
         ], next: 'c' },
-        c: { bg: 'mansion-kiramman', lines: [
-          { s: 'narrador', t: 'Días después, una incursión en Zaun sale mal. En el caos, entre humo y disparos, Cassandra Kiramman no vuelve a casa.' },
-          { s: 'narrador', t: 'En el funeral, Caitlyn no llora. Se queda de pie, recta como un rifle, mirando el ataúd.' },
-          { s: 'ambessa', t: '(Apoyada en la balaustrada de la mansión Kiramman.) Una ciudad herida necesita un puño firme. Noxus puede prestárselo.' },
-          { s: 'ambessa', t: '(A ti, sin apartar la vista de Caitlyn.) Pregúntale a la joven Kiramman. Ya no le tiembla el pulso. Eso es lo primero que se pierde en una guerra.' },
+        c: { bg: 'ultima-gota', lines: [
+          { s: 'narrador', t: 'Abajo, La Última Gota es el cuartel de Sevika. Sin Silco, los químbarones se pelean por las sobras y ella intenta que Zaun no se rompa en pedazos.' },
+          { s: 'narrador', t: 'Una mujer con un brazo mecánico te corta el paso en la puerta: Sevika, la que fue mano derecha de Silco.', cond: { notMet: 'sevika' } },
+          { s: 'sevika', t: '(Con el cigarro apagado entre los dientes.) Silco está muerto. Jinx se ha esfumado. Y Piltover baja a cazarnos a todos por lo que hizo una sola cría.' },
+          { s: 'sevika', t: 'Si vienes de parte de arriba, {name}, dilo ya. Me ahorrarás el trabajo de sacártelo.', cond: { met: 'sevika' } },
+          { s: 'sevika', t: 'No sé quién eres, pero hueles a arriba. Si vienes de su parte, dilo ya. Me ahorrarás el trabajo de sacártelo.', cond: { notMet: 'sevika' } },
+          { s: 'sevika', t: '(Mira la placa que llevas.) Vaya. Y encima con uniforme. Tienes valor o te falta cabeza.', cond: { flag: 'bando_piltover' } },
+        ], choices: [
+          { t: '«Vengo a evitar una guerra. Ayúdame.»', next: 'c2', fx: { aff: { sevika: 1 }, rep: { zaun: 1 } } },
+          { t: '«Vengo a avisarte: Caitlyn no va a parar.»', next: 'c2', fx: { aff: { sevika: 2 }, flags: ['avisa_sevika'] } },
+          { t: '«Vengo de parte de nadie. Como siempre.»', next: 'c2', fx: { stats: { sigilo: 1 } } },
+        ] },
+        c2: { bg: 'ultima-gota', lines: [
+          { s: 'sevika', t: 'Silco me dejó un despacho, un montón de deudas y una ciudad que no sabe qué hacer sin alguien que le diga a quién odiar.' },
+          { s: 'sevika', t: '(Golpea la mesa con el brazo de metal.) Yo no soy Silco. Pero tampoco voy a dejar que la Kiramman nos pase por encima.' },
+          { s: 'narrador', t: 'Al salir, ves la pintada nueva en todos los muros de Zaun: una chica de trenzas con una sonrisa enorme, y debajo, en letras torcidas, «Jinx vive».' },
         ], end: true },
       },
     },
     {
       id: 't2', route: 't2', title: 'T2 · Capítulo 2 · La niña de las gafas',
-      intro: 'En los callejones, una niña muda con unas gafas enormes sigue a Jinx a todas partes. Los ejecutores ya la buscan también a ella.',
+      intro: 'Jinx se ha convertido en un símbolo para Zaun. Y en los callejones, una niña muda con unas gafas enormes la sigue a todas partes.',
       unlocks: ['isha'],
       start: 'a',
       nodes: {
         a: { bg: 'escondite-jinx', lines: [
-          { s: 'narrador', t: 'Las paredes de Zaun están llenas de pintadas nuevas: un dibujo de Jinx con trenzas y una sonrisa, y debajo, en letras torcidas, «Jinx vive». Los zaunitas la han convertido en un símbolo.' },
-          { s: 'jinx', t: '(Al verte, sorprendida.) Puaj. ¿Has visto lo que pintan? Me han hecho una santa. Yo no quería ser una santa. Quería ser… no sé. Nada.' },
+          { s: 'narrador', t: 'En el escondite hay velas, latas de pintura y un colchón en el suelo. Jinx está sentada en una viga, balanceando las piernas.' },
+          { s: 'jinx', t: '(Al verte, sorprendida.) Puaj. ¿Has visto lo que pintan ahí fuera? Me han hecho una santa. Yo no quería ser una santa. Quería ser… no sé. Nada.' },
+          { s: 'jinx', t: 'Y encima vienes con el uniforme de mi hermana. Te queda fatal. A ella también.', cond: { flag: 'bando_piltover' } },
+          { s: 'jinx', t: 'Gracias por el aviso, por cierto. Me chamuscaron una trenza, pero sigo aquí.', cond: { flag: 'protege_jinx' } },
+          { s: 'narrador', t: 'Una niña con unas gafas enormes asoma la cabeza por detrás de Jinx. Te mira como quien mira un bicho raro.' },
           { s: 'jinx', t: 'Esta es Isha. No habla, pero me entiende mejor que nadie. Me sigue a todas partes. No consigo librarme de ella. (No parece intentarlo mucho.)' },
           { s: 'isha', t: '(Te saluda con la mano y te enseña un dibujo de un cohete con cara sonriente.)' },
           { s: 'jinx', t: 'Isha, saluda bien a {name}. Así no. Con estilo.' },
@@ -1310,8 +1406,10 @@ window.STORY = {
           { t: '«Lo estás haciendo mejor de lo que crees.»', next: 'a3', fx: { aff: { jinx: 2 } } },
           { t: '«Entonces aprende rápido. Ella te necesita.»', next: 'a3', fx: { aff: { jinx: 1, isha: 1 } } },
           { t: 'Agacharte y preguntarle a Isha qué está construyendo.', next: 'a3', fx: { aff: { isha: 2 } } },
+          { t: '«Entrégate, Jinx. Si no, la próxima bala será para ella.»', next: 'a3', req: { flag: 'bando_piltover' }, fx: { aff: { jinx: -2, caitlyn: 1 }, flags: ['pide_rendicion'] } },
         ] },
         a3: { bg: 'escondite-jinx', lines: [
+          { s: 'jinx', t: '(Se le borra la sonrisa.) ¿Rendirme? Para que me cuelguen en la plaza y Cait lo mire desde un balcón. No, gracias.', cond: { flag: 'pide_rendicion' } },
           { s: 'isha', t: '(Te enseña orgullosa una granada pintada de rosa con un lazo.)' },
           { s: 'jinx', t: '¡No! ¡Eso no se toca! (Se la quita con cuidado.) ¿Ves? Es igualita que yo. Es un desastre.' },
           { s: 'narrador', t: 'Silbatos fuera. Botas. Los ejecutores han encontrado el escondite.' },
@@ -1320,12 +1418,14 @@ window.STORY = {
           { t: 'Huir con Isha en aerotabla.', next: 'b_ok', game: { id: 'aerotabla', win: 'b_ok', lose: 'b_ko', winFx: { aff: { jinx: 3, isha: 4 }, flags: ['salva_isha'] } }, fx: {} },
           { t: 'Entregar a Isha a Vi para que la proteja.', req: { aff: ['vi', 3] }, next: 'b_vi', fx: { aff: { vi: 3, jinx: -2, isha: 1 }, flags: ['isha_con_vi'] } },
           { t: 'Esconderos en un conducto (Sigilo 3).', req: { stat: 'sigilo', min: 3 }, next: 'b_ok', fx: { aff: { isha: 3, jinx: 2 }, flags: ['salva_isha'] } },
+          { t: 'Abrir la puerta a los ejecutores.', req: { flag: 'bando_piltover' }, next: 'b_entrega', fx: { aff: { caitlyn: 2, jinx: -4, isha: -2 }, rep: { piltover: 1, zaun: -2 }, flags: ['delata_escondite'] } },
         ] },
         b_ok: { bg: 'arbol', lines: [
           { s: 'narrador', t: 'Aterrizáis lejos, entre las luces del árbol de las Luciérnagas. Isha se ríe en silencio y te abraza la cintura.' },
           { s: 'ekko', t: '¿Otra cría de Jinx? (Suspira, pero se agacha para mirarla a la altura de los ojos.) Hola, peque. Aquí estarás a salvo. Por ahora.' },
           { s: 'isha', t: '(Señala el mural de Powder en la pared y luego se señala a sí misma, muy seria.)' },
           { s: 'ekko', t: '(Se le escapa una sonrisa triste.) Sí. Te pareces un poco.' },
+          { s: 'narrador', t: 'Antes del amanecer, Isha se escapa del árbol. Vuelve con Jinx. Siempre vuelve con Jinx.' },
         ], next: 'c' },
         b_vi: { bg: 'callejones', lines: [
           { s: 'vi', t: 'La cuidaré. Te lo juro. (Mira a Isha.) Tranquila, peque. Yo también tuve una hermana pequeña.' },
@@ -1338,31 +1438,50 @@ window.STORY = {
           { s: 'jinx', t: '¡Nadie toca a mi equipo! Corred, pringados.' },
           { s: 'isha', t: '(Aplaude en silencio, entusiasmada, mientras corréis.)' },
         ], next: 'c' },
-        c: { bg: 'fabrica', lines: [
-          { s: 'narrador', t: 'Corre un rumor por Zaun: en la vieja fábrica hay un hombre que cura a los enfermos de Brillo con solo tocarlos. Lo llaman el Heraldo.' },
-          { s: 'narrador', t: 'Dicen que camina sin bastón. Dicen que sus ojos brillan de color azul.' },
+        b_entrega: { bg: 'escondite-jinx', lines: [
+          { s: 'narrador', t: 'Abres la puerta. Entran botas, linternas y fusiles hextec. Jinx ya no está: solo queda una nube de humo rosa y un monito de trapo en el suelo.' },
+          { s: 'caitlyn', t: '(Recoge el muñeco y te mira.) Has hecho lo correcto. (No suena convencida.)' },
+          { s: 'narrador', t: 'Desde un tejado, unas gafas enormes te miran. Isha no olvidará tu cara.' },
+        ], next: 'c' },
+        c: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Días después, Caitlyn tiende una trampa en el puente con todo lo que tiene. Jinx aparece. Vi también.' },
+          { s: 'vi', t: '(Entre las dos, con los guanteletes levantados.) Cait, baja el rifle. Pow, baja eso. ¡Las dos!' },
+          { s: 'jinx', t: '¿Ves, Vi? Siempre en medio. Nunca a mi lado.' },
+          { s: 'narrador', t: 'Una explosión, cristales, gritos. Cuando el humo se va, Jinx ha escapado y Caitlyn sangra de la frente. Vi no sabe a quién socorrer primero.' },
+        ], choices: [
+          { t: 'Ayudar a Caitlyn a levantarse.', next: 'd', fx: { aff: { caitlyn: 2 } } },
+          { t: 'Ir con Vi, que se ha quedado quieta mirando el humo.', next: 'd', fx: { aff: { vi: 2 } } },
+          { t: 'Seguir el rastro de Jinx (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'd', fx: { aff: { jinx: 1 }, flags: ['sigue_jinx'] } },
+        ] },
+        d: { bg: 'fabrica', lines: [
+          { s: 'vi', t: '(Más tarde, quitándose la placa.) No puedo, {name}. No puedo apuntar a mi hermana. Ni dejar que Cait lo haga.' },
+          { s: 'narrador', t: 'Ves a Jinx subir a un tejado con Isha en brazos. Isha le limpia la cara con la manga. Jinx se deja.', cond: { flag: 'sigue_jinx' } },
+          { s: 'narrador', t: 'Y corre un rumor por Zaun: en la vieja fábrica hay un hombre que cura a los enfermos de Brillo con solo tocarlos. Lo llaman el Heraldo. Dicen que sus ojos brillan de color azul.' },
         ], end: true },
       },
     },
     {
       id: 't3', route: 't2', title: 'T2 · Capítulo 3 · El Heraldo',
       intro: 'Una fila de zaunitas enfermos espera ante la fábrica. Salen caminando erguidos, con la mirada tranquila… demasiado tranquila.',
-      unlocks: [],
+      unlocks: ['viktor'],
       start: 'a0',
       nodes: {
         a0: { bg: 'taller-jayce', lines: [
           { s: 'jayce', t: '(Rodeado de planos, sin afeitar, con ojeras de varios días.) {name}. Gracias por venir. No sé a quién más preguntar.' },
           { s: 'jayce', t: 'Viktor tocó el Hexcore aquella noche. Se lo llevó. Y ahora dicen que está en Zaun, curando gente. Curando. Como un santo.' },
-          { s: 'jayce', t: 'Le prometí que la hextec bajaría a Zaun. Y en vez de eso, Piltover hizo armas con ella. Hice armas con ella.' },
+          { s: 'jayce', t: 'Le prometí que la hextec bajaría a Zaun. Y en vez de eso, Piltover hizo armas con ella. Yo voté las armas.' },
         ], choices: [
           { t: '«Ve a buscarle. Es tu amigo.»', next: 'a', fx: { aff: { jayce: 2, viktor: 1 } } },
           { t: '«Lo que hace Viktor no es curar, Jayce. Ten cuidado.»', next: 'a', fx: { aff: { jayce: 1 }, stats: { ingenio: 1 } } },
-          { t: '«Iré yo primero. Te contaré lo que vea.»', next: 'a', fx: { aff: { jayce: 2 } } },
+          { t: '«Iré yo primero. Te contaré lo que vea.»', next: 'a', fx: { aff: { jayce: 2 }, flags: ['explora_heraldo'] } },
         ] },
         a: { bg: 'fabrica', lines: [
           { s: 'narrador', t: 'Dentro de la fábrica, la luz es azul y el silencio es total. Los curados se mueven despacio, sin prisa, como si nada les doliera.' },
-          { s: 'viktor', t: '{name}. Ya no cojeo, ¿lo ves? El Hexcore me ha mostrado el camino. Puedo quitarle el dolor a Zaun. A todo Zaun.' },
-          { s: 'viktor', t: 'Toda mi vida he sido un cuerpo roto en una ciudad rota. Ahora puedo arreglar las dos cosas.' },
+          { s: 'narrador', t: 'En el centro, un hombre alto con una túnica sin mangas apoya la mano en la frente de un niño. No lleva bastón.', cond: { notMet: 'viktor' } },
+          { s: 'viktor', t: 'No nos conocemos. Soy Viktor. Nací a dos calles de aquí. Ven, no tengas miedo.', cond: { notMet: 'viktor' } },
+          { s: 'viktor', t: '{name}. Ya no cojeo, ¿lo ves? El Hexcore me ha mostrado el camino.', cond: { met: 'viktor' } },
+          { s: 'viktor', t: 'Puedo quitarle el dolor a Zaun. A todo Zaun. Toda mi vida he sido un cuerpo roto en una ciudad rota. Ahora puedo arreglar las dos cosas.' },
+          { s: 'viktor', t: 'Las armas que votó el Consejo han llegado a Zaun antes que las medicinas. Yo traigo las medicinas.', cond: { flag: 'armas_si' } },
           { s: 'viktor', t: 'Ven. Deja que te muestre lo que es vivir sin miedo.' },
         ], choices: [
           { t: 'Aceptar su «curación».', next: 'b_acepta', fx: { aff: { viktor: 4 }, flags: ['evolucion_aceptada'] } },
@@ -1371,10 +1490,10 @@ window.STORY = {
         ] },
         b_acepta: { bg: 'fabrica', lines: [
           { s: 'narrador', t: 'Un calor azul te recorre. Las cicatrices, el cansancio, los recuerdos que dolían… todo se vuelve suave. Lejano.' },
-          { s: 'viktor', t: 'Bienvenid{g:o|a|e} a la Evolución Gloriosa.' },
+          { s: 'viktor', t: 'Bienvenid{g:o|a|e}. Esto es solo el principio.' },
         ], next: 'b2' },
         b_estudia: { bg: 'taller-jayce', lines: [
-          { s: 'narrador', t: 'Las runas del Hexcore no solo curan: reescriben. Cada persona curada pierde algo pequeño… una manía, una risa, una voluntad.' },
+          { s: 'narrador', t: 'Las runas del Hexcore no solo curan: reescriben. Cada persona curada pierde algo pequeño. Una manía, una risa, una voluntad.' },
           { s: 'yo', t: 'Viktor, esto no es curar. Es borrar.' },
           { s: 'viktor', t: '(Sin emoción.) Es mejorar. Algún día lo entenderás.' },
         ], next: 'b2' },
@@ -1382,50 +1501,91 @@ window.STORY = {
           { s: 'viktor', t: 'Lástima. Volverás. Todos vuelven cuando el dolor es suficiente.' },
         ], next: 'b2' },
         b2: { bg: 'fabrica', lines: [
-          { s: 'narrador', t: 'La puerta de la fábrica se abre de golpe. Jayce entra, sin escolta, con el martillo a la espalda.' },
+          { s: 'narrador', t: 'La puerta de la fábrica se abre de golpe. Jayce entra sin escolta, con el martillo a la espalda.' },
           { s: 'jayce', t: 'Viktor.' },
           { s: 'viktor', t: '(Se gira despacio. Por un instante, algo humano le cruza la cara.) Jayce. Has venido.' },
           { s: 'jayce', t: 'Vuelve conmigo. Lo arreglaremos juntos. Como siempre.' },
-          { s: 'viktor', t: '«Como siempre». Tú arriba, en las fotos. Yo abajo, tosiendo sangre. No, Jayce. Esta vez lo arreglaré yo.' },
+          { s: 'viktor', t: '«Como siempre». Tú arriba, en las fotos. Yo abajo, tosiendo sangre. No, Jayce. Esta vez lo arreglo yo.' },
         ], choices: [
           { t: 'Ponerte del lado de Jayce.', next: 'b3', fx: { aff: { jayce: 2, viktor: -1 } } },
           { t: 'Ponerte del lado de Viktor.', next: 'b3', fx: { aff: { viktor: 2, jayce: -1 } } },
-          { t: '«Los dos tenéis razón. Y los dos os vais a destruir.» (Carisma 2)', req: { stat: 'carisma', min: 2 }, next: 'b3', fx: { aff: { jayce: 1, viktor: 1 } } },
+          { t: '«Los dos tenéis razón. Y los dos os vais a destruir.» (Carisma 2)', req: { stat: 'carisma', min: 2 }, next: 'b3', fx: { aff: { jayce: 1, viktor: 1 }, flags: ['puente_jayce_viktor'] } },
         ] },
         b3: { bg: 'fabrica', lines: [
           { s: 'narrador', t: 'Jayce no levanta el martillo. Viktor tampoco levanta la mano. Se miran durante un tiempo que parece eterno.' },
           { s: 'jayce', t: '(Al salir, a ti.) Ya no me ve, {name}. Me mira y ve a todos los que le fallaron. Y tiene razón: yo fui uno de ellos.' },
         ], next: 'c' },
         c: { bg: 'mansion-kiramman', lines: [
-          { s: 'narrador', t: 'En Piltover, Mel Medarda regresa de Noxus con malas noticias. Y Ambessa la recibe con una sonrisa que no llega a sus ojos.' },
+          { s: 'narrador', t: 'En Piltover, Mel Medarda hace las maletas. Dice que tiene que ir a Noxus. Que alguien de su familia la está esperando.' },
         ], end: true },
       },
     },
     {
       id: 't4', route: 't2', title: 'T2 · Capítulo 4 · La loba y la rosa',
-      intro: 'Madre e hija frente a frente. Una ofrece ejércitos; la otra, una advertencia. Piltover tiene que elegir… y tú también.',
+      intro: 'Piltover ya no tiene Consejo: tiene una comandante y un estado de guerra. Mel parte hacia Noxus. Y tú tienes que elegir dónde estar.',
       unlocks: ['maddie', 'kino'],
       start: 'a',
       nodes: {
-        a: { bg: 'consejo', lines: [
-          { s: 'narrador', t: 'Lo que queda del Consejo se reúne en una sala provisional. Caitlyn, de uniforme negro, ocupa el asiento de su madre. Nadie se atreve a decirle que no le corresponde.' },
-          { s: 'narrador', t: 'Detrás de Ambessa, dos soldados noxianos montan guardia: un hombre enorme y callado, Kino, y una joven de mirada atenta, Maddie, que no le quita ojo a Caitlyn.' },
+        a: { bg: 'ejecutores', lines: [
+          { s: 'narrador', t: 'Caitlyn, ahora comandante, firma toques de queda para Zaun con la misma letra con la que su madre firmaba tratados.' },
+          { s: 'narrador', t: 'A su lado, una ejecutora rubia con pecas le acerca café y papeles antes de que los pida.' },
+          { s: 'maddie', t: 'Maddie Nolen, para servirle. La comandante dice que eres de fiar. (Sonríe.) Yo todavía no lo he decidido.' },
           { s: 'ambessa', t: 'Noxus protegerá Piltover. Sus fábricas, su hextec, su gente. A cambio, solo pido lealtad. Y vuestras armas.' },
-          { s: 'mel', t: 'Mi madre no regala espadas, {name}. Las presta. Y siempre las cobra.' },
-          { s: 'mel', t: 'Y hay alguien más moviendo los hilos: una rosa negra que crece en la sombra de Noxus. Mi madre lleva años luchando contra ella… o usándola.' },
-          { s: 'ambessa', t: '(Sin mirarla.) Mi hija confunde la prudencia con la cobardía. Un defecto de crianza. Mío, supongo.' },
-        ], next: 'a2' },
-        a2: { bg: 'mansion-kiramman', lines: [
-          { s: 'mel', t: '(A solas, en un balcón, mostrándote una chispa dorada en la palma de la mano.) En el ataque al Consejo, esto me salvó la vida. Una luz. Una barrera.' },
-          { s: 'mel', t: 'Soy maga, {name}. Mi madre lo sabía. Me mandó lejos de Noxus de niña para que nadie lo descubriera. Para que la Rosa Negra no me encontrara.' },
+          { s: 'caitlyn', t: '(Sin levantar la vista del mapa.) Ambessa me ha dado lo que el Consejo nunca me dio: soldados y una dirección.' },
+          { s: 'mel', t: '(En la puerta, con un abrigo de viaje.) Me voy a Noxus esta noche, {name}. Mi madre dice que allí no hay nada para mí. Por eso tengo que ir.' },
+        ], choices: [
+          { t: 'Acompañar a Mel a Noxus.', next: 'n_viaje', fx: { aff: { mel: 2 }, flags: ['viaje_noxus'] } },
+          { t: 'Quedarte con Caitlyn en Piltover.', next: 'p_cait', fx: { aff: { caitlyn: 2 }, flags: ['con_caitlyn'] } },
+        ] },
+        n_viaje: { bg: 'mansion-kiramman', lines: [
+          { s: 'mel', t: '(En la cubierta del barco, mostrándote una chispa dorada en la palma de la mano.) En el ataque al Consejo, esto me salvó la vida. Una luz. Una barrera.' },
+          { s: 'mel', t: 'Soy maga, {name}. Mi madre lo sabía. Me mandó lejos de Noxus de niña para que nadie lo descubriera.' },
           { s: 'mel', t: 'Toda mi vida he creído que me exilió por débil. Y resulta que me escondió por fuerte.' },
         ], choices: [
-          { t: '«Eso no la convierte en buena madre.»', next: 'a3', fx: { aff: { mel: 2, ambessa: -1 } } },
-          { t: '«Quizá te quiere más de lo que sabe demostrar.»', next: 'a3', fx: { aff: { mel: 1, ambessa: 1 } } },
-          { t: '«¿Qué puedes hacer con esa magia?» (Ingenio 2)', req: { stat: 'ingenio', min: 2 }, next: 'a3', fx: { aff: { mel: 2 }, stats: { ingenio: 1 } } },
+          { t: '«Eso no la convierte en buena madre.»', next: 'n_celda', fx: { aff: { mel: 2, ambessa: -1 } } },
+          { t: '«Quizá te quiere más de lo que sabe demostrar.»', next: 'n_celda', fx: { aff: { mel: 1, ambessa: 1 } } },
+          { t: '«¿Qué puedes hacer con esa magia?» (Ingenio 2)', req: { stat: 'ingenio', min: 2 }, next: 'n_celda', fx: { aff: { mel: 2 }, stats: { ingenio: 1 } } },
+        ] },
+        n_celda: { bg: 'stillwater', lines: [
+          { s: 'narrador', t: 'En Noxus, bajo una villa abandonada de los Medarda, Mel encuentra lo que buscaba: una celda, y en ella, un hombre encadenado.' },
+          { s: 'kino', t: '(Levanta la cabeza despacio.) ¿Mel? Has crecido. Madre te escondió de ellos. A mí no pudo.' },
+          { s: 'mel', t: '(Le tiembla la voz.) Kino murió cuando yo era una niña. Madre lo dijo.' },
+          { s: 'kino', t: 'Madre dice muchas cosas. Sácame de aquí, hermana. Antes de que vuelvan.' },
+        ], choices: [
+          { t: 'Ayudar a Mel a romper las cadenas.', next: 'n_rosa', fx: { aff: { mel: 1 } } },
+          { t: 'Fijarte en él antes de nada: algo no encaja (Ingenio 2).', req: { stat: 'ingenio', min: 2 }, next: 'n_rosa', fx: { aff: { mel: 2 }, flags: ['descubre_rosa'] } },
+          { t: '«Mel, decide tú. Es tu hermano.»', next: 'n_rosa', fx: { aff: { mel: 1 } } },
+        ] },
+        n_rosa: { bg: 'stillwater', lines: [
+          { s: 'yo', t: 'Mel, mira sus manos. No tiene ni una marca de las cadenas. Lleva años aquí y no tiene ni una marca.', cond: { flag: 'descubre_rosa' } },
+          { s: 'narrador', t: 'La cara de Kino se deshace como cera al fuego. Debajo sonríe una mujer de pelo blanco con una máscara: LeBlanc, de la Rosa Negra.' },
+          { s: 'narrador', t: 'Con la voz de Kino todavía, LeBlanc os cuenta la verdad: el verdadero Kino murió hace años. Lo mataron porque creían que era el hijo mágico de Ambessa.' },
+          { s: 'mel', t: '(Muy despacio.) Se equivocaron de hijo. (Te mira.) Era yo. Siempre fui yo.' },
+          { s: 'narrador', t: 'La luz dorada estalla en las manos de Mel. Cuando se apaga, LeBlanc ya no está. Solo queda una rosa negra en el suelo.' },
+        ], next: 'a3' },
+        p_cait: { bg: 'ejecutores', lines: [
+          { s: 'maddie', t: '(Ofreciéndole a Caitlyn una taza de té.) Comandante. Lleva dos días sin dormir. Con todo respeto, así no se gana una guerra.' },
+          { s: 'caitlyn', t: '(La acepta, sin mirarla.) Gracias, Maddie.' },
+          { s: 'narrador', t: 'Vi no está. Dicen que ha dejado la placa y que pelea en los fosos de Zaun por cuatro monedas.' },
+        ], choices: [
+          { t: '«Maddie cuida mucho de ti, Caitlyn.»', next: 'p_mapa', fx: { aff: { maddie: 2 } } },
+          { t: 'Fijarte en cómo Maddie mira los mapas de Caitlyn (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'p_mapa', fx: { aff: { maddie: -1 }, flags: ['sospecha_maddie'] } },
+          { t: '«¿Y Vi? ¿Nadie va a ir a buscarla?»', next: 'p_mapa', fx: { aff: { vi: 1, caitlyn: -1 } } },
+        ] },
+        p_mapa: { bg: 'ejecutores', lines: [
+          { s: 'narrador', t: 'Maddie se queda un segundo más de lo necesario mirando el mapa. Luego saluda y sale. Va directa a los aposentos de Ambessa.', cond: { flag: 'sospecha_maddie' } },
+          { s: 'caitlyn', t: '(Más tarde, a solas, mirando un mapa de Zaun lleno de cruces rojas.) Vi dice que me estoy convirtiendo en otra persona. Puede que tenga razón.' },
+          { s: 'caitlyn', t: 'Pero la Caitlyn de antes no pudo salvar a su madre.' },
+        ], choices: [
+          { t: '«La Caitlyn de antes es de la que Vi se enamoró.»', next: 'a3', fx: { aff: { caitlyn: 1, vi: 1 } } },
+          { t: '«Haz lo que tengas que hacer. Pero no lo hagas sola.»', next: 'a3', fx: { aff: { caitlyn: 2 } } },
+          { t: '«Tu madre quería paz, Caitlyn. No esto.»', next: 'a3', fx: { aff: { caitlyn: -1 }, stats: { carisma: 1 } } },
         ] },
         a3: { bg: 'consejo', lines: [
-          { s: 'ambessa', t: '(Al día siguiente, en la sala.) Bien, {name}. Todos te miran. Eres el puente entre esta ciudad y la de abajo. Dime qué quiere Piltover.' },
+          { s: 'narrador', t: 'Días después, de vuelta en Piltover, Ambessa reúne a lo que queda del poder de la ciudad.' },
+          { s: 'mel', t: '(Delante de todos, sin bajar la voz.) Madre. He visto a Kino. Bueno, a lo que la Rosa Negra hizo con su cara.', cond: { flag: 'viaje_noxus' } },
+          { s: 'ambessa', t: '(Se queda muy quieta. Por primera vez, no tiene respuesta.) …Kino.', cond: { flag: 'viaje_noxus' } },
+          { s: 'ambessa', t: 'Bien, {name}. Todos te miran. Eres el puente entre esta ciudad y la de abajo. Dime qué quiere Piltover.' },
         ], choices: [
           { t: 'Negociar con Ambessa las condiciones de la alianza.', next: 'b_trato', game: { id: 'regateo', win: 'b_trato', lose: 'b_ambessa', winFx: { aff: { ambessa: 2, caitlyn: 1 }, rep: { piltover: 1 }, flags: ['trato_noxus'] } }, fx: {} },
           { t: 'Confiar en Mel y su magia.', next: 'b_mel', fx: { aff: { mel: 4, ambessa: -3 }, flags: ['aliado_mel_s2'] } },
@@ -1434,36 +1594,18 @@ window.STORY = {
         b_trato: { bg: 'consejo', lines: [
           { s: 'ambessa', t: '(Ríe.) Negocias como una noxiana. Está bien: Zaun no será tocado. Por ahora.' },
           { s: 'caitlyn', t: '(Te mira con algo parecido a la gratitud. O al cansancio.) Bien jugado.' },
-        ], next: 'c00' },
+        ], next: 'c' },
         b_mel: { bg: 'mansion-kiramman', lines: [
           { s: 'mel', t: 'Gracias. La magia que llevo dentro puede proteger a mucha gente. Pero necesito tiempo… y alguien que me cubra las espaldas.' },
           { s: 'ambessa', t: '(Desde la puerta, fría.) Elegir a mi hija es elegir a una niña que aún no sabe usar sus armas. Espero que no te arrepientas.' },
-        ], next: 'c00' },
+        ], next: 'c' },
         b_ambessa: { bg: 'consejo', lines: [
           { s: 'narrador', t: 'Soldados noxianos desfilan por el Puente del Progreso. Desde abajo, Zaun los mira con un odio nuevo.' },
           { s: 'ambessa', t: 'Así se hacen las cosas, {name}. Rápido y con firmeza.' },
           { s: 'mel', t: '(Al pasar a tu lado, en un susurro.) Acabas de dejar entrar al lobo. Ya veremos quién lo saca.' },
-        ], next: 'c00' },
-        c00: { bg: 'ejecutores', lines: [
-          { s: 'maddie', t: '(Ofreciéndole a Caitlyn una taza de té.) Comandante. Lleva dos días sin dormir. Con todo respeto, así no se gana una guerra.' },
-          { s: 'caitlyn', t: '(La acepta, sin mirarla.) Gracias, Maddie.' },
-          { s: 'kino', t: '(A ti, en voz baja, junto a la puerta.) La señora Ambessa dice que vigile quién entra en esta sala. Tú entras mucho.' },
-        ], choices: [
-          { t: '«Tranquilo, Kino. Soy de los buenos.»', next: 'c0', fx: { aff: { kino: 1 } } },
-          { t: 'Fijarte en cómo Maddie mira los mapas de Caitlyn (Sigilo 2).', req: { stat: 'sigilo', min: 2 }, next: 'c0', fx: { aff: { maddie: -1 }, flags: ['sospecha_maddie'] } },
-          { t: 'Darle las gracias a Maddie por cuidar de Caitlyn.', next: 'c0', fx: { aff: { maddie: 2 } } },
-        ] },
-        c0: { bg: 'ejecutores', lines: [
-          { s: 'narrador', t: 'Maddie se queda un segundo más de lo necesario mirando el mapa. Luego saluda y sale.', cond: { flag: 'sospecha_maddie' } },
-          { s: 'caitlyn', t: '(Más tarde, a solas, mirando un mapa de Zaun lleno de cruces rojas.) Mi madre murió ahí abajo, {name}. Ahí. (Señala una cruz.)' },
-          { s: 'caitlyn', t: 'Vi dice que me estoy convirtiendo en otra persona. Puede que tenga razón. Pero la Caitlyn de antes no protegía a nadie.' },
-        ], choices: [
-          { t: '«La Caitlyn de antes es de la que Vi se enamoró.»', next: 'c', fx: { aff: { caitlyn: 1, vi: 1 } } },
-          { t: '«Haz lo que tengas que hacer. Pero no lo hagas sola.»', next: 'c', fx: { aff: { caitlyn: 2 } } },
-          { t: '«Tu madre quería paz, Caitlyn. No esto.»', next: 'c', fx: { aff: { caitlyn: -1 }, stats: { carisma: 1 } } },
-        ] },
+        ], next: 'c' },
         c: { bg: 'sumidero', lines: [
-          { s: 'narrador', t: 'Esa noche, algo enorme destroza un puesto de ejecutores en el Sumidero. Los supervivientes hablan de un lobo del tamaño de un carro.' },
+          { s: 'narrador', t: 'Esa noche, algo enorme destroza un puesto de ejecutores en el Sumidero. Los supervivientes hablan de un lobo del tamaño de un carro, con tubos de Brillo clavados en la espalda.' },
         ], end: true },
       },
     },
@@ -1471,11 +1613,19 @@ window.STORY = {
       id: 't5', route: 't2', title: 'T2 · Capítulo 5 · La bestia del Sumidero',
       intro: 'Garras en el metal, aullidos en la niebla. La criatura de Singed anda suelta… y parece buscar a alguien.',
       unlocks: [],
-      start: 'a',
+      start: 'a0',
       nodes: {
+        a0: { bg: 'foso', lines: [
+          { s: 'narrador', t: 'Encuentras a Vi en el foso de Sevika, sin placa y sin vendas, recibiendo golpes como si los mereciera.' },
+          { s: 'vi', t: '(Escupe sangre y sonríe.) ¿Vienes a sacarme de aquí, {name}? Llegas tarde. O pronto. Ya no lo sé.' },
+        ], choices: [
+          { t: 'Saltar al foso y pelear a su lado.', next: 'a', fx: { aff: { vi: 2 }, stats: { valor: 1 } } },
+          { t: '«Esto no es pelear, Vi. Es castigarte.»', next: 'a', fx: { aff: { vi: 1 }, stats: { carisma: 1 } } },
+          { t: 'Pagarle a Sevika la deuda de Vi y sacarla de ahí.', next: 'a', fx: { aff: { vi: 1, sevika: 1 } } },
+        ] },
         a: { bg: 'sumidero', lines: [
-          { s: 'narrador', t: 'Entre la niebla verde, unos ojos brillan. La bestia avanza hacia ti, jadeando, con un collar de metal roto al cuello y tubos de Brillo clavados en la espalda.' },
-          { s: 'vi', t: '(Llega corriendo, con los guanteletes encendidos.) ¡{name}, atrás! Esa cosa ha matado a tres ejecutores.' },
+          { s: 'narrador', t: 'Esa misma noche, entre la niebla verde, unos ojos brillan. La bestia avanza hacia vosotras, jadeando, con un collar de metal roto y tubos de Brillo clavados en la espalda.' },
+          { s: 'vi', t: '(Se pone los guanteletes.) ¡{name}, atrás! Esa cosa ha matado a tres ejecutores.' },
           { s: 'narrador', t: 'Pero la bestia se detiene. Mira a Vi. Y emite un sonido que se parece demasiado a una palabra.' },
           { s: 'narrador', t: 'Suena como «Vi».' },
         ], choices: [
@@ -1492,13 +1642,14 @@ window.STORY = {
           { s: 'vi', t: 'Eh, eh. Quédate conmigo. No pienso perder a nadie más esta semana.' },
         ], next: 'b2' },
         b_verdad: { bg: 'sumidero', lines: [
-          { s: 'yo', t: 'Vi… es Vander. Singed lo trajo de vuelta. Así.' },
+          { s: 'yo', t: 'Vi… es Vander. Singed se llevó su cuerpo aquella noche. Lo trajo de vuelta. Así.' },
           { s: 'vi', t: '(Baja los puños. La bestia baja la cabeza.) …¿Viejo?' },
-          { s: 'narrador', t: 'Por un instante, el monstruo y la chica se miran como un padre y una hija. Luego la bestia aúlla y huye hacia la oscuridad.' },
+          { s: 'narrador', t: 'Por un instante, el monstruo y la chica se miran como un padre y una hija. Luego la bestia aúlla y huye hacia la oscuridad. Ya no es Vander. Es Warwick.' },
         ], next: 'b2' },
         b2: { bg: 'escondite-jinx', lines: [
-          { s: 'narrador', t: 'Esa noche, Vi no vuelve a la jefatura. La encuentras en el antiguo escondite de Jinx. Y Jinx está allí, sentada en el otro extremo de la habitación, con Isha dormida en su regazo.' },
-          { s: 'jinx', t: '(Sin levantar la voz, para no despertar a Isha.) Le he visto, Vi. Le he oído. Era su voz, aunque saliera de esa cosa.' },
+          { s: 'narrador', t: 'Vi no vuelve a la jefatura. La encuentras en el escondite de Jinx. Y Jinx está allí, en el otro extremo de la habitación, con Isha dormida en el regazo.' },
+          { s: 'narrador', t: 'Isha se escapó de Vi hace dos días para volver con Jinx. Nadie pudo impedirlo.', cond: { flag: 'isha_con_vi' } },
+          { s: 'jinx', t: '(Sin levantar la voz, para no despertarla.) Le he visto, Vi. Le he oído. Era su voz, aunque saliera de esa cosa.' },
           { s: 'vi', t: 'Lo sé, Pow.' },
           { s: 'jinx', t: '(Abre mucho los ojos.) Me has llamado Pow. Hace siglos que no me llamas Pow.' },
         ], choices: [
@@ -1511,60 +1662,89 @@ window.STORY = {
           { s: 'vi', t: 'Ninguna de las dos lo está. (Se acerca un poco.) Pero podemos no estar bien juntas.' },
           { s: 'isha', t: '(Medio dormida, alarga una mano hacia Vi y se la coge.)' },
           { s: 'jinx', t: '(Ríe bajito.) Traidora.' },
-        ], next: 'c' },
-        c: { bg: 'arbol', lines: [
-          { s: 'narrador', t: 'Ekko te espera en el árbol. Ha encontrado algo en el Z-Drive. Algo que no debería existir.' },
+        ], next: 'd' },
+        d: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'Al amanecer, Warwick vuelve. Esta vez no se detiene. Atraviesa la pared del escondite y derriba a Jinx de un golpe.' },
+          { s: 'narrador', t: 'Isha coge el arma de Jinx. Mete tres gemas en el cargador, una detrás de otra, como se lo ha visto hacer cien veces.' },
+        ], choices: [
+          { t: 'Intentar quitarle el arma (Valor 2).', req: { stat: 'valor', min: 2 }, next: 'e', fx: { aff: { isha: 1 }, flags: ['intento_isha'] } },
+          { t: 'Gritarle a Isha que corra.', next: 'e', fx: { flags: ['intento_isha'] } },
+          { t: 'Lanzarte a cubrir a Jinx.', next: 'e', fx: { aff: { jinx: 2 }, stats: { valor: 1 } } },
+        ] },
+        e: { bg: 'sumidero', lines: [
+          { s: 'narrador', t: 'No llegas a tiempo. Nadie habría llegado.', cond: { flag: 'intento_isha' } },
+          { s: 'isha', t: '(Te mira. Se sube las gafas. Sonríe. Y aprieta el gatillo.)' },
+          { s: 'narrador', t: 'La explosión lanza a Warwick contra la pared del Sumidero. Cuando el humo se aparta, Isha no se levanta.' },
+          { s: 'jinx', t: '(Abrazada a ella.) No. No, no, no. Tú no. Tú eras la buena. Tú eras la que tenía que salir bien.' },
+        ], choices: [
+          { t: 'Arrodillarte junto a Jinx y no soltarla.', next: 'f', fx: { aff: { jinx: 3 }, flags: ['isha_muere'] } },
+          { t: 'Sostener a Vi, que no puede moverse.', next: 'f', fx: { aff: { vi: 3 }, flags: ['isha_muere'] } },
+          { t: 'Quitarte la chaqueta y tapar a Isha.', next: 'f', fx: { aff: { jinx: 1, vi: 1 }, flags: ['isha_muere', 'tapa_isha'] } },
+        ] },
+        f: { bg: 'ejecutores', lines: [
+          { s: 'narrador', t: 'Jinx coge la granada rosa del lazo y se la guarda en el bolsillo. No dice nada en todo el día.', cond: { notFlag: 'tapa_isha' } },
+          { s: 'jinx', t: '(Mirando tu chaqueta sobre la niña.) Gracias. Odiaba el frío. No lo decía, pero lo odiaba.', cond: { flag: 'tapa_isha' } },
+          { s: 'narrador', t: 'Esa noche, Jinx se entrega en la jefatura de los ejecutores. Deja las armas sobre el mostrador, una a una. Por primera vez en años, no hay voces.' },
+          { s: 'narrador', t: 'En Piltover, nadie sabe dónde está Jayce: desapareció en un fogonazo azul en su laboratorio.' },
+          { s: 'narrador', t: 'Ekko te manda un mensaje: él y Heimerdinger han encontrado algo en el árbol. Una grieta en el aire.' },
         ], end: true },
       },
     },
     {
       id: 't6', route: 't2', title: 'T2 · Capítulo 6 · Ecos del tiempo',
-      intro: 'Una chispa del Hexcore y del Z-Drive abre una grieta. Al otro lado: un Zaun donde nada de esto pasó.',
+      intro: 'Un resto del Hexcore ha abierto una grieta en el aire. Al otro lado: un Zaun donde nada de esto pasó.',
       unlocks: [],
       start: 'a',
       nodes: {
         a: { bg: 'arbol', lines: [
-          { s: 'heimerdinger', t: '(Sentado en una rama, con la bata llena de hojas.) Desde el ataque al Consejo vivo aquí, entre críos con máscaras. Es lo más parecido a una Academia que he tenido en años.' },
-          { s: 'ekko', t: '(Con el Z-Drive en la mano, la voz rara.) Lo he visto, {name}. Un mundo donde Powder nunca se convirtió en Jinx. Donde Vander sigue sirviendo cerveza. Donde todos están bien.' },
-          { s: 'ekko', t: 'Allí Powder y yo… (Se calla.) Allí la Academia aceptó a Viktor de verdad. Allí la hextec bajó a Zaun.' },
-          { s: 'ekko', t: 'Pero solo puedo traer de allí una cosa. Un recuerdo, una idea… algo que nos ayude aquí.' },
+          { s: 'narrador', t: 'Sentado en una rama, con la bata llena de hojas, hay un yordle de bigote blanco: Heimerdinger, el que fue decano de la Academia.', cond: { notMet: 'heimerdinger' } },
+          { s: 'heimerdinger', t: 'Encantado, encantado. Desde el ataque vivo aquí, entre críos con máscaras. Es lo más parecido a una Academia que he tenido en años.', cond: { notMet: 'heimerdinger' } },
+          { s: 'heimerdinger', t: '(Sentado en una rama, con la bata llena de hojas.) ¡{name}! Desde el ataque vivo aquí, entre críos con máscaras. Es lo más parecido a una Academia que he tenido en años.', cond: { met: 'heimerdinger' } },
+          { s: 'ekko', t: '(Junto a una esfera de luz que gira en el aire, la voz rara.) Lo he visto, {name}. Al otro lado hay un mundo donde Powder nunca se convirtió en Jinx. Donde Vander sigue sirviendo cerveza.' },
+          { s: 'heimerdinger', t: 'Una anomalía. Fascinante y espantosa a partes iguales. Si entramos, no sé si sabremos volver.' },
+          { s: 'ekko', t: 'Voy a entrar. Necesito saber cómo lo arreglaron allí. Para arreglarlo aquí.' },
         ], choices: [
-          { t: 'Viajar con Ekko a través de la grieta.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, heimerdinger: 2 }, flags: ['esperanza'] } }, fx: {} },
-          { t: 'Pedirle que no vaya: «Nuestro mundo nos necesita.»', next: 'b_queda', fx: { aff: { ekko: 1 } } },
+          { t: 'Cruzar la grieta con Ekko y el profesor.', next: 'b_ok', game: { id: 'runas', win: 'b_ok', lose: 'b_ko', winFx: { aff: { ekko: 3, heimerdinger: 2 }, flags: ['esperanza'] } }, fx: {} },
+          { t: 'Pedirles que no vayan: «Nuestro mundo nos necesita.»', next: 'b_queda', fx: { aff: { ekko: 1 } } },
         ] },
         b_ok: { bg: 'callejones', lines: [
           { s: 'narrador', t: 'Al otro lado, el aire huele a flores. Hay árboles de verdad en los callejones. Powder, mayor y sonriente, ríe en la barra de La Última Gota.' },
           { s: 'narrador', t: 'Vander, con un delantal, le revuelve el pelo a Vi. Es tan bonito que duele.' },
-          { s: 'ekko', t: '(Con los ojos brillantes.) Ella aquí construye cosas que funcionan. Me enseñó a pintar. Me… da igual. Tenemos que volver.' },
-          { s: 'ekko', t: 'Me traigo esto. (Te enseña un dibujo de Powder: dos hermanas y un mono de trapo.) Para recordarle a Jinx quién puede ser.' },
+          { s: 'ekko', t: '(Con los ojos brillantes.) Aquí ella construye cosas que funcionan. Me enseñó a pintar. Me… da igual. Tenemos que volver.' },
+          { s: 'narrador', t: 'Pero la grieta se cierra. Para volver, alguien tiene que quedarse al otro lado sosteniendo la máquina.' },
+          { s: 'heimerdinger', t: 'Llevo trescientos años siendo prudente, {name}. Dejadme, por una vez, ser valiente.' },
+          { s: 'ekko', t: 'Profesor, no…' },
+          { s: 'heimerdinger', t: 'Cuida de él. Y cuidad del mundo de verdad. Este solo es un sueño bonito.' },
+          { s: 'narrador', t: 'La luz se lo lleva. Ekko vuelve con un dibujo de esa Powder en el bolsillo: dos hermanas y un mono de trapo.' },
         ], next: 'b2' },
         b_ko: { bg: 'arbol', lines: [
-          { s: 'narrador', t: 'La grieta se cierra de golpe con un estallido de luz. Ekko vuelve solo, temblando.' },
-          { s: 'ekko', t: 'Lo he perdido. Pero lo he visto. Y eso ya es algo.' },
+          { s: 'narrador', t: 'La grieta te escupe de vuelta al árbol. Horas después, Ekko sale de ella solo, temblando.' },
+          { s: 'ekko', t: 'Se quedó para que yo pudiera volver. El profesor. Ni siquiera me dejó despedirme.' },
         ], next: 'b2' },
         b_queda: { bg: 'arbol', lines: [
-          { s: 'ekko', t: '(Guarda el Z-Drive.) Tienes razón. Los sueños no paran ejércitos.' },
-          { s: 'heimerdinger', t: 'Una decisión sensata. Aunque, a mi edad, uno aprende que los sueños son lo único que de verdad mueve ejércitos.' },
-          { s: 'ekko', t: 'Pero a veces me gustaría quedarme un rato en ellos.' },
+          { s: 'ekko', t: '(Te pone una mano en el hombro.) Por eso tengo que ir. Porque lo necesita.' },
+          { s: 'heimerdinger', t: 'A mi edad, uno aprende que los sueños son lo único que de verdad mueve ejércitos. Volveremos pronto. Espero.' },
+          { s: 'narrador', t: 'Cruzan igual. Horas después, solo vuelve Ekko. Heimerdinger se quedó al otro lado para que él pudiera volver.' },
         ], next: 'b2' },
         b2: { bg: 'arbol', lines: [
-          { s: 'narrador', t: 'Alguien sube por las cuerdas del árbol. Jinx. Sin armas. Con las manos en los bolsillos.' },
-          { s: 'jinx', t: 'Ekko. Me han dicho que querías verme. Bueno, me lo ha dicho Isha. Con dibujos.' },
-          { s: 'ekko', t: '(Se levanta despacio.) Powder… Jinx. La última vez que hablamos, te tiré de un puente.' },
-          { s: 'jinx', t: 'Técnicamente te tiré yo a ti. Pero vale, estamos en paz.' },
+          { s: 'narrador', t: 'Esa noche llega una noticia: Jinx ha salido de Stillwater. Vi la ha sacado. Ninguna de las dos quiere hablar de cómo.' },
+          { s: 'narrador', t: 'Alguien sube por las cuerdas del árbol. Jinx. Sin armas. Con las manos en los bolsillos y una granada rosa colgada del cinturón.' },
+          { s: 'jinx', t: 'Ekko. Me han dicho que querías verme.' },
+          { s: 'ekko', t: '(Se levanta despacio.) Powder… Jinx. La última vez que hablamos, intentamos matarnos en un puente.' },
+          { s: 'jinx', t: 'Técnicamente casi te mato yo. Pero vale, estamos en paz.' },
         ], choices: [
-          { t: 'Animar a Ekko a contarle lo que ha visto.', next: 'b3', fx: { aff: { ekko: 2, jinx: 1 } } },
-          { t: 'Hacer una broma para romper el hielo.', next: 'b3', fx: { aff: { jinx: 2 } } },
-          { t: 'Retirarte y dejarles hablar.', next: 'b3', fx: { aff: { ekko: 1, jinx: 1 } } },
+          { t: 'Animar a Ekko a contarle lo que ha visto.', next: 'b3', fx: { aff: { ekko: 2, jinx: 1 }, flags: ['heimer_cae'] } },
+          { t: 'Hacer una broma para romper el hielo.', next: 'b3', fx: { aff: { jinx: 2 }, flags: ['heimer_cae'] } },
+          { t: 'Retirarte y dejarles hablar.', next: 'b3', fx: { aff: { ekko: 1, jinx: 1 }, flags: ['heimer_cae'] } },
         ] },
         b3: { bg: 'arbol', lines: [
-          { s: 'ekko', t: 'Hay un sitio… otro lugar, donde tú y yo seguimos siendo amigos. Donde nada de esto pasó.' },
+          { s: 'ekko', t: 'Hay un sitio, otro lugar, donde tú y yo seguimos siendo amigos. Donde nada de esto pasó.' },
           { s: 'jinx', t: '(Se ríe, pero se le quiebra la risa.) Qué suerte la de esa Powder. (Pausa.) ¿Era feliz?' },
           { s: 'ekko', t: 'Mucho.' },
           { s: 'jinx', t: 'Bien. Al menos una de nosotras.' },
         ], next: 'c' },
         c: { bg: 'puente', lines: [
-          { s: 'narrador', t: 'Al amanecer, las campanas de Piltover suenan a guerra. Noxus por el mar. El ejército del Heraldo desde abajo. Y las dos ciudades, en medio.' },
+          { s: 'narrador', t: 'Al amanecer, las campanas de Piltover suenan a guerra. Noxus por un lado. El ejército del Heraldo por el otro. Y las dos ciudades, en medio.' },
         ], end: true },
       },
     },
@@ -1578,51 +1758,66 @@ window.STORY = {
           { s: 'narrador', t: 'Antes de la batalla, en una sala de mapas, Piltover y Zaun se sientan a la misma mesa por primera vez.' },
           { s: 'sevika', t: '(Con los pies encima de la mesa.) No me gustáis. Ninguno. Pero Noxus me gusta menos.' },
           { s: 'caitlyn', t: 'Me basta con eso.' },
-          { s: 'jayce', t: 'Viktor está en el corazón de la fábrica. Si alguien puede llegar hasta él, soy yo.' },
-          { s: 'mel', t: 'Y yo me encargaré de mi madre. Es lo único que nunca ha esperado de mí.' },
-          { s: 'ambessa', t: '(Al otro lado del mar, en su barco, a un mensajero.) Que avancen. Piltover caerá antes del anochecer.', cond: { notFlag: 'trato_noxus' } },
-          { s: 'ambessa', t: '(Entra en la sala sin llamar.) Noxus luchará a vuestro lado contra el Heraldo. Un trato es un trato.', cond: { flag: 'trato_noxus' } },
+          { s: 'maddie', t: '(Detrás de Caitlyn, como siempre.) Comandante, los hombres de Ambessa esperan su señal.' },
+          { s: 'narrador', t: 'Jayce ha vuelto. Nadie sabe de dónde ni cuánto tiempo ha pasado para él.' },
+          { s: 'jayce', t: '(Más viejo de lo que debería, con una cicatriz nueva.) He visto lo que pasa si Viktor gana, {name}. Un mundo de ceniza. Si alguien puede llegar hasta él, soy yo.' },
+          { s: 'mel', t: 'Y yo me encargaré de mi madre. Y de la Rosa Negra, si se atreve a venir.' },
+          { s: 'ambessa', t: '(En la puerta, con la armadura puesta.) Noxus luchará a vuestro lado contra el Heraldo. Un trato es un trato.', cond: { flag: 'trato_noxus' } },
+          { s: 'ambessa', t: '(En la puerta, con la armadura puesta.) Noxus luchará. A su manera. Y cuando acabe, ya hablaremos de a quién pertenece esta ciudad.', cond: { notFlag: 'trato_noxus' } },
         ], next: 'a' },
         a: { bg: 'puente', lines: [
-          { s: 'narrador', t: 'El cielo está rojo de fuego noxiano y azul de magia hextec. Jinx aparece en lo alto de una torre con Isha a su lado.', cond: { flag: 'salva_isha' } },
-          { s: 'narrador', t: 'El cielo está rojo de fuego noxiano y azul de magia hextec. Jinx aparece sola en lo alto de una torre.', cond: { notFlag: 'salva_isha' } },
+          { s: 'narrador', t: 'El cielo está rojo de fuego noxiano y azul de magia hextec. Jinx aparece en lo alto de una torre con la granada rosa de Isha colgada del cinturón.' },
           { s: 'caitlyn', t: '{name}, es ahora o nunca. Si Piltover y Zaun no luchan juntas hoy, mañana no habrá ninguna de las dos.' },
-          { s: 'vi', t: '(Ajustándose los guanteletes.) Por Vander. Por Mylo y Claggor. Por todos los que se quedaron en el camino.' },
+          { s: 'vi', t: '(Ajustándose los guanteletes.) Por Vander. Por Mylo y Claggor. Por Isha. Por todos los que se quedaron en el camino.' },
           { s: 'viktor', t: '(Su voz resuena desde todas partes.) No tiene por qué haber guerra. Uníos a mí y nadie volverá a sufrir.' },
         ], choices: [
           { t: 'Unir a las dos ciudades contra Noxus y el Heraldo (Carisma 3).', req: { stat: 'carisma', min: 3 }, next: 'b_union', fx: { flags: ['union'] } },
           { t: 'Enseñarle a Jinx el dibujo del otro mundo.', req: { flag: 'esperanza' }, next: 'b_jinx', fx: { aff: { jinx: 3, vi: 2 }, flags: ['union', 'jinx_redimida'] } },
-          { t: 'Llamar a la bestia para que proteja a Vi.', req: { flag: 'vi_sabe_vander' }, next: 'b_lobo', fx: { flags: ['union'] } },
+          { t: 'Vigilar a Maddie, que no se separa de Caitlyn.', req: { flag: 'sospecha_maddie' }, next: 'b_maddie', fx: { aff: { caitlyn: 3 }, flags: ['salva_caitlyn'] } },
+          { t: 'Cubrir a Mel frente a la Rosa Negra.', req: { flag: 'viaje_noxus' }, next: 'b_mel', fx: { aff: { mel: 3 }, flags: ['union'] } },
           { t: 'Unirte a la Evolución Gloriosa.', req: { flag: 'evolucion_aceptada' }, next: 'b_evo', fx: { flags: ['elige_evolucion'] } },
           { t: 'Luchar por tu cuenta.', next: 'b_solo' },
         ] },
         b_union: { bg: 'puente', lines: [
           { s: 'yo', t: '¡Escuchadme! ¡Arriba y abajo da igual! ¡Hoy somos el mismo puente!' },
           { s: 'narrador', t: 'Ejecutores y zaunitas se miran. Sevika levanta su brazo mecánico. Caitlyn asiente. Y cargan juntos.' },
-          { s: 'sevika', t: '(Riéndose mientras tumba a un soldado noxiano.) ¡Esto sí que es un foso!' },
+          { s: 'sevika', t: '(Riéndose mientras tumba a un ascendido.) ¡Esto sí que es un foso!' },
         ], next: 'c' },
         b_jinx: { bg: 'puente', lines: [
           { s: 'jinx', t: '(Mira el dibujo mucho rato.) …Powder. Hace mucho que nadie me llamaba así.' },
           { s: 'jinx', t: 'Vale. Una última explosión. Pero esta vez, a favor del equipo bueno.' },
-          { s: 'isha', t: '(Levanta su granada rosa con el lazo, muy seria, lista para ayudar.)', cond: { flag: 'salva_isha' } },
-          { s: 'jinx', t: 'Tú no, renacuaja. Tú te quedas detrás de mí. Siempre.', cond: { flag: 'salva_isha' } },
         ], next: 'c' },
-        b_lobo: { bg: 'sumidero', lines: [
-          { s: 'narrador', t: 'Un aullido sube desde el Sumidero. La bestia salta al puente y se planta delante de Vi, gruñendo a los soldados noxianos.' },
-          { s: 'vi', t: 'Juntos, viejo. Como antes.' },
-          { s: 'jinx', t: '(Desde la torre, con la voz rota.) Hola, papá.' },
+        b_maddie: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'En mitad del caos, Maddie se coloca detrás de Caitlyn y levanta la pistola. No apunta a los ascendidos. Apunta a su espalda.' },
+          { s: 'yo', t: '¡Caitlyn, al suelo!' },
+          { s: 'narrador', t: 'Caitlyn se tira a tiempo. Una barrera dorada de Mel cae sobre ella. La bala rebota en la luz y vuelve por donde vino. Maddie no se levanta.' },
+          { s: 'caitlyn', t: '(Mirando el cuerpo, sin entender.) Era de Ambessa. Todo el tiempo. Y yo le daba las gracias por el té.' },
+        ], next: 'c' },
+        b_mel: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'Entre los soldados noxianos aparecen figuras con máscaras y rosas negras. Van a por Ambessa. Y a por Mel.' },
+          { s: 'mel', t: '(La luz dorada le envuelve los brazos.) Esta vez no me esconde nadie. Cúbreme, {name}.' },
+          { s: 'narrador', t: 'Luchas a su espalda hasta que la última máscara se rompe. La Rosa Negra se retira. Pero no se va sin cobrarse algo.' },
         ], next: 'c' },
         b_evo: { bg: 'fabrica', lines: [
           { s: 'narrador', t: 'Das un paso hacia la luz azul. El ruido de la guerra se apaga. El miedo, también. Y algo más, que ya no recuerdas.' },
-        ], next: 'final' },
+        ], next: 'c' },
         b_solo: { bg: 'puente', lines: [
           { s: 'narrador', t: 'Luchas con todo lo que tienes. Pero el puente es demasiado grande para una sola persona.' },
-        ], next: 'final' },
+        ], next: 'c' },
         c: { bg: 'fabrica', lines: [
           { s: 'narrador', t: 'En el corazón de la fábrica, Jayce llega hasta Viktor. No lleva el martillo. Lo ha dejado atrás.' },
           { s: 'jayce', t: 'Si vas a hacer esto, Viktor, no lo harás solo. Me quedo contigo. Hasta el final.' },
           { s: 'viktor', t: '(La luz azul de sus ojos parpadea.) Jayce… Lo siento. Lo siento tanto.' },
-          { s: 'narrador', t: 'La luz se apaga. En el puente, los ascendidos se detienen de golpe, como si despertaran de un sueño.' },
+          { s: 'narrador', t: 'La luz se los traga a los dos. Cuando se apaga, no queda nadie. En el puente, los ascendidos se detienen de golpe, como si despertaran de un sueño.' },
+        ], next: 'c2' },
+        c2: { bg: 'puente', lines: [
+          { s: 'narrador', t: 'En la plaza, Ambessa cae bajo la magia de la Rosa Negra. Muere en brazos de Mel, con la espada todavía en la mano.' },
+          { s: 'narrador', t: 'Maddie apunta a la espalda de Caitlyn. Una barrera dorada de Mel desvía la bala. Maddie no se levanta.', cond: { notFlag: 'salva_caitlyn' } },
+          { s: 'narrador', t: 'Y en lo alto de una torre, Warwick, lo que queda de Vander, se lanza contra Vi.' },
+          { s: 'jinx', t: '(Cogiendo a Vi de la mano, al borde del vacío.) Vi. Suéltame.' },
+          { s: 'vi', t: 'Ni hablar. Ni hablar, Pow.' },
+          { s: 'jinx', t: '(Sonríe, por fin tranquila.) Te quiero, hermanita. Gracias por volver.' },
+          { s: 'narrador', t: 'Jinx se suelta y cae con Warwick hacia la explosión. Una luz rosa. Luego, nada. Nadie encuentra su cuerpo.' },
         ], next: 'final' },
         final: { bg: 'puente', ending: true, endingSet: 'endings2' },
       },
@@ -1636,29 +1831,33 @@ window.STORY = {
     t2: ['t1', 't2', 't3', 't4', 't5', 't6', 'fin2'],
   },
 
-  // Finales de la Temporada 2.
+  // Finales de la Temporada 2. Lo que pasa en el canon pasa siempre (Jayce y Viktor desaparecen,
+  // Ambessa y Maddie mueren, Jinx cae con Warwick); lo que cambia es lo que construiste tú.
   endings2: [
     {
       id: 't2_union', scene: 'puente', title: 'Final · Un solo puente',
       test: (st) => st.flags.union && !st.flags.elige_evolucion,
       lines: [
-        { s: 'narrador', t: 'Al caer la noche, las banderas de Noxus se retiran por el mar y la luz azul del Heraldo se apaga en la fábrica.' },
-        { s: 'caitlyn', t: 'Lo hemos hecho juntos. Arriba y abajo. Eso no lo había conseguido nadie.' },
-        { s: 'vi', t: '(Sentada en el borde del puente.) Vander estaría orgulloso. De todos nosotros.' },
-        { s: 'jinx', t: '(Con una sonrisa cansada.) ¿Y ahora qué? ¿Nos hacemos amigos y tal?', cond: { flag: 'jinx_redimida' } },
-        { s: 'isha', t: '(Dibuja en el suelo del puente, con tiza, a todos cogidos de la mano. Incluye un lobo.)', cond: { flag: 'salva_isha' } },
-        { s: 'mel', t: 'Mi madre ha vuelto a Noxus. Por primera vez en mi vida, no me importa lo que piense.' },
+        { s: 'narrador', t: 'Al caer la noche, los noxianos se retiran por el mar y la luz azul de la fábrica se apaga para siempre.' },
+        { s: 'caitlyn', t: 'Lo hemos hecho juntos. Arriba y abajo. Eso no lo había conseguido nadie. (Se toca la frente.) Ni siquiera mi madre.' },
+        { s: 'vi', t: '(Sentada en el borde del puente, con la granada rosa de Isha entre las manos.) Vander estaría orgulloso. Powder también. Seguro que se está riendo de mí en alguna parte.' },
+        { s: 'caitlyn', t: '(Se sienta a su lado.) Gracias por no soltar mi mano, {name}. Ni la de Vi.', cond: { flag: 'salva_caitlyn' } },
+        { s: 'mel', t: 'Mi madre ha muerto en mis brazos. La Rosa Negra pagará por ello. (Te mira.) Y esta vez no iré sola.' },
+        { s: 'sevika', t: '(Incómoda en una silla nueva del Consejo.) Zaun tiene voz. Ya era hora. Que nadie espere que me ponga vestido.' },
+        { s: 'sevika', t: 'Y que conste que la idea de la silla fue tuya, {name}. No pienso agradecértelo en público.', cond: { flag: 'voz_zaun' } },
         { s: 'ekko', t: 'Ahora, a reconstruir. Y esta vez, el puente será de todos.' },
-        { s: 'narrador', t: 'Años después, en el Puente del Progreso hay una placa con muchos nombres. Jayce. Viktor. Vander. Uno de ellos es el tuyo, {name}.' },
+        { s: 'narrador', t: 'Años después, en el Puente del Progreso hay una placa con muchos nombres. Jayce. Viktor. Heimerdinger. Isha. Debajo queda sitio para los vivos. El primero es el tuyo, {name}.' },
+        { s: 'narrador', t: 'Y en un muro de Zaun, alguien pinta una chica de trenzas azules con un mono de trapo. Nadie sabe quién.' },
       ],
     },
     {
       id: 't2_evolucion', scene: 'fabrica', title: 'Final · La Evolución Gloriosa',
       test: (st) => st.flags.elige_evolucion,
       lines: [
-        { s: 'narrador', t: 'La luz azul se extiende por Zaun y sube por el puente hasta Piltover. Las armas caen. Los gritos callan.' },
-        { s: 'viktor', t: 'Ya no hay arriba ni abajo, {name}. Ya no hay dolor. Ni guerras. Ni nada.' },
-        { s: 'narrador', t: 'Es paz. Una paz perfecta, silenciosa y vacía. Y en algún lugar, muy dentro, una parte de ti sigue gritando.' },
+        { s: 'narrador', t: 'Durante un tiempo que no sabes medir, todo es azul y silencio. No hay arriba ni abajo. No hay dolor. No hay nada.' },
+        { s: 'narrador', t: 'Luego Jayce y Viktor apagan el Hexcore. Despiertas en el puente, entre ascendidos que lloran sin saber por qué.' },
+        { s: 'vi', t: '(Ayudándote a levantarte.) Eh. ¿Sigues ahí? Dime algo. Lo que sea.' },
+        { s: 'narrador', t: 'Sigues ahí. Casi entero. Te falta algo pequeño, una risa, una manía, y no sabes cuál. Lo buscarás el resto de tu vida.' },
         { s: 'narrador', t: '(Hay otros finales. Quizá, la próxima vez, el dolor merezca la pena.)' },
       ],
     },
@@ -1666,9 +1865,9 @@ window.STORY = {
       id: 't2_ruinas', scene: 'puente-zaun', title: 'Final · Ciudades en ruinas',
       test: () => true,
       lines: [
-        { s: 'narrador', t: 'La guerra termina porque ya no queda nada por lo que luchar. El puente cae al amanecer.' },
-        { s: 'vi', t: '(Entre los escombros.) Lo intentamos. Lo intentamos de verdad.' },
-        { s: 'caitlyn', t: '(Le coge la mano, manchada de hollín.) Y lo volveremos a intentar. Mañana.' },
+        { s: 'narrador', t: 'La guerra termina porque ya no queda nadie con fuerzas para seguir. El puente cae al amanecer.' },
+        { s: 'vi', t: '(Entre los escombros.) La he perdido otra vez. A Pow. Ni siquiera hemos encontrado su cuerpo.' },
+        { s: 'caitlyn', t: '(Le coge la mano, manchada de hollín.) Entonces no la des por perdida. Y mañana empezamos de cero. Juntas.' },
         { s: 'narrador', t: 'Piltover y Zaun tendrán que empezar de cero. Quizá esta vez aprendan. Quizá.' },
         { s: 'narrador', t: '(Consejo: mejora tu Carisma, conserva tus alianzas y busca la esperanza en el árbol de las Luciérnagas.)' },
       ],
@@ -1678,15 +1877,16 @@ window.STORY = {
   // Finales: se elige el primero cuya condición se cumple.
   endings: [
     {
-      id: 'paz', scene: 'puente', title: 'Final · El puente de los dos mundos',
+      id: 'paz', scene: 'puente', title: 'Final · La mano tendida',
       test: (st) => (st.flags.jinx_escucha || st.flags.cohete_saboteado) && (st.flags.pacto || st.flags.puente_hermanas || st.flags.alianza_luciernagas || (st.rep.zaun >= 3 && st.rep.piltover >= 1)),
       lines: [
-        { s: 'narrador', t: 'El cohete nunca despega. En su lugar, Jinx baja del tejado de la mano de Vi.' },
-        { s: 'vi', t: 'Estoy aquí, Pow. No me voy a ninguna parte. Nunca más.' },
-        { s: 'caitlyn', t: 'El Consejo firmará el tratado. Y esta vez Zaun tendrá voz. Gracias a ti, {name}.' },
-        { s: 'ekko', t: 'Quién lo iba a decir. Arriba y abajo en la misma mesa.' },
-        { s: 'narrador', t: 'No es el final de los problemas. Pero es el principio de algo distinto. Y lleva tu nombre.' },
-        { s: 'ambessa', t: '(Desde un balcón, una mujer con armadura noxiana te observa.) Interesante. Muy interesante.' },
+        { s: 'narrador', t: 'Una luz azul cruza el cielo y la cúpula del Consejo estalla en mil cristales. Nada de lo que hiciste pudo pararlo del todo. Pero algo ha cambiado.' },
+        { s: 'jinx', t: '(Con la voz rota, a tu lado.) Tenía que hacerlo antes de que me convencieras. Casi lo consigues, {name}. Casi.', cond: { flag: 'jinx_escucha' } },
+        { s: 'vi', t: 'Estoy aquí, Pow. No me voy a ninguna parte. Pase lo que pase.' },
+        { s: 'caitlyn', t: '(Mirando el humo, sin llorar.) Mi madre estaba en esa sala. (Pausa.) Gracias por intentarlo, {name}. Tú lo intentaste.' },
+        { s: 'ekko', t: 'Hoy hemos perdido. Pero arriba y abajo hemos estado en el mismo puente. Eso no lo había visto nunca.' },
+        { s: 'narrador', t: 'Entre los escombros, una luz dorada: Mel Medarda sigue viva, envuelta en una barrera que nadie sabe explicar.' },
+        { s: 'narrador', t: 'Desde un balcón, una mujer con armadura noxiana lo observa todo. Ambessa Medarda sonríe como quien acaba de ver una oportunidad.' },
       ],
     },
     {
@@ -1696,18 +1896,19 @@ window.STORY = {
         { s: 'narrador', t: 'Una luz azul atraviesa el cielo. La Sala del Consejo estalla en mil cristales.' },
         { s: 'jinx', t: '¡Lo hemos hecho, {name}! ¡Ahora sí que nos ven! (Mira al cielo.) ¿Lo has visto, Silco? Para ti.' },
         { s: 'sevika', t: '(Mirando el humo desde La Última Gota.) Zaun será libre. Aunque tenga que nacer entre cenizas.' },
+        { s: 'narrador', t: 'Entre los muertos está la consejera Cassandra Kiramman. Caitlyn la busca entre el humo hasta que alguien la sujeta.' },
         { s: 'narrador', t: 'En los callejones te aclaman. En Piltover, tu cara aparece en todos los carteles de búsqueda.' },
-        { s: 'ambessa', t: '(En Noxus, alguien sonríe.) Una ciudad en guerra es una ciudad que se puede comprar.' },
+        { s: 'narrador', t: 'Desde un balcón, Ambessa Medarda mira el humo y sonríe. Una ciudad en guerra es una ciudad que se puede comprar.' },
       ],
     },
     {
       id: 'orden', scene: 'consejo', title: 'Final · El orden de Piltover',
       test: (st) => st.flags.evacuacion || st.rep.piltover >= 3,
       lines: [
-        { s: 'narrador', t: 'El cohete impacta, pero la sala está vacía. Nadie muere. Piltover te llama héroe.' },
-        { s: 'jayce', t: 'Has salvado al Consejo, {name}. Pero me temo que esto significa guerra con Zaun.' },
-        { s: 'mel', t: 'Los héroes son útiles. Hasta que dejan de serlo. Cuídate.' },
-        { s: 'cassandra', t: '(Sacudiéndose el polvo del vestido.) Te debo la vida. Los Kiramman no olvidamos nuestras deudas.' },
+        { s: 'narrador', t: 'Sacas a medio Consejo por la escalera de servicio. Cuando el cohete impacta, la sala no está vacía del todo.' },
+        { s: 'jayce', t: '(Cubierto de polvo.) Has salvado a muchos, {name}. No a todos. (Mira los escombros.) Cassandra se quedó la última en la puerta.' },
+        { s: 'mel', t: '(Con las manos todavía brillando de dorado, sin entender por qué.) Los héroes son útiles. Hasta que dejan de serlo. Cuídate.' },
+        { s: 'narrador', t: 'Caitlyn llega corriendo al Consejo. Busca a su madre entre el humo. No la encuentra.' },
         { s: 'narrador', t: 'Las puertas del puente se cierran. Desde arriba, Zaun parece más lejos que nunca.' },
       ],
     },
@@ -1717,6 +1918,7 @@ window.STORY = {
       lines: [
         { s: 'narrador', t: 'Una luz azul. Un silencio terrible. Después, sirenas.' },
         { s: 'vi', t: '(Entre los escombros.) Llegamos tarde. Otra vez.' },
+        { s: 'narrador', t: 'Entre los muertos, la consejera Cassandra Kiramman. Caitlyn no suelta su mano hasta que se hace de noche.' },
         { s: 'narrador', t: 'La guerra entre las dos ciudades ya no tiene marcha atrás. Y tú te preguntas qué habría pasado si hubieras elegido distinto.' },
         { s: 'narrador', t: '(Consejo: sube tus estadísticas y tu afinidad con los personajes y vuelve a intentarlo. Hay otros finales esperándote.)' },
       ],

@@ -891,6 +891,9 @@ body[data-city='zaun'] .btn.primary { background: linear-gradient(180deg, #8fe8c
 .contact strong { font-family: var(--display); letter-spacing: 0.04em; font-weight: 600; }
 .contact.active { background: linear-gradient(90deg, rgba(227, 196, 90, 0.16), rgba(227, 196, 90, 0.02)); border-color: rgba(227, 196, 90, 0.35); }
 .contact.active::before { content: ''; position: absolute; left: -1px; top: 18%; bottom: 18%; width: 3px; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+.contact.fallen { opacity: 0.5; filter: grayscale(1); cursor: default; }
+.contact.fallen:hover { background: transparent; }
+.c-memory-head { margin-top: 0.8rem !important; }
 .aff { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; }
 .aff b { font-weight: 600; color: var(--muted); }
 .aff-pips { width: 70px; height: 5px; display: inline-block;

@@ -16,6 +16,11 @@
   const chapterById = (id) => S().chapters.find((c) => c.id === id);
   const charName = (id) => window.WIKI.personajes.find((p) => p.id === id)?.name || id;
   const affOf = (id) => G.aff[id] ?? 0;
+  // Personajes que han muerto en la historia (canon de Arcane): ya no chatean.
+  const isFallen = (id) => (G.fallen || []).includes(id);
+  const talkable = () => G.unlocked.filter((id) => !isFallen(id));
+  // Familia del jugador elegida en la creación (se conocen desde siempre).
+  const kinOf = (st) => Object.keys(window.RELATIONS.familyLinks[st.player.family] || {});
 
   // ---------------- Partidas ----------------
   function newState(player, stats) {
@@ -23,12 +28,13 @@
     const st = {
       version: 1, player, stats,
       aff: {}, rep: { zaun: player.origin === 'zaun' ? 1 : 0, piltover: player.origin === 'piltover' ? 1 : 0 },
-      flags: {}, unlocked: [], chats: {}, log: [], endings: [],
+      flags: {}, unlocked: [], chats: {}, log: [], endings: [], met: [], fallen: [],
       world: { map: null, x: 0, y: 0 }, codex: [], visited: [], acts: {},
       progress: { route: player.origin, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false },
     };
     Object.entries(player.familyAff || {}).forEach(([k, v]) => { st.aff[k] = v; });
     if (player.family !== 'ninguna') st.flags.familia_famosa = true;
+    st.met = kinOf(st);
     Relations.applyFamily(st);
     return st;
   }
@@ -98,6 +104,9 @@
     G.acts = G.acts || {};
     // Solo el reparto principal sale en el comunicador (partidas antiguas tenían a más gente).
     G.unlocked = G.unlocked.filter((id) => window.STORY.cast.includes(id));
+    // Partidas anteriores a los primeros encuentros y a las muertes del canon.
+    G.met = [...new Set([...(G.met || []), ...G.unlocked, ...kinOf(G)])];
+    syncFallen();
     // Las partidas de la versión «Arcane Piltover y Zaun» guardaban el avatar con la ruta de
     // aquella instalación; se apunta al mismo avatar dentro del juego actual.
     const oldPhoto = /^file:.*\/src\/img\/arte\/(.+)$/.exec(G.player?.photo || '');
@@ -186,7 +195,7 @@
       const maxed = (G.stats[loc.activity.stat] || 0) >= window.WORLD.maxStat;
       if (!done && !maxed) acts.push({ label: `${loc.activity.game ? "" : ""}${loc.activity.label} (+1 ${S().stats[loc.activity.stat].label})`, run: () => doActivity(loc, key) });
     }
-    const here = G.unlocked.filter((id) => window.WORLD.homes[id] === loc.id);
+    const here = talkable().filter((id) => window.WORLD.homes[id] === loc.id);
     here.forEach((id) => acts.push({ label: `Hablar con ${charName(id)}`, run: () => openOverlay('chats', id) }));
     return acts;
   }
@@ -307,7 +316,7 @@
       if (sub === 'atlas') {
         renderAtlas(body, who);
       } else {
-        Wiki.mount(body, { known: codexKnown, onTalk: (id) => openOverlay('chats', id), canTalk: (id) => G.unlocked.includes(id) });
+        Wiki.mount(body, { known: codexKnown, onTalk: (id) => openOverlay('chats', id), canTalk: (id) => talkable().includes(id) });
         if (who) Wiki.open(who);
       }
       return;
@@ -418,7 +427,7 @@
     function showPlace(p) {
       Audio2.sfx.click();
       const hidden = p.spoiler && !spoilers;
-      const people = p.people.filter((id) => G.unlocked.includes(id));
+      const people = p.people.filter((id) => G.unlocked.includes(id) && !isFallen(id));
       const unknown = p.people.length - people.length;
       detail.innerHTML = '';
       detail.append(
@@ -593,9 +602,10 @@
     const list = $('#contact-list');
     if (!list) return;
     list.innerHTML = '';
-    list.append(el('h4', {}, `Personajes desbloqueados (${G.unlocked.length})`));
-    if (!G.unlocked.length) list.append(el('p', { class: 'muted small' }, 'Avanza en la historia para conocer a gente.'));
-    for (const id of G.unlocked) {
+    const alive = talkable();
+    list.append(el('h4', {}, `Personajes desbloqueados (${alive.length})`));
+    if (!alive.length) list.append(el('p', { class: 'muted small' }, 'Avanza en la historia para conocer a gente.'));
+    for (const id of alive) {
       const a = affOf(id);
       list.append(el('button', {
         class: `contact${tab === 'chats' && contact === id ? ' active' : ''}`,
@@ -605,6 +615,16 @@
       el('span', { class: 'c-body' }, el('strong', {}, charName(id), window.CHAT[id] && freshTopics(id) ? el('em', { class: 'new', title: 'Temas nuevos' }, ' ✦') : null),
         Relations.status(G, id) ? el('small', { class: `c-rel rel-${Relations.status(G, id)}` }, `${window.RELATIONS.kinds[Relations.status(G, id)]?.icon || ''} ${tpl(Relations.label(G, id), G.player)}`) : null,
         heart(a))));
+    }
+    // Quienes han muerto en la historia: se les recuerda, pero ya no responden.
+    const gone = G.unlocked.filter(isFallen);
+    if (gone.length) {
+      list.append(el('h4', { class: 'c-memory-head' }, 'En memoria'));
+      for (const id of gone) {
+        list.append(el('div', { class: 'contact fallen', title: 'Ya no está' },
+          el('span', { class: 'avatar sm', html: Portrait.forCharacter(id) }),
+          el('span', { class: 'c-body' }, el('strong', {}, charName(id)), el('small', { class: 'muted' }, id === 'jinx' ? 'Desaparecida' : 'Ya no está'))));
+      }
     }
   }
 
@@ -726,11 +746,46 @@
 
   /** Comprueba si una línea puede mostrarse según el estado. */
   function lineVisible(line) {
-    const c = line.cond;
+    return condMet(line.cond);
+  }
+
+  // Condiciones de una línea o de una opción (todas deben cumplirse):
+  // flag/notFlag, met/notMet (ya conoces a ese personaje), kin/notKin (es de tu familia),
+  // origin (zaun | piltover, de dónde viene tu personaje).
+  function condMet(c) {
     if (!c) return true;
     if (c.flag && !G.flags[c.flag]) return false;
     if (c.notFlag && G.flags[c.notFlag]) return false;
+    if (c.met && !G.met.includes(c.met)) return false;
+    if (c.notMet && G.met.includes(c.notMet)) return false;
+    if (c.kin && !kinOf(G).includes(c.kin)) return false;
+    if (c.notKin && kinOf(G).includes(c.notKin)) return false;
+    if (c.origin && G.player.origin !== c.origin) return false;
     return true;
+  }
+
+  // Muertes del canon: STORY.deaths = { id: capítulo en el que muere }.
+  // Cuentan si ese capítulo ya terminó en tu partida (en la T2, toda la T1 ha terminado).
+  function chapterDone(chId) {
+    const p = G.progress;
+    if (p.season === 2 && !S().routes.t2.includes(chId)) return true;
+    const route = S().routes[p.route] || [];
+    const i = route.indexOf(chId);
+    if (i < 0) return false;
+    return i < p.chapterIdx || (i === p.chapterIdx && (p.finished || p.chapterEnded));
+  }
+  function syncFallen() {
+    G.fallen = Object.entries(S().deaths || {}).filter(([, ch]) => chapterDone(ch)).map(([id]) => id);
+  }
+  // Tras un capítulo: avisa de quién ya no está.
+  function announceFallen() {
+    const before = new Set(G.fallen || []);
+    syncFallen();
+    const gone = G.fallen.filter((id) => !before.has(id) && G.met.includes(id));
+    if (!gone.length) return;
+    pushLog('sistema', `En memoria: ${gone.map(charName).join(', ')}. Ya no aparecerán en el comunicador.`);
+    $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
+    scrollLog();
   }
 
   /** Inicia un capítulo desde su nodo de entrada. */
@@ -766,6 +821,8 @@
   // Reproduce un nodo: muestra sus líneas una a una (con voz) y luego sus opciones.
   async function playNode(nodeId, resume = false) {
     const ch = chapterById(G.progress.chapterId);
+    // Partidas guardadas en una escena que ya no existe: vuelve al inicio del capítulo.
+    if (!ch.nodes[nodeId]) { nodeId = ch.start; resume = false; }
     const node = ch.nodes[nodeId];
     G.progress.node = nodeId;
     setBg(node.bg);
@@ -777,7 +834,10 @@
     busy = true;
     skipping = false;
     showChoices([]);
-    for (const line of node.lines.filter(lineVisible)) {
+    const lines = node.lines.filter(lineVisible);
+    // Quien habla en una escena pasa a ser alguien que ya conoces.
+    lines.forEach((l) => { if (S().cast.includes(l.s) && !G.met.includes(l.s)) G.met.push(l.s); });
+    for (const line of lines) {
       const text = tpl(line.t, G.player);
       if (tab === 'historia' && !skipping && window.App.settings.textSpeed !== 'instantaneo') {
         const typing = typingIndicator(line.s);
@@ -845,13 +905,13 @@
     if (req.flag) return Boolean(G.flags[req.flag]);
     if (req.notFlag) return !G.flags[req.notFlag];
     if (req.aff) return affOf(req.aff[0]) >= req.aff[1];
-    return true;
+    return condMet(req);
   }
 
-  // Las opciones que dependen de un flag que no tienes se ocultan;
+  // Las opciones que dependen de un flag, de a quién conoces o de tu familia se ocultan;
   // las que dependen de estadística o afinidad se muestran bloqueadas.
   function reqHidden(req) {
-    return req && (req.flag || req.notFlag) && !reqMet(req);
+    return req && (req.flag || req.notFlag || req.met || req.notMet || req.kin || req.notKin || req.origin) && !reqMet(req);
   }
 
   /** Construye los botones de decisión del jugador. */
@@ -862,7 +922,7 @@
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
         G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Temporada 2') : null,
-        el('button', { class: 'btn', onclick: () => setTab('chats', G.unlocked[0]) }, 'Seguir chateando con los personajes'),
+        talkable().length ? el('button', { class: 'btn', onclick: () => setTab('chats', talkable()[0]) }, 'Seguir chateando con los personajes') : null,
         el('button', { class: 'btn', onclick: () => setTab('ficha') }, 'Ver mi ficha'),
         el('button', { class: 'btn ghost', onclick: replayRoute }, 'Rejugar la ruta con este personaje')));
       return;
@@ -917,14 +977,18 @@
   /** Registra la conclusión del capítulo actual. */
   async function endChapter() {
     const ch = chapterById(G.progress.chapterId);
-    const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id));
+    G.progress.chapterEnded = true;
+    // Solo se puede chatear con quien has conocido de verdad en la historia.
+    const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
-    if (fresh.length) {
+    announceFallen();
+    const alive = fresh.filter((id) => !isFallen(id));
+    if (alive.length) {
       Audio2.sfx.unlock();
-      pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${fresh.map(charName).join(', ')}`);
+      pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${alive.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
       scrollLog();
-      toast(`Nuevos contactos: ${fresh.map(charName).join(', ')}`, 'good');
+      toast(`Nuevos contactos: ${alive.map(charName).join(', ')}`, 'good');
     }
     renderContacts();
     await persist();
@@ -938,6 +1002,7 @@
     G.progress.chapterId = route[G.progress.chapterIdx];
     G.progress.node = null;
     G.progress.linesShown = false;
+    G.progress.chapterEnded = false;
     G.progress.started = false;
     if (G.progress.chapterId === 'fin') Audio2.playMusic('final');
     await persist();
@@ -984,7 +1049,7 @@
     skipping = false;
     pushLog('sistema', `— ${ending.title} —`);
     $('#story-log')?.append(bubble('sistema', `— ${ending.title} —`));
-    for (const line of ending.lines) {
+    for (const line of ending.lines.filter(lineVisible)) {
       const text = tpl(line.t, G.player);
       pushLog(line.s, text);
       setSpeaker(line.s);
@@ -1003,11 +1068,13 @@
     await Cinematic.play([
       { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Temporada 2' : 'Fin de la Temporada 1', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
     ]);
-    const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id));
+    const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
-    if (fresh.length) {
+    announceFallen();
+    const alive = fresh.filter((id) => !isFallen(id));
+    if (alive.length) {
       Audio2.sfx.unlock();
-      pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${fresh.map(charName).join(', ')}`);
+      pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${alive.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     }
     pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Temporada 2 te espera.'}`);
@@ -1024,6 +1091,7 @@
     const route = S().routes.t2;
     G.flags[`s1_${G.endings[G.endings.length - 1] || 'humo'}`] = true;
     G.progress = { route: 't2', season: 2, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false };
+    syncFallen();
     G.log = [];
     G.acts = {};
     await persist();
@@ -1046,6 +1114,8 @@
     G.flags = G.player.family !== 'ninguna' ? { familia_famosa: true } : {};
     G.rep = { zaun: G.player.origin === 'zaun' ? 1 : 0, piltover: G.player.origin === 'piltover' ? 1 : 0 };
     G.progress = { route: G.progress.route, season: G.progress.season, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: '', finished: false, started: false };
+    // Al rejugar, los que murieron en esta ruta vuelven a estar vivos hasta su capítulo.
+    syncFallen();
     G.log = [];
     G.acts = {};
     await persist();
@@ -1073,16 +1143,21 @@
   // Requisitos de una opción. aff: n se refiere al personaje con el que hablas.
   function dlgReq(req, id) {
     if (!req) return true;
-    if (typeof req.aff === 'number') return affOf(id) >= req.aff;
-    if (req.season) return (G.progress.season || 1) >= req.season;
-    return reqMet(req);
+    const season = G.progress.season || 1;
+    if (typeof req.aff === 'number' && affOf(id) < req.aff) return false;
+    if (Array.isArray(req.aff) && affOf(req.aff[0]) < req.aff[1]) return false;
+    if (req.stat && (G.stats[req.stat] || 0) < req.min) return false;
+    if (req.season && season < req.season) return false;
+    if (req.maxSeason && season > req.maxSeason) return false;
+    return condMet(req);
   }
 
   /** Decide si una opción de diálogo debe ocultarse. */
   function dlgHidden(req, id) {
     if (!req) return false;
-    if (req.season) return !dlgReq(req, id);
-    return reqHidden(req);
+    const season = G.progress.season || 1;
+    if ((req.season && season < req.season) || (req.maxSeason && season > req.maxSeason)) return true;
+    return !condMet(req);
   }
 
   /** Describe de forma legible el requisito de una opción. */
@@ -1127,11 +1202,11 @@
 
   /** Dibuja el comunicador y la conversación actual. */
   function renderChat(main) {
-    if (!G.unlocked.length) {
+    if (!talkable().length) {
       main.append(el('div', { class: 'wiki-empty' }, el('h2', {}, 'Aún no conoces a nadie'), el('p', {}, 'Juega la historia para desbloquear personajes con los que hablar.')));
       return;
     }
-    if (!contact || !G.unlocked.includes(contact)) contact = G.unlocked[0];
+    if (!contact || !talkable().includes(contact)) contact = talkable()[0];
     const id = contact;
     if (!G.chats[id]) {
       G.chats[id] = [{ s: id, t: tpl(greeting(id), G.player) }];
