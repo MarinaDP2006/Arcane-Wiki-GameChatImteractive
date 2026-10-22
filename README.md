@@ -19,6 +19,14 @@ El juego acepta modelos `.zip`, `.fbx`, `.obj` y `.glb` con texturas (los ZIP pu
 
 **[Guía paso a paso para los seis ZIP y pruebas Windows](GUIA-MODELOS-3D-Y-PRUEBAS.md)**.
 
+## Nueva campaña en dos partes y conversaciones inmersivas
+
+La historia se presenta ahora en **Parte I · El inicio** y **Parte II · Las consecuencias**. Se han añadido seis capítulos con decisiones del protagonista, conservando las rutas y escenas existentes y los identificadores de guardado para no perder partidas anteriores. El comunicador incorpora nuevos temas escritos que recuerdan tus decisiones, incluso si la IA está desactivada.
+
+El chat libre usa biografías, motivaciones y contradicciones de los 16 personajes, así como la información del personaje creado, los acontecimientos recientes de la partida y el historial del chat. El prompt principal se construye en `src/js/ai.js`, función `systemPrompt(G, id)`. Para ajustarlo consulta **[Guía de IA y campaña](GUIA-IA-Y-CAMPANA.md)**.
+
+La respuesta final también depende de la calidad del modelo local de Ollama. La ampliación de historia se ha validado estructuralmente, pero sigue necesitando una partida completa de prueba en Windows.
+
 ## Qué incluye
 
 - Personaje personalizable y origen de Piltover o Zaun.
