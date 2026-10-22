@@ -6,7 +6,7 @@ const vm = require('vm');
 
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['wiki.js', 'creation.js', 'story.js', 'story-expansion.js', 'chat.js', 'chat-expansion.js', 'relations.js', 'world.js', 'atlas.js']) {
+for (const f of ['wiki.js', 'creation.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'relations.js', 'world.js', 'atlas.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', f), 'utf8'), ctx, { filename: f });
 }
 const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS, RELATIONS } = ctx.window;
@@ -208,7 +208,7 @@ for (const ch of STORY.chapters) {
   Object.keys(ch.nodes).filter((id) => !seen.has(id)).forEach((id) => errors.push(`${ch.id}.${id}: escena inalcanzable desde "${ch.start}"`));
 }
 // Los finales que dependen de flags solo se alcanzan si alguna decisión activa esas flags.
-const storySrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'story.js'), 'utf8');
+const storySrc = ['story.js', 'story-expansion.js', 'alternate-fates.js'].map((n) => fs.readFileSync(path.join(__dirname, '..', 'src', 'data', n), 'utf8')).join('\n');
 for (const e of [...STORY.endings, ...(STORY.endings2 || [])]) {
   for (const [, flag] of String(e.test).matchAll(/flags\.(\w+)/g)) {
     if (!FLAG_SET.has(flag) && !new RegExp(`flags:\\s*\\[[^\\]]*'${flag}'`).test(storySrc)) errors.push(`final ${e.id}: la flag "${flag}" nunca se activa`);
