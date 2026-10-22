@@ -779,8 +779,11 @@
     if (i < 0) return false;
     return i < p.chapterIdx || (i === p.chapterIdx && (p.finished || p.chapterEnded));
   }
+  /** Actualiza quién ha caído en esta partida, respetando los rescates alternativos. */
   function syncFallen() {
-    G.fallen = Object.entries(S().deaths || {}).filter(([, ch]) => chapterDone(ch)).map(([id]) => id);
+    G.fallen = Object.entries(S().deaths || {}).filter(([id, ch]) =>
+      chapterDone(ch) && !(S().rescues?.[id] && G.flags[S().rescues[id]])
+    ).map(([id]) => id);
   }
   // Tras un capítulo: avisa de quién ya no está.
   function announceFallen() {
@@ -1050,6 +1053,7 @@
     const ch = chapterById(G.progress.chapterId);
     const set = ch.nodes[G.progress.node]?.endingSet === 'endings2' ? S().endings2 : S().endings;
     const ending = set.find((e) => e.test(G));
+    if (!ending) throw new Error('No se ha encontrado un final válido para esta partida');
     busy = true;
     skipping = false;
     pushLog('sistema', `— ${ending.title} —`);
