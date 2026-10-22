@@ -19,23 +19,26 @@ for (const m of html.matchAll(/<script\s+src="([^"]+)"\s*><\/script>/g)) {
     catch (e) { errors.push('Error de sintaxis en ' + url + ': ' + e.message); }
   }
 }
-/** Carga la definición de cada ciudad sin WebGL para contrastar las ubicaciones con el mundo abierto. */
-function inspect(module, globalName, expectedIds, mapId) {
-  const ctx = { window: { THREE: null } };
-  vm.runInNewContext(fs.readFileSync(path.join(src, 'js', module), 'utf8'), ctx);
-  const engine = ctx.window[globalName];
-  ensure(!!engine, globalName + ' no se exporta');
-  for (const id of expectedIds) {
-    ensure(Boolean(engine?.has(id)), globalName + ' no reconoce ' + id);
+/** Cada lugar de los dos mapas debe tener su escenario 2D, con una imagen que exista. */
+const ctx = { window: {} };
+vm.runInNewContext(fs.readFileSync(path.join(src, 'js', 'scenes2d.js'), 'utf8'), ctx);
+const scenes = ctx.window.Scenes2D;
+ensure(!!scenes, 'Scenes2D no se exporta');
+const world = { window: {} };
+vm.runInNewContext(fs.readFileSync(path.join(src, 'data', 'world.js'), 'utf8'), world);
+let total = 0;
+for (const mapId of ['zaun', 'piltover']) {
+  for (const loc of world.window.WORLD.maps[mapId].locations) {
+    total++;
+    const p = scenes?.PLACES[loc.id];
+    ensure(Boolean(p), 'Scenes2D no tiene escenario para ' + loc.id);
+    if (p) {
+      ensure(p[0] === mapId, loc.id + ' está en ' + mapId + ', no en ' + p[0]);
+      ensure(fs.existsSync(path.join(src, p[1])), 'Falta la imagen de ' + loc.id + ': ' + p[1]);
+    }
   }
-  const world = { window: {} };
-  vm.runInNewContext(fs.readFileSync(path.join(src, 'data', 'world.js'), 'utf8'), world);
-  const places = new Set(world.window.WORLD.maps[mapId].locations.map((p) => p.id));
-  for (const id of expectedIds) ensure(places.has(id), mapId + ' no tiene acceso a ' + id);
 }
-inspect('zaun-interiors.js', 'ZaunInteriors', ['callejones','arbol','fabrica','ultima-gota','sumidero','invernadero'], 'zaun');
-inspect('piltover-interiors.js', 'PiltoverInteriors', ['consejo','taller-jayce','hexpuertas','muelle-stillwater','puente'], 'piltover');
 if (errors.length) {
   console.error('Errores de recursos:\n' + errors.map(x => ' - ' + x).join('\n'));
   process.exitCode = 1;
-} else console.log('OK: scripts locales válidos y once accesos 3D definidos en sus mapas.');
+} else console.log('OK: scripts locales válidos y ' + total + ' lugares con escenario 2D.');
