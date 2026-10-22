@@ -5,7 +5,8 @@ Se ejecuta en GitHub Actions (.github/workflows/arte.yml), donde hay internet ab
 Lee el pedido en JSON de la variable PEDIDO (o de un archivo pasado como argumento):
   {"mode": "discover", "pages": [...], "keywords": [...]}
   {"mode": "allimages", "wikis": ["arcane"], "minw": 900}   (solo lista: título, tamaño, url)
-  {"mode": "sheet", "wiki": "arcane", "groups": {"nombre": ["File:A.png", ...]}}   (hojas de miniaturas)
+  {"mode": "sheet", "wiki": "arcane", "groups": {"nombre": ["File:A.png", ...]},
+   "match": {"nombre": [["prefijo", ...], "regex"]}}   (hojas de miniaturas numeradas)
   {"mode": "fetch", "items": [{"title": "File:X.png", "dest": "ruta/salida.webp", "max": 1600}]}
 """
 import json, os, re, sys, time, io, urllib.parse, urllib.request
@@ -149,10 +150,29 @@ def allimages(req):
         json.dump(out, open(OUT + f'/{wiki}-todas.json', 'w'), ensure_ascii=False, indent=0)
 
 
+def by_prefix(wiki, prefixes, rx, minw=0):
+    """Archivos cuyo nombre empieza por alguno de los prefijos y casa con la expresión."""
+    out = []
+    for pre in prefixes:
+        cont = {}
+        while True:
+            r = api(wiki, action='query', list='allimages', ailimit='500', aiprefix=pre, aiprop='size', **cont)
+            if not r or 'query' not in r:
+                break
+            out += [i['title'] for i in r['query']['allimages'] if re.search(rx, i['title']) and (i.get('width') or 0) >= minw]
+            if 'continue' not in r:
+                break
+            cont = {'aicontinue': r['continue']['aicontinue']}
+    nat = lambda t: [int(x) if x.isdigit() else x for x in re.split(r'(\d+)', t)]
+    return sorted(dict.fromkeys(out), key=nat)
+
+
 def sheets(req):
     os.makedirs(OUT + '/hojas', exist_ok=True)
     wiki = req.get('wiki', 'arcane')
     index = {}
+    for name, (prefixes, rx) in req.get('match', {}).items():
+        req.setdefault('groups', {})[name] = by_prefix(wiki, prefixes, rx, req.get('minw', 0))
     for name, titles in req['groups'].items():
         info = {}
         for k in range(0, len(titles), 40):
