@@ -8,8 +8,8 @@
 (function () {
   if (!window.THREE) return;
   const T = window.THREE;
-  // Móviles: menos luces, sombras más pequeñas y menos resolución en el posprocesado.
-  const LOW = Boolean(window.U?.touch);
+  // Edición Windows: las opciones gráficas gobiernan la calidad, no el dispositivo táctil.
+  const LOW = false;
 
   function rng(seed) {
     let a = seed >>> 0;
@@ -24,18 +24,18 @@
   // Ambiente de cada ciudad. grade = [sombras, luces] (tintes), sat, contraste.
   const LOOK = {
     piltover: {
-      sky: [0x3b6fb8, 0xffd9a8, 0xa47a4c], bg: 0xe9dcc4, fog: 0xe6dcc8, fogD: 0.00012,
-      hemi: [0xcfe0ff, 0x8a6236, 0.6], sun: [0xffc47a, 5.6], sunDir: [-0.72, 0.6, 0.42],
+      sky: [0x244b80, 0xffc48c, 0x67503d], bg: 0x977e67, fog: 0xc4a688, fogD: 0.00017,
+      hemi: [0xa9c7e9, 0x63412e, 0.75], sun: [0xffb46a, 4.8], sunDir: [-0.72, 0.6, 0.42],
       exposure: 1.0, dust: 0xffd88a, dustRise: 6, pitch: 0.92, lantern: 0,
-      bloom: 0.5, thr: 1.4, grade: [[0.88, 0.96, 1.1], [1.06, 1.0, 0.9]], sat: 1.12, contrast: 1.12, vig: 0.6,
+      bloom: 0.38, thr: 1.5, grade: [[0.82, 0.91, 1.06], [1.12, 1.02, 0.88]], sat: 1.04, contrast: 1.19, vig: 0.72,
       env: { top: 0x5d8fd0, mid: 0xffd9a0, bot: 0x7a5a3a, blobs: [[0xffd090, 18, [-0.72, 0.6, 0.42], 0.3]] },
       lights: 3, lightI: 9000,
     },
     zaun: {
-      sky: [0x070d10, 0x1a3436, 0x040606], bg: 0x142426, fog: 0x1a2b2c, fogD: 0.00036,
+      sky: [0x060a11, 0x16312f, 0x030507], bg: 0x101d20, fog: 0x152a2b, fogD: 0.00043,
       hemi: [0x6aa8a0, 0x5a2a38, 1.2], sun: [0xd8eadc, 1.6], sunDir: [0.35, 1, -0.6],
       exposure: 1.6, dust: 0x9fe8d0, dustRise: 22, pitch: 1.0, lantern: 1,
-      bloom: 0.85, thr: 1.0, grade: [[0.76, 0.96, 1.08], [1.16, 0.98, 0.82]], sat: 0.9, contrast: 1.14, vig: 0.85,
+      bloom: 0.7, thr: 1.2, grade: [[0.72, 0.94, 1.1], [1.14, 1.03, 0.84]], sat: 0.94, contrast: 1.21, vig: 0.9,
       env: { top: 0x0b2a24, mid: 0x1a3c34, bot: 0x050808, blobs: [[0xff3fa0, 6, [0.8, 0.2, 0.3], 0.25], [0x3fffc0, 6, [-0.6, 0.25, -0.5], 0.3], [0xffa040, 5, [0.1, 0.15, 0.9], 0.25]] },
       lights: 8, lightI: 60000,
     },
@@ -1797,10 +1797,12 @@
     C.yaw += (C.goalYaw - C.yaw) * ease(0.12);
     C.pitch += (C.goalPitch - C.pitch) * ease(0.035);
     C.dist += (C.goalDist - C.dist) * ease(0.04);
-    const goal = v3.set(info.x + (info.vx || 0) * 0.35, 20, info.y + (info.vy || 0) * 0.35);
+    // Anticipación de movimiento: la cámara muestra más calle hacia donde camina el personaje.
+    const lookAhead = opt().reduceMotion ? 0.12 : 0.48;
+    const goal = v3.set(info.x + (info.vx || 0) * lookAhead, 20, info.y + (info.vy || 0) * lookAhead);
     C.focus.lerp(goal, ease(0.09));
     const sway = opt().cameraSway === false || opt().reduceMotion ? 0 : 1;
-    const yaw = C.yaw + (C.mouse.x * 0.05 + Math.sin(s * 0.13) * 0.025) * sway;
+    const yaw = C.yaw + (C.mouse.x * 0.045 + Math.sin(s * 0.13) * 0.018) * sway;
     const pitch = Math.min(1.35, Math.max(0.15, C.pitch + (-C.mouse.y * 0.04 + Math.sin(s * 0.21) * 0.01) * sway));
     const hd = Math.cos(pitch) * C.dist;
     R.camera.position.set(C.focus.x + Math.sin(yaw) * hd, C.focus.y + Math.sin(pitch) * C.dist, C.focus.z + Math.cos(yaw) * hd);
