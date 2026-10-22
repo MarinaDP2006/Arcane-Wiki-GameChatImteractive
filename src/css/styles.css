@@ -1101,3 +1101,13 @@ body.readable-font * { letter-spacing: normal !important; }
 body.high-contrast { --text: #ffffff; --muted: #d8d2e4; --line: rgba(255, 230, 140, 0.55); --panel: rgba(8, 6, 14, 0.96); }
 body.high-contrast .bubble, body.high-contrast .choice, body.high-contrast .btn { border-width: 2px; }
 body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+
+/* Exploración independiente de los seis espacios de Zaun. */
+.zaun-interior { position: fixed; inset: 0; z-index: 1200; background: #0b1412; overflow: hidden; }
+.zaun-interior canvas { width: 100%; height: 100%; display: block; }
+.zaun-interior-hud { position: absolute; z-index: 2; inset: 0 0 auto; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 18px 22px; color: #f0efe2; background: linear-gradient(#08120de8, #08120d96, transparent); pointer-events: none; font-family: system-ui, sans-serif; }
+.zaun-interior-hud h2 { flex: 1 0 100%; margin: 0; font-size: clamp(19px, 2.5vw, 30px); }
+.zaun-interior-hud p { margin: 0; font-size: 13px; }
+.zaun-interior-objective { color: #c5f5a0; font-weight: 700; }
+.zaun-interior-hud button { pointer-events: auto; margin-left: auto; }
+@media (max-width: 600px) { .zaun-interior-hud { padding: 10px; } .zaun-interior-hud p { font-size: 11px; } }
