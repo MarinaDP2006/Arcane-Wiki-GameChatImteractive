@@ -6,7 +6,7 @@ const path = require('path');
 
 const root = path.join(__dirname, '..', 'src', 'img', 'arte');
 const out = path.join(__dirname, '..', 'src', 'data', 'arte.js');
-const DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'mapa/piltover', 'mapa/zaun'];
+const DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice', 'mapa/piltover', 'mapa/zaun', 'personajes/s1', 'personajes/s2', 'caras/s1', 'caras/s2', 'lugares/s1', 'lugares/s2'];
 
 function build() {
   const data = {};
