@@ -534,7 +534,7 @@
     return new Promise((ok) => new window.THREE_GLTF.GLTFLoader().parse(buf, '', ok, (err) => { console.warn(`Modelo ${name}:`, err); ok(null); }));
   }
 
-  // Un .zip trae dentro el modelo (.glb o .fbx) y sus texturas.
+  /** Abre un ZIP de personaje, selecciona el modelo GLB/FBX y vincula las texturas incluidas. */
   function parseZip(data, name) {
     const files = window.THREE_FBX.unzipSync(new Uint8Array(data));
     const entries = Object.keys(files).filter((n) => !/(^|\/)(__MACOSX|\.)/.test(n) && files[n].length);
@@ -609,7 +609,16 @@
         o.castShadow = true;
         o.frustumCulled = false;
         // Los .fbx traen a veces materiales negros o transparentes sin querer.
-        for (const m of [].concat(o.material)) { if (m.map) m.color?.setRGB(1, 1, 1); if (m.opacity === 0) m.opacity = 1; }
+        for (const m of [].concat(o.material)) {
+          if (!m) continue;
+          // Mantener la textura original en color: el tinte del FBX puede oscurecerla.
+          if (m.map) { m.color?.setRGB(1, 1, 1); m.map.colorSpace = T.SRGBColorSpace; m.map.needsUpdate = true; }
+          if (m.opacity === 0) m.opacity = 1;
+          if (m.transparent && m.opacity >= 1 && m.alphaTest === 0) m.transparent = false;
+          // Los modelos siguen recibiendo luz y sombras sin quedar negros por el material importado.
+          m.side = T.DoubleSide;
+          m.needsUpdate = true;
+        }
       }
     });
     const box = new T.Box3().setFromObject(model);
@@ -695,11 +704,15 @@
   }
 
   // speed en unidades por segundo; yaw hacia donde mira (0 = +z del mapa).
-  function update(av, dt, speed, yaw, t) {
+  /** Orienta al personaje y aplica la animación normal o una pose estática de exposición. */
+  function update(av, dt, speed, yaw, t, staticNpc = false) {
     let d = yaw - av.yaw;
     d = Math.atan2(Math.sin(d), Math.cos(d));
     av.yaw += d * Math.min(1, dt * 10);
     av.holder.rotation.y = av.yaw;
+    // Los modelos externos de NPC se muestran con su pose y colores originales.
+    // No avanzamos el AnimationMixer ni balanceamos el cuerpo en modo estático.
+    if (staticNpc && (av.kind === 'glb' || av.kind === 'static')) return;
     if (av.kind === 'glb') animateGLB(av, dt, speed);
     else if (av.kind === 'static') animateStatic(av, dt, speed);
     else animateDoll(av, dt, speed, t);
