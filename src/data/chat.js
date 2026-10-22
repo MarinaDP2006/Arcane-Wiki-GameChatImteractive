@@ -9,8 +9,10 @@
 //   t: lo que dices tú. tone: amable | broma | duro | pregunta | coqueto | astuto | serio | sigilo.
 //   say: lo que responde (texto o lista; { s: 'narrador', t } para acotaciones de narrador).
 //   go: nodo siguiente, 'hub' o 'bye'. Por defecto, sigues en el mismo nodo.
-//   req: { stat, min } | { aff: n } (con este personaje) | { aff: [id, n] } | { flag } | { notFlag } | { season: 2 }
-//        Las de flag y temporada se ocultan si no se cumplen; las demás se ven bloqueadas.
+//   req: { stat, min } | { aff: n } (con este personaje) | { aff: [id, n] } | { flag } | { notFlag } | { met } |
+//        { season: 2 } (desde la T2) | { maxSeason: 1 } (solo en la T1). Se pueden combinar.
+//        Las de flag, personaje conocido y temporada se ocultan si no se cumplen; las demás se ven bloqueadas.
+//   Quien muere en la historia (STORY.deaths) deja de estar en el comunicador: sus temas son de cuando vivía.
 //   fx: { aff: n | { id: n }, rep, stats, flags } (solo la primera vez que eliges esa respuesta).
 //   once: la opción desaparece después de elegirla.
 // Plantillas: {name}, {job}, {district}, {g:o|a|e}… igual que en la historia.
@@ -29,6 +31,8 @@ window.CHAT = {
       { t: 'Sobre el golpe en Piltover… no me arrepiento.', tone: 'broma', req: { flag: 'golpe' }, once: true, fx: { aff: 1 },
         say: ['Yo sí. Todos los días. Pero me alegra que estuvieras ahí. Sin ti, Mylo seguiría colgado de aquella cornisa.'] },
       { t: 'Lo de chivarme a Vander… lo hice por vosotros.', tone: 'serio', req: { flag: 'chivato' }, once: true, go: 'chivato' },
+      { t: '¿Por qué peleabas en el foso?', tone: 'serio', req: { season: 2 }, once: true, fx: { aff: 1 },
+        say: ['Porque los golpes en la cara duelen menos que los de dentro. Un clásico.', 'Cait dice que me estaba castigando. Odio cuando tiene razón.'] },
       { t: 'Te debo una verdad sobre Vander…', tone: 'serio', req: { flag: 'vi_sabe_vander' }, once: true,
         say: ['(Se queda callada mucho rato.) Esa cosa… era él. Y aun así me protegió.', 'No me pidas que esté bien. Pero gracias por no mentirme. Eres de los pocos que no lo hace.'], fx: { aff: 2 } },
     ],
@@ -127,7 +131,9 @@ window.CHAT = {
       { t: '¿En qué estás trabajando?', tone: 'pregunta', go: 'inventos' },
       { t: 'Preséntame a tus armas.', tone: 'broma', go: 'armas' },
       { t: '¿Echas de menos a Vi?', tone: 'serio', go: 'vi' },
-      { t: '¿Qué es Silco para ti?', tone: 'pregunta', go: 'silco' },
+      { t: '¿Qué es Silco para ti?', tone: 'pregunta', go: 'silco', req: { maxSeason: 1 } },
+      { t: '¿Echas de menos a Silco?', tone: 'serio', go: 'silco2', req: { season: 2 } },
+      { t: 'Háblame de Isha.', tone: 'amable', go: 'isha', req: { season: 2, flag: 'isha_muere' } },
       { t: '¿Con quién hablas cuando estás sola?', tone: 'amable', go: 'voces', req: { aff: 3 } },
       { t: '¿Qué opinas de Piltover?', tone: 'pregunta',
         say: ['Piltover es como una tarta gigante. Y yo tengo las velas. ¡Bum!'] },
@@ -137,7 +143,7 @@ window.CHAT = {
         say: ['(Te apunta con Pow-Pow… y se ríe.) ¡Qué sinceridad! Me encanta. Te odio un poquito, pero me encanta.'] },
       { t: 'Te avisé de la cacería. ¿Llegaste a tiempo?', tone: 'amable', req: { flag: 'protege_jinx' }, once: true, fx: { aff: 3 },
         say: ['Por los pelos. Literalmente: me chamuscaron una trenza.', 'Gracias. De verdad. Nadie se arriesga por mí. Bueno, tú sí. Raro. Me gusta.'] },
-      { t: 'Isha te dibujó algo. Toma.', tone: 'amable', req: { season: 2 }, once: true, fx: { aff: 2, flags: ['jinx_dibujo'] },
+      { t: 'Isha te dibujó algo. Toma.', tone: 'amable', req: { season: 2, met: 'isha', notFlag: 'isha_muere' }, once: true, fx: { aff: 2, flags: ['jinx_dibujo'] },
         say: ['(Mira el dibujo en silencio. Sale ella con corona.) …Es horrible. Lo voy a guardar para siempre.'] },
     ],
     nodes: {
@@ -189,6 +195,21 @@ window.CHAT = {
           { t: 'Silco es un monstruo.', tone: 'duro', fx: { aff: -2 }, go: 'hub', say: ['¡Y tú un aburrimiento con patas! (Te tira una tuerca.)'] },
         ],
       },
+      silco2: {
+        say: ['(Juega con una bala entre los dedos.) Le disparé yo. Él apuntó a Cait, yo le apunté a él y… (Se encoge de hombros.) Me dijo que no cambiaría nada. Que era perfecta.', 'Nadie me había querido tan mal y tan de verdad a la vez.'],
+        opts: [
+          { t: 'No fue culpa tuya.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['(Ríe sin gracia.) Siempre es culpa mía. Es lo único que se me da bien.'] },
+          { t: 'Te hizo mucho daño, Jinx.', tone: 'serio', req: { stat: 'carisma', min: 2 }, fx: { aff: 2 }, go: 'hub',
+            say: ['Lo sé. Y también me sacó del agua. Las dos cosas son verdad. Qué asco, ¿eh?'] },
+        ],
+      },
+      isha: {
+        say: ['(Saca la granada rosa del bolsillo y la gira entre los dedos.) No hablaba. Pero lo decía todo. Con las gafas, con las manos, con esos dibujos horribles.', 'Me enseñó que yo podía cuidar de alguien. Y luego se murió cuidándome a mí.'],
+        opts: [
+          { t: 'Ella eligió salvarte. Fue cosa suya.', tone: 'amable', fx: { aff: 2 }, go: 'hub', say: ['(Se le humedecen los ojos.) Tozuda. Ya te lo dije: igualita que yo.'] },
+          { t: 'Guárdala siempre contigo.', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['Siempre. No pienso tirarla. Bueno… a lo mejor una vez. Contra alguien que se lo merezca.'] },
+        ],
+      },
       voces: {
         say: ['(Mira alrededor.) Shhh. Si hablas muy alto, se despiertan. Mylo, Claggor… a veces Vander.'],
         opts: [
@@ -214,6 +235,9 @@ window.CHAT = {
       { t: 'Gracias por dejarme revisar los informes.', tone: 'amable', req: { flag: 'pistas_cait' }, once: true, fx: { aff: 1, stats: { ingenio: 1 } },
         say: ['Al contrario. Viste el patrón antes que yo. Eso no le pasa a mucha gente.'] },
       { t: 'Sobre la cacería de Jinx…', tone: 'serio', req: { season: 2 }, go: 'caceria' },
+      { t: '¿Cómo llevas lo de tu madre?', tone: 'amable', req: { season: 2 }, go: 'madre' },
+      { t: '¿Qué hay entre tú y Maddie?', tone: 'coqueto', req: { season: 2, met: 'maddie' }, once: true,
+        say: ['¿Maddie? Es eficiente, leal y siempre tiene té. (Pausa.) Ella querría que fuera algo más. Yo sigo pensando en otra persona.'] },
     ],
     nodes: {
       caso: {
@@ -230,7 +254,7 @@ window.CHAT = {
         opts: [
           { t: 'Te brillan los ojos cuando hablas de ella.', tone: 'coqueto', fx: { aff: 1 }, go: 'hub',
             say: ['(Carraspea.) Es la luz. Las lámparas de hextec. Son muy… brillantes.', 'Vale. Puede que un poco. No se lo digas.'] },
-          { t: 'Vi es de Zaun. Tu madre no lo aprobará.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['Mi madre no aprueba nada de lo que hago. Una cosa más no cambiará eso.'] },
+          { t: 'Vi es de Zaun. Tu madre no lo aprobará.', tone: 'duro', req: { maxSeason: 1 }, fx: { aff: -1 }, go: 'hub', say: ['Mi madre no aprueba nada de lo que hago. Una cosa más no cambiará eso.'] },
           { t: 'Hacéis buen equipo.', tone: 'amable', fx: { aff: 1 }, go: 'hub', say: ['Ella golpea y yo pienso. O al revés, a veces. Funciona.'] },
         ],
       },
@@ -256,6 +280,13 @@ window.CHAT = {
         opts: [
           { t: 'Me alegra que lo veas.', tone: 'amable', fx: { aff: 1, rep: { zaun: 1 } }, go: 'hub', say: ['Ver no basta. Hay que hacer algo. Estoy en ello.'] },
           { t: 'Zaun también tiene su parte de culpa.', tone: 'serio', go: 'hub', say: ['Puede. Pero no tienen ni la mitad de las herramientas que tenemos arriba. Es injusto exigirles lo mismo.'] },
+        ],
+      },
+      madre: {
+        say: ['(Mira por la ventana.) Escribo cartas que no le envío. Es una costumbre de familia, al parecer.', 'Lo peor no es echarla de menos. Es que nuestra última conversación fue una discusión.'],
+        opts: [
+          { t: 'Ella sabía que la querías.', tone: 'amable', fx: { aff: 2 }, go: 'hub', say: ['(Traga saliva.) Eso espero. Gracias, {name}.'] },
+          { t: 'Úsalo. Que te haga más fuerte.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['Ya lo he usado. Me ha convertido en alguien que mi madre no reconocería.'] },
         ],
       },
       caceria: {
@@ -401,6 +432,8 @@ window.CHAT = {
       { t: 'Cuenta conmigo en el Consejo.', tone: 'serio', req: { flag: 'aliado_mel' }, once: true, fx: { aff: 2, rep: { piltover: 1 } },
         say: ['Lo sé. Por eso te elegí. Los aliados elegantes son los más difíciles de encontrar.'] },
       { t: 'Esa luz dorada en tus manos… ¿es magia?', tone: 'pregunta', req: { season: 2 }, go: 'magia' },
+      { t: '¿Cómo era Kino?', tone: 'amable', req: { flag: 'viaje_noxus' }, once: true, fx: { aff: 1 },
+        say: ['Mi hermano pequeño. Prefería hablar a pelear, como yo. Lo mataron por un secreto que era mío.', 'LeBlanc me lo devolvió durante una hora, con su cara. Nunca le perdonaré esa hora.'] },
     ],
     nodes: {
       noxus: {
@@ -447,6 +480,8 @@ window.CHAT = {
       { t: '¿Cuántos años tiene usted, profesor?', tone: 'broma', go: 'edad' },
       { t: '¿Qué opina de Viktor?', tone: 'pregunta', say: ['Viktor es mi mejor alumno. Y también el que más me preocupa.'] },
       { t: 'Cuénteme un experimento suyo.', tone: 'amable', go: 'ciencia' },
+      { t: '¿Por qué vive con las Luciérnagas?', tone: 'pregunta', req: { season: 2 }, once: true, fx: { aff: 1 },
+        say: ['El Consejo me apartó, la Academia me olvidó y estos críos me dieron una rama y una manta. Es la mejor beca que he tenido nunca.'] },
       { t: 'Le avisé de lo que tramaba Jayce.', tone: 'serio', req: { flag: 'delata_jayce' }, once: true, fx: { aff: 2 },
         say: ['Y se lo agradezco. Aunque, entre usted y yo, el muchacho tenía razón en casi todo. Casi.'] },
     ],
@@ -596,7 +631,9 @@ window.CHAT = {
       { t: 'Os ayudé contra Sevika. Lo haría otra vez.', tone: 'serio', req: { flag: 'heroe_luciernagas' }, once: true, fx: { aff: 3 },
         say: ['Lo sé. Te vi. (Te da un golpe en el puño.) Eres de los nuestros. Para siempre.'] },
       { t: 'Fui yo quien vendió la ruta del árbol.', tone: 'serio', req: { flag: 'traiciona_luciernagas' }, once: true, go: 'traicion' },
-      { t: '¿Qué viste al otro lado de la grieta?', tone: 'pregunta', req: { season: 2 }, go: 'grieta' },
+      { t: '¿Qué viste al otro lado de la grieta?', tone: 'pregunta', req: { season: 2, flag: 'heimer_cae' }, go: 'grieta' },
+      { t: '¿Qué pasó con Heimerdinger?', tone: 'serio', req: { season: 2, flag: 'heimer_cae' }, once: true, fx: { aff: 1 },
+        say: ['Se quedó al otro lado sosteniendo la máquina para que yo pudiera volver. Trescientos años de prudencia, y lo último que hizo fue lo más valiente que he visto.', '(Se ríe, con los ojos húmedos.) Me llamaba «joven Ekko». Para él yo era un bebé.'] },
     ],
     nodes: {
       luciernagas: {
@@ -647,8 +684,11 @@ window.CHAT = {
     bye: ['Largo.', 'No me hagas esperar la próxima vez.', '(Te echa el humo a la cara a modo de despedida.)'],
     hub: [
       { t: 'Ese brazo es impresionante.', tone: 'amable', go: 'brazo' },
-      { t: '¿Por qué trabajas para Silco?', tone: 'pregunta', go: 'silco' },
-      { t: '¿Qué opinas de Jinx?', tone: 'pregunta', say: ['Esa cría es un problema con patas. Y Silco no lo ve.'] },
+      { t: '¿Por qué trabajas para Silco?', tone: 'pregunta', go: 'silco', req: { maxSeason: 1 } },
+      { t: '¿Cómo es mandar en Zaun sin Silco?', tone: 'pregunta', req: { season: 2 }, once: true, fx: { aff: 1 },
+        say: ['Como llevar un barril de Brillo cuesta abajo. Todo el mundo empuja y nadie quiere frenar.', 'Silco tenía un plan. Yo tengo un puño y una lista de químbarones que me quieren muerta. Me apaño.'] },
+      { t: '¿Qué opinas de Jinx?', tone: 'pregunta', req: { maxSeason: 1 }, say: ['Esa cría es un problema con patas. Y Silco no lo ve.'] },
+      { t: '¿Qué opinas ahora de Jinx?', tone: 'pregunta', req: { season: 2 }, say: ['Mató a Silco y luego la pintan en todos los muros como a una santa. Zaun es así: odia a quien le salva y reza a quien lo quema.'] },
       { t: '¿Una partida de cartas?', tone: 'broma', go: 'cartas' },
       { t: 'Bajé al foso contra ti. No me arrepiento.', tone: 'duro', req: { flag: 'sabe_cohete' }, once: true, fx: { aff: 2 },
         say: ['(Ríe, ronca.) Duraste más de lo que pensaba. Eso en Zaun es un cumplido.'] },
@@ -689,6 +729,8 @@ window.CHAT = {
       { t: 'Háblame de Mel.', tone: 'amable', go: 'mel' },
       { t: '¿Por qué los lobos?', tone: 'pregunta', say: ['El lobo que duda acaba siendo cordero. Mis hijos lo aprendieron pronto. Algunos, demasiado tarde.'] },
       { t: '¿Qué es la Rosa Negra?', tone: 'pregunta', req: { season: 2 }, go: 'rosa' },
+      { t: '¿Por qué le dijiste a Mel que Kino murió en una guerra?', tone: 'serio', req: { flag: 'viaje_noxus' }, once: true, fx: { aff: -1 },
+        say: ['(Su mano se cierra sobre la empuñadura.) Porque es verdad. Una guerra que empezó antes de que tú nacieras y que aún no ha terminado.', 'No vuelvas a pronunciar su nombre en mi presencia sin motivo.'] },
       { t: '¿Qué piensas de Caitlyn Kiramman?', tone: 'astuto', req: { season: 2 }, say: ['La joven Kiramman ha perdido a su madre y ha encontrado su puntería. Es la mejor alumna que he tenido en años.', '(Sonríe apenas.) Lo malo de las buenas alumnas es que un día dejan de necesitarte.'] },
       { t: 'Negocié contigo las condiciones de la alianza.', tone: 'serio', req: { flag: 'trato_noxus' }, once: true, fx: { aff: 2 },
         say: ['Y lo hiciste bien. Pocos se atreven a regatear con una Medarda y conservan las manos.'] },
@@ -804,47 +846,57 @@ window.CHAT = {
     },
   },
   // =========================================================== MADDIE
+  // Maddie Nolen, ejecutora a las órdenes de Caitlyn. En secreto, informa a Ambessa.
   maddie: {
-    greet: { low: 'Identifíquese.', mid: '{name}. ¿Necesita algo?', high: '{name}. Si la señora Ambessa pregunta, no he dicho nada.' },
-    bye: ['Con permiso.', 'Que no la sorprenda la noche en Piltover.', '(Hace un saludo militar breve y se marcha.)'],
+    greet: { low: 'Ejecutora Nolen. ¿En qué puedo ayudarle?', mid: '{name}. ¿Busca a la comandante?', high: '{name}. Me alegra verle. Aquí dentro no hay mucha gente con quien hablar.' },
+    bye: ['Con permiso. La comandante me espera.', 'Que no le sorprenda el toque de queda.', '(Hace un saludo breve y se marcha.)'],
     hub: [
-      { t: '¿Cuánto hace que sirves a Ambessa?', tone: 'pregunta', go: 'servicio' },
-      { t: '¿Qué te parece Piltover?', tone: 'amable', go: 'piltover' },
-      { t: 'Pareces cansada.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['(Se pasa la mano por la cara.) Los soldados no se cansan. Pero gracias por fijarse.'] },
+      { t: '¿Cuánto hace que trabajas con Caitlyn?', tone: 'pregunta', go: 'servicio' },
+      { t: '¿Qué te parece Ambessa?', tone: 'pregunta', go: 'ambessa' },
+      { t: '¿Qué te parece Zaun?', tone: 'amable', go: 'zaun' },
+      { t: 'Pareces cansada.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['(Se pasa la mano por la cara.) Los ejecutores no se cansan. Pero gracias por fijarse.'] },
     ],
     nodes: {
       servicio: {
-        say: ['Desde que dejé la academia militar. Ella no habla mucho de eso, pero me eligió a mí.'],
+        say: ['Desde que la nombraron comandante. Le llevo los papeles, el té y las malas noticias. Por ese orden.'],
         opts: [
+          { t: 'Te gusta trabajar con ella, ¿eh?', tone: 'coqueto', fx: { aff: 1 }, go: 'hub', say: ['(Se sonroja.) Es la persona más valiente que conozco. Trabajar con ella no es lo difícil. Lo difícil es… otra cosa.'] },
           { t: '¿Y si te pide algo que no está bien?', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['(Tarda en responder.) Lo cumplo. Y luego lo pienso. Esa es la parte difícil.'] },
-          { t: 'Debe de ser un honor.', tone: 'amable', go: 'hub', say: ['Lo es. También es una carga.'] },
         ],
       },
-      piltover: {
-        say: ['Demasiado limpia por arriba. Demasiado sucia por debajo. En Noxus al menos sabemos quién manda.'],
+      ambessa: {
+        say: ['La general Medarda sabe lo que quiere. Eso es más de lo que se puede decir del Consejo.'],
         opts: [
-          { t: 'Aquí también lo sabemos. Solo que no se dice.', tone: 'astuto', fx: { aff: 1 }, go: 'hub', say: ['(Casi sonríe.) Entonces no somos tan distintas.'] },
-          { t: 'Pues vuelve a casa, entonces.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['No es una opción, señor.'] },
+          { t: 'Hablas como si trabajaras para ella.', tone: 'astuto', req: { stat: 'sigilo', min: 2 }, fx: { flags: ['sospecha_maddie'] }, go: 'hub',
+            say: ['(Una sonrisa demasiado rápida.) Trabajo para Piltover. Como todos. ¿Quiere un té?'] },
+          { t: 'Da miedo, la verdad.', tone: 'broma', go: 'hub', say: ['(Se ríe.) A mí también. Por eso la escucho con atención.'] },
+        ],
+      },
+      zaun: {
+        say: ['Nunca había bajado hasta este año. Huele a química y a gente que no se rinde.'],
+        opts: [
+          { t: 'Entonces no la trates como a un enemigo.', tone: 'serio', fx: { aff: 1, rep: { zaun: 1 } }, go: 'hub', say: ['No elijo yo a quién tratamos como enemigo. (Baja la voz.) Casi nunca elijo nada.'] },
+          { t: 'Pues no vuelvas a bajar.', tone: 'duro', fx: { aff: -1 }, go: 'hub', say: ['No es una opción. Voy donde vaya la comandante.'] },
         ],
       },
     },
   },
 
   // =========================================================== KINO
+  // El hombre que Mel encuentra en Noxus diciendo ser su hermano Kino (en realidad, LeBlanc).
   kino: {
-    greet: { low: '(Te mira de arriba abajo, sin decir nada.)', mid: 'Hm. {name}.', high: '{name}. Siéntate. Hoy hay tiempo.' },
-    bye: ['(Asiente una sola vez.)', 'Anda con cuidado.', '(Se cruza de brazos y mira al frente.)'],
+    greet: { low: '(Te observa desde las sombras de la celda, sin decir nada.)', mid: '{name}. Viajas con mi hermana.', high: '{name}. Cuida de Mel. Ella no sabe lo que lleva dentro.' },
+    bye: ['(Sonríe, como si supiera algo que tú no sabes.)', 'Nos veremos. Antes de lo que crees.', 'Vete. Y no le digas a nadie que me has visto.'],
     hub: [
-      { t: '¿Has estado en muchas batallas?', tone: 'pregunta', go: 'batallas' },
-      { t: '¿Qué opinas de Ambessa?', tone: 'pregunta', say: ['(Tras un largo silencio.) Es la mejor general que he seguido. Y la más peligrosa de contradecir.'] },
-      { t: 'Cuéntame algo de Maddie.', tone: 'amable', fx: { aff: 1 }, once: true, say: ['Es joven. Tiene buena cabeza. Ojalá la guerra no se la gaste pronto.'] },
+      { t: '¿De verdad eres el hermano de Mel?', tone: 'pregunta', say: ['¿Y tú eres de verdad quien dices ser? En Noxus nadie lo es del todo.'] },
+      { t: '¿Quién te encerró aquí?', tone: 'serio', go: 'celda' },
     ],
     nodes: {
-      batallas: {
-        say: ['Más de las que quiero recordar. Cada una te quita algo y te da algo, y rara vez coinciden.'],
+      celda: {
+        say: ['Gente que lleva rosas negras y siglos de paciencia. Me encerraron por un secreto que no era mío.'],
         opts: [
-          { t: '¿Y qué te dieron a ti?', tone: 'serio', fx: { aff: 1 }, go: 'hub', say: ['Silencio. Eso es lo que da la guerra cuando te sobrevive.'] },
-          { t: 'Pareces tranquilo para ser un soldado.', tone: 'broma', go: 'hub', say: ['(Resopla.) Los nerviosos no duran.'] },
+          { t: '¿Qué secreto?', tone: 'pregunta', go: 'hub', say: ['Pregúntale a mi madre por qué mandó a Mel tan lejos de niña. (Pausa.) O mejor no le preguntes.'] },
+          { t: 'Algo en ti no encaja.', tone: 'astuto', req: { stat: 'ingenio', min: 2 }, go: 'hub', say: ['(Por un instante, sus ojos parecen de otro color.) Qué observador{g:|a|e}. Eso suele acortar la vida.'] },
         ],
       },
     },

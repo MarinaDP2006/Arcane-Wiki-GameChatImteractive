@@ -52,6 +52,40 @@ for (const ch of STORY.chapters) {
     }
   }
 }
+// Condiciones de las líneas (cond) y muertes del canon: nadie habla después de morir.
+const COND_KEYS = ['flag', 'notFlag', 'met', 'notMet', 'kin', 'notKin', 'origin'];
+const checkCond = (where, c) => {
+  if (!c) return;
+  Object.keys(c).forEach((k) => { if (!COND_KEYS.includes(k)) errors.push(`${where}: condición "${k}" desconocida`); });
+  ['met', 'notMet', 'kin', 'notKin'].forEach((k) => { if (c[k] && !cast.has(c[k])) errors.push(`${where}: ${k} "${c[k]}" no es del reparto`); });
+  if (c.origin && !CREATION.origins[c.origin]) errors.push(`${where}: origen "${c.origin}" desconocido`);
+};
+for (const ch of STORY.chapters) for (const [nid, n] of Object.entries(ch.nodes)) {
+  (n.lines || []).forEach((l) => checkCond(`${ch.id}.${nid}`, l.cond));
+  (n.choices || []).forEach((c) => checkCond(`${ch.id}.${nid}`, c.req && Object.fromEntries(Object.entries(c.req).filter(([k]) => COND_KEYS.includes(k) || !['stat', 'min', 'aff'].includes(k)))));
+}
+[...STORY.endings, ...(STORY.endings2 || [])].forEach((e) => e.lines.forEach((l) => checkCond(`final ${e.id}`, l.cond)));
+const deaths = STORY.deaths || {};
+for (const [id, chId] of Object.entries(deaths)) {
+  if (!cast.has(id)) errors.push(`muertes: "${id}" no es del reparto`);
+  if (!STORY.chapters.find((c) => c.id === chId)) errors.push(`muertes: capítulo "${chId}" de ${id} no existe`);
+}
+const s1 = new Set([...STORY.routes.zaun, ...STORY.routes.piltover]);
+for (const [r, ids] of Object.entries(STORY.routes)) {
+  // Capítulos ya terminados antes de cada capítulo de la ruta (en la T2, toda la T1).
+  ids.forEach((chId, i) => {
+    const before = new Set([...ids.slice(0, i), ...(r === 't2' ? s1 : [])]);
+    const ch = STORY.chapters.find((c) => c.id === chId);
+    if (!ch) return;
+    for (const [nid, n] of Object.entries(ch.nodes)) (n.lines || []).forEach((l) => {
+      if (deaths[l.s] && before.has(deaths[l.s])) errors.push(`${chId}.${nid}: habla ${l.s}, que murió en ${deaths[l.s]}`);
+    });
+    if (r === 't2' && chId === ids[ids.length - 1]) (STORY.endings2 || []).forEach((e) => e.lines.forEach((l) => {
+      if (deaths[l.s] && (before.has(deaths[l.s]) || deaths[l.s] === chId)) errors.push(`final ${e.id}: habla ${l.s}, que ya ha muerto`);
+    }));
+  });
+}
+
 for (const [r, ids] of Object.entries(STORY.routes)) ids.forEach((id) => { if (!STORY.chapters.find((c) => c.id === id)) errors.push(`ruta ${r}: capítulo "${id}" no existe`); });
 [...STORY.endings, ...(STORY.endings2 || [])].forEach((e) => e.lines.forEach((l) => { if (!speakers.has(l.s)) errors.push(`final ${e.id}: hablante "${l.s}"`); }));
 for (const p of WIKI.personajes) (p.relations || []).forEach((r) => { if (!allIds.has(r)) errors.push(`wiki ${p.id}: relación "${r}" no existe`); });
