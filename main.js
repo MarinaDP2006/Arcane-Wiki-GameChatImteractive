@@ -402,6 +402,7 @@ ipcMain.handle('save:list', () =>
 ipcMain.handle('save:load', (_e, slot) => readSave(slot));
 ipcMain.handle('save:write', (_e, slot, data) => {
   writeSave(slot, data);
+  scheduleAutoBackup();
   return true;
 });
 ipcMain.handle('save:delete', (_e, slot) => {
@@ -411,18 +412,55 @@ ipcMain.handle('save:delete', (_e, slot) => {
   return true;
 });
 
-// Exportar una partida a un archivo para llevarla a otro dispositivo (tableta, otro PC).
+// Guardar un archivo exportado (una partida o una copia completa) donde elija el jugador.
 // El archivo va donde elija el jugador; nunca sale de su ordenador por sí solo.
-ipcMain.handle('save:export', async (_e, slot, file) => {
-  if (!readSave(slot)) return false;
+ipcMain.handle('file:save', async (_e, name, text) => {
   const { canceled, filePath } = await dialog.showSaveDialog({
-    title: 'Exportar partida',
-    defaultPath: path.join(app.getPath('documents'), path.basename(String(file || 'partida.json'))),
-    filters: [{ name: 'Partida de Grietas & Gears', extensions: ['json'] }],
+    title: 'Guardar archivo',
+    defaultPath: path.join(BACKUP_DIR(), path.basename(String(name || 'partida.json'))),
+    filters: [{ name: 'Datos de Grietas & Gears', extensions: ['json'] }],
   });
   if (canceled || !filePath) return false;
-  writeJSON(filePath, { formato: 'grietas-partida', version: 1, exportadaEl: new Date().toISOString(), partida: readSave(slot) });
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, String(text), 'utf8');
   return true;
+});
+
+// ---------- Copia automática ----------
+// Cada vez que se guarda una partida (como mucho cada pocos segundos) se deja en
+// Documentos\Grietas & Gears\Copias automáticas una copia completa (partidas + ajustes, sin la
+// clave de la IA) que se puede cargar en otro dispositivo con Ajustes → Datos → Cargar copia.
+const BACKUP_DIR = () => path.join(app.getPath('documents'), 'Grietas & Gears');
+const AUTO_DIR = () => path.join(BACKUP_DIR(), 'Copias automáticas');
+const AUTO_KEEP = 10;
+let autoTimer = null;
+
+/** Escribe la copia del día y borra las más antiguas. */
+function writeAutoBackup() {
+  autoTimer = null;
+  const settings = readJSON(SETTINGS_FILE(), {});
+  if (settings.autoBackup === false) return;
+  const slots = {};
+  for (const slot of SLOTS) {
+    const data = readSave(slot);
+    if (data) slots[slot] = data;
+  }
+  if (!Object.keys(slots).length) return;
+  const { ai, ...rest } = settings;
+  OLD_AI_KEYS.forEach((k) => delete rest[k]);
+  try {
+    const day = new Date().toISOString().slice(0, 10);
+    writeJSON(path.join(AUTO_DIR(), `copia-automatica-${day}.json`), { game: 'grietas-and-gears', version: 1, auto: true, date: new Date().toISOString(), slots, settings: rest });
+    const old = fs.readdirSync(AUTO_DIR()).filter((f) => /^copia-automatica-\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort().slice(0, -AUTO_KEEP);
+    old.forEach((f) => fs.rmSync(path.join(AUTO_DIR(), f), { force: true }));
+  } catch (err) {
+    console.error('Copia automática:', err);
+  }
+}
+const scheduleAutoBackup = () => { if (!autoTimer) autoTimer = setTimeout(writeAutoBackup, 5000); };
+ipcMain.handle('backup:folder', () => {
+  fs.mkdirSync(AUTO_DIR(), { recursive: true });
+  return shell.openPath(AUTO_DIR());
 });
 
 // Exportar la ficha del personaje a un archivo JSON elegido por el usuario.
@@ -464,6 +502,11 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+// Al cerrar, la copia pendiente se escribe ya para no perder los últimos minutos.
+app.on('before-quit', () => {
+  if (autoTimer) { clearTimeout(autoTimer); writeAutoBackup(); }
 });
 
 app.on('window-all-closed', () => {

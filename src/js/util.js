@@ -86,10 +86,76 @@
     difficulty: 'normal', objectiveArrow: true, minimap: true, names: false, confirmExit: true,
     camSpeed: 1, invertCam: false, vibration: true, shake: 1,
     reduceMotion: false, highContrast: false, readableFont: false,
+    autoBackup: true,
   };
   const desktop = window.arcane?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).
   const touch = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+  // App de Android (Capacitor) con los plugins para escribir y compartir archivos.
+  const native = () => {
+    const cap = window.Capacitor;
+    const { Filesystem, Share } = cap?.Plugins || {};
+    return cap?.isNativePlatform?.() && Filesystem ? { Filesystem, Share } : null;
+  };
+  // Carpeta visible en la tableta: Documentos/Grietas & Gears (sobrevive si se desinstala el juego).
+  const ANDROID_DIR = 'Grietas & Gears';
+
+  /** Guarda un archivo de texto: diálogo en Windows, menú Compartir en Android, descarga en navegador. */
+  async function saveFile(name, text) {
+    if (window.arcane?.saveFile) return window.arcane.saveFile(name, text);
+    const n = native();
+    if (n?.Share) {
+      const { uri } = await n.Filesystem.writeFile({ path: name, data: text, directory: 'CACHE', encoding: 'utf8' });
+      // Drive, correo, «Guardar en Archivos», Quick Share...
+      await n.Share.share({ title: name, files: [uri], dialogTitle: 'Guardar o enviar' }).catch(() => {});
+      return true;
+    }
+    const a = el('a', { href: URL.createObjectURL(new Blob([text], { type: 'application/json' })), download: name });
+    document.body.append(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    return true;
+  }
+
+  // Copia automática en Android: como mucho cada pocos segundos tras guardar, se deja una copia
+  // completa del día en Documentos/Grietas & Gears/Copias automáticas (en Windows lo hace main.js).
+  let autoTimer = null;
+  async function writeAutoBackup() {
+    autoTimer = null;
+    const n = native();
+    if (!n) return;
+    const settings = LS.get('arcane-settings', {});
+    if (settings.autoBackup === false) return;
+    const slots = {};
+    for (const slot of ['1', '2', '3']) { const d = LS.get(`arcane-slot-${slot}`, null); if (d) slots[slot] = d; }
+    if (!Object.keys(slots).length) return;
+    const { ai, ...rest } = settings;
+    const text = JSON.stringify({ game: 'grietas-and-gears', version: 1, auto: true, date: new Date().toISOString(), slots, settings: rest });
+    const dir = `${ANDROID_DIR}/Copias automáticas`;
+    const day = new Date().toISOString().slice(0, 10);
+    // Tras reinstalar, Android no deja tocar los archivos de la instalación anterior: se usa otro nombre.
+    for (const name of [`copia-automatica-${day}.json`, `copia-automatica-${day}-b.json`]) {
+      try {
+        await n.Filesystem.writeFile({ path: `${dir}/${name}`, data: text, directory: 'DOCUMENTS', encoding: 'utf8', recursive: true });
+        break;
+      } catch (err) {
+        console.warn('Copia automática:', err);
+      }
+    }
+    try {
+      const { files } = await n.Filesystem.readdir({ path: dir, directory: 'DOCUMENTS' });
+      const old = files.map((f) => f.name || f).filter((f) => /^copia-automatica-\d{4}-\d{2}-\d{2}(-b)?\.json$/.test(f)).sort().slice(0, -10);
+      for (const f of old) await n.Filesystem.deleteFile({ path: `${dir}/${f}`, directory: 'DOCUMENTS' }).catch(() => {});
+    } catch {
+      /* sin carpeta todavía */
+    }
+  }
+  const scheduleAutoBackup = () => { if (!autoTimer && native()) autoTimer = setTimeout(writeAutoBackup, 5000); };
+  // Si la app pasa a segundo plano, la copia pendiente se escribe ya.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && autoTimer) { clearTimeout(autoTimer); writeAutoBackup(); }
+  });
+
   const store = {
     async listSlots() {
       if (desktop) return window.arcane.saves.list();
@@ -104,6 +170,7 @@
     async save(slot, data) {
       if (desktop) return window.arcane.saves.write(slot, data);
       LS.set(`arcane-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
+      scheduleAutoBackup();
       return true;
     },
     async remove(slot) {
@@ -234,5 +301,5 @@
     },
   };
 
-  window.U = { $, $$, el, esc, tpl, store, SETTINGS_DEFAULTS, toast, sleep, pick, norm, genderIndex, genderize, desktop, touch };
+  window.U = { $, $$, el, esc, tpl, store, saveFile, SETTINGS_DEFAULTS, toast, sleep, pick, norm, genderIndex, genderize, desktop, touch };
 })();

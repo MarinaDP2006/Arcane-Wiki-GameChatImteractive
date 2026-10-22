@@ -12,3 +12,5 @@ keystore.properties
 
 # Partidas exportadas: son personales, no se suben
 grietas-partida-*.json
+grietas-and-gears-copia-*.json
+copia-automatica-*.json

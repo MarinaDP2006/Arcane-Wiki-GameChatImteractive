@@ -3928,5 +3928,13 @@ window.I18N_DATA.fr = {
   "No se pudo exportar la partida": "Impossible d'exporter la partie",
   "Ese archivo no es una partida de Grietas & Gears": "Ce fichier n'est pas une partie de Grietas & Gears",
   "Partida de {0} importada en la ranura {1}": "Partie de {0} importée dans l'emplacement {1}",
-  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?"
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?",
+  "Copia automática": "Sauvegarde automatique",
+  "Copia automática al guardar": "Sauvegarde automatique à l'enregistrement",
+  "Cada vez que guardas, deja una copia completa en Documentos\\Grietas & Gears\\Copias automáticas (se guardan las de los últimos 10 días). Cárgala en otro dispositivo con «Cargar copia».": "À chaque sauvegarde, une copie complète est placée dans Documents\\Grietas & Gears\\Copias automáticas (les 10 derniers jours sont gardés). Charge-la sur un autre appareil avec « Charger une sauvegarde ».",
+  "Cada vez que guardas, deja una copia completa en Documentos/Grietas & Gears/Copias automáticas de la tableta (las de los últimos 10 días). Sigue ahí aunque desinstales el juego. Cárgala en otro dispositivo con «Cargar copia».": "À chaque sauvegarde, une copie complète est placée dans Documents/Grietas & Gears/Copias automáticas de la tablette (les 10 derniers jours). Elle reste là même si tu désinstalles le jeu. Charge-la sur un autre appareil avec « Charger une sauvegarde ».",
+  "Abrir carpeta de copias": "Ouvrir le dossier des copies",
+  "No se pudo exportar la ficha": "Impossible d'exporter la fiche",
+  "Guardar o enviar": "Enregistrer ou envoyer",
+  "No se pudo guardar: {0}": "Impossible d'enregistrer : {0}"
 };

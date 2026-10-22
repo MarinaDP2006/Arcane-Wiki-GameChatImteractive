@@ -49,7 +49,9 @@ En Android las partidas se guardan dentro de la propia app (no en una carpeta vi
 1. En **Partidas**, pulsa **Exportar** en la ranura. En Android se abre el menú Compartir: guárdala en Drive, envíatela por correo o usa «Guardar en Archivos». En Windows eliges dónde guardar el archivo `grietas-partida-….json`.
 2. En el otro dispositivo, pulsa **Importar** en una ranura y elige ese archivo. También vale una `ranura-N.json` copiada de `%APPDATA%\Arcane Piltover y Zaun\partidas`.
 
-Las partidas exportadas son tuyas: no las subas al repositorio.
+**Copia automática:** cada vez que guardas, el juego deja además una copia completa (las 3 ranuras y los ajustes, sin la clave de la IA) en `Documentos\Grietas & Gears\Copias automáticas` (en la tableta, `Documentos/Grietas & Gears/Copias automáticas`). Se guardan las de los últimos 10 días y en Android siguen ahí aunque desinstales el juego. Para usarla en otro dispositivo: **Ajustes → Datos → Cargar copia**. Se puede apagar en Ajustes → Datos.
+
+Las partidas exportadas y las copias son tuyas: no las subas al repositorio.
 
 Desde la versión 1.24.0 el APK de prueba se firma siempre con la misma llave, así que las nuevas versiones se instalan encima de la anterior sin perder las partidas de la tableta.
 

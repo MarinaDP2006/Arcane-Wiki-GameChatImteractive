@@ -167,12 +167,12 @@
     const slots = {};
     for (const s of await store.listSlots()) if (!s.empty) slots[s.slot] = await store.load(s.slot);
     const settings = { ...App.settings, ai: App.settings.ai ? { ...App.settings.ai, key: '' } : undefined };
-    const blob = new Blob([JSON.stringify({ game: 'grietas-and-gears', version: 1, date: new Date().toISOString(), slots, settings }, null, 2)], { type: 'application/json' });
-    const a = el('a', { href: URL.createObjectURL(blob), download: `grietas-and-gears-copia-${new Date().toISOString().slice(0, 10)}.json` });
-    document.body.append(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    toast('Copia de seguridad guardada', 'good');
+    const text = JSON.stringify({ game: 'grietas-and-gears', version: 1, date: new Date().toISOString(), slots, settings }, null, 2);
+    try {
+      if (await U.saveFile(`grietas-and-gears-copia-${new Date().toISOString().slice(0, 10)}.json`, text)) toast('Copia de seguridad guardada', 'good');
+    } catch (err) {
+      toast(`No se pudo guardar: ${err.message || err}`, 'warn');
+    }
   }
 
   /** Importa una copia de seguridad seleccionada. */
@@ -180,7 +180,9 @@
     const input = el('input', { type: 'file', accept: 'application/json,.json', style: 'display:none' });
     input.onchange = async () => {
       try {
-        const data = JSON.parse(await input.files[0].text());
+        let data = JSON.parse(await input.files[0].text());
+        // También vale una sola partida exportada desde la pantalla Partidas (va a la ranura 1).
+        if (data?.formato === 'grietas-partida' && data.partida) data = { game: 'grietas-and-gears', slots: { 1: data.partida } };
         if (data.game !== 'grietas-and-gears' || !data.slots) throw new Error('no es una copia del juego');
         if (!confirm('Se sustituirán las partidas de las ranuras que haya en la copia. ¿Continuar?')) return;
         for (const [slot, d] of Object.entries(data.slots)) if (['1', '2', '3'].includes(slot) && d?.player) await store.save(slot, d);
@@ -324,6 +326,12 @@
         el('div', { class: 'row gap' },
           el('button', { class: 'btn small', onclick: exportData }, 'Guardar copia'),
           el('button', { class: 'btn small', onclick: () => importData(root, onBack) }, 'Cargar copia')),
+        el('h3', {}, 'Copia automática'),
+        toggle('autoBackup', 'Copia automática al guardar', U.desktop
+          ? 'Cada vez que guardas, deja una copia completa en Documentos\\Grietas & Gears\\Copias automáticas (se guardan las de los últimos 10 días). Cárgala en otro dispositivo con «Cargar copia».'
+          : 'Cada vez que guardas, deja una copia completa en Documentos/Grietas & Gears/Copias automáticas de la tableta (las de los últimos 10 días). Sigue ahí aunque desinstales el juego. Cárgala en otro dispositivo con «Cargar copia».'),
+        window.arcane?.openBackupFolder ? el('div', { class: 'row gap' },
+          el('button', { class: 'btn ghost small', onclick: () => window.arcane.openBackupFolder() }, 'Abrir carpeta de copias')) : null,
         el('h3', {}, 'Restablecer'),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', onclick: async () => {

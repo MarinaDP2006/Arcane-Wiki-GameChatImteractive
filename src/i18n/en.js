@@ -3935,5 +3935,13 @@ window.I18N_DATA.en = {
   "No se pudo exportar la partida": "Could not export the save",
   "Ese archivo no es una partida de Grietas & Gears": "That file is not a Grietas & Gears save",
   "Partida de {0} importada en la ranura {1}": "{0}'s save imported into slot {1}",
-  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "Slot {0} holds {1}'s save. Replace it with {2}'s?"
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "Slot {0} holds {1}'s save. Replace it with {2}'s?",
+  "Copia automática": "Automatic backup",
+  "Copia automática al guardar": "Automatic backup when saving",
+  "Cada vez que guardas, deja una copia completa en Documentos\\Grietas & Gears\\Copias automáticas (se guardan las de los últimos 10 días). Cárgala en otro dispositivo con «Cargar copia».": "Every time you save, a full copy is left in Documents\\Grietas & Gears\\Copias automáticas (the last 10 days are kept). Load it on another device with “Load backup”.",
+  "Cada vez que guardas, deja una copia completa en Documentos/Grietas & Gears/Copias automáticas de la tableta (las de los últimos 10 días). Sigue ahí aunque desinstales el juego. Cárgala en otro dispositivo con «Cargar copia».": "Every time you save, a full copy is left in Documents/Grietas & Gears/Copias automáticas on the tablet (the last 10 days). It stays there even if you uninstall the game. Load it on another device with “Load backup”.",
+  "Abrir carpeta de copias": "Open backup folder",
+  "No se pudo exportar la ficha": "Could not export the sheet",
+  "Guardar o enviar": "Save or send",
+  "No se pudo guardar: {0}": "Could not save: {0}"
 };

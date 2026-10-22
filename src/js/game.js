@@ -90,29 +90,11 @@
 
   /** Guarda una ranura en un archivo para seguir la partida en otro dispositivo. */
   async function exportSlot(s) {
-    const file = saveFileName(s);
     try {
-      if (window.arcane?.saves?.exportFile) {
-        if (await window.arcane.saves.exportFile(s.slot, file)) toast('Partida exportada', 'good');
-        return;
-      }
       const data = await store.load(s.slot);
       if (!data) return toast('No se pudo cargar la partida', 'warn');
       const text = JSON.stringify({ formato: 'grietas-partida', version: 1, exportadaEl: new Date().toISOString(), partida: data });
-      const cap = window.Capacitor;
-      const { Filesystem, Share } = cap?.Plugins || {};
-      if (cap?.isNativePlatform?.() && Filesystem && Share) {
-        // Android: se escribe en la caché de la app y se abre el menú Compartir
-        // (Drive, correo, «Guardar en Archivos», Quick Share...).
-        const { uri } = await Filesystem.writeFile({ path: file, data: text, directory: 'CACHE', encoding: 'utf8' });
-        await Share.share({ title: 'Partida de Grietas & Gears', files: [uri], dialogTitle: 'Guardar o enviar la partida' }).catch(() => {});
-        return;
-      }
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-      a.download = file;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      if (await U.saveFile(saveFileName(s), text)) toast('Partida exportada', 'good');
     } catch (err) {
       console.error(err);
       toast('No se pudo exportar la partida', 'warn');
@@ -129,7 +111,10 @@
       let data = null;
       try {
         const raw = JSON.parse(await f.text());
-        data = raw?.formato === 'grietas-partida' ? raw.partida : raw;
+        // Vale una partida exportada, una copia completa (la de esta ranura o la primera) o una ranura-N.json.
+        if (raw?.formato === 'grietas-partida') data = raw.partida;
+        else if (raw?.game === 'grietas-and-gears' && raw.slots) data = raw.slots[s.slot] || Object.values(raw.slots)[0];
+        else data = raw;
       } catch {
         data = null;
       }
@@ -1641,10 +1626,7 @@
       if (await window.arcane.exportSheet(data)) toast('Ficha exportada', 'good');
       return;
     }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-    a.download = `ficha-${G.player.name}.json`;
-    a.click();
+    await U.saveFile(`ficha-${String(G.player.name || 'personaje').replace(/[^\w-]+/g, '_')}.json`, JSON.stringify(data, null, 2)).catch(() => toast('No se pudo exportar la ficha', 'warn'));
   }
 
   // Atajos de teclado: 1-9 eligen opción en la historia.

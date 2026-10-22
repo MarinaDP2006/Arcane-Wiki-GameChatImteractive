@@ -11,9 +11,10 @@ contextBridge.exposeInMainWorld('arcane', {
     load: (slot) => ipcRenderer.invoke('save:load', slot),
     write: (slot, data) => ipcRenderer.invoke('save:write', slot, data),
     remove: (slot) => ipcRenderer.invoke('save:delete', slot),
-    exportFile: (slot, file) => ipcRenderer.invoke('save:export', slot, file),
   },
   exportSheet: (data) => ipcRenderer.invoke('sheet:export', data),
+  saveFile: (name, text) => ipcRenderer.invoke('file:save', name, text),
+  openBackupFolder: () => ipcRenderer.invoke('backup:folder'),
   art: {
     list: () => ipcRenderer.invoke('art:list'),
     open: (sub) => ipcRenderer.invoke('art:open', sub),
