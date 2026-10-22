@@ -58,6 +58,7 @@
     ['piltover', '50% 40%'], ['hexpuertas', '50% 30%'], ['zaun', '50% 45%'], ['comuna-viktor', '50% 50%'],
   ];
 
+  /** Dibuja el menú principal y sus botones. */
   async function renderTitle() {
     const root = $('#view-home');
     root.innerHTML = '';
@@ -129,6 +130,7 @@
               status.textContent = `✓ Funciona en ${r.secs.toFixed(1)} s: «${r.text}»${a.provider === 'ollama' && r.secs > 15 ? ' · La primera vez tarda más porque carga el modelo. Prueba otra vez; si sigue lento, elige un modelo más pequeño.' : ''}`;
             } catch (err) { status.textContent = `✗ ${err.message}`; }
           } }, 'Probar conexión'), status) : null);
+      /** Busca modelos de IA accesibles para el usuario. */
       async function findModels() {
         status.textContent = 'Buscando…';
         try {
@@ -173,6 +175,7 @@
     toast('Copia de seguridad guardada', 'good');
   }
 
+  /** Importa una copia de seguridad seleccionada. */
   function importData(root, onBack) {
     const input = el('input', { type: 'file', accept: 'application/json,.json', style: 'display:none' });
     input.onchange = async () => {
@@ -202,6 +205,7 @@
   // Pestaña abierta en Ajustes (se recuerda mientras el juego esté abierto).
   let settingsTab = 'general';
 
+  /** Construye las pestañas y controles de ajustes. */
   function renderSettings(root, onBack) {
     const s = App.settings;
     root.innerHTML = '';
@@ -415,6 +419,7 @@
       r.unknown.length ? el('p', { class: 'muted small' }, `No sé a qué lugar corresponden estos archivos (renómbralos con un nombre de la guía): ${r.unknown.join(', ')}`) : null);
   }
 
+  /** Construye las opciones de arte personal. */
   function artSettings(root, onBack) {
     const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
     const models = el('span', {});
@@ -431,6 +436,7 @@
       el('p', { class: 'muted small' }, 'Todo el arte viene dentro del juego y funciona sin internet. Lo que pongas en tu carpeta de arte (también mapa/piltover y mapa/zaun para los fondos del mundo 3D) sustituye al incluido.'));
   }
 
+  /** Inicializa el menú y carga los ajustes guardados. */
   async function init() {
     App.settings = await store.getSettings();
     window.I18N.setLang(App.settings.lang);
