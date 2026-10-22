@@ -82,14 +82,14 @@
   const SETTINGS_DEFAULTS = {
     volume: 0.6, music: true, musicVolume: 1, sfxVolume: 1, muteBackground: true,
     textSpeed: 'normal', textSize: 'normal', spoilers: false,
-    quality: 'alta', renderScale: 1, shadows: true, postfx: true, paintStyle: true, particles: true, cameraSway: true, models3d: true, brightness: 1, showFps: false,
+    quality: 'alta', renderScale: 1, shadows: true, postfx: true, paintStyle: true, particles: true, cameraSway: true, models3d: true, staticNpcModels: true, brightness: 1, showFps: false,
     difficulty: 'normal', objectiveArrow: true, minimap: true, names: false, confirmExit: true,
     camSpeed: 1, invertCam: false, vibration: true, shake: 1,
     reduceMotion: false, highContrast: false, readableFont: false,
   };
   const desktop = window.arcane?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).
-  const touch = Boolean(window.Capacitor?.isNativePlatform?.() || window.matchMedia?.('(pointer: coarse)').matches);
+  const touch = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
   const store = {
     async listSlots() {
       if (desktop) return window.arcane.saves.list();
