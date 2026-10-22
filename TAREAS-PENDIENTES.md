@@ -15,6 +15,16 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [x] Movimiento con colisiones subdivididas por fotograma para no atravesar edificios al correr o sufrir caídas de FPS.
 - [x] Se mantienen íntegros los recursos gráficos y las imágenes existentes.
 
+## Revisión de ramas y documentación del código
+- [x] Comparar `main` con `feature/windows-only-polish` y las dos ramas `claude/project-thread-*`.
+- [x] Confirmar que `feature/windows-only-polish` no tiene commits exclusivos y puede eliminarse sin fusionar.
+- [x] Confirmar que `main` contiene privacidad y traducciones ya presentes en trabajos de Claude.
+- [x] Documentar todos los métodos declarados mediante `function` en los seis archivos principales del motor, interfaz e historia; añadidos 145 comentarios.
+- [x] Registrar conclusiones y instrucciones en `REVISION-RAMAS.md`.
+- [ ] Eliminar la rama `feature/windows-only-polish` en GitHub (todavía no se ha borrado).
+- [ ] Inspeccionar línea a línea los commits exclusivos de Claude y retirar esas ramas solo después de conservar lo necesario.
+- [ ] Extender los comentarios descriptivos a funciones flecha y otros módulos pendientes.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.
