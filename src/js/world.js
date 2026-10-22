@@ -225,7 +225,9 @@
       }
       if (!moved) target = null;
       pos.dir = Math.atan2(dy, dx);
+      const stride = Math.floor((pos.walk || 0) / Math.PI);
       pos.walk = (pos.walk || 0) + dt * 10;
+      if (moved && Math.floor(pos.walk / Math.PI) !== stride) Audio2.step?.(mapId, keys.has('shift') || push > 0.92);
     }
     if (dt) { vel.x += ((pos.x - ox) / dt - vel.x) * 0.1; vel.y += ((pos.y - oy) / dt - vel.y) * 0.1; }
 
