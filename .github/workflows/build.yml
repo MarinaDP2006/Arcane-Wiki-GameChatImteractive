@@ -28,6 +28,10 @@ jobs:
           node --check preload.js
           node --check src/js/world3d.js
           node --check src/js/world.js
+          node --check src/js/avatars3d.js
+          node --check src/js/game.js
+          node --check src/js/app.js
+          node --check src/js/util.js
       - name: Compilar instalador y portable de Windows
         run: npm run dist:win -- --publish never
         env:
