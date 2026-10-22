@@ -59,6 +59,7 @@ window.WORLD = {
         { id: 'mercado', name: 'Mercado de las Tuberías', x: 2400, y: 1100, icon: '', codex: 'zaun', activity: { label: 'Regatear en el mercado', stat: 'carisma', game: 'regateo', text: 'Consigues el doble por la mitad. La vendedora te mira con respeto.' } },
         { id: 'sumidero', name: 'Laboratorio del Sumidero', x: 850, y: 1900, icon: '', codex: 'sumidero', activity: { label: 'Analizar residuos químicos', stat: 'ingenio', text: 'Muestras, frascos y un olor terrible. Pero ahora entiendes algo más de la quimtec.' } },
         { id: 'escondite-jinx', name: 'Escondite de Jinx', x: 1750, y: 1950, icon: '', codex: null },
+        { id: 'invernadero', name: 'Invernadero oculto de Zaun', x: 2090, y: 1660, icon: '', codex: null },
         { id: 'arbol', name: 'El Árbol de las Luciérnagas', x: 2550, y: 1850, icon: '', codex: 'arbol', activity: { label: 'Volar en aerotabla', stat: 'sigilo', game: 'aerotabla', text: 'Las Luciérnagas te enseñan sus rutas secretas por las profundidades.' } },
       ],
       fragments: [
