@@ -72,24 +72,6 @@ window.ART_BUNDLED = {
   "codice": {
     "mapa-piltover-zaun": "img/arte/codice/mapa-piltover-zaun.webp"
   },
-  "mapa/piltover": {
-    "universe-01": "img/arte/mapa/piltover/universe-01.jpg",
-    "universe-02": "img/arte/mapa/piltover/universe-02.jpg",
-    "universe-03": "img/arte/mapa/piltover/universe-03.jpg",
-    "universe-04": "img/arte/mapa/piltover/universe-04.jpg",
-    "universe-05": "img/arte/mapa/piltover/universe-05.jpg",
-    "universe-06": "img/arte/mapa/piltover/universe-06.jpg",
-    "universe-07": "img/arte/mapa/piltover/universe-07.jpg",
-    "universe-08": "img/arte/mapa/piltover/universe-08.jpg"
-  },
-  "mapa/zaun": {
-    "universe-01": "img/arte/mapa/zaun/universe-01.jpg",
-    "universe-02": "img/arte/mapa/zaun/universe-02.jpg",
-    "universe-03": "img/arte/mapa/zaun/universe-03.jpg",
-    "universe-04": "img/arte/mapa/zaun/universe-04.jpg",
-    "universe-05": "img/arte/mapa/zaun/universe-05.jpg",
-    "universe-06": "img/arte/mapa/zaun/universe-06.jpg",
-    "universe-07": "img/arte/mapa/zaun/universe-07.jpg",
-    "universe-08": "img/arte/mapa/zaun/universe-08.jpg"
-  }
+  "mapa/piltover": {},
+  "mapa/zaun": {}
 };

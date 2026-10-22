@@ -185,8 +185,8 @@
   const A = 'img/arte/';
   const PLACES = {
     // Zaun
-    callejones: ['zaun', A + 'mapa/zaun/universe-01.jpg', [0.62, 0.78], [0.2, 0.62], 'Pasarelas suspendidas, talleres apiñados y luz química en las profundidades.', 'Has encontrado las señales de una ruta de contrabando entre las pasarelas.'],
-    mercado: ['zaun', A + 'mapa/zaun/universe-01.jpg', [0.42, 0.8], [0.86, 0.6], 'Puestos colgados de las tuberías y regateo a gritos.', 'Un puesto vende piezas marcadas con el sello de una fábrica de Brillo.'],
+    callejones: ['zaun', A + 'lugares/zaun.webp', [0.62, 0.78], [0.2, 0.62], 'Pasarelas suspendidas, talleres apiñados y luz química en las profundidades.', 'Has encontrado las señales de una ruta de contrabando entre las pasarelas.'],
+    mercado: ['zaun', A + 'lugares/comuna-viktor.webp', [0.42, 0.8], [0.86, 0.6], 'Puestos colgados de las tuberías y regateo a gritos.', 'Un puesto vende piezas marcadas con el sello de una fábrica de Brillo.'],
     tejados: ['zaun', A + 'lugares/zaun.webp', [0.3, 0.55], [0.8, 0.4], 'Chimeneas, humo y la luz de Piltover allá arriba.', 'Unas marcas de tiza señalan un camino seguro entre las chimeneas.'],
     'puente-zaun': ['zaun', A + 'lugares/zaun.webp', [0.2, 0.8], [0.6, 0.45], 'El paso entre las dos ciudades, visto desde abajo.', 'Un sello desgastado en una caseta indica quién controlaba el paso.'],
     arbol: ['zaun', A + 'lugares/arbol.png', [0.12, 0.7], [0.88, 0.62], 'Un refugio vivo, construido sobre las ramas y lejos del Brillo.', 'Descubres el sistema de cuerdas que protege el refugio de las Luciérnagas.'],
@@ -198,16 +198,16 @@
     sumidero: ['zaun', A + 'lugares/fabrica.png', [0.78, 0.25], [0.45, 0.45], 'La química de Singed, entre frascos verdes y reactores violetas.', 'Un registro del laboratorio revela experimentos y muestras de Brillo.'],
     invernadero: ['zaun', A + 'lugares/comuna-viktor.webp', [0.2, 0.75], [0.52, 0.28], 'Vidrio, conductos de quimtec y vegetación creciendo en las ruinas.', 'Los conductos del invernadero mezclan aire limpio y quimtec reciclada.'],
     // Piltover
-    consejo: ['piltover', A + 'lugares/academia.webp', [0.7, 0.8], [0.45, 0.45], 'Mármol, bronce y decisiones que pesan sobre las dos ciudades.', 'La documentación del Consejo contiene nombres que faltan en el acta.'],
+    consejo: ['piltover', A + 'lugares/consejo.webp', [0.7, 0.8], [0.45, 0.45], 'Mármol, bronce y decisiones que pesan sobre las dos ciudades.', 'La documentación del Consejo contiene nombres que faltan en el acta.'],
     academia: ['piltover', A + 'lugares/academia.webp', [0.25, 0.82], [0.75, 0.5], 'Aulas, archivos y el prestigio de la ciencia de Piltover.', 'Un registro de prácticas revela quién utilizó el taller.'],
     'taller-jayce': ['piltover', A + 'lugares/taller-jayce.webp', [0.2, 0.7], [0.55, 0.3], 'Pizarras, prototipos y cristales hextec.', 'En la pizarra encuentras una ecuación hextec corregida a mano.'],
-    artesanos: ['piltover', A + 'mapa/piltover/universe-01.jpg', [0.3, 0.85], [0.6, 0.55], 'Talleres de relojeros y orfebres bajo los arcos.', 'Un relojero guarda el encargo de alguien que no quiere ser visto.'],
+    artesanos: ['piltover', A + 'lugares/taller-jayce.webp', [0.3, 0.85], [0.6, 0.55], 'Talleres de relojeros y orfebres bajo los arcos.', 'Un relojero guarda el encargo de alguien que no quiere ser visto.'],
     hexpuertas: ['piltover', A + 'lugares/hexpuertas.webp', [0.3, 0.82], [0.5, 0.42], 'La torre de las Hexpuertas y los dirigibles entre las nubes.', 'Un registro del tráfico aéreo muestra una ruta que no figura en los permisos.'],
-    plaza: ['piltover', A + 'mapa/piltover/universe-01.jpg', [0.75, 0.82], [0.55, 0.5], 'Fuentes, estatuas y el Día del Progreso.', 'Un cartel arrancado anunciaba una reunión que nadie autorizó.'],
+    plaza: ['piltover', A + 'lugares/piltover.webp', [0.75, 0.82], [0.55, 0.5], 'Fuentes, estatuas y el Día del Progreso.', 'Un cartel arrancado anunciaba una reunión que nadie autorizó.'],
     'muelle-stillwater': ['piltover', A + 'lugares/stillwater.webp', [0.2, 0.8], [0.48, 0.3], 'La prisión sobre el agua, de noche.', 'Una orden de traslado está firmada por alguien que no debería estar aquí.'],
     ejecutores: ['piltover', A + 'lugares/ejecutores.png', [0.2, 0.75], [0.6, 0.45], 'Uniformes azules, expedientes y celdas.', 'Un expediente tiene páginas arrancadas justo donde empieza tu caso.'],
     puente: ['piltover', A + 'lugares/piltover.webp', [0.25, 0.8], [0.62, 0.45], 'El Puente del Progreso, entre el oro y la niebla.', 'Un sello desgastado en una caseta indica quién controlaba el paso.'],
-    'mansion-kiramman': ['piltover', A + 'lugares/piltover.webp', [0.8, 0.75], [0.35, 0.4], 'Jardines, retratos y secretos de familia.', 'Una carta sin enviar habla de un trato con el Consejo.'],
+    'mansion-kiramman': ['piltover', A + 'lugares/mansion-kiramman.png', [0.8, 0.75], [0.35, 0.4], 'Jardines, retratos y secretos de familia.', 'Una carta sin enviar habla de un trato con el Consejo.'],
   };
   /** ¿Tiene este lugar escenario 2D? */
   function has(id) { return Boolean(PLACES[id]); }

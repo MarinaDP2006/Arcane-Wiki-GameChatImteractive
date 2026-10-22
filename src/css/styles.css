@@ -1147,3 +1147,10 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .scene2d-arrow-l { left: 10px; } .scene2d-arrow-r { right: 10px; }
 body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before { animation: none; }
 @media (max-width: 600px) { .scene2d-card { font-size: 14px; } .scene2d-spot { width: 76px; height: 76px; margin: -38px 0 0 -38px; } }
+
+/* Ajustes: pantalla negra uniforme, tanto desde el menú como durante la partida. */
+#view-settings { background: #000 !important; background-image: none !important; }
+#view-settings::before, #view-settings::after { background-image: none !important; }
+#view-settings .settings { background: #000; }
+.overlay.show:has(.settings) { background: #000 !important; backdrop-filter: none !important; }
+.overlay.show:has(.settings) .overlay-scroll { background: #000 !important; }
