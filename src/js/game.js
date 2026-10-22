@@ -33,6 +33,7 @@
     return st;
   }
 
+  /** Guarda los datos actuales de la partida. */
   async function persist() {
     if (!G || !slot) return;
     G.progress.chapterTitle = chapterById(G.progress.chapterId)?.title || '';
@@ -40,6 +41,7 @@
     await store.save(slot, G);
   }
 
+  /** Dibuja el menú de partidas. */
   async function renderMenu() {
     const root = $('#view-game');
     const slots = await store.listSlots();
@@ -68,6 +70,7 @@
           }, 'Borrar') : null))))));
   }
 
+  /** Inicia una nueva historia con el personaje creado. */
   function newGame(s) {
     slot = s;
     window.App.go('creator');
@@ -82,6 +85,7 @@
     });
   }
 
+  /** Restaura una partida guardada. */
   async function loadGame(s) {
     const data = await store.load(s);
     if (!data) return toast('No se pudo cargar la partida', 'warn');
@@ -127,10 +131,12 @@
     return typeof loc === 'object' ? loc[G.progress.route] : loc;
   }
 
+  /** Devuelve el texto visible del objetivo actual. */
   function objectiveName() {
     return World.locById(objectiveId())?.name || '';
   }
 
+  /** Registra un hallazgo del mundo o del códice. */
   function discover(codexId, label) {
     if (!codexId || G.codex.includes(codexId)) return false;
     G.codex.push(codexId);
@@ -138,6 +144,7 @@
     return true;
   }
 
+  /** Actualiza los indicadores visibles durante el juego. */
   function updateHud() {
     const o = $('#hud-objective');
     if (!o) return;
@@ -151,16 +158,20 @@
     if (cx) cx.textContent = `${codexCount()}/${codexTotal()}`;
   }
 
+  /** Comprueba si una entrada del códice ya está descubierta. */
   function codexKnown(id) {
     return G.codex.includes(id) || G.unlocked.includes(id);
   }
+  /** Calcula el número total de entradas del códice. */
   function codexTotal() {
     return window.WIKI.categories.reduce((a, c) => a + window.WIKI[c.id].length, 0);
   }
+  /** Cuenta las entradas que ha descubierto el jugador. */
   function codexCount() {
     return window.WIKI.categories.reduce((a, c) => a + window.WIKI[c.id].filter((e) => codexKnown(e.id)).length, 0);
   }
 
+  /** Enumera las acciones disponibles en un lugar. */
   function locationActions(loc) {
     const acts = [];
     if (!G.progress.finished && loc.id === objectiveId()) acts.push({ label: G.progress.started ? 'Continuar la historia' : `Comenzar «${chapterById(G.progress.chapterId).title}»`, run: openStory });
@@ -176,6 +187,7 @@
     return acts;
   }
 
+  /** Responde a la interacción del jugador con un lugar. */
   function onLocation(loc) {
     const acts = locationActions(loc);
     if (!acts.length) return toast(`${loc.name}: aquí no hay nada que hacer ahora mismo.`);
@@ -191,6 +203,7 @@
       el('button', { class: 'btn ghost', onclick: closeOverlay }, 'Cerrar (Esc)')));
   }
 
+  /** Inicia una actividad o minijuego del escenario. */
   async function doActivity(loc, key) {
     const a = loc.activity;
     if (a.game) {
@@ -211,6 +224,7 @@
     persist();
   }
 
+  /** Muestra una notificación contextual en pantalla. */
   function showNotice(title, text) {
     World.pause(true);
     const box = $('#overlay');
@@ -221,6 +235,7 @@
       el('button', { class: 'btn primary', onclick: closeOverlay }, 'Continuar')));
   }
 
+  /** Traslada al jugador entre lugares o ciudades. */
   async function travel(t) {
     Audio2.sfx.choice();
     World.travel(t.to, t.at);
@@ -228,6 +243,7 @@
     await persist();
   }
 
+  /** Configura las funciones usadas por el motor del mundo. */
   function worldCallbacks() {
     return {
       objective: objectiveId,
@@ -254,6 +270,7 @@
     };
   }
 
+  /** Busca una entrada del códice por identificador. */
   function findEntry(id) {
     for (const c of window.WIKI.categories) {
       const e = window.WIKI[c.id].find((x) => x.id === id);
@@ -265,6 +282,7 @@
   // ---------------- Superposiciones ----------------
   let overlayKind = null;
 
+  /** Abre una capa de interfaz encima de la partida. */
   function openOverlay(kind, who) {
     World.pause(true);
     overlayKind = kind;
@@ -363,6 +381,7 @@
       el('div', { class: 'atlas-stage' }, emblems.piltover, map, emblems.zaun, detail),
       el('small', { class: 'muted atlas-credit' }, A.credit)));
 
+    /** Actualiza el elemento de interfaz que recibe el foco. */
     function setFocus(city) {
       focus = city;
       map.classList.toggle('focus', Boolean(city));
@@ -370,6 +389,7 @@
       Object.entries(emblems).forEach(([c, b]) => b.classList.toggle('active', c === city));
     }
 
+    /** Presenta la vista de una ciudad. */
     function showCity(city) {
       Audio2.sfx.click();
       setFocus(city);
@@ -390,6 +410,7 @@
       return (p.scene && window.CustomArt.image('lugares', p.scene)) || `img/atlas/${p.id}.webp`;
     }
 
+    /** Abre la ficha del lugar visitado. */
     function showPlace(p) {
       Audio2.sfx.click();
       const hidden = p.spoiler && !spoilers;
@@ -417,6 +438,7 @@
       detail.classList.remove('hidden');
     }
 
+    /** Regresa a la exploración del mundo. */
     function explore(p) {
       if (!G.atlas.includes(p.id)) {
         G.atlas.push(p.id);
@@ -429,6 +451,7 @@
       showPlace(p);
     }
 
+    /** Muestra el diario y el progreso narrativo. */
     function showJournal() {
       const done = A.places.filter((p) => G.atlas.includes(p.id));
       detail.innerHTML = '';
@@ -447,10 +470,12 @@
     if (start) showPlace(start);
   }
 
+  /** Construye el botón de cierre de un panel. */
   function closeBtn() {
     return el('button', { class: 'btn ghost small', onclick: closeOverlay }, `✕ Cerrar${keyHint('Esc')}`);
   }
 
+  /** Cierra el panel superpuesto activo. */
   function closeOverlay() {
     if (busy && overlayKind === 'historia') {
       toast('Espera a que termine la escena (o pulsa «Saltar»).', 'warn');
@@ -463,6 +488,7 @@
     World.pause(false);
   }
 
+  /** Abre los ajustes sin abandonar la partida. */
   function openSettingsOverlay() {
     const box = $('#overlay');
     box.innerHTML = '';
@@ -471,6 +497,7 @@
     window.App.renderSettings(holder, () => openOverlay('menu'));
   }
 
+  /** Presenta la ayuda y controles. */
   function showHelp() {
     if (U.touch) {
       showNotice('Controles', [
@@ -491,6 +518,7 @@
     ].join('\n'));
   }
 
+  /** Abre la interfaz narrativa del capítulo. */
   function openStory() {
     if (!G.progress.started && !G.progress.finished) {
       G.progress.started = true;
@@ -499,6 +527,7 @@
     } else openOverlay('historia');
   }
 
+  /** Sale al menú principal conservando el estado necesario. */
   function exitToTitle() {
     World.stop();
     G = null;
@@ -539,10 +568,12 @@
     }
   }
 
+  /** Crea un botón de navegación entre pestañas. */
   function tabBtn(id, label) {
     return el('button', { class: `tab${tab === id ? ' active' : ''}`, 'data-tab': id, onclick: () => setTab(id) }, label);
   }
 
+  /** Activa una pestaña y actualiza sus contenidos. */
   function setTab(t, who) {
     if (overlayKind !== t && ['historia', 'chats', 'ficha'].includes(t) && !$('#play-main')) return openOverlay(t, who);
     overlayKind = t;
@@ -553,6 +584,7 @@
     renderMain();
   }
 
+  /** Muestra los contactos conocidos del jugador. */
   function renderContacts() {
     const list = $('#contact-list');
     if (!list) return;
@@ -579,6 +611,7 @@
       el('b', {}, String(a)));
   }
 
+  /** Dibuja la vista principal del comunicador. */
   function renderMain() {
     const main = $('#play-main');
     if (!main) return;
@@ -619,6 +652,7 @@
     if (!busy) showChoices(currentChoices());
   }
 
+  /** Construye un globo de diálogo. */
   function bubble(s, text, instant) {
     const isMe = s === 'yo';
     const isNarr = s === 'narrador' || s === 'sistema';
@@ -631,6 +665,7 @@
     return b;
   }
 
+  /** Desplaza el historial del diálogo al mensaje visible. */
   function scrollLog() {
     const log = $('#story-log');
     if (log) log.scrollTop = log.scrollHeight;
@@ -641,15 +676,18 @@
   let speakerCtl = null;
   let speakerId = undefined;
 
+  /** Determina el fondo que corresponde a la escena actual. */
   function currentBg() {
     const ch = chapterById(G.progress.chapterId);
     return (G.progress.node && ch.nodes[G.progress.node]?.bg) || ch.nodes[ch.start]?.bg || G.player.origin;
   }
 
+  /** Cambia el fondo visual de la historia. */
   function setBg(bg) {
     if (bg) sceneCtl?.set(bg);
   }
 
+  /** Actualiza el nombre y retrato del hablante. */
   function setSpeaker(s) {
     const box = $('#speaker');
     if (!box) return;
@@ -677,10 +715,12 @@
     box.classList.add('swap');
   }
 
+  /** Inicia una conversación con un personaje. */
   function talk(v) {
     speakerCtl?.talk(v);
   }
 
+  /** Comprueba si una línea puede mostrarse según el estado. */
   function lineVisible(line) {
     const c = line.cond;
     if (!c) return true;
@@ -689,6 +729,7 @@
     return true;
   }
 
+  /** Inicia un capítulo desde su nodo de entrada. */
   async function startChapter() {
     const ch = chapterById(G.progress.chapterId);
     busy = true;
@@ -700,14 +741,17 @@
     playNode(ch.start);
   }
 
+  /** Añade una línea al historial narrativo. */
   function pushLog(s, t) {
     G.log.push({ s, t });
   }
 
+  /** Redibuja la historia si su vista está activa. */
   function renderStoryIfVisible() {
     if (tab === 'historia') renderMain();
   }
 
+  /** Calcula el tiempo de lectura o animación de un mensaje. */
   function delayFor(text) {
     const speed = window.App.settings.textSpeed;
     if (speed === 'instantaneo') return 120;
@@ -763,6 +807,7 @@
     while (Date.now() - t0 < ms && !skipping) await sleep(60);
   }
 
+  /** Muestra u oculta la indicación de escritura. */
   function typingIndicator(s) {
     const log = $('#story-log');
     if (!log || s === 'narrador' || s === 'sistema') return null;
@@ -772,11 +817,13 @@
     return t;
   }
 
+  /** Avanza al siguiente mensaje o nodo narrativo. */
   function advance(next) {
     G.progress.linesShown = false;
     playNode(next);
   }
 
+  /** Obtiene las decisiones disponibles en el nodo actual. */
   function currentChoices() {
     if (G.progress.finished) return [];
     const ch = chapterById(G.progress.chapterId);
@@ -787,6 +834,7 @@
     return [];
   }
 
+  /** Evalúa si se cumplen los requisitos de una opción. */
   function reqMet(req) {
     if (!req) return true;
     if (req.stat) return (G.stats[req.stat] || 0) >= req.min;
@@ -802,6 +850,7 @@
     return req && (req.flag || req.notFlag) && !reqMet(req);
   }
 
+  /** Construye los botones de decisión del jugador. */
   function showChoices(choices) {
     const box = $('#choices');
     if (!box) return;
@@ -825,6 +874,7 @@
     });
   }
 
+  /** Aplica las consecuencias de una decisión al estado del juego. */
   function applyFx(fx = {}) {
     for (const [k, v] of Object.entries(fx.aff || {})) {
       G.aff[k] = Math.max(-10, Math.min(10, affOf(k) + v));
@@ -837,6 +887,7 @@
     (fx.flags || []).forEach((f) => { G.flags[f] = true; });
   }
 
+  /** Procesa la decisión elegida y avanza la historia. */
   async function choose(c) {
     if (busy) return;
     Audio2.sfx.choice();
@@ -859,6 +910,7 @@
     advance(c.next);
   }
 
+  /** Registra la conclusión del capítulo actual. */
   async function endChapter() {
     const ch = chapterById(G.progress.chapterId);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id));
@@ -875,6 +927,7 @@
     showChoices(currentChoices());
   }
 
+  /** Determina cuál es el siguiente capítulo narrativo. */
   async function nextChapter() {
     const route = S().routes[G.progress.route];
     G.progress.chapterIdx += 1;
@@ -918,6 +971,7 @@
     return [...S().endings, ...(S().endings2 || [])];
   }
 
+  /** Ejecuta el final alcanzado por las decisiones. */
   async function playEnding() {
     const ch = chapterById(G.progress.chapterId);
     const set = ch.nodes[G.progress.node]?.endingSet === 'endings2' ? S().endings2 : S().endings;
@@ -1001,11 +1055,13 @@
   const TONES = { amable: 'Amable', broma: 'Broma', duro: 'Dura', pregunta: 'Pregunta', coqueto: 'Coqueta', astuto: 'Astuta', serio: 'Seria', sigilo: 'Sigilo' };
   let talking = false;
 
+  /** Calcula el estado de la relación al iniciar una charla. */
   function talkState() {
     G.talk = G.talk || { at: {}, seen: {} };
     return G.talk;
   }
 
+  /** Genera una clave estable para identificar una conversación. */
   function dlgKey(id, node, o) {
     return `${id}:${node}:${o.t}`;
   }
@@ -1018,12 +1074,14 @@
     return reqMet(req);
   }
 
+  /** Decide si una opción de diálogo debe ocultarse. */
   function dlgHidden(req, id) {
     if (!req) return false;
     if (req.season) return !dlgReq(req, id);
     return reqHidden(req);
   }
 
+  /** Describe de forma legible el requisito de una opción. */
   function reqLabel(req) {
     if (!req) return '';
     if (req.stat) return `[${S().stats[req.stat].label} ${req.min}]`;
@@ -1063,6 +1121,7 @@
     return (data?.hub || []).filter((o) => !dlgHidden(o.req, id) && !seen[dlgKey(id, 'hub', o)]).length;
   }
 
+  /** Dibuja el comunicador y la conversación actual. */
   function renderChat(main) {
     if (!G.unlocked.length) {
       main.append(el('div', { class: 'wiki-empty' }, el('h2', {}, 'Aún no conoces a nadie'), el('p', {}, 'Juega la historia para desbloquear personajes con los que hablar.')));
@@ -1132,6 +1191,7 @@
   function chatMode(id) {
     return talkState().mode?.[id] || 'tree';
   }
+  /** Cambia entre diálogo escrito y chat libre opcional. */
   function setChatMode(id, m) {
     talkState().mode = { ...(talkState().mode || {}), [id]: m };
     document.querySelectorAll('.chat-mode .cm-btn').forEach((b, i) => b.classList.toggle('on', (i === 1) === (m === 'ai')));
@@ -1139,6 +1199,7 @@
     persist();
   }
 
+  /** Muestra la entrada de texto del chat libre con IA. */
   function showAIBox(id, box) {
     box.classList.add('ai-box');
     if (!window.AI.ready()) {
@@ -1156,6 +1217,7 @@
     if (!U.touch) setTimeout(() => input.focus(), 0);
   }
 
+  /** Envía el mensaje al proveedor de IA seleccionado. */
   async function sendAI(id, text) {
     talking = true;
     const thread = G.chats[id];
@@ -1186,6 +1248,7 @@
     persist();
   }
 
+  /** Presenta las líneas de una conversación con personaje. */
   function showDialog(id) {
     const box = $('#dlg-choices');
     if (!box) return;
@@ -1217,6 +1280,7 @@
     });
   }
 
+  /** Reinicia la selección de temas de conversación. */
   async function restartTalk(id) {
     talkState().at[id] = 'hub';
     await speak(id, [tpl(greeting(id), G.player)]);
@@ -1249,6 +1313,7 @@
     if (thread.length > 160) thread.splice(1, thread.length - 160);
   }
 
+  /** Procesa la respuesta elegida por el jugador. */
   async function sayOption(id, o) {
     if (talking) return;
     talking = true;
@@ -1300,6 +1365,7 @@
     persist();
   }
 
+  /** Presenta un aviso de cambio de relación o afinidad. */
   function relToast(id, kind) {
     Audio2.sfx.unlock();
     if (kind === 'romper') return toast(`Ya no sales con ${charName(id)} (−3 afinidad)`, 'warn');
@@ -1319,6 +1385,7 @@
     }
   }
 
+  /** Selecciona el saludo apropiado para el contexto. */
   function greeting(id) {
     const r = Relations.greet(G, id);
     if (r) return r;
@@ -1363,11 +1430,13 @@
         G.endings.length ? ` — ${G.endings.map((e) => allEndings().find((x) => x.id === e)?.title.replace('Final · ', '')).join(', ')}` : '')));
   }
 
+  /** Dibuja una barra de reputación o relación. */
   function repBar(label, v, cls) {
     return el('div', { class: 'stat' }, el('span', {}, label),
       el('div', { class: `bar rep-${cls}` }, el('i', { style: `width:${Math.max(0, Math.min(100, v * 12))}%` })), el('b', {}, v));
   }
 
+  /** Permite modificar la imagen de la ficha del personaje. */
   function changePhoto(f) {
     if (!f) return;
     const reader = new FileReader();
@@ -1388,6 +1457,7 @@
     reader.readAsDataURL(f);
   }
 
+  /** Prepara una copia de los datos de la ficha. */
   async function exportSheet() {
     const data = { ...G.player, stats: G.stats, reputacion: G.rep, afinidad: G.aff, desbloqueados: G.unlocked, finales: G.endings };
     if (window.arcane?.exportSheet) {
@@ -1431,6 +1501,7 @@
   // Autoguardado mientras se explora.
   setInterval(() => { if (G && window.App.view === 'game') persist(); }, 30000);
 
+  /** Prepara la interfaz de juego cuando se entra a la partida. */
   function mount() {
     if (G) renderPlay();
     else renderMenu();
