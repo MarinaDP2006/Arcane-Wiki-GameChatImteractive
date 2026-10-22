@@ -1,7 +1,7 @@
 {
   "name": "grietas-and-gears",
   "productName": "Grietas & Gears",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "Grietas & Gears, juego de fans de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
@@ -19,6 +19,8 @@
     "@capacitor/app": "^8.1.2",
     "@capacitor/cli": "^8.5.3",
     "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
     "electron": "^44.9.1",
     "electron-builder": "^26.15.3"
   },

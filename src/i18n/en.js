@@ -3928,5 +3928,12 @@ window.I18N_DATA.en = {
   "✦ Personajes desbloqueados para chatear: {0}": "✦ Characters unlocked for chat: {0}",
   "✦ {0} tema{1} por descubrir": "✦ {0} topic{1} to discover",
   "✦ {0} · lo que escribas se envía a ese servicio": "✦ {0} · what you write is sent to that service",
-  "⧉ Abrir en ventana": "⧉ Open in window"
+  "⧉ Abrir en ventana": "⧉ Open in window",
+  "Exportar": "Export",
+  "Importar": "Import",
+  "Partida exportada": "Save exported",
+  "No se pudo exportar la partida": "Could not export the save",
+  "Ese archivo no es una partida de Grietas & Gears": "That file is not a Grietas & Gears save",
+  "Partida de {0} importada en la ranura {1}": "{0}'s save imported into slot {1}",
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "Slot {0} holds {1}'s save. Replace it with {2}'s?"
 };

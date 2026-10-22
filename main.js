@@ -411,6 +411,20 @@ ipcMain.handle('save:delete', (_e, slot) => {
   return true;
 });
 
+// Exportar una partida a un archivo para llevarla a otro dispositivo (tableta, otro PC).
+// El archivo va donde elija el jugador; nunca sale de su ordenador por sí solo.
+ipcMain.handle('save:export', async (_e, slot, file) => {
+  if (!readSave(slot)) return false;
+  const { canceled, filePath } = await dialog.showSaveDialog({
+    title: 'Exportar partida',
+    defaultPath: path.join(app.getPath('documents'), path.basename(String(file || 'partida.json'))),
+    filters: [{ name: 'Partida de Grietas & Gears', extensions: ['json'] }],
+  });
+  if (canceled || !filePath) return false;
+  writeJSON(filePath, { formato: 'grietas-partida', version: 1, exportadaEl: new Date().toISOString(), partida: readSave(slot) });
+  return true;
+});
+
 // Exportar la ficha del personaje a un archivo JSON elegido por el usuario.
 ipcMain.handle('sheet:export', async (_e, data) => {
   const { canceled, filePath } = await dialog.showSaveDialog({

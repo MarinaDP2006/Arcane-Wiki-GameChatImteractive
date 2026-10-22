@@ -8,3 +8,7 @@ android/app/release/
 *.jks
 keystore.properties
 /i18n/
+!android/app/debug.keystore
+
+# Partidas exportadas: son personales, no se suben
+grietas-partida-*.json

@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('arcane', {
     load: (slot) => ipcRenderer.invoke('save:load', slot),
     write: (slot, data) => ipcRenderer.invoke('save:write', slot, data),
     remove: (slot) => ipcRenderer.invoke('save:delete', slot),
+    exportFile: (slot, file) => ipcRenderer.invoke('save:export', slot, file),
   },
   exportSheet: (data) => ipcRenderer.invoke('sheet:export', data),
   art: {

@@ -32,6 +32,14 @@ android {
         }
     }
     signingConfigs {
+        // Llave de prueba fija (no es secreta): así cada APK de prueba nuevo se instala encima del
+        // anterior y la tableta conserva las partidas. Antes cada compilación tenía una llave distinta.
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         release {
             if (storeFilePath) {
                 storeFile rootProject.file(storeFilePath)
@@ -42,6 +50,9 @@ android {
         }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
             if (storeFilePath) signingConfig signingConfigs.release
             minifyEnabled false
