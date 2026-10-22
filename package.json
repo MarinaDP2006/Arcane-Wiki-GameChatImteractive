@@ -9,7 +9,7 @@
   "scripts": {
     "start": "electron .",
     "postinstall": "node scripts/asegurar-electron.js",
-    "check": "node scripts/check.js",
+    "check": "node scripts/check.js && node scripts/check-runtime.js",
     "dist": "electron-builder --win",
     "dist:win": "electron-builder --win"
   },

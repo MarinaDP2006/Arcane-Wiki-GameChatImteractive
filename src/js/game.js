@@ -238,6 +238,8 @@
       World.pause(false);
       return toast('No se ha podido abrir este lugar de Piltover en 3D. Comprueba WebGL.', 'warn');
     }
+    // Se marca el capítulo explorado solo después de completar el recorrido interior.
+    if (inside && loc.id === objectiveId()) G.acts[`interior:${G.progress.chapterId}`] = true;
     const acts = locationActions(loc);
     if (!acts.length) return toast(`${loc.name}: aquí no hay nada que hacer ahora mismo.`);
     if (acts.length === 1) return acts[0].run();
@@ -569,6 +571,14 @@
 
   /** Abre la interfaz narrativa del capítulo. */
   function openStory() {
+    // Evita iniciar o continuar capítulos de un edificio desde el botón H del mapa
+    // sin haber investigado antes su espacio 3D, también en partidas nuevas.
+    const required = objectiveId();
+    const isExplorable = Boolean(window.PiltoverInteriors?.has(required) || window.ZaunInteriors?.has(required));
+    if (!G.progress.finished && isExplorable && !G.acts[`interior:${G.progress.chapterId}`]) {
+      toast(`Entra en ${objectiveName()} e investiga primero su interior.`, 'warn');
+      return;
+    }
     if (!G.progress.started && !G.progress.finished) {
       G.progress.started = true;
       openOverlay('historia');

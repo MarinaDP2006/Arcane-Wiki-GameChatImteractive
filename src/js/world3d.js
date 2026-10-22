@@ -1730,6 +1730,28 @@
       grp.add(outer);
       grp.add(map.id === 'zaun' ? buildZaun(map, R) : buildPiltover(map, R));
       buildCommon(map, R, grp);
+      // Entradas monumentales de Piltover: piedra clara, remates de bronce y luz hextec.
+      if (map.id === 'piltover') {
+        const colors = { consejo: 0xffe3a1, 'taller-jayce': 0x89d9e8, academia: 0xcdbd8b, hexpuertas: 0x55b9f2, 'muelle-stillwater': 0xdb7071, puente: 0xe1c18d };
+        for (const loc of map.def.locations) {
+          if (!colors[loc.id]) continue;
+          const entry = new T.Group(); entry.position.set(loc.x, 0, loc.y);
+          const stone = new T.MeshStandardMaterial({ color: 0xe5d9bf, metalness: 0.14, roughness: 0.75 });
+          const brass = new T.MeshStandardMaterial({ color: 0xb99761, metalness: 0.8, roughness: 0.35 });
+          const glow = new T.MeshBasicMaterial({ color: colors[loc.id] });
+          for (const x of [-20, 20]) {
+            const column = new T.Mesh(new T.CylinderGeometry(3.8, 4.7, 48, 8), stone);
+            column.position.set(x, 24, 0); entry.add(column);
+            const capital = new T.Mesh(new T.BoxGeometry(12, 4, 12), brass);
+            capital.position.set(x, 49, 0); entry.add(capital);
+          }
+          const lintel = new T.Mesh(new T.BoxGeometry(51, 7, 11), stone);
+          lintel.position.y = 54; entry.add(lintel);
+          const gem = new T.Mesh(new T.OctahedronGeometry(7), glow);
+          gem.position.y = 64; entry.add(gem);
+          grp.add(entry);
+        }
+      }
       // Entradas volumétricas reconocibles que marcan los seis interiores de Zaun.
       if (map.id === 'zaun') {
         const colors = { callejones: 0x7dd65c, arbol: 0xe4a95c, fabrica: 0x9364ed, 'ultima-gota': 0xf0b34e, sumidero: 0xac53d4, invernadero: 0x92ed6c };
