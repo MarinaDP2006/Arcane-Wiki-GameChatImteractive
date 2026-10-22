@@ -63,6 +63,20 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [x] `npm run check` comprueba que nadie habla después de su muerte y que las condiciones son válidas. Textos nuevos traducidos a inglés y francés.
 - [ ] Jugar una partida completa de cada temporada en Windows.
 
+## Nueva campaña en dos partes y chats inmersivos (22/10/2026)
+- [x] Revisados los prompts de IA en `src/js/ai.js`, el perfil de cada personaje y sus relaciones.
+- [x] Incorporada `src/data/arcane-lore.js` con pasado, vínculos y motivaciones de 16 personajes, basada en fuentes de Arcane.
+- [x] Ampliado el prompt con acontecimientos de la partida, decisiones recientes, relaciones y recuerdos de conversación, sin revelar secretos futuros.
+- [x] Añadidos seis capítulos con elecciones propias del protagonista: z9/z10, p9/p10 y t7/t8.
+- [x] Estructura visible en «Parte I · El inicio» y «Parte II · Las consecuencias», manteniendo IDs internos para guardar/cargar.
+- [x] Nuevas conversaciones escritas reactivas a decisiones en `src/data/chat-expansion.js`.
+- [x] Asignados lugares válidos del mapa a los seis capítulos nuevos.
+- [x] Validación estructural de los datos: 30 capítulos, 261 nodos, 7 finales, 300 opciones de diálogo. Nota: prueba ejecutada mediante evaluador JavaScript con comprobación de recursos externos simulada; no es una ejecución de Windows.
+- [ ] Probar la narrativa ampliada completa en Windows, incluyendo guardados anteriores y ambos orígenes.
+- [ ] Probar la IA con modelos de Ollama reales y refinar posibles respuestas repetitivas o que desvelen spoilers.
+- [ ] Revisar textos secundarios que todavía mencionen «temporada» y otras traducciones.
+- [ ] Considerar una campaña alternativa original independiente del canon, si se desea reemplazar completamente el argumento, sin eliminar el actual.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.
