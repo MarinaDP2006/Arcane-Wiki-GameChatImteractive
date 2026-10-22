@@ -1,0 +1,166 @@
+{
+  "personajes": {
+    "jinx": {
+      "s1": "https://arcane.fandom.com/wiki/Jinx/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Jinx/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "vi": {
+      "s1": "https://arcane.fandom.com/wiki/Vi/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Vi/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "caitlyn": {
+      "s1": "https://arcane.fandom.com/wiki/Caitlyn_Kiramman/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Caitlyn_Kiramman/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "ekko": {
+      "s1": "https://arcane.fandom.com/wiki/Ekko/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Ekko/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "jayce": {
+      "s1": "https://arcane.fandom.com/wiki/Jayce_Talis/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Jayce_Talis/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "viktor": {
+      "s1": "https://arcane.fandom.com/wiki/Viktor/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Viktor/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "mel": {
+      "s1": "https://arcane.fandom.com/wiki/Mel_Medarda/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Mel_Medarda/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "sevika": {
+      "s1": "https://arcane.fandom.com/wiki/Sevika/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Sevika/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "silco": {
+      "s1": "https://arcane.fandom.com/wiki/Silco/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Silco/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "vander": {
+      "s1": "https://arcane.fandom.com/wiki/Vander/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Vander/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "isha": {
+      "s1": "https://arcane.fandom.com/wiki/Isha/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Isha/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "ambessa": {
+      "s1": "https://arcane.fandom.com/wiki/Ambessa_Medarda/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Ambessa_Medarda/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "heimerdinger": {
+      "s1": "https://arcane.fandom.com/wiki/Cecil_B._Heimerdinger/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Cecil_B._Heimerdinger/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "cassandra": {
+      "s1": "https://arcane.fandom.com/wiki/Cassandra/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Cassandra/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "maddie": {
+      "s1": "https://arcane.fandom.com/wiki/Maddie_Nolen/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Maddie_Nolen/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    },
+    "kino": {
+      "s1": "https://arcane.fandom.com/wiki/Kino_Medarda/Gallery",
+      "s2": "https://arcane.fandom.com/wiki/Kino_Medarda/Gallery",
+      "status": "pendiente de descargar y comprobar encuadre; no sustituir imagen original subida"
+    }
+  },
+  "lugares": {
+    "piltover": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "zaun": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "ultima-gota": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "academia": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "consejo": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "hexpuertas": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "mansion-kiramman": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "stillwater": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "taller-jayce": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "tienda-benzo": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "fabrica": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "arbol": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "comuna-viktor": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "puente": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "callejones": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    },
+    "ejecutores": {
+      "s1": "https://arcane.fandom.com/wiki/Category:Locations",
+      "s2": "https://arcane.fandom.com/wiki/Category:Locations",
+      "status": "pendiente de seleccionar fotograma sin personajes y verificar temporada"
+    }
+  }
+}
