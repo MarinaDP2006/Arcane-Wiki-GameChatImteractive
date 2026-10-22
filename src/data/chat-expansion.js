@@ -57,5 +57,6 @@
     req: { flag: 'voz_zaun' }, once: true, fx: { aff: 2 },
     say: ['No necesito que me inviten a una mesa porque quedan sillas libres.',
       'Necesito saber que la próxima vez que nos quiten algo, no bastará con pedirnos paciencia. ¿Tú lo entiendes, verdad?'] });
-  CHAT.expansionV2 = true;
+  // No enumerar esta marca: el validador recorre Object.values(CHAT) como personajes.
+  Object.defineProperty(CHAT, 'expansionV2', { value: true, enumerable: false });
 })();
