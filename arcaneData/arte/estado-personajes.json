@@ -1,0 +1,29 @@
+{
+  "nota": "Imágenes existentes copiadas sin alterarlas. No son modelos 3D ni recortes de cuerpo completo.",
+  "ciudades": [
+    "piltover",
+    "zaun",
+    "otros"
+  ],
+  "personajesPrincipales": [
+    "jinx",
+    "isha",
+    "ekko",
+    "caitlyn",
+    "viktor",
+    "jayce",
+    "silco",
+    "sevika"
+  ],
+  "estadoCanon": {
+    "silco": "muere al final de temporada 1",
+    "isha": "muere en temporada 2",
+    "jinx": "desaparece en el final; muerte no confirmada",
+    "jayce": "desaparece junto a Viktor; destino no confirmado",
+    "viktor": "desaparece junto a Jayce; destino no confirmado",
+    "ekko": "sobrevive",
+    "caitlyn": "sobrevive",
+    "sevika": "sobrevive"
+  },
+  "notaJuego": "La aparición en el mapa depende de G.fallen y de los rescates alternativos. Las desapariciones se distinguen de las muertes confirmadas."
+}
