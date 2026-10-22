@@ -4,6 +4,8 @@
 Se ejecuta en GitHub Actions (.github/workflows/arte.yml), donde hay internet abierto.
 Lee el pedido en JSON de la variable PEDIDO (o de un archivo pasado como argumento):
   {"mode": "discover", "pages": [...], "keywords": [...]}
+  {"mode": "allimages", "wikis": ["arcane"], "minw": 900}   (solo lista: título, tamaño, url)
+  {"mode": "sheet", "wiki": "arcane", "groups": {"nombre": ["File:A.png", ...]}}   (hojas de miniaturas)
   {"mode": "fetch", "items": [{"title": "File:X.png", "dest": "ruta/salida.webp", "max": 1600}]}
 """
 import json, os, re, sys, time, io, urllib.parse, urllib.request
@@ -130,6 +132,51 @@ def discover(req):
     json.dump(index, open(OUT + f'/{wiki}-indice.json', 'w'), ensure_ascii=False, indent=1)
 
 
+def allimages(req):
+    for wiki in req.get('wikis', ['arcane']):
+        out, cont = [], {}
+        while True:
+            r = api(wiki, action='query', list='allimages', ailimit='500', aiprop='size|url|mime', **cont)
+            if not r or 'query' not in r:
+                break
+            for i in r['query']['allimages']:
+                if (i.get('width') or 0) >= req.get('minw', 900):
+                    out.append([i['title'], i.get('width'), i.get('height'), i.get('url')])
+            if 'continue' not in r:
+                break
+            cont = {'aicontinue': r['continue']['aicontinue']}
+        print(wiki, len(out), flush=True)
+        json.dump(out, open(OUT + f'/{wiki}-todas.json', 'w'), ensure_ascii=False, indent=0)
+
+
+def sheets(req):
+    os.makedirs(OUT + '/hojas', exist_ok=True)
+    wiki = req.get('wiki', 'arcane')
+    index = {}
+    for name, titles in req['groups'].items():
+        info = {}
+        for k in range(0, len(titles), 40):
+            r = api(wiki, action='query', titles='|'.join(titles[k:k + 40]), prop='imageinfo', iiprop='url|size', iiurlwidth='420')
+            for p in (r or {}).get('query', {}).get('pages', []):
+                if p.get('imageinfo'):
+                    info[p['title']] = p['imageinfo'][0]
+        cells, index[name] = [], []
+        for n, t in enumerate(titles):
+            ii = info.get(t.replace('_', ' '))
+            im = None
+            if ii:
+                data = get(ii.get('thumburl') or ii['url'], binary=True)
+                try:
+                    im = Image.open(io.BytesIO(data)).convert('RGB')
+                except Exception:
+                    pass
+            index[name].append([n, t, bool(im)])
+            cells.append((f'{n} {t[5:]}', im))
+        for k in range(0, len(cells), 12):
+            contact_sheet(cells[k:k + 12], f'{OUT}/hojas/{name}-{k // 12}.jpg', cols=3, cell=(560, 240))
+    json.dump(index, open(OUT + '/hojas.json', 'w'), ensure_ascii=False, indent=1)
+
+
 def imageinfo(wiki, titles):
     res = {}
     for k in range(0, len(titles), 40):
@@ -181,4 +228,4 @@ def fetch(req):
 if __name__ == '__main__':
     req = json.loads(os.environ['PEDIDO']) if os.environ.get('PEDIDO') else json.load(open(sys.argv[1]))
     os.makedirs(OUT, exist_ok=True)
-    (discover if req['mode'] == 'discover' else fetch)(req)
+    {'discover': discover, 'allimages': allimages, 'sheet': sheets, 'fetch': fetch}[req['mode']](req)
