@@ -11,6 +11,14 @@
     sumidero: { title: 'Laboratorio del Sumidero', desc: 'La química de Singed, entre frascos verdes y reactores violetas.', kind: 'laboratory', accent: 0xaf5ceb },
     invernadero: { title: 'El invernadero secreto', desc: 'Vidrio, conductos de quimtec y vegetación creciendo en las ruinas.', kind: 'garden', accent: 0x99e45e },
   };
+  const discoveries = {
+    canyon: 'Has encontrado las señales de una ruta de contrabando entre las pasarelas.',
+    tree: 'Descubres el sistema de cuerdas que protege el refugio de las Luciérnagas.',
+    tower: 'La consola principal controla las máquinas y las pasarelas de la torre.',
+    tavern: 'En el libro de cuentas de la barra hay una entrega marcada con tinta roja.',
+    laboratory: 'Un registro del laboratorio revela experimentos y muestras de Brillo.',
+    garden: 'Los conductos del invernadero mezclan aire limpio y quimtec reciclada.',
+  };
   const aliases = { 'tienda-benzo': 'tavern', mercado: 'canyon', tejados: 'canyon', foso: 'tower', 'escondite-jinx': 'tower' };
   let running = null;
   /** Indica si hay una escena explorable asociada al lugar, incluidos accesos alternativos. */
@@ -218,17 +226,30 @@
     const warm = new T.PointLight(0xffae65, 36, 110, 2); warm.position.set(-25, 15, 32); scene.add(warm);
     const group = new T.Group(); scene.add(group);
     const goal = build(group, cfg);
+    // Primer punto de investigación independiente del objetivo narrativo final.
+    const clue = new T.Group();
+    clue.position.set(21, 2, 17);
+    cube(clue, 0, 0, 0, 8, 2, 8, material(0x665b4c));
+    orb(clue, 0, 5, 0, 3.3, material(0x61e6d1, true));
+    group.add(clue);
     const camera = new T.PerspectiveCamera(68, Math.max(1, host.clientWidth / host.clientHeight), 0.1, 600);
     const player = new T.Vector3(0, 7, 58);
     const keys = new Set();
     let last = 0;
     let complete = false;
+    let inspected = false;
     const keydown = (e) => {
       if (!running || e.target.matches?.('input,textarea,select')) return;
       const k = e.key.toLowerCase();
       if (['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift','e','escape'].includes(k)) e.preventDefault();
       if (k === 'escape') { close(); return; }
-      if (k === 'e' && Math.hypot(player.x - goal.position.x, player.z - goal.position.z) < 17 && !complete) {
+      if (k === 'e' && !inspected && Math.hypot(player.x - clue.position.x, player.z - clue.position.z) < 13) {
+        inspected = true;
+        status.textContent = discoveries[cfg.kind] + ' Ahora busca el objetivo principal.';
+        clue.visible = false;
+        return;
+      }
+      if (k === 'e' && inspected && Math.hypot(player.x - goal.position.x, player.z - goal.position.z) < 17 && !complete) {
         complete = true; const action = onGoal; close(); action?.(); return;
       }
       keys.add(k);
@@ -250,7 +271,11 @@
       camera.position.set(player.x, player.y + 12, player.z + 27);
       camera.lookAt(player.x, player.y - 4, player.z - 32);
       const d = Math.hypot(player.x - goal.position.x, player.z - goal.position.z);
-      status.textContent = d < 17 ? 'Objetivo alcanzado: pulsa E para investigar y continuar.' : 'Avanza hasta la luz del objetivo (' + Math.round(d) + ' m).';
+      const dc = Math.hypot(player.x - clue.position.x, player.z - clue.position.z);
+      status.textContent = !inspected
+        ? dc < 13 ? 'Pulsa E para investigar la pista azul.' : 'Busca la pista azul (' + Math.round(dc) + ' m).'
+        : d < 17 ? 'Pista encontrada. Pulsa E para activar el objetivo de la historia.'
+          : 'Pista encontrada. Llega a la luz del objetivo (' + Math.round(d) + ' m).';
       goal.rotation.y += dt * 0.4;
       const w = host.clientWidth, h = host.clientHeight;
       if (renderer.domElement.width !== Math.floor(w * renderer.getPixelRatio()) || renderer.domElement.height !== Math.floor(h * renderer.getPixelRatio())) {
