@@ -574,8 +574,7 @@
     // Evita iniciar o continuar capítulos de un edificio desde el botón H del mapa
     // sin haber investigado antes su espacio 3D, también en partidas nuevas.
     const required = objectiveId();
-    const isExplorable = (G.world.map === 'piltover' && window.PiltoverInteriors?.has(required)) ||
-      (G.world.map === 'zaun' && window.ZaunInteriors?.has(required));
+    const isExplorable = Boolean(window.PiltoverInteriors?.has(required) || window.ZaunInteriors?.has(required));
     if (!G.progress.finished && isExplorable && !G.acts[`interior:${G.progress.chapterId}`]) {
       toast(`Entra en ${objectiveName()} e investiga primero su interior.`, 'warn');
       return;
