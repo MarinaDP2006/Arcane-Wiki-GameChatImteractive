@@ -550,7 +550,7 @@
   function showHelp() {
     if (U.touch) {
       showNotice('Controles', [
-        'Moverse: arrastra el joystick de abajo a la izquierda (empújalo hasta el borde para correr). También puedes tocar un punto del mapa para ir allí.',
+        'Moverse: toca el mapa para mover la vista, o toca un personaje o un lugar para ir hasta él y abrirlo.',
         'Hablar, entrar o usar: botón ✦ de abajo a la derecha, o toca el aviso que sale en pantalla.',
         'Cámara 3D: pellizca con dos dedos para acercar o alejar, y gira los dos dedos para rotar la vista.',
         'Los botones de abajo abren la historia, el comunicador, la ficha, el Códice, el Atlas y la pausa. El botón «atrás» del móvil cierra ventanas y pausa.',
@@ -559,7 +559,7 @@
       return;
     }
     showNotice('Controles', [
-      'Moverse: WASD o flechas (Mayús para correr). También puedes hacer clic en el mapa.',
+      'Moverse: haz clic en el mapa para mover la vista, o en un personaje o un lugar para ir hasta él y abrirlo.',
       'Interactuar / hablar / entrar: E o Intro.',
       'Cámara 3D: rueda del ratón (o + y −) para acercar o alejar, Q y R para girar, botón derecho arrastrando para girar e inclinar.',
       'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',

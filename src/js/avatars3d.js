@@ -911,18 +911,20 @@
   }
 
   // ---------- Interfaz ----------
-  // Crea un personaje. Empieza con el muñeco y, si hay modelo .glb, lo cambia en cuanto carga.
+  // Crea un personaje. El jugador empieza con el muñeco y, si hay modelo .glb, lo cambia en
+  // cuanto carga. Los personajes de Arcane solo aparecen con su propio modelo 3D: sin muñeco
+  // provisional ni modelo genérico (hasta que carga, el hueco queda vacío).
   function create({ id, player }) {
     const spec = specFor(id, player);
     const holder = new T.Group();
-    const av = { holder, yaw: 0, ...buildDoll(spec) };
-    holder.add(av.root);
+    const av = { holder, yaw: 0, ...(player ? buildDoll(spec) : {}) };
+    if (av.root) holder.add(av.root);
     // En el móvil solo el jugador proyecta sombra (ahorra mucho trabajo a la gráfica).
     const shadows = !(window.U?.touch && !player);
     if (!shadows) holder.traverse((o) => { o.castShadow = false; });
-    buildGLB(player ? ['jugador', 'generico'] : [id, 'generico'], spec.build.scale || 1, spec).then((g) => {
+    buildGLB(player ? ['jugador', 'generico'] : [id], spec.build.scale || 1, spec).then((g) => {
       if (!g || av.disposed) return;
-      holder.remove(av.root);
+      if (av.root) holder.remove(av.root);
       Object.assign(av, g, { J: null });
       if (!shadows) g.root.traverse((o) => { o.castShadow = false; });
       holder.add(g.root);
@@ -937,6 +939,7 @@
     d = Math.atan2(Math.sin(d), Math.cos(d));
     av.yaw += d * Math.min(1, dt * 10);
     av.holder.rotation.y = av.yaw;
+    if (!av.root) return; // su modelo aún se está cargando
     // Los modelos externos de NPC se muestran con su pose y colores originales.
     // No avanzamos el AnimationMixer ni balanceamos el cuerpo en modo estático.
     if (staticNpc && (av.kind === 'glb' || av.kind === 'static')) return;

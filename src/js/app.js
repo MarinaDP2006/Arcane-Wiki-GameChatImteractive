@@ -313,7 +313,7 @@
         slider('shake', 'Sacudidas de pantalla', 'En los minijuegos.', 0, 1.5, 0.1, pct),
         U.touch ? toggle('vibration', 'Vibración', 'El móvil vibra con los golpes y los aciertos.') : null,
         el('h3', {}, 'Teclado'),
-        el('p', { class: 'muted small' }, 'WASD o flechas: moverse · Mayús: correr · E: hablar o entrar · H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas · Q/R: girar · +/−: zoom · Esc: pausa'),
+        el('p', { class: 'muted small' }, 'Clic: moverse, hablar o entrar · E: hablar o entrar · H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas · Q/R: girar · +/−: zoom · Esc: pausa'),
       ],
       accesibilidad: () => [
         el('h3', {}, 'Accesibilidad'),
