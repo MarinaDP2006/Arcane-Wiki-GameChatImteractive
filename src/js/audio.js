@@ -20,7 +20,7 @@
       A.master.gain.value = A.settings.volume;
       A.master.connect(A.ctx.destination);
       A.musicGain = A.ctx.createGain();
-      A.musicGain.gain.value = 0.25;
+      A.musicGain.gain.value = 0.25 * (A.settings.musicVolume ?? 1);
       A.musicGain.connect(A.master);
     }
     if (A.ctx.state === 'suspended') A.ctx.resume();
@@ -30,6 +30,7 @@
   function configure(s) {
     Object.assign(A.settings, s);
     if (A.master) A.master.gain.value = A.settings.volume;
+    if (A.musicGain) A.musicGain.gain.value = 0.25 * (A.settings.musicVolume ?? 1);
     if (!A.settings.music) stopMusic();
     else if (A.mood) playMusic(A.mood, true);
   }
@@ -42,7 +43,7 @@
     const g = ctx.createGain();
     o.type = type;
     o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.setValueAtTime(Math.max(0.0002, vol * (A.settings.sfxVolume ?? 1)), ctx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
     o.connect(g).connect(A.master);
     o.start();

@@ -1074,3 +1074,27 @@ body[data-city='zaun'] .btn.primary { background: linear-gradient(180deg, #8fe8c
 .ai-status { margin-left: 0.4rem; }
 .msg.sys .bubble { font-style: italic; }
 body.touch .ai-input { font-size: 16px; }
+
+/* ============ Ajustes ampliados (v1.15) ============ */
+.settings-tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; }
+.settings-tabs .tab { padding: 0.4rem 0.8rem; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.03); font-size: 0.85rem; }
+.settings-tabs .tab.active { background: linear-gradient(180deg, rgba(227, 196, 90, 0.28), rgba(201, 154, 59, 0.16)); border-color: var(--gold2); color: #fff3c8; }
+.settings-page { min-height: 320px; }
+.slider { display: inline-flex; align-items: center; gap: 0.6rem; min-width: 210px; }
+.slider input { flex: 1; accent-color: var(--gold); }
+.slider-val { min-width: 3.2rem; text-align: right; font-variant-numeric: tabular-nums; }
+.switch-row select.input { width: auto; min-width: 150px; }
+.btn.danger { color: var(--danger); border-color: rgba(224, 90, 90, 0.4); }
+.fps-meter { position: fixed; left: 10px; bottom: 10px; z-index: 9999; padding: 2px 8px; border-radius: 6px; background: rgba(0, 0, 0, 0.6); color: #8fffd0; font: 600 12px/1.4 ui-monospace, monospace; pointer-events: none; }
+
+/* Brillo, tamaño de letra y accesibilidad */
+html.dim { filter: brightness(var(--brightness, 1)); }
+html[data-text-size="pequeno"] { font-size: 14px; }
+html[data-text-size="grande"] { font-size: 18px; }
+html[data-text-size="enorme"] { font-size: 21px; }
+body.no-minimap #world-mini { display: none; }
+body.readable-font { --font: Verdana, Tahoma, 'Segoe UI', sans-serif; --display: Verdana, Tahoma, sans-serif; }
+body.readable-font * { letter-spacing: normal !important; }
+body.high-contrast { --text: #ffffff; --muted: #d8d2e4; --line: rgba(255, 230, 140, 0.55); --panel: rgba(8, 6, 14, 0.96); }
+body.high-contrast .bubble, body.high-contrast .choice, body.high-contrast .btn { border-width: 2px; }
+body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }

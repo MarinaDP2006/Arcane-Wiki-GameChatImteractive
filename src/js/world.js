@@ -428,12 +428,12 @@
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Flecha hacia el objetivo cuando no está en pantalla
-    if (obj) drawObjectiveArrow(obj, cam);
+    if (obj && opt().objectiveArrow !== false) drawObjectiveArrow(obj, cam);
     if (fade > 0) {
       ctx.fillStyle = `rgba(0,0,0,${fade})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    drawMini(obj);
+    if (opt().minimap !== false) drawMini(obj);
   }
 
   // Dibujo en 2D+3D: la ciudad la pinta world3d.js y aquí se pintan encima, ordenados por
@@ -505,7 +505,7 @@
           ctx.moveTo(foot.x, foot.y);
           ctx.lineTo(head.x, head.y + r);
           ctx.stroke();
-          drawPerson(p.img, head.x, head.y, p.name, p.ring, r, false);
+          drawPerson(p.img, head.x, head.y, p.name, p.ring, r, opt().names === true);
         } });
         labels.push({ d: head.d, fn: () => label(p.name, head.x, head.y - r - 14, p.ring) });
       }
@@ -532,12 +532,12 @@
       ctx.fillStyle = v;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    if (obj) drawObjectiveArrow(obj, null);
+    if (obj && opt().objectiveArrow !== false) drawObjectiveArrow(obj, null);
     if (fade > 0) {
       ctx.fillStyle = `rgba(0,0,0,${fade})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    drawMini(obj);
+    if (opt().minimap !== false) drawMini(obj);
   }
 
   // Tarjeta del lugar: imagen recortada en hexágono alargado con marco dorado (o verde en Zaun).
@@ -825,6 +825,18 @@
   }
 
   // ---------- Bucle ----------
+  // Ajustes del jugador (minimapa, flecha del objetivo, nombres, contador de FPS).
+  const opt = () => window.App?.settings || {};
+  let fpsEl = null;
+  let fpsN = 0;
+  let fpsT = 0;
+  function fpsMeter(t) {
+    if (!opt().showFps) { fpsEl?.remove(); fpsEl = null; return; }
+    if (!fpsEl) { fpsEl = document.createElement('div'); fpsEl.className = 'fps-meter'; document.body.append(fpsEl); }
+    fpsN++;
+    if (t - fpsT >= 500) { fpsEl.textContent = `${Math.round((fpsN * 1000) / (t - fpsT))} FPS`; fpsN = 0; fpsT = t; }
+  }
+
   function frame(t, id) {
     if (!running || id !== loopId) return;
     const dt = Math.min(0.05, (t - last) / 1000 || 0);
@@ -837,6 +849,7 @@
     try {
       if (!paused) update(dt);
       draw(t);
+      fpsMeter(t);
     } catch (err) {
       console.error(err);
     }

@@ -41,6 +41,7 @@
       n.dataset.tilt = '1';
       n.classList.add('tilt3d');
       n.addEventListener('pointermove', (e) => {
+        if (App.settings.reduceMotion) return;
         const r = n.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5;
         const y = (e.clientY - r.top) / r.height - 0.5;
@@ -144,85 +145,213 @@
     return box;
   }
 
+  // Clases del <body> que dependen de los ajustes (tamaño de letra, accesibilidad, brillo…).
+  function applyLook(s = App.settings) {
+    const b = document.body;
+    const h = document.documentElement;
+    h.dataset.textSize = s.textSize || 'normal';
+    h.classList.toggle('dim', (s.brightness ?? 1) !== 1);
+    h.style.setProperty('--brightness', String(s.brightness ?? 1));
+    b.classList.toggle('reduce-motion', Boolean(s.reduceMotion));
+    b.classList.toggle('high-contrast', Boolean(s.highContrast));
+    b.classList.toggle('readable-font', Boolean(s.readableFont));
+    b.classList.toggle('no-minimap', s.minimap === false);
+    window.World3D?.applySettings?.();
+  }
+  App.applyLook = applyLook;
+
+  // Copia de seguridad: partidas y ajustes en un archivo .json (la clave de la IA no se copia).
+  async function exportData() {
+    const slots = {};
+    for (const s of await store.listSlots()) if (!s.empty) slots[s.slot] = await store.load(s.slot);
+    const settings = { ...App.settings, ai: App.settings.ai ? { ...App.settings.ai, key: '' } : undefined };
+    const blob = new Blob([JSON.stringify({ game: 'grietas-and-gears', version: 1, date: new Date().toISOString(), slots, settings }, null, 2)], { type: 'application/json' });
+    const a = el('a', { href: URL.createObjectURL(blob), download: `grietas-and-gears-copia-${new Date().toISOString().slice(0, 10)}.json` });
+    document.body.append(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Copia de seguridad guardada', 'good');
+  }
+
+  function importData(root, onBack) {
+    const input = el('input', { type: 'file', accept: 'application/json,.json', style: 'display:none' });
+    input.onchange = async () => {
+      try {
+        const data = JSON.parse(await input.files[0].text());
+        if (data.game !== 'grietas-and-gears' || !data.slots) throw new Error('no es una copia del juego');
+        if (!confirm('Se sustituirán las partidas de las ranuras que haya en la copia. ¿Continuar?')) return;
+        for (const [slot, d] of Object.entries(data.slots)) if (['1', '2', '3'].includes(slot) && d?.player) await store.save(slot, d);
+        if (data.settings) {
+          const { ai, lang, ...rest } = data.settings;
+          Object.assign(App.settings, rest);
+          await store.setSettings(rest);
+        }
+        toast('Copia de seguridad cargada', 'good');
+        applyLook();
+        renderSettings(root, onBack);
+      } catch (err) {
+        toast(`No se pudo cargar: ${err.message || err}`, 'warn');
+      } finally {
+        input.remove();
+      }
+    };
+    document.body.append(input);
+    input.click();
+  }
+
+  // Pestaña abierta en Ajustes (se recuerda mientras el juego esté abierto).
+  let settingsTab = 'general';
+
   function renderSettings(root, onBack) {
     const s = App.settings;
     root.innerHTML = '';
     const set = async (patch) => {
       Object.assign(App.settings, patch);
       Audio2.configure(App.settings);
+      applyLook();
       await store.setSettings(patch);
     };
-    const toggle = (key, label, hint) => el('label', { class: 'switch-row' },
-      el('span', {}, el('strong', {}, label), hint ? el('small', { class: 'muted' }, hint) : null),
-      el('input', { type: 'checkbox', checked: Boolean(s[key]), onchange: (e) => set({ [key]: e.target.checked }) }));
+    const redraw = () => renderSettings(root, onBack);
+    const row = (label, hint, control) => el('label', { class: 'switch-row' },
+      el('span', {}, el('strong', {}, label), hint ? el('small', { class: 'muted' }, hint) : null), control);
+    const toggle = (key, label, hint) => row(label, hint,
+      el('input', { type: 'checkbox', checked: s[key] !== false && Boolean(s[key] ?? U.SETTINGS_DEFAULTS[key]), onchange: (e) => set({ [key]: e.target.checked }) }));
+    const select = (key, label, hint, opts) => row(label, hint,
+      el('select', { class: 'input', onchange: (e) => set({ [key]: e.target.value }) },
+        opts.map(([v, l]) => el('option', { value: v, selected: String(s[key] ?? U.SETTINGS_DEFAULTS[key]) === v }, l))));
+    const slider = (key, label, hint, min, max, step, fmt) => {
+      const out = el('small', { class: 'muted slider-val' }, fmt(s[key] ?? U.SETTINGS_DEFAULTS[key]));
+      return el('div', { class: 'switch-row' },
+        el('span', {}, el('strong', {}, label), hint ? el('small', { class: 'muted' }, hint) : null),
+        el('span', { class: 'slider' },
+          el('input', { type: 'range', min, max, step, value: s[key] ?? U.SETTINGS_DEFAULTS[key], oninput: (e) => { out.textContent = fmt(Number(e.target.value)); set({ [key]: Number(e.target.value) }); } }),
+          out));
+    };
+    const pct = (v) => `${Math.round(v * 100)}%`;
+
+    const TABS = [
+      ['general', 'General'], ['graficos', 'Gráficos'], ['audio', 'Audio'], ['lectura', 'Lectura'], ['juego', 'Juego'],
+      ['controles', 'Controles'], ['accesibilidad', 'Accesibilidad'], ['ia', 'IA'], ['datos', 'Datos'],
+      ...(U.desktop ? [['arte', 'Arte personal']] : []), ['acerca', 'Acerca de'],
+    ];
+    if (!TABS.some(([id]) => id === settingsTab)) settingsTab = 'general';
+
+    const pages = {
+      general: () => [
+        el('h3', {}, 'Idioma · Language · Langue'),
+        el('div', { class: 'chips', 'data-no-i18n': '' },
+          window.I18N.LANGS.map((l) => el('button', {
+            class: `chip${window.I18N.lang === l.id ? ' active' : ''}`,
+            onclick: async () => {
+              if (window.I18N.lang === l.id) return;
+              await set({ lang: l.id });
+              await window.Game?.save?.();
+              location.reload();
+            },
+          }, l.label))),
+        el('h3', {}, 'Pantalla'),
+        U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, 'Pantalla completa (F11)') : null,
+        toggle('confirmExit', 'Preguntar antes de salir al menú', 'Evita perder el hilo por un clic sin querer.'),
+        toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
+      ],
+      graficos: () => [
+        el('h3', {}, 'Calidad'),
+        select('quality', 'Calidad gráfica', 'Baja va fluido en ordenadores y móviles modestos; Ultra pide una buena tarjeta gráfica.',
+          [['baja', 'Baja'], ['media', 'Media'], ['alta', 'Alta'], ['ultra', 'Ultra']]),
+        slider('renderScale', 'Resolución del mundo 3D', 'Bájala si el mapa va a tirones.', 0.5, 1.25, 0.05, pct),
+        toggle('shadows', 'Sombras', 'Sombras de edificios y personajes (no se usan en calidad Baja).'),
+        toggle('postfx', 'Efectos de cámara', 'Resplandor de luces, gradación de color estilo Arcane y viñeta.'),
+        toggle('paintStyle', 'Estilo pintado (Arcane)', 'El mundo 3D se ve como pintado a mano, con pinceladas y contornos de tinta. Las pinceladas se ven en calidad Alta y Ultra.'),
+        toggle('particles', 'Partículas', 'Polvo dorado en Piltover y esporas de neón en Zaun.'),
+        toggle('cameraSway', 'Balanceo de cámara', 'La cámara respira un poco y sigue al ratón.'),
+        slider('brightness', 'Brillo', null, 0.6, 1.4, 0.05, pct),
+        toggle('showFps', 'Mostrar FPS', 'Contador de fotogramas por segundo en una esquina.'),
+        el('h3', {}, 'Mundo 3D'),
+        row('Personajes en 3D', 'Tu personaje y los de Arcane caminan y corren por el mapa. Desactívalo si el móvil va lento (vuelven los iconos redondos).',
+          el('input', { type: 'checkbox', checked: s.models3d !== false, onchange: (e) => { set({ models3d: e.target.checked }); window.World3D?.resetActors(); } })),
+      ],
+      audio: () => [
+        el('h3', {}, 'Volumen'),
+        slider('volume', 'Volumen general', null, 0, 1, 0.05, pct),
+        slider('musicVolume', 'Música', null, 0, 1, 0.05, pct),
+        slider('sfxVolume', 'Efectos de sonido', null, 0, 1, 0.05, pct),
+        toggle('music', 'Música ambiental', 'Melodías generadas en tiempo real para Zaun y Piltover.'),
+        toggle('muteBackground', 'Silenciar al cambiar de ventana', 'El sonido se pausa si el juego queda en segundo plano.'),
+      ],
+      lectura: () => [
+        el('h3', {}, 'Texto'),
+        select('textSpeed', 'Velocidad del texto', 'Instantáneo quita las pausas y el «escribiendo…».',
+          [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido'], ['instantaneo', 'Instantáneo']]),
+        select('textSize', 'Tamaño de letra', null, [['pequeno', 'Pequeño'], ['normal', 'Normal'], ['grande', 'Grande'], ['enorme', 'Muy grande']]),
+        toggle('readableFont', 'Letra más fácil de leer', 'Cambia la letra decorativa por una sencilla (ayuda con la dislexia).'),
+      ],
+      juego: () => [
+        el('h3', {}, 'Partida'),
+        select('difficulty', 'Dificultad de los minijuegos', 'Fácil te da una ventaja extra; Difícil te la quita.',
+          [['facil', 'Fácil'], ['normal', 'Normal'], ['dificil', 'Difícil']]),
+        toggle('objectiveArrow', 'Flecha hacia el objetivo', 'Señala en el mapa a dónde tienes que ir.'),
+        toggle('minimap', 'Minimapa', 'El mapa pequeño de la esquina.'),
+        toggle('names', 'Nombres siempre visibles', 'Si está apagado, solo ves el nombre de quien tienes cerca.'),
+      ],
+      controles: () => [
+        el('h3', {}, 'Cámara'),
+        slider('camSpeed', 'Velocidad de giro', 'Teclas Q y R, o dos dedos en el móvil.', 0.4, 2.5, 0.1, (v) => `×${v.toFixed(1)}`),
+        toggle('invertCam', 'Invertir el giro de la cámara'),
+        el('h3', {}, 'Sensaciones'),
+        slider('shake', 'Sacudidas de pantalla', 'En los minijuegos.', 0, 1.5, 0.1, pct),
+        U.touch ? toggle('vibration', 'Vibración', 'El móvil vibra con los golpes y los aciertos.') : null,
+        el('h3', {}, 'Teclado'),
+        el('p', { class: 'muted small' }, 'WASD o flechas: moverse · Mayús: correr · E: hablar o entrar · H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas · Q/R: girar · +/−: zoom · Esc: pausa'),
+      ],
+      accesibilidad: () => [
+        el('h3', {}, 'Accesibilidad'),
+        toggle('reduceMotion', 'Reducir movimiento', 'Quita animaciones de la interfaz, inclinaciones 3D y balanceo de cámara.'),
+        toggle('highContrast', 'Alto contraste', 'Textos y bordes más marcados.'),
+        toggle('readableFont', 'Letra más fácil de leer', 'Cambia la letra decorativa por una sencilla.'),
+        select('textSize', 'Tamaño de letra', null, [['pequeno', 'Pequeño'], ['normal', 'Normal'], ['grande', 'Grande'], ['enorme', 'Muy grande']]),
+        slider('shake', 'Sacudidas de pantalla', null, 0, 1.5, 0.1, pct),
+      ],
+      ia: () => [aiSettings(set)],
+      datos: () => [
+        el('h3', {}, 'Copias de seguridad'),
+        el('p', { class: 'muted small' }, 'Guarda tus partidas y ajustes en un archivo para pasarlos a otro ordenador o al móvil. La clave de la IA no se copia.'),
+        el('div', { class: 'row gap' },
+          el('button', { class: 'btn small', onclick: exportData }, 'Guardar copia'),
+          el('button', { class: 'btn small', onclick: () => importData(root, onBack) }, 'Cargar copia')),
+        el('h3', {}, 'Restablecer'),
+        el('div', { class: 'row gap' },
+          el('button', { class: 'btn ghost small', onclick: async () => {
+            if (!confirm('¿Volver a los ajustes de fábrica? (El idioma y la IA se mantienen.)')) return;
+            await set({ ...U.SETTINGS_DEFAULTS });
+            toast('Ajustes restablecidos', 'good');
+            redraw();
+          } }, 'Ajustes de fábrica'),
+          el('button', { class: 'btn ghost small danger', onclick: async () => {
+            if (!confirm('¿Borrar TODAS las partidas guardadas? No se puede deshacer.')) return;
+            for (const sl of await store.listSlots()) if (!sl.empty) await store.remove(sl.slot);
+            toast('Partidas borradas', 'good');
+          } }, 'Borrar todas las partidas')),
+      ],
+      arte: () => [artSettings(root, onBack)],
+      acerca: () => [
+        el('h3', {}, 'Acerca de'),
+        el('p', { class: 'muted small' }, 'Juego de fans gratuito y sin ánimo de lucro: no se vende, no tiene anuncios ni compras. Todas las imágenes y datos vienen dentro del juego y la música se sintetiza en tiempo real: no necesita internet (solo el chat libre con IA, si lo activas con un servicio en línea).'),
+        el('p', { class: 'muted small' }, 'Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.'),
+        el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo. Si activas la IA para los chats, lo que escribes en el comunicador (y el contexto del personaje) se envía al servicio que elijas, con tu propia clave; con Ollama no sale de tu ordenador.'),
+      ],
+    };
 
     root.append(el('div', { class: 'settings panel' },
       el('div', { class: 'row gap', style: 'justify-content:space-between' },
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
-      el('h3', {}, 'Idioma · Language · Langue'),
-      el('div', { class: 'chips', 'data-no-i18n': '' },
-        window.I18N.LANGS.map((l) => el('button', {
-          class: `chip${window.I18N.lang === l.id ? ' active' : ''}`,
-          onclick: async () => {
-            if (window.I18N.lang === l.id) return;
-            await set({ lang: l.id });
-            await window.Game?.save?.();
-            location.reload();
-          },
-        }, l.label))),
-      el('h3', {}, 'Pantalla'),
-      U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, 'Pantalla completa (F11)') : null,
-      U.desktop ? artSettings(root, onBack) : null,
-      el('h3', {}, 'Audio'),
-      el('label', { class: 'field' }, el('span', {}, 'Volumen general'),
-        el('input', { type: 'range', min: 0, max: 1, step: 0.05, value: s.volume, oninput: (e) => set({ volume: Number(e.target.value) }) })),
-      toggle('music', 'Música ambiental', 'Melodías generadas en tiempo real para Zaun y Piltover.'),
-      el('h3', {}, 'Lectura'),
-      el('label', { class: 'field' }, el('span', {}, 'Velocidad del texto'),
-        el('select', { class: 'input', onchange: (e) => set({ textSpeed: e.target.value }) },
-          [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido']].map(([v, l]) => el('option', { value: v, selected: s.textSpeed === v }, l)))),
-      toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
-      el('h3', {}, 'Mundo 3D'),
-      el('label', { class: 'switch-row' },
-        el('span', {}, el('strong', {}, 'Personajes en 3D'), el('small', { class: 'muted' }, 'Tu personaje y los de Arcane caminan y corren por el mapa. Desactívalo si el móvil va lento (vuelven los iconos redondos).')),
-        el('input', { type: 'checkbox', checked: s.models3d !== false, onchange: (e) => { set({ models3d: e.target.checked }); window.World3D?.resetActors(); } })),
-      aiSettings(set),
-      el('h3', {}, 'Acerca de'),
-      el('p', { class: 'muted small' }, 'Juego de fans gratuito y sin ánimo de lucro: no se vende, no tiene anuncios ni compras. Las imágenes de personajes y lugares son de la Arcane Wiki (arcane.fandom.com) y la música se sintetiza en tiempo real.'),
-      el('p', { class: 'muted small' }, 'Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.'),
-      el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo. Si activas la IA para los chats, lo que escribes en el comunicador (y el contexto del personaje) se envía al servicio que elijas, con tu propia clave; con Ollama no sale de tu ordenador.')));
+      el('div', { class: 'settings-tabs' }, TABS.map(([id, label]) => el('button', {
+        class: `tab${settingsTab === id ? ' active' : ''}`,
+        onclick: () => { settingsTab = id; redraw(); },
+      }, label))),
+      el('div', { class: 'settings-page' }, ...pages[settingsTab]())));
   }
 
   // ---------- Arte personal ----------
-  // Páginas de la Arcane Wiki (Fandom, en inglés) de cada personaje y lugar del juego.
-  const FANDOM_CHARS = {
-    vi: ['Vi'], jinx: ['Jinx'], caitlyn: ['Caitlyn Kiramman'], jayce: ['Jayce Talis'], viktor: ['Viktor'], mel: ['Mel Medarda'],
-    heimerdinger: ['Cecil B. Heimerdinger', 'Heimerdinger'], silco: ['Silco'], vander: ['Vander'], ekko: ['Ekko'], sevika: ['Sevika'],
-    ambessa: ['Ambessa Medarda'], cassandra: ['Cassandra Kiramman'], 
-    isha: ['Isha'], 
-  };
-  const FANDOM_PLACES = {
-    piltover: ['Piltover'], zaun: ['Zaun', 'The Undercity'], puente: ['Bridge of Progress', 'The Bridge of Progress'],
-    'ultima-gota': ['The Last Drop', 'Last Drop'], callejones: ['The Lanes', 'Lanes'], sumidero: ['The Sump', 'Sump'],
-    academia: ['Piltover Academy', 'Academy'], consejo: ['Council Chambers', 'Piltover Council', 'Council'],
-    stillwater: ['Stillwater Hold', 'Stillwater'], arbol: ['Firelights Hideout', 'The Firelights', 'Firelights'],
-    'taller-jayce': ["Jayce's Laboratory", "Jayce's Lab", "Jayce's Workshop"], 'mansion-kiramman': ['Kiramman Estate', 'Kiramman Manor', 'House Kiramman'],
-    hexpuertas: ['Hexgates', 'Hexgate'], noxus: ['Noxus'], ejecutores: ['Enforcers', 'Piltover Enforcers'],
-    fabrica: ['Shimmer Factory', 'Shimmer'], foso: ['Fight Pit', 'Fighting Pit'], 'escondite-jinx': ["Jinx's Hideout", "Jinx's Lair"],
-    'tienda-benzo': ["Benzo's Shop", 'Benzo'], mercado: ['Zaun Market', 'Undercity Market'], plaza: ['Progress Day', 'Progress Plaza'],
-  };
-
-  // Personajes y lugares que aún no tienen imagen propia en la carpeta de arte.
-  function fandomItems() {
-    const F = window.CustomArt.files;
-    const r = window.CustomArt.report;
-    const lack = new Set([...r.missing, ...r.borrowed]);
-    return [
-      ...Object.entries(FANDOM_CHARS).filter(([id]) => !F.personajes[id]).map(([id, titles]) => ({ id, dir: 'personajes', titles, search: titles[0] })),
-      ...Object.entries(FANDOM_PLACES).filter(([id]) => lack.has(id)).map(([id, titles]) => ({ id, dir: 'lugares', titles })),
-    ];
-  }
-
   // Texto de la guía con todos los nombres de archivo que el juego reconoce.
   function artGuide() {
     const W = window.WIKI;
@@ -290,7 +419,6 @@
     const counts = ['avatares', 'personajes', 'caras', 'lugares', 'codice'].map((d) => `${d}: ${Object.keys(window.CustomArt.files[d] || {}).length}`).join(' · ');
     const models = el('span', {});
     window.Avatars3D?.listModels().then((m) => { models.textContent = ` · modelos 3D: ${m.size}`; });
-    const progress = el('div', { class: 'dl-progress hidden' }, el('i'), el('span'));
     return el('div', {},
       el('h3', {}, 'Arte personal'),
       el('p', { class: 'muted' }, 'Pon tus imágenes en la carpeta de arte y el juego los usará en lugar del arte pintado. En el archivo GUIA-DE-ARTE.txt de esa carpeta tienes todos los nombres de archivo que reconoce.'),
@@ -300,80 +428,20 @@
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
         ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'modelos'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
         el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); window.World3D?.resetActors(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
-      el('p', { class: 'muted small' }, `Todas las imágenes de personajes salen de la Arcane Wiki (arcane.fandom.com), no de Riot. Este botón descarga la imagen principal de la página de cada personaje (cuerpo) y de cada lugar que aún te falte; las caras del chat ya vienen con el juego. Solo baja lo que no tienes, no toca tus archivos. Los retratos de Riot que bajaban las versiones anteriores se apartan a la carpeta «_riot-retirado». Ahora faltan: ${fandomItems().length}.`),
-      el('button', {
-        class: 'btn primary small',
-        disabled: !fandomItems().length,
-        onclick: async (ev) => {
-          ev.target.disabled = true;
-          progress.classList.remove('hidden');
-          window.arcane.art.onFandom((d) => {
-            progress.querySelector('i').style.width = `${Math.round((d.progress || 0) * 100)}%`;
-            progress.querySelector('span').textContent = d.done ? '¡Listo!' : `Arcane Wiki: ${d.current}…`;
-          });
-          try {
-            const r = await window.arcane.art.fandom(fandomItems());
-            await window.CustomArt.load();
-            toast(`Imágenes de la Arcane Wiki: ${r.done.length}${r.failed.length ? ` · sin imagen: ${r.failed.join(', ')}` : ''}`, r.done.length ? 'good' : 'warn');
-          } catch (err) {
-            toast(`No se pudo conectar con la Arcane Wiki: ${err.message || err}`, 'warn');
-          }
-          renderSettings(root, onBack);
-        },
-      }, 'Descargar lo que falta de la Arcane Wiki'),
-      progress,
-      el('h3', {}, 'Fondos del mapa 3D'),
-      el('p', { class: 'muted small' }, 'El mundo abierto pone alrededor de cada ciudad las ilustraciones de su página de región en Universe de League of Legends (universe.leagueoflegends.com). Se bajan solas la primera vez que entras en cada ciudad; con estos botones las vuelves a bajar. También puedes poner tus propias imágenes en las carpetas mapa/piltover y mapa/zaun de tu carpeta de arte.'),
-      el('div', { class: 'row gap' }, ...['piltover', 'zaun'].map((region) => el('button', {
-        class: 'btn small',
-        onclick: async (ev) => {
-          ev.target.disabled = true;
-          try {
-            const r = await window.arcane.art.universe(region);
-            window.World3D?.reloadBackdrops();
-            toast(r.ok ? `${r.done} imágenes de ${region === 'zaun' ? 'Zaun' : 'Piltover'} guardadas.` : 'No encontré imágenes en la página de Universe.', r.ok ? 'good' : 'warn');
-          } catch (err) {
-            toast(`No se pudo conectar con Universe: ${err.message || err}`, 'warn');
-          }
-          ev.target.disabled = false;
-        },
-      }, `Bajar fondos de ${region === 'zaun' ? 'Zaun' : 'Piltover'}`))),
-      el('h3', {}, 'Mapas de la Wiki en el Códice'),
-      el('p', { class: 'muted small' }, 'Aparece en el Códice (tecla K) en la pestaña «Mapas de la Wiki». El Atlas ilustrado (tecla M) no necesita internet.'),
-      el('label', { class: 'field' }, el('span', {}, 'Dirección del mapa interactivo de la ciudad'),
-        el('input', { class: 'input', value: App.settings.mapUrl || DEFAULT_MAP, onchange: async (e) => { App.settings.mapUrl = e.target.value.trim(); await store.setSettings({ mapUrl: App.settings.mapUrl }); } })),
-      el('button', { class: 'btn small', onclick: () => App.openMap() }, 'Abrir mapa interactivo'));
-  }
-
-  // Mapas interactivos de la Arcane Wiki (menú «Interactive Maps» de arcane.fandom.com).
-  const DEFAULT_MAP = 'https://arcane.fandom.com/wiki/Special:AllMaps';
-  App.DEFAULT_MAP = DEFAULT_MAP;
-  App.mapUrl = () => App.settings.mapUrl || DEFAULT_MAP;
-  App.openMap = () => {
-    const url = App.mapUrl();
-    if (window.arcane?.openMap) window.arcane.openMap(url);
-    else window.open(url, '_blank');
-  };
-
-  // Al abrir el juego se baja sola, en segundo plano, la imagen de la Arcane Wiki de cada
-  // personaje y lugar que aún falte (lo mismo que el botón de Ajustes). Sin internet no pasa nada.
-  async function autoFandom() {
-    if (!window.arcane?.art?.fandom || !fandomItems().length) return;
-    try {
-      const r = await window.arcane.art.fandom(fandomItems());
-      if (r.done.length) {
-        await window.CustomArt.load();
-        toast(`Arte de la Arcane Wiki descargado: ${r.done.length} imágenes nuevas.`, 'good');
-      }
-    } catch { /* sin conexión */ }
+      el('p', { class: 'muted small' }, 'Todo el arte viene dentro del juego y funciona sin internet. Lo que pongas en tu carpeta de arte (también mapa/piltover y mapa/zaun para los fondos del mundo 3D) sustituye al incluido.'));
   }
 
   async function init() {
     App.settings = await store.getSettings();
     window.I18N.setLang(App.settings.lang);
+    applyLook();
+    // Sin sonido cuando el juego queda en segundo plano (si así se ha elegido).
+    document.addEventListener('visibilitychange', () => {
+      if (App.settings.muteBackground === false) return;
+      if (document.hidden) Audio2.suspend(); else Audio2.resume();
+    });
     await window.CustomArt.load();
     window.arcane?.art?.guide(artGuide());
-    autoFandom();
     Audio2.configure(App.settings);
     // El audio web solo arranca tras un gesto del usuario.
     document.addEventListener('pointerdown', () => Audio2.ensureCtx(), { once: true });

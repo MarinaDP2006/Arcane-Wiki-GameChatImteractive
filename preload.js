@@ -17,16 +17,12 @@ contextBridge.exposeInMainWorld('arcane', {
     list: () => ipcRenderer.invoke('art:list'),
     open: (sub) => ipcRenderer.invoke('art:open', sub),
     guide: (text) => ipcRenderer.invoke('art:guide', text),
-    fandom: (wanted) => ipcRenderer.invoke('art:fandom', wanted),
-    onFandom: (cb) => ipcRenderer.on('art:fandom-progress', (_e, d) => cb(d)),
     mapImages: (region) => ipcRenderer.invoke('map:images', region),
-    universe: (region) => ipcRenderer.invoke('map:universe', region),
   },
   models: {
     list: () => ipcRenderer.invoke('model:list'),
     read: (name) => ipcRenderer.invoke('model:read', name),
   },
-  openMap: (url) => ipcRenderer.invoke('map:open', url),
   ai: (url, headers, body) => ipcRenderer.invoke('ai:chat', url, headers, body),
   aiGet: (url) => ipcRenderer.invoke('ai:get', url),
   settings: {

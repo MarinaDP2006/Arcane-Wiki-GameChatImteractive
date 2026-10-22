@@ -1,0 +1,95 @@
+// Generado por scripts/art-manifest.js: no lo edites a mano.
+window.ART_BUNDLED = {
+  "avatares": {
+    "hombre-1": "img/arte/avatares/hombre-1.webp",
+    "hombre-2": "img/arte/avatares/hombre-2.webp",
+    "hombre-3": "img/arte/avatares/hombre-3.webp",
+    "hombre-4": "img/arte/avatares/hombre-4.webp",
+    "hombre-5": "img/arte/avatares/hombre-5.webp",
+    "hombre-6": "img/arte/avatares/hombre-6.webp",
+    "hombre-7": "img/arte/avatares/hombre-7.webp",
+    "hombre-8": "img/arte/avatares/hombre-8.webp",
+    "mujer-1": "img/arte/avatares/mujer-1.webp",
+    "mujer-2": "img/arte/avatares/mujer-2.webp",
+    "mujer-3": "img/arte/avatares/mujer-3.webp",
+    "mujer-4": "img/arte/avatares/mujer-4.webp",
+    "mujer-5": "img/arte/avatares/mujer-5.webp",
+    "mujer-6": "img/arte/avatares/mujer-6.webp",
+    "mujer-7": "img/arte/avatares/mujer-7.webp",
+    "mujer-8": "img/arte/avatares/mujer-8.webp"
+  },
+  "personajes": {
+    "ambessa": "img/arte/personajes/ambessa.jpg",
+    "caitlyn": "img/arte/personajes/caitlyn.jpg",
+    "cassandra": "img/arte/personajes/cassandra.png",
+    "ekko": "img/arte/personajes/ekko.png",
+    "heimerdinger": "img/arte/personajes/heimerdinger.jpg",
+    "isha": "img/arte/personajes/isha.jpg",
+    "jayce": "img/arte/personajes/jayce.png",
+    "jinx": "img/arte/personajes/jinx.png",
+    "mel": "img/arte/personajes/mel.png",
+    "sevika": "img/arte/personajes/sevika.png",
+    "silco": "img/arte/personajes/silco.png",
+    "vander": "img/arte/personajes/vander.png",
+    "vi": "img/arte/personajes/vi.jpg",
+    "viktor": "img/arte/personajes/viktor.png"
+  },
+  "caras": {
+    "ambessa": "img/arte/caras/ambessa.webp",
+    "caitlyn": "img/arte/caras/caitlyn.webp",
+    "cassandra": "img/arte/caras/cassandra.webp",
+    "ekko": "img/arte/caras/ekko.webp",
+    "heimerdinger": "img/arte/caras/heimerdinger.webp",
+    "isha": "img/arte/caras/isha.webp",
+    "jayce": "img/arte/caras/jayce.webp",
+    "jinx": "img/arte/caras/jinx.webp",
+    "kino": "img/arte/caras/kino.webp",
+    "maddie": "img/arte/caras/maddie.webp",
+    "mel": "img/arte/caras/mel.webp",
+    "sevika": "img/arte/caras/sevika.webp",
+    "silco": "img/arte/caras/silco.webp",
+    "vander": "img/arte/caras/vander.webp",
+    "vi": "img/arte/caras/vi.webp",
+    "viktor": "img/arte/caras/viktor.webp"
+  },
+  "lugares": {
+    "academia": "img/arte/lugares/academia.webp",
+    "arbol": "img/arte/lugares/arbol.png",
+    "comuna-viktor": "img/arte/lugares/comuna-viktor.webp",
+    "consejo": "img/arte/lugares/consejo.webp",
+    "ejecutores": "img/arte/lugares/ejecutores.png",
+    "fabrica": "img/arte/lugares/fabrica.png",
+    "hexpuertas": "img/arte/lugares/hexpuertas.webp",
+    "mansion-kiramman": "img/arte/lugares/mansion-kiramman.png",
+    "noxus": "img/arte/lugares/noxus.png",
+    "piltover": "img/arte/lugares/piltover.webp",
+    "stillwater": "img/arte/lugares/stillwater.webp",
+    "taller-jayce": "img/arte/lugares/taller-jayce.webp",
+    "tienda-benzo": "img/arte/lugares/tienda-benzo.png",
+    "ultima-gota": "img/arte/lugares/ultima-gota.webp",
+    "zaun": "img/arte/lugares/zaun.webp"
+  },
+  "codice": {
+    "mapa-piltover-zaun": "img/arte/codice/mapa-piltover-zaun.webp"
+  },
+  "mapa/piltover": {
+    "universe-01": "img/arte/mapa/piltover/universe-01.jpg",
+    "universe-02": "img/arte/mapa/piltover/universe-02.jpg",
+    "universe-03": "img/arte/mapa/piltover/universe-03.jpg",
+    "universe-04": "img/arte/mapa/piltover/universe-04.jpg",
+    "universe-05": "img/arte/mapa/piltover/universe-05.jpg",
+    "universe-06": "img/arte/mapa/piltover/universe-06.jpg",
+    "universe-07": "img/arte/mapa/piltover/universe-07.jpg",
+    "universe-08": "img/arte/mapa/piltover/universe-08.jpg"
+  },
+  "mapa/zaun": {
+    "universe-01": "img/arte/mapa/zaun/universe-01.jpg",
+    "universe-02": "img/arte/mapa/zaun/universe-02.jpg",
+    "universe-03": "img/arte/mapa/zaun/universe-03.jpg",
+    "universe-04": "img/arte/mapa/zaun/universe-04.jpg",
+    "universe-05": "img/arte/mapa/zaun/universe-05.jpg",
+    "universe-06": "img/arte/mapa/zaun/universe-06.jpg",
+    "universe-07": "img/arte/mapa/zaun/universe-07.jpg",
+    "universe-08": "img/arte/mapa/zaun/universe-08.jpg"
+  }
+};

@@ -24,18 +24,18 @@
   // Ambiente de cada ciudad. grade = [sombras, luces] (tintes), sat, contraste.
   const LOOK = {
     piltover: {
-      sky: [0x3b6fb8, 0xffc98a, 0xa47a4c], bg: 0xf0cf9c, fog: 0xf2cf98, fogD: 0.00021,
+      sky: [0x3b6fb8, 0xffd9a8, 0xa47a4c], bg: 0xe9dcc4, fog: 0xe6dcc8, fogD: 0.00012,
       hemi: [0xcfe0ff, 0x8a6236, 0.6], sun: [0xffc47a, 5.6], sunDir: [-0.72, 0.6, 0.42],
       exposure: 1.0, dust: 0xffd88a, dustRise: 6, pitch: 0.92, lantern: 0,
-      bloom: 0.45, thr: 1.5, grade: [[0.9, 0.97, 1.12], [1.07, 1.0, 0.88]], sat: 1.1, contrast: 1.12, vig: 0.6,
+      bloom: 0.5, thr: 1.4, grade: [[0.88, 0.96, 1.1], [1.06, 1.0, 0.9]], sat: 1.12, contrast: 1.12, vig: 0.6,
       env: { top: 0x5d8fd0, mid: 0xffd9a0, bot: 0x7a5a3a, blobs: [[0xffd090, 18, [-0.72, 0.6, 0.42], 0.3]] },
       lights: 3, lightI: 9000,
     },
     zaun: {
-      sky: [0x061210, 0x15453a, 0x030706], bg: 0x0f2c24, fog: 0x123a30, fogD: 0.0003,
-      hemi: [0x6fe8c8, 0x5a1a40, 1.1], sun: [0x9affdc, 1.8], sunDir: [0.35, 1, -0.6],
-      exposure: 1.4, dust: 0x6affc8, dustRise: 22, pitch: 1.0, lantern: 1,
-      bloom: 0.9, thr: 1.0, grade: [[0.82, 1.04, 1.05], [1.1, 0.96, 1.02]], sat: 1.12, contrast: 1.1, vig: 0.8,
+      sky: [0x070d10, 0x1a3436, 0x040606], bg: 0x142426, fog: 0x1a2b2c, fogD: 0.00036,
+      hemi: [0x6aa8a0, 0x5a2a38, 1.2], sun: [0xd8eadc, 1.6], sunDir: [0.35, 1, -0.6],
+      exposure: 1.6, dust: 0x9fe8d0, dustRise: 22, pitch: 1.0, lantern: 1,
+      bloom: 0.85, thr: 1.0, grade: [[0.76, 0.96, 1.08], [1.16, 0.98, 0.82]], sat: 0.9, contrast: 1.14, vig: 0.85,
       env: { top: 0x0b2a24, mid: 0x1a3c34, bot: 0x050808, blobs: [[0xff3fa0, 6, [0.8, 0.2, 0.3], 0.25], [0x3fffc0, 6, [-0.6, 0.25, -0.5], 0.3], [0xffa040, 5, [0.1, 0.15, 0.9], 0.25]] },
       lights: 8, lightI: 60000,
     },
@@ -684,7 +684,7 @@
     const wallMat = cutaway(new T.MeshStandardMaterial({ map: fac.map, emissiveMap: fac.glow, emissive: 0xffb060, emissiveIntensity: 1.3, vertexColors: true, roughness: 0.85, envMapIntensity: 0.3 }));
     const stoneMat = cutaway(new T.MeshStandardMaterial({ vertexColors: true, roughness: 0.75, envMapIntensity: 0.35 }));
     const goldMat = cutaway(new T.MeshStandardMaterial({ vertexColors: true, metalness: 0.92, roughness: 0.26, envMapIntensity: 1.3 }));
-    const roofMat = cutaway(new T.MeshStandardMaterial({ vertexColors: true, metalness: 0.4, roughness: 0.5, envMapIntensity: 1.0 }));
+    const roofMat = cutaway(new T.MeshStandardMaterial({ vertexColors: true, metalness: 0.25, roughness: 0.55, envMapIntensity: 0.45 }));
     const walls = [];
     const stone = [];
     const gold = [];
@@ -976,8 +976,8 @@
     R.dyn.neon = [];
     R.dyn.chimneys = [];
     // Tonos de la ciudad baja: más claros que los del mapa 2D para que la luz se note.
-    const BODY = [0xc8b4a0, 0xa8b4b4, 0xa4b09a, 0xc8a68c, 0xb0a4b8, 0x9cb0ac];
-    const rust = [0x6a3a22, 0x3a3a3a, 0x4a4a3a, 0x7a4a2a];
+    const BODY = [0xa8826a, 0x7e8a88, 0x8c8470, 0xb08468, 0x847890, 0x6e8480, 0x9a6a58];
+    const rust = [0x8a4a26, 0x5a4a40, 0x6a5038, 0x9a5a30];
     const AWN = [0x1f6a5a, 0x7a2050, 0x6a5a1a, 0x2a3a6a];
     const signMats = {};
     const neonMats = {};
@@ -1032,7 +1032,7 @@
         const along = (r() - 0.5) * (nx ? b.h : b.w) * 0.7;
         const px = x + nx * (b.w / 2 + 3) + (nz ? along : 0);
         const pz = z + nz * (b.h / 2 + 3) + (nx ? along : 0);
-        metal.push({ geo: new T.CylinderGeometry(2.6, 2.6, h, 8).translate(px, h / 2, pz), color: r() < 0.5 ? 0x4a7a5a : 0x8a5a32 });
+        metal.push({ geo: new T.CylinderGeometry(2.6, 2.6, h, 8).translate(px, h / 2, pz), color: r() < 0.5 ? 0x4a5a52 : 0x8a5a32 });
         for (let y = 20; y < h; y += 30) metal.push({ geo: box(7, 2, 7).translate(px, y, pz), color: 0x2a2a2a });
       }
       // Toldos sobre los bajos
@@ -1150,8 +1150,8 @@
     }
 
     // Tuberías gigantes que cruzan por encima de las calles, con abrazaderas
-    const pipeMat = cutaway(new T.MeshStandardMaterial({ color: 0x5a7a5a, metalness: 0.75, roughness: 0.4 }));
-    const clampMat = cutaway(new T.MeshStandardMaterial({ color: 0x8a5a32, metalness: 0.7, roughness: 0.5 }));
+    const pipeMat = cutaway(new T.MeshStandardMaterial({ color: 0x8a5634, metalness: 0.8, roughness: 0.45 }));
+    const clampMat = cutaway(new T.MeshStandardMaterial({ color: 0x3a2a22, metalness: 0.6, roughness: 0.6 }));
     for (let i = 0; i < 7; i++) {
       const z0 = 120 + i * 330;
       const y0 = 140 + r() * 110;
@@ -1328,9 +1328,10 @@
     }
   }
 
-  // ---------- Fondo panorámico con las ilustraciones de Universe ----------
+  // ---------- Fondo panorámico con las ilustraciones de cada ciudad ----------
   // Las imágenes forman un anillo lejano alrededor de la ciudad: al girar la cámara o al
   // llegar a la ciudad (la cámara baja desde el horizonte) se ven moverse con paralaje.
+  // Vienen dentro del juego (img/arte/mapa) y no necesitan internet.
   const BACKDROP_FALLBACK = {
     piltover: ['piltover', 'academia', 'consejo', 'taller-jayce', 'stillwater', 'hexpuertas'].map((id) => `img/arte/lugares/${id}.webp`),
     zaun: ['zaun', 'ultima-gota', 'comuna-viktor'].map((id) => `img/arte/lugares/${id}.webp`),
@@ -1340,16 +1341,12 @@
     const api = window.arcane?.art;
     if (api?.mapImages) {
       try {
-        let r = await api.mapImages(id);
-        if (!r.own && api.universe) {
-          // Primera visita: bajamos las ilustraciones de la página de la región.
-          const d = await api.universe(id).catch(() => null);
-          if (d?.ok) r = await api.mapImages(id);
-        }
+        const r = await api.mapImages(id);
         if (r.images.length) return r.images;
       } catch { /* sin imágenes */ }
     }
-    return BACKDROP_FALLBACK[id] || [];
+    const bundled = Object.values(window.ART_BUNDLED?.[`mapa/${id}`] || {});
+    return bundled.length ? bundled.slice(0, 8) : BACKDROP_FALLBACK[id] || [];
   }
 
   function buildBackdrop(map, grp) {
@@ -1433,11 +1430,39 @@
         tScene: { value: null }, tB1: { value: null }, tB2: { value: null }, tPaper: { value: paper },
         uBloom: { value: 0.6 }, uExposure: { value: 1 }, uTime: { value: 0 }, uSat: { value: 1 }, uContrast: { value: 1 }, uVig: { value: 0.6 },
         uShadow: { value: new T.Vector3(1, 1, 1) }, uHigh: { value: new T.Vector3(1, 1, 1) }, uRes: { value: new T.Vector2(1, 1) },
+        uPaint: { value: 0 }, uInk: { value: 0 },
       },
       vertexShader: FSQ_VS, depthTest: false, depthWrite: false,
       fragmentShader: `uniform sampler2D tScene; uniform sampler2D tB1; uniform sampler2D tB2; uniform sampler2D tPaper;
         uniform float uBloom; uniform float uExposure; uniform float uTime; uniform float uSat; uniform float uContrast; uniform float uVig;
-        uniform vec3 uShadow; uniform vec3 uHigh; uniform vec2 uRes; varying vec2 vUv;
+        uniform vec3 uShadow; uniform vec3 uHigh; uniform vec2 uRes; uniform float uPaint; uniform float uInk; varying vec2 vUv;
+        // Estilo pintado a mano (como los fondos de Arcane): filtro de Kuwahara, que aplana
+        // los colores en pinceladas sin perder los bordes.
+        // Se mide en una escala comprimida para que las ventanas muy brillantes no lo oscurezcan todo.
+        vec3 tm(vec3 c){ return c / (1.0 + c); }
+        vec3 kuwahara(vec2 uv){
+          vec2 px = uPaint / uRes;
+          vec3 m[4]; vec3 s[4];
+          for (int k = 0; k < 4; k++){ m[k] = vec3(0.0); s[k] = vec3(0.0); }
+          for (int j = 0; j <= 3; j++){
+            for (int i = 0; i <= 3; i++){
+              vec3 a = tm(texture2D(tScene, uv + vec2(-i, -j) * px).rgb); m[0] += a; s[0] += a * a;
+              vec3 b = tm(texture2D(tScene, uv + vec2( i, -j) * px).rgb); m[1] += b; s[1] += b * b;
+              vec3 c = tm(texture2D(tScene, uv + vec2( i,  j) * px).rgb); m[2] += c; s[2] += c * c;
+              vec3 d = tm(texture2D(tScene, uv + vec2(-i,  j) * px).rgb); m[3] += d; s[3] += d * d;
+            }
+          }
+          vec3 best = m[0] / 16.0; float bestV = 1e9;
+          for (int k = 0; k < 4; k++){
+            vec3 mu = m[k] / 16.0;
+            vec3 v = abs(s[k] / 16.0 - mu * mu);
+            float vv = v.r + v.g + v.b;
+            if (vv < bestV){ bestV = vv; best = mu; }
+          }
+          best = min(best, vec3(0.995));
+          return best / (1.0 - best);
+        }
+        float lum(vec2 uv){ vec3 c = texture2D(tScene, uv).rgb; return log(1.0 + dot(c, vec3(0.2126, 0.7152, 0.0722))); }
         vec3 aces(vec3 color){
           const mat3 IM = mat3(vec3(0.59719, 0.07600, 0.02840), vec3(0.35458, 0.90834, 0.13383), vec3(0.04823, 0.01566, 0.83777));
           const mat3 OM = mat3(vec3(1.60475, -0.10208, -0.00327), vec3(-0.53108, 1.10813, -0.07276), vec3(-0.07367, -0.00605, 1.07602));
@@ -1449,7 +1474,17 @@
         }
         vec3 srgb(vec3 c){ return mix(c * 12.92, pow(c, vec3(1.0 / 2.4)) * 1.055 - 0.055, step(0.0031308, c)); }
         void main(){
-          vec3 c = texture2D(tScene, vUv).rgb;
+          // Las pinceladas tiemblan un poco, como trazos hechos a mano.
+          vec2 uv = vUv + (texture2D(tPaper, gl_FragCoord.xy / 512.0).rg - 0.5) * (uPaint > 0.0 ? 2.5 : 0.0) / uRes;
+          vec3 c = texture2D(tScene, uv).rgb;
+          if (uPaint > 0.0) c = mix(c, kuwahara(uv), 0.7);
+          // Contorno de tinta suave en los cambios fuertes de luz.
+          if (uInk > 0.0){
+            vec2 e = 1.0 / uRes;
+            float gx = lum(uv + vec2(e.x, 0.0)) - lum(uv - vec2(e.x, 0.0));
+            float gy = lum(uv + vec2(0.0, e.y)) - lum(uv - vec2(0.0, e.y));
+            c *= 1.0 - uInk * smoothstep(0.22, 0.6, length(vec2(gx, gy)));
+          }
           vec3 bl = texture2D(tB1, vUv).rgb * 0.55 + texture2D(tB2, vUv).rgb;
           c += bl * uBloom;
           c = aces(c);
@@ -1510,6 +1545,10 @@
       U2.uVig.value = L.vig;
       U2.uShadow.value.fromArray(L.grade[0]);
       U2.uHigh.value.fromArray(L.grade[1]);
+      U2.uRes.value.set(P.w, P.h);
+      const paint = opt().paintStyle !== false;
+      U2.uPaint.value = paint && (quality() === 'alta' || quality() === 'ultra') ? (quality() === 'ultra' ? 1.2 : 0.9) : 0;
+      U2.uInk.value = paint ? 0.3 : 0;
       P.quad.material = P.comp;
       renderer.setRenderTarget(null);
       renderer.render(P.scene, P.cam);
@@ -1540,6 +1579,27 @@
   // ---------- Renderizador ----------
   let R = null;
 
+  // Ajustes gráficos (Ajustes → Gráficos): calidad, sombras, partículas y cámara.
+  const opt = () => window.App?.settings || {};
+  const quality = () => opt().quality || 'alta';
+  const pixelRatio = () => {
+    const dpr = window.devicePixelRatio || 1;
+    const scale = Number(opt().renderScale) || 1;
+    return { baja: 0.7, media: 1, alta: Math.min(1.5, dpr), ultra: Math.min(2, dpr) }[quality()] * scale;
+  };
+
+  // Aplica los ajustes gráficos sin reiniciar el mapa.
+  function applySettings() {
+    if (!R) return;
+    const shadows = quality() !== 'baja' && opt().shadows !== false;
+    if (R.renderer.shadowMap.enabled !== shadows) {
+      R.renderer.shadowMap.enabled = shadows;
+      R.scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => { m.needsUpdate = true; }); });
+    }
+    if (R.dust) R.dust.visible = opt().particles !== false && quality() !== 'baja';
+    R.w = 0; // fuerza a recalcular el tamaño con la nueva resolución
+  }
+
   function create() {
     const canvas = document.createElement('canvas');
     canvas.className = 'world-3d';
@@ -1549,7 +1609,7 @@
     } catch {
       return null;
     }
-    renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio || 1));
+    renderer.setPixelRatio(pixelRatio());
     renderer.toneMapping = T.ACESFilmicToneMapping;
     renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
@@ -1691,6 +1751,7 @@
     if (!w || !h || (w === R.w && h === R.h)) return;
     R.w = w;
     R.h = h;
+    R.renderer.setPixelRatio(pixelRatio());
     R.renderer.setSize(w, h, false);
     R.post?.size(w, h);
     R.camera.aspect = w / h;
@@ -1738,8 +1799,9 @@
     C.dist += (C.goalDist - C.dist) * ease(0.04);
     const goal = v3.set(info.x + (info.vx || 0) * 0.35, 20, info.y + (info.vy || 0) * 0.35);
     C.focus.lerp(goal, ease(0.09));
-    const yaw = C.yaw + C.mouse.x * 0.05 + Math.sin(s * 0.13) * 0.025;
-    const pitch = Math.min(1.35, Math.max(0.15, C.pitch - C.mouse.y * 0.04 + Math.sin(s * 0.21) * 0.01));
+    const sway = opt().cameraSway === false || opt().reduceMotion ? 0 : 1;
+    const yaw = C.yaw + (C.mouse.x * 0.05 + Math.sin(s * 0.13) * 0.025) * sway;
+    const pitch = Math.min(1.35, Math.max(0.15, C.pitch + (-C.mouse.y * 0.04 + Math.sin(s * 0.21) * 0.01) * sway));
     const hd = Math.cos(pitch) * C.dist;
     R.camera.position.set(C.focus.x + Math.sin(yaw) * hd, C.focus.y + Math.sin(pitch) * C.dist, C.focus.z + Math.cos(yaw) * hd);
     R.camera.lookAt(C.focus);
@@ -1838,7 +1900,7 @@
       }
     }
     if (info.people) syncActors(info.people, dt, s);
-    if (R.post) {
+    if (R.post && quality() !== 'baja' && opt().postfx !== false) {
       try {
         R.post.render(R.scene, R.camera, L, s);
         return;
@@ -1903,6 +1965,7 @@
     mount(host) {
       if (!R) R = create();
       if (!R) return false;
+      applySettings();
       if (R.host !== host) {
         host.prepend(R.canvas);
         R.host = host;
@@ -1924,7 +1987,8 @@
     get post() { return Boolean(R?.post); },
     get yaw() { return R ? R.cam.yaw : 0; },
     get dist() { return R ? R.cam.goalDist : 0; },
-    rotate(d) { R.cam.goalYaw += d; },
+    rotate(d) { R.cam.goalYaw += d * (Number(opt().camSpeed) || 1) * (opt().invertCam ? -1 : 1); },
+    applySettings,
     tilt(d) { R.cam.goalPitch = Math.min(1.3, Math.max(0.3, R.cam.goalPitch + d)); },
     zoom(f) { R.cam.goalDist = Math.min(1600, Math.max(R.actors?.size ? 240 : 380, R.cam.goalDist * f)); },
     mouse(x, y) { if (R) { R.cam.mouse.x = x; R.cam.mouse.y = y; } },
