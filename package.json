@@ -11,9 +11,14 @@
     "postinstall": "node scripts/asegurar-electron.js",
     "check": "node scripts/check.js && node scripts/check-runtime.js",
     "dist": "electron-builder --win",
-    "dist:win": "electron-builder --win"
+    "dist:win": "electron-builder --win",
+    "android:sync": "node scripts/build-mobile.js && cap sync android"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "electron": "^44.9.1",
     "electron-builder": "^26.15.3"
   },
