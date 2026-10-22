@@ -1111,3 +1111,13 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .zaun-interior-objective { color: #c5f5a0; font-weight: 700; }
 .zaun-interior-hud button { pointer-events: auto; margin-left: auto; }
 @media (max-width: 600px) { .zaun-interior-hud { padding: 10px; } .zaun-interior-hud p { font-size: 11px; } }
+
+/* Piltover: vistas 3D explorables y objetivos de investigación. */
+.piltover-interior { position: fixed; inset: 0; z-index: 1200; background: #303940; overflow: hidden; }
+.piltover-interior canvas { width: 100%; height: 100%; display: block; }
+.piltover-interior-hud { position: absolute; z-index: 2; inset: 0 0 auto; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding: 18px 22px; color: #f8f0d8; background: linear-gradient(#182a39ec, #182a39a3, transparent); pointer-events: none; font-family: system-ui, sans-serif; }
+.piltover-interior-hud h2 { flex: 1 0 100%; margin: 0; font-size: clamp(19px, 2.5vw, 30px); }
+.piltover-interior-hud p { margin: 0; font-size: 13px; }
+.piltover-interior-objective { color: #fce5a1; font-weight: 700; }
+.piltover-interior-hud button { pointer-events: auto; margin-left: auto; }
+@media (max-width: 600px) { .piltover-interior-hud { padding: 10px; } .piltover-interior-hud p { font-size: 11px; } }
