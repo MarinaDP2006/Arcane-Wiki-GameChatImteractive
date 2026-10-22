@@ -25,6 +25,16 @@ Actualizado: 22 de octubre de 2026. Estado revisado sobre `main`.
 - [ ] Inspeccionar línea a línea los commits exclusivos de Claude y retirar esas ramas solo después de conservar lo necesario.
 - [ ] Extender los comentarios descriptivos a funciones flecha y otros módulos pendientes.
 
+## Cambios nuevos para la prueba en Windows
+- [x] Añadido modo «NPC quietos y a color», activado por defecto, sin inmovilizar al jugador.
+- [x] Ajustado el cargador de modelos para conservar mejor las texturas coloreadas de ZIP/FBX/GLB.
+- [x] Añadido inspector no destructivo `scripts/comprobar-modelos.ps1` y guía de instalación de seis ZIP.
+- [x] Partidas escritas mediante archivo temporal, copia de respaldo `.bak` y recuperación de respaldo si la principal está dañada.
+- [x] Comprobada la sintaxis JavaScript de cinco archivos editados; workflow ampliado a historia, avatares y ajustes.
+- [ ] Verificar en Windows que cada uno de los seis ZIP particulares se carga y se ve con sus texturas reales.
+- [ ] Confirmar ejecución verde de Windows Actions y descargar y probar el instalador.
+- [ ] Validar todas las rutas de historia con una partida de principio a fin.
+
 ## Pendiente prioritario
 - [ ] Verificar un run completo de Actions Windows (npm ci, npm run check, sintaxis y electron-builder). No se ha confirmado ejecución correcta.
 - [ ] Generar y probar el instalador y el portable en Windows real: instalación, arranque, permisos y desinstalación.
