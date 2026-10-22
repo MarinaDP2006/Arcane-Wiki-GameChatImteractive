@@ -206,9 +206,16 @@
       const sp = SPEED * (keys.has('shift') || push > 0.92 ? 1.7 : 1) * (push > 0.15 && push <= 0.92 ? Math.max(0.45, push) : 1) * (G.player.keystone === 'pies' ? 1.3 : 1) * dt;
       const mx = (dx / len) * sp;
       const my = (dy / len) * sp;
+      // Colisiones por pasos cortos: al correr o perder FPS no se atraviesan fachadas.
+      // Mantiene deslizamiento en esquinas, de modo que explorar con WASD se siente continuo.
+      const steps = Math.max(1, Math.ceil(Math.hypot(mx, my) / (PLAYER_R * 0.6)));
       let moved = false;
-      if (!collides(pos.x + mx, pos.y)) { pos.x += mx; moved = true; }
-      if (!collides(pos.x, pos.y + my)) { pos.y += my; moved = true; }
+      for (let step = 0; step < steps; step++) {
+        const sx = mx / steps;
+        const sy = my / steps;
+        if (!collides(pos.x + sx, pos.y)) { pos.x += sx; moved = true; }
+        if (!collides(pos.x, pos.y + sy)) { pos.y += sy; moved = true; }
+      }
       if (!moved) target = null;
       pos.dir = Math.atan2(dy, dx);
       pos.walk = (pos.walk || 0) + dt * 10;
