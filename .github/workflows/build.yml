@@ -6,6 +6,11 @@ on:
     branches: [main]
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      publicar:
+        description: "Publicar la Release v<versión de package.json> con lo compilado"
+        type: boolean
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -83,10 +88,14 @@ jobs:
             dist/*.zip
           if-no-files-found: error
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.publicar
     needs: [build-windows, build-mac]
     runs-on: ubuntu-latest
     steps:
+      # Sin etiqueta (publicación manual), la Release crea la etiqueta v<versión> en este commit.
+      - uses: actions/checkout@v4
+      - id: ver
+        run: echo "tag=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           pattern: ciudades-del-umbral-*
@@ -94,7 +103,9 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          name: Las ciudades del Umbral ${{ github.ref_name }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || steps.ver.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: Las ciudades del Umbral ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || steps.ver.outputs.tag }}
           body: |
             Instaladores de Las ciudades del Umbral (Rifts & Gears).
             - Windows: `Ciudades-del-Umbral-Setup-*.exe` (instalador) o `*-portable.exe` (sin instalar).

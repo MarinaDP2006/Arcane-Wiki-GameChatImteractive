@@ -88,7 +88,13 @@ npm run dist:mac     # macOS
 npm run android:sync # copia src/ y la música a www/ y sincroniza Capacitor
 ```
 
-La app de Android es `com.marinadp2006.ciudadesdelumbral`. GitHub Actions compila Windows y macOS en cada push y publica una release al crear una etiqueta `v*`.
+La app de Android es `com.marinadp2006.ciudadesdelumbral`. GitHub Actions compila Windows, macOS y Android en cada push a main. Para publicar una Release:
+
+1. Sube la versión en `package.json` (por ejemplo 1.29.0).
+2. En GitHub → Actions → «Compilar escritorio (Windows y Mac)» → Run workflow, marca **Publicar** y ejecútalo. Crea la etiqueta `v<versión>` y la Release con los instaladores.
+3. Cuando termine, haz lo mismo en «Compilar móvil (Android)» para añadir el APK.
+
+También vale crear y subir una etiqueta `v*`: lanza los dos workflows y publica sola.
 
 ## 11. Antes de publicar
 
