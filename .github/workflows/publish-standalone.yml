@@ -1,0 +1,40 @@
+name: Publicar Arcane en el repositorio independiente
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Escribe PUBLICAR para copiar esta rama a MarinaDP2006/Arcane-fangame (main)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: ${{ inputs.confirm == 'PUBLICAR' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar la rama Arcane completa
+        uses: actions/checkout@v4
+        with:
+          ref: claude/project-thread-9huivc-arcane
+          fetch-depth: 0
+      - name: Publicar solo en Arcane-fangame/main
+        env:
+          ARCANE_REPO_TOKEN: ${{ secrets.ARCANE_REPO_TOKEN }}
+        run: |
+          if [ -z "$ARCANE_REPO_TOKEN" ]; then
+            echo "::error::Falta el secreto ARCANE_REPO_TOKEN. Añade un token con Contents: Read and write limitado a MarinaDP2006/Arcane-fangame."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add standalone "https://x-access-token:${ARCANE_REPO_TOKEN}@github.com/MarinaDP2006/Arcane-fangame.git"
+          git push standalone HEAD:refs/heads/main --force
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="arcane-v$VERSION"
+          git tag -f "$TAG" HEAD
+          git push standalone "refs/tags/$TAG" --force
+          echo "::notice::Publicado Arcane-fangame/main y lanzadas las compilaciones de Release $TAG."
