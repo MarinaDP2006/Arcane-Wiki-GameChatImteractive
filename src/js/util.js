@@ -94,21 +94,21 @@
     async listSlots() {
       if (desktop) return window.arcane.saves.list();
       return ['1', '2', '3'].map((slot) => {
-        const d = LS.get(`arcane-slot-${slot}`, null);
+        const d = LS.get(`rifts-gears-slot-${slot}`, null);
         return { slot, empty: !d, name: d?.player?.name, origin: d?.player?.origin, chapter: d?.progress?.chapterTitle, savedAt: d?.savedAt, playTimeSeconds: d?.playTimeSeconds || 0 };
       });
     },
     async load(slot) {
-      return desktop ? window.arcane.saves.load(slot) : LS.get(`arcane-slot-${slot}`, null);
+      return desktop ? window.arcane.saves.load(slot) : LS.get(`rifts-gears-slot-${slot}`, null);
     },
     async save(slot, data) {
       if (desktop) return window.arcane.saves.write(slot, data);
-      LS.set(`arcane-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
+      LS.set(`rifts-gears-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
       return true;
     },
     async remove(slot) {
       if (desktop) return window.arcane.saves.remove(slot);
-      LS.del(`arcane-slot-${slot}`);
+      LS.del(`rifts-gears-slot-${slot}`);
       return true;
     },
     async getSettings() {
@@ -142,32 +142,21 @@
 
   // Nombres alternativos (también en inglés) con los que se reconoce cada lugar.
   const PLACE_ALIASES = {
-    'ultima-gota': ['last-drop', 'bar-ultima-gota', 'bar-de-vander'],
-    callejones: ['lanes', 'zaun-callejones'],
-    sumidero: ['sump', 'laboratorio-sumidero', 'laboratorio-de-singed', 'lab-singed'],
-    academia: ['academy', 'piltover-academy'],
-    zaun: ['undercity', 'ciudad-subterranea'],
-    'taller-jayce': ['jaycetaller'],
-    consejo: ['council', 'council-chamber', 'sala-consejo'],
-    hexpuertas: ['hexgates', 'hexgate', 'hexpuerta'],
-    puente: ['bridge', 'bridge-of-progress', 'puente-progreso'],
-    arbol: ['firelights', 'firelight', 'arbol-luciernagas', 'luciernagas', 'firelight-tree'],
-    'escondite-jinx': ['jinx-hideout', 'guarida-jinx', 'guarida-de-jinx'],
-    fabrica: ['shimmer-factory', 'fabrica-brillo', 'fabrica-de-shimmer'],
-    ejecutores: ['enforcers', 'jefatura', 'comisaria'],
-    'mansion-kiramman': ['kiramman', 'kiramman-mansion', 'casa-kiramman'],
-    'taller-jayce': ['jayce-workshop', 'taller', 'laboratorio-jayce'],
-    stillwater: ['prision-stillwater', 'stillwater-prison', 'prision'],
-    'muelle-stillwater': ['muelle', 'stillwater-dock', 'muelles'],
-    mercado: ['mercado-tuberias', 'mercado-zaun', 'zaun-market'],
-    artesanos: ['mercado-artesanos', 'artisans', 'artisan-market'],
-    plaza: ['plaza-progreso', 'plaza-del-progreso', 'progress-plaza'],
-    'tienda-benzo': ['benzo', 'tienda-de-benzo', 'benzo-shop'],
-    tejados: ['rooftops', 'tejados-chimeneas', 'chimeneas'],
-    foso: ['pit', 'fight-pit', 'foso-peleas', 'foso-de-peleas'],
+    aurelia: ['ciudad-aurelia', 'upper-city', 'ciudad-elevada'],
+    nacar: ['ciudad-nacar', 'undercity', 'ciudad-subterranea'],
+    archivo: ['archivo-frecuencias', 'frequency-archive'],
+    observatorio: ['terrazas-observatorio', 'observatory'],
+    gremios: ['patio-gremios', 'guild-courtyard'],
+    'ascensor-central': ['central-lift', 'estacion-ascensores', 'contrapesos'],
+    cristal: ['bulevar-cristal', 'crystal-boulevard'],
+    'mercado-nacar': ['mercado-tuberias', 'pipe-market'],
+    galerias: ['galerias-geotermicas', 'geothermal-galleries'],
+    'jardin-musgo': ['jardin-de-musgo', 'moss-garden'],
+    clinica: ['clinica-tres-arcos', 'three-arches-clinic'],
+    'canal-cobre': ['canal-de-cobre', 'copper-canal'],
   };
   // Si falta un lugar, usa la imagen de su gemelo antes que el fondo pintado.
-  const PLACE_FALLBACK = { callejones: 'zaun', sumidero: 'zaun', mercado: 'zaun', fabrica: 'zaun', 'puente-zaun': 'puente', puente: 'puente-zaun', 'muelle-stillwater': 'stillwater', stillwater: 'muelle-stillwater', plaza: 'piltover', piltover: 'plaza', zaun: 'mercado' };
+  const PLACE_FALLBACK = { archivo: 'observatorio', cristal: 'archivo', 'jardin-musgo': 'galerias', 'canal-cobre': 'mercado-nacar' };
 
   // Asigna los archivos de lugares/ a los ids del juego aunque el nombre no sea exacto.
   function matchPlaces(raw) {
