@@ -64,7 +64,7 @@
       el('div', { class: 'slots' }, slots.map((s) => el('div', { class: `slot panel${s.empty ? ' empty' : ''}` },
         el('h3', {}, `Ranura ${s.slot}`),
         s.empty ? el('p', { class: 'muted' }, 'Vacía') : el('div', {},
-          el('strong', {}, s.name), el('span', { class: `tag origin-${s.origin}` }, s.origin === 'zaun' ? 'Zaun' : 'Piltover'),
+          el('strong', {}, s.name), el('span', { class: `tag origin-${s.origin}` }, s.origin === 'zaun' ? 'Nácar' : 'Aurelia'),
           el('p', { class: 'muted' }, s.chapter || ''),
           s.savedAt ? el('small', { class: 'muted' }, new Date(s.savedAt).toLocaleString(window.I18N?.lang || 'es')) : null),
         el('div', { class: 'row gap' },
@@ -180,7 +180,7 @@
     // Partidas anteriores a los primeros encuentros y a las muertes del canon.
     G.met = [...new Set([...(G.met || []), ...G.unlocked, ...kinOf(G)])];
     syncFallen();
-    // Las partidas de la versión «Arcane Piltover y Zaun» guardaban el avatar con la ruta de
+    // Las partidas antiguas guardaban el avatar con la ruta de
     // aquella instalación; se apunta al mismo avatar dentro del juego actual.
     const oldPhoto = /^file:.*\/src\/img\/arte\/(.+)$/.exec(G.player?.photo || '');
     if (oldPhoto) G.player.photo = `img/arte/${decodeURIComponent(oldPhoto[1])}`;
@@ -196,15 +196,15 @@
     const me = { look: p.look, photo: p.photo, ...Portrait.playerOpts(p) };
     const shots = p.origin === 'zaun'
       ? [
-        { scene: 'piltover', dur: 6, kicker: 'Runeterra', title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso brilla de oro y cristal.'], zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
+        { scene: 'piltover', dur: 6, kicker: 'Las ciudades del Umbral', title: 'Aurelia', lines: ['Arriba, la piedra clara y el latón reflejan la luz de los observatorios.'], zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
         { scene: 'puente', dur: 6, lines: ['Un puente une dos mundos que no se miran a los ojos.'], zoom: [1.0, 1.18], pan: [[0.5, -0.3], [-0.2, 0.4]] },
-        { scene: 'zaun', dur: 7, title: 'Zaun', lines: ['Abajo, entre humo verde y neón, la gente sobrevive como puede.'], zoom: [1.15, 1.0], pan: [[0, 0.6], [0, -0.2]] },
+        { scene: 'zaun', dur: 7, title: 'Nácar', lines: ['Bajo la piedra, talleres y canales sostienen a una comunidad que no puede detenerse.'], zoom: [1.15, 1.0], pan: [[0, 0.6], [0, -0.2]] },
         { scene: 'callejones', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ]
       : [
-        { scene: 'zaun', dur: 6, kicker: 'Runeterra', title: 'Zaun', lines: ['Bajo tus pies, una ciudad respira humo y rabia.'], zoom: [1.2, 1.05], pan: [[0.5, 0.5], [-0.3, 0]] },
+        { scene: 'zaun', dur: 6, kicker: 'Las ciudades del Umbral', title: 'Nácar', lines: ['Bajo tus pies, la Resonancia recorre galerías y canales geotérmicos.'], zoom: [1.2, 1.05], pan: [[0.5, 0.5], [-0.3, 0]] },
         { scene: 'puente', dur: 6, lines: ['El Puente del Progreso separa a quien tiene de quien no.'], zoom: [1.0, 1.18], pan: [[-0.5, 0.3], [0.3, -0.3]] },
-        { scene: 'piltover', dur: 7, title: 'Piltover', lines: ['Arriba, la Ciudad del Progreso vive su edad dorada.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
+        { scene: 'piltover', dur: 7, title: 'Aurelia', lines: ['Arriba, los gremios y los observatorios controlan los ascensores de contrapesos.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
         { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ];
     await Cinematic.play(shots);
@@ -406,7 +406,7 @@
       el('button', { class: 'btn primary', onclick: closeOverlay }, 'Continuar')));
   }
 
-  /** Guía rápida de personajes (src/data/guia.js) para quien no ha visto Arcane. */
+  /** Guía rápida de personajes originales (src/data/guia.js). */
   function showGuide(kind, after) {
     const g = window.GUIA;
     if (!g?.orden?.[kind]) { after?.(); return; }
@@ -494,7 +494,7 @@
       const tab = (id, label) => el('button', { class: `tab${sub === id ? ' active' : ''}`, onclick: () => openOverlay('codice', null, id) }, label);
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
-          el('h2', {}, `Códice de Runeterra · ${codexCount()}/${codexTotal()}`),
+          el('h2', {}, `Códice de las Ciudades · ${codexCount()}/${codexTotal()}`),
           el('div', { class: 'codex-tabs' }, tab('entradas', 'Entradas'), tab('atlas', 'Atlas')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
@@ -553,14 +553,14 @@
   }
 
   // ---------- Atlas de las Dos Ciudades (Códice) ----------
-  // Mapa ilustrado con los lugares de Arcane: al pulsar uno se abre su ficha, con
+  // Mapa ilustrado de Aurelia y Nácar: al pulsar un lugar se abre su ficha, con
   // puntos de interés, quién vive allí y un diario de los lugares explorados.
   function renderAtlas(body, placeId) {
     G.atlas = G.atlas || [];
     const A = window.ATLAS;
     const spoilers = window.App.settings.spoilers;
     const detail = el('div', { class: 'atlas-detail hidden' });
-    const CITY = { piltover: 'Piltover', zaun: 'Zaun' };
+    const CITY = { piltover: 'Aurelia', zaun: 'Nácar' };
     let focus = null;
     const pins = A.places.map((p) => el('button', {
       class: `atlas-pin pin-${p.city || 'both'}${G.atlas.includes(p.id) ? ' explored' : ''}`,
@@ -569,7 +569,7 @@
       onclick: () => showPlace(p),
     }, el('span', {}, p.name)));
     const map = el('div', { class: 'atlas-map' },
-      el('img', { class: 'atlas-bg', src: 'img/arte/codice/mapa-piltover-zaun.webp', alt: 'Mapa de Piltover y Zaun', draggable: 'false' }),
+      el('img', { class: 'atlas-bg', src: 'img/arte/codice/ciudades-umbral.svg', alt: 'Mapa conceptual de Aurelia y Nácar', draggable: 'false' }),
       pins);
     const emblem = (city) => el('button', { class: `atlas-emblem emblem-${city}`, title: `Lugares de ${CITY[city]}`, onclick: () => showCity(city) },
       el('img', { src: `img/arte/simbolos/${city}.png`, alt: CITY[city], draggable: 'false' }), el('span', {}, CITY[city]));
@@ -873,7 +873,7 @@
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
-        el('div', {}, el('small', { class: 'muted' }, window.GAME_UNIVERSE ? `${ch.part === 1 ? 'Parte I' : ch.part === 2 ? 'Parte II' : 'Parte III'} · ${G.progress.route === 'zaun' ? 'Nácar' : 'Aurelia'}` : (G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'zaun' ? 'Parte I · El inicio (Zaun)' : 'Parte I · El inicio (Piltover)')), el('h2', {}, ch.title)),
+        el('div', {}, el('small', { class: 'muted' }, window.GAME_UNIVERSE ? `${ch.part === 1 ? 'Parte I' : ch.part === 2 ? 'Parte II' : 'Parte III'} · ${G.progress.route === 'zaun' ? 'Nácar' : 'Aurelia'}` : (G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'zaun' ? 'Parte I · El inicio (Nácar)' : 'Parte I · El inicio (Aurelia)')), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; } }, 'Saltar'))),
       el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
@@ -1300,7 +1300,7 @@
     G.progress.finished = true;
     talk(false);
     await Cinematic.play([
-      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Piltover y Zaun termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la guerra apenas empieza…'], zoom: [1.0, 1.2], align: 'center' },
+      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Aurelia y Nácar continúa en las decisiones que tomaste.' : 'Tu historia queda escrita en las dos ciudades; el pacto todavía puede cambiar.'], zoom: [1.0, 1.2], align: 'center' },
     ]);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
