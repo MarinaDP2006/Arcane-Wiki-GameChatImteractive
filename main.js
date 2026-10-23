@@ -8,7 +8,7 @@ const { pathToFileURL } = require('url');
 // La app se llama «Grietas & Gears», pero las partidas, ajustes y arte siguen en la carpeta de siempre
 // (%APPDATA%\Arcane Piltover y Zaun), así no se pierde nada al actualizar.
 // GRIETAS_DATOS permite probar el juego con otra carpeta sin tocar las partidas reales.
-app.setPath('userData', process.env.GRIETAS_DATOS || path.join(app.getPath('appData'), 'Arcane Piltover y Zaun'));
+app.setPath('userData', process.env.GRIETAS_DATOS || path.join(app.getPath('appData'), 'Rifts & Gears - Las ciudades del Umbral'));
 const Modelos = require('./modelos');
 
 const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
