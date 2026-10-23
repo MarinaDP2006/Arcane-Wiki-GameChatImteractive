@@ -18,6 +18,8 @@
   let mapId = null;
   let map = null; // datos del mapa + edificios, calles y fondo pintado
   let dpr = 1;
+  let backdrop = null;
+  let backdropKey = '';
   let cw = 0; // tamaño del lienzo en px CSS
   let ch = 0;
   let zoom = 1; // px de pantalla por unidad de mundo
@@ -422,18 +424,25 @@
     ctx.fillStyle = '#05040a';
     ctx.fillRect(0, 0, cw, ch);
     if (!map.bg || (!map.bgArt && ready(cityArt(mapId)))) paintBackground();
-    // Fuera de la carta (pantallas más anchas que la ciudad): la panorámica desenfocada.
+    // Cache the costly blurred panorama: only rebuild it when the art or viewport changes.
     const art = cityArt(mapId);
     if (ready(art)) {
-      const s = Math.max(cw / art.naturalWidth, ch / art.naturalHeight) * 1.1;
-      ctx.save();
-      ctx.globalAlpha = 0.35;
-      ctx.filter = 'blur(18px)';
-      ctx.drawImage(art, (cw - art.naturalWidth * s) / 2, (ch - art.naturalHeight * s) / 2, art.naturalWidth * s, art.naturalHeight * s);
-      ctx.restore();
+      const key = `${art.src}:${cw}x${ch}`;
+      if (backdropKey !== key) {
+        backdropKey = key;
+        backdrop = document.createElement('canvas');
+        backdrop.width = cw;
+        backdrop.height = ch;
+        const b = backdrop.getContext('2d');
+        const scale = Math.max(cw / art.naturalWidth, ch / art.naturalHeight) * 1.1;
+        b.globalAlpha = 0.35;
+        b.filter = 'blur(18px)';
+        b.drawImage(art, (cw - art.naturalWidth * scale) / 2, (ch - art.naturalHeight * scale) / 2, art.naturalWidth * scale, art.naturalHeight * scale);
+      }
+      ctx.drawImage(backdrop, 0, 0);
     }
     const o = toScreen(0, 0);
-    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingQuality = 'medium';
     ctx.drawImage(map.bg, o.x, o.y, map.w * zoom, map.h * zoom);
 
     // Ruta animada hasta el objetivo por las calles.
@@ -1140,7 +1149,8 @@
     const rel = zoom / (fit || 1);
     cw = Math.max(320, Math.floor(box.width));
     ch = Math.max(240, Math.floor(box.height));
-    dpr = Math.min(2, window.devicePixelRatio || 1);
+    // Limit fill-rate on high-density screens while keeping map labels readable.
+    dpr = Math.min(1.5, window.devicePixelRatio || 1);
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(ch * dpr);
     fit = Math.min(cw / map.w, (ch - PAD_TOP - PAD_BOTTOM) / map.h);
@@ -1156,6 +1166,8 @@
   /** Cambia de ciudad y encuadra el lugar de llegada. */
   function setMap(id, atLocId) {
     mapId = id;
+    backdropKey = '';
+    backdrop = null;
     map = buildMap(id);
     G.world.map = id;
     resize();
