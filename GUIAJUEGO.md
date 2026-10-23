@@ -261,7 +261,7 @@ Este plan sirve para probar una compilación sin editar el código. Haz una prue
 - [ ] Silenciar el audio no impide continuar el juego.
 - [ ] No aparecen sonidos atascados tras cambiar de pantalla.
 
-**Importante:** esta prueba corresponde al sistema de audio procedural actual. No marques como aprobada la reproducción de tres archivos externos hasta que existan e estén integrados.
+**Importante:** esta prueba corresponde al sistema de audio procedural actual. No marques como aprobada la reproducción de tres archivos externos hasta que existan y estén integrados.
 
 ### Prueba H. Minijuegos, atlas y códice
 
