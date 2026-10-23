@@ -873,7 +873,7 @@
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
-        el('div', {}, el('small', { class: 'muted' }, G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'zaun' ? 'Parte I · El inicio (Zaun)' : 'Parte I · El inicio (Piltover)'), el('h2', {}, ch.title)),
+        el('div', {}, el('small', { class: 'muted' }, window.GAME_UNIVERSE ? `${ch.part === 1 ? 'Parte I' : ch.part === 2 ? 'Parte II' : 'Parte III'} · ${G.progress.route === 'zaun' ? 'Nácar' : 'Aurelia'}` : (G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'zaun' ? 'Parte I · El inicio (Zaun)' : 'Parte I · El inicio (Piltover)')), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; } }, 'Saltar'))),
       el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
@@ -1139,7 +1139,7 @@
     box.innerHTML = '';
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
-        G.progress.season !== 2 ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Parte II · Las consecuencias') : null,
+        (!window.GAME_UNIVERSE && G.progress.season !== 2) ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Parte II · Las consecuencias') : null,
         talkable().length ? el('button', { class: 'btn', onclick: () => setTab('chats', talkable()[0]) }, 'Seguir chateando con los personajes') : null,
         el('button', { class: 'btn', onclick: () => setTab('ficha') }, 'Ver mi ficha'),
         el('button', { class: 'btn ghost', onclick: replayRoute }, 'Rejugar la ruta con este personaje')));
@@ -1215,9 +1215,24 @@
 
   /** Determina cuál es el siguiente capítulo narrativo. */
   async function nextChapter() {
-    const route = S().routes[G.progress.route];
-    G.progress.chapterIdx += 1;
-    G.progress.chapterId = route[G.progress.chapterIdx];
+    const route = S().routes[G.progress.route] || [];
+    const nextIndex = G.progress.chapterIdx + 1;
+    // La campaña original tiene tres partes por ruta y no debe intentar abrir un
+    // capítulo inexistente al llegar al final de Aurelia o Nácar.
+    if (window.GAME_UNIVERSE && (!route[nextIndex])) {
+      G.progress.finished = true;
+      G.progress.chapterEnded = true;
+      G.progress.linesShown = true;
+      G.progress.started = true;
+      await persist();
+      closeOverlay();
+      renderMain();
+      showChoices([]);
+      toast('Has llegado al final de esta ruta. Puedes rejugarla o seguir conversando.', 'good');
+      return;
+    }
+    G.progress.chapterIdx = nextIndex;
+    G.progress.chapterId = route[nextIndex];
     G.progress.node = null;
     G.progress.linesShown = false;
     G.progress.chapterEnded = false;

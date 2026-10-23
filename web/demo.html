@@ -3,25 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Probar demo · Rifts &amp; Gears</title>
-  <meta name="theme-color" content="#0d0b14">
+  <meta name="theme-color" content="#0e1113">
+  <meta name="description" content="Demo de Las ciudades del Umbral: crea tu personaje y vive la primera escena con conversación libre.">
+  <title>Demo · Las ciudades del Umbral</title>
   <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body class="pagina-demo">
-  <header class="barra">
-    <a class="marca" href="index.html"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a>
-    <nav><a href="index.html">← Volver a la web</a></nav>
+  <header class="cabecera">
+    <a class="logo" href="index.html" aria-label="Volver a Las ciudades del Umbral">
+      <span class="logo-sello" aria-hidden="true">U</span>
+      <span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Demo jugable</small></span>
+    </a>
+    <a class="btn btn-borde btn-sm" href="index.html">Volver a la web</a>
   </header>
-  <main>
-    <section class="seccion demo-juego" aria-labelledby="demo-titulo">
-      <p class="antetitulo">Demo jugable · Capítulos 1 y 2</p>
-      <h1 id="demo-titulo" class="demo-titulo">Crea tu personaje y elige tu ciudad</h1>
-      <p class="intro">Los dos primeros capítulos de la historia del juego, con las mismas decisiones. El resto de la historia, el mapa, el comunicador y los minijuegos están en el juego completo.</p>
-      <div id="demo-app" class="dj" aria-live="polite">
-        <noscript><p>La demo necesita JavaScript.</p></noscript>
-      </div>
-    </section>
+  <main class="demo" id="contenido">
+    <header class="demo-cabeza">
+      <p class="kicker">Rol libre · sin opciones fijas</p>
+      <h1>La primera vibración</h1>
+      <p>Escribe lo que tu personaje dice o hace. Los personajes te contestarán y la escena avanzará contigo. Tu partida de la demo se guarda solo en este navegador.</p>
+    </header>
+    <div id="demo-app" class="dj"><noscript><p>Activa JavaScript para jugar la demo.</p></noscript></div>
   </main>
   <script src="demo-datos.js"></script>
   <script src="demo-juego.js"></script>
