@@ -282,7 +282,7 @@ La carpeta de referencia es [assets/music/README.md](assets/music/README.md). No
 En Windows, la guía del proyecto indica esta carpeta habitual:
 
 ~~~text
-%APPDATA%\Arcane Piltover y Zaun\partidas
+%APPDATA%\Rifts & Gears - Las ciudades del Umbral\partidas
 ~~~
 
 Las ranuras pueden tener una copia anterior con extensión <code>.bak</code>. En Android, la partida vive dentro de la app salvo que se exporte; las carpetas internas no deben suponerse accesibles desde el explorador de archivos.
