@@ -1,19 +1,25 @@
 # Música de Rifts & Gears
 
-## Estado actual
-La banda sonora principal está implementada en `src/js/audio.js` como síntesis procedural con Web Audio. No hay archivos MP3/OGG externos necesarios para reproducir los temas existentes.
+## Qué existe ahora
 
-- Menú principal / wiki: `Audio2.playMusic('wiki')`
-- Piltover: `Audio2.playMusic('piltover')`
-- Zaun: `Audio2.playMusic('zaun')`
+La música actual se genera en tiempo real mediante Web Audio en `src/js/audio.js`. No necesita archivos MP3/OGG externos para reproducir estos temas:
 
-También hay ambiente por ciudad y efectos de interfaz/pasos. La generación procedural reduce descargas y permite cambiar música sin cargar archivos de audio. Esta carpeta documenta el destino reservado para futuras mezclas renderizadas (OGG/Opus) si se decide exportarlas.
+| Uso | Identificador en el código |
+|---|---|
+| Menú principal / wiki | `wiki` |
+| Piltover | `piltover` |
+| Zaun | `zaun` |
 
-## Añadir pistas renderizadas más adelante
-1. Usa composiciones originales y conserva licencia/autoría de cada recurso.
-2. Exporta OGG/Opus a una tasa de bits adecuada y con loop points probados.
-3. Añade los archivos a esta carpeta solo cuando el reproductor los use realmente.
-4. Actualiza la ruta de recursos en el código, el empaquetado de Electron y el generador web/móvil.
-5. Prueba volumen, silencio, cambio de ciudad, reanudación y consumo de memoria en todas las plataformas.
+Puedes localizar las llamadas a `Audio2.playMusic(...)` en el código para ver cuándo cambia cada tema. Esta carpeta documenta futuras pistas renderizadas; su presencia no significa que ya haya archivos de audio integrados.
 
-No se incluyen melodías, stems ni grabaciones oficiales de Arcane. La generación externa de una canción no se considera completada hasta disponer de un archivo final reproducible y con licencia verificada.
+## Añadir pistas renderizadas en el futuro
+
+1. Crear o encargar composiciones originales y conservar los datos de autoría y licencia.
+2. Exportar a OGG/Opus con un punto de bucle limpio.
+3. Colocar aquí únicamente los archivos finales que vaya a utilizar el reproductor.
+4. Actualizar las rutas en el código y comprobar que el proceso de empaquetado de escritorio, web y Android los incluye.
+5. Probar inicio y parada, volumen, silencio, cambio de zona, bucles y consumo de memoria en las plataformas compatibles.
+
+## Derechos y estado
+
+No usar melodías, stems ni grabaciones oficiales de *Arcane*. La música generada por un servicio externo solo está lista para integrarse cuando existe un archivo final, se ha revisado la licencia aplicable y se ha probado en el juego. La documentación no habilita por sí misma Suno ni otro servicio musical.
