@@ -1300,7 +1300,7 @@
     G.progress.finished = true;
     talk(false);
     await Cinematic.play([
-      { scene: ending.scene || 'puente', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Aurelia y Nácar continúa en las decisiones que tomaste.' : 'Tu historia queda escrita en las dos ciudades; el pacto todavía puede cambiar.'], zoom: [1.0, 1.2], align: 'center' },
+      { scene: ending.scene || 'ascensor-central', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Aurelia y Nácar continúa en las decisiones que tomaste.' : 'Tu historia queda escrita en las dos ciudades; el pacto todavía puede cambiar.'], zoom: [1.0, 1.2], align: 'center' },
     ]);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
