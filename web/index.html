@@ -3,84 +3,168 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101513">
-  <meta name="description" content="Las ciudades del Umbral: aventura narrativa original sobre Aurelia, Nácar y una energía que nadie debería controlar a solas.">
-  <meta property="og:title" content="Las ciudades del Umbral">
-  <meta property="og:description" content="Una aventura narrativa de fantasía industrial. Investiga la Resonancia. Decide qué significa compartir el futuro.">
-  <meta property="og:image" content="arte-propio/aurelia.svg">
-  <title>Las ciudades del Umbral | Rifts &amp; Gears</title>
+  <meta name="theme-color" content="#0e1113">
+  <meta name="description" content="Las ciudades del Umbral: aventura narrativa de fantasía industrial. Dos ciudades, una energía compartida y una historia que escribes tú, sin opciones fijas.">
+  <meta property="og:title" content="Las ciudades del Umbral · Rifts &amp; Gears">
+  <meta property="og:description" content="Aurelia vive en las alturas. Nácar, bajo la piedra. Una frecuencia imposible está a punto de unirlas.">
+  <meta property="og:image" content="arte-propio/ciudades-umbral.svg">
+  <title>Las ciudades del Umbral · Rifts &amp; Gears</title>
   <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <a class="skip" href="#contenido">Saltar al contenido</a>
-  <header class="topbar">
-    <a class="brand" href="#inicio" aria-label="Las ciudades del Umbral, inicio"><span class="brand-mark">R/G</span><span><strong>RIFTS &amp; GEARS</strong><small>LAS CIUDADES DEL UMBRAL</small></span></a>
-    <nav aria-label="Navegación principal">
-      <a href="#mundo">El mundo</a><a href="#historia">Historia</a><a href="#reparto">Reparto</a><a href="#demo">Demo</a>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <a class="logo" href="#inicio" aria-label="Las ciudades del Umbral, inicio">
+      <span class="logo-sello" aria-hidden="true">U</span>
+      <span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span>
+    </a>
+    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <nav id="menu" class="menu" aria-label="Navegación principal">
+      <a href="#cronica">Crónica</a>
+      <a href="#ciudades">Ciudades</a>
+      <a href="#resonancia">Resonancia</a>
+      <a href="#reparto">Reparto</a>
+      <a href="#como-se-juega">Cómo se juega</a>
+      <a class="btn btn-primario btn-sm" href="demo.html">Jugar la demo</a>
     </nav>
-    <a class="nav-cta" href="demo.html">Probar la demo <span aria-hidden="true">↗</span></a>
   </header>
 
   <main id="contenido">
-    <section class="hero section" id="inicio">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="pulse"></span> AVENTURA NARRATIVA · FANTASÍA INDUSTRIAL</p>
-        <h1>Dos ciudades.<br><em>Una energía</em><br>que nadie posee.</h1>
-        <p class="hero-lede">Aurelia vive en las alturas. Nácar, bajo la piedra. Cuando la red de ascensores empieza a fallar, una frecuencia imposible revela que ambas ciudades comparten algo más que sus cimientos.</p>
-        <div class="hero-actions"><a class="button primary" href="demo.html">Entrar en la historia <span>→</span></a><a class="button quiet" href="#mundo">Explorar el mundo <span>↓</span></a></div>
-        <div class="hero-meta"><span>01 / 03 <i>·</i> Tres partes narrativas</span><span>PC · Web · Android <i>·</i> En desarrollo</span></div>
+    <section class="portada" id="inicio">
+      <div class="portada-texto">
+        <p class="kicker"><span class="latido" aria-hidden="true"></span> Registro 00:03 · vibración fuera de rango</p>
+        <h1>La ciudad de arriba no recuerda a la de abajo. <em>La piedra, sí.</em></h1>
+        <p class="entradilla">Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Cuando un ascensor se detiene entre las dos, una frecuencia imposible empieza a contar una historia que alguien borró.</p>
+        <div class="acciones">
+          <a class="btn btn-primario" href="demo.html">Entrar en la historia</a>
+          <a class="btn btn-borde" href="#cronica">Leer la crónica</a>
+        </div>
+        <dl class="cifras">
+          <div><dt>Ciudades</dt><dd>2</dd></div>
+          <div><dt>Personajes</dt><dd>{{PERSONAJES}}</dd></div>
+          <div><dt>Partes</dt><dd>3</dd></div>
+          <div><dt>Opciones fijas</dt><dd>0</dd></div>
+        </dl>
       </div>
-      <div class="hero-art" aria-label="Ilustración conceptual de Aurelia y Nácar conectadas por ascensores">
-        <img src="arte-propio/ciudades-umbral.svg" alt="Ilustración conceptual original de una ciudad elevada sobre galerías industriales">
-        <div class="art-stamp"><span>ARCHIVO DE CAMPO</span><strong>Registro 00:03</strong><small>Vibración fuera de rango</small></div>
+      <figure class="portada-arte">
+        <img src="arte-propio/ciudades-umbral.svg" alt="Ilustración original: una ciudad elevada de piedra clara sobre galerías industriales iluminadas">
+        <figcaption>Aurelia y Nácar, unidas por la red de contrapesos.</figcaption>
+      </figure>
+    </section>
+
+    <section class="seccion" id="cronica" aria-labelledby="t-cronica">
+      <header class="seccion-cabeza">
+        <p class="kicker">01 · Crónica del Umbral</p>
+        <h2 id="t-cronica">Trescientos años de silencio en cinco fechas.</h2>
+        <p>Nadie en Aurelia enseña esta historia completa en la escuela. En Nácar se cuenta a trozos, de taller en taller.</p>
+      </header>
+      <ol class="cronica">
+        <li><span class="fecha">Año 0</span><h3>El Hundimiento</h3><p>La meseta de Umbral cede en una sola noche. Los barrios del borde se quedan arriba y fundan Aurelia. Los que caen con la roca sobreviven en las galerías y levantan Nácar con lo que encuentran.</p></li>
+        <li><span class="fecha">Año 112</span><h3>La piedra que canta</h3><p>Una minera de Nácar descubre que ciertos cristales vibran al ritmo del subsuelo. Con válvulas y amortiguadores, esa vibración mueve máquinas. Nace la Resonancia.</p></li>
+        <li><span class="fecha">Año 190</span><h3>El Pacto de los Contrapesos</h3><p>Aurelia financia los ascensores públicos que unen las dos ciudades. A cambio, puede extraer energía de los estratos profundos. Tres cláusulas del pacto nunca se publicaron.</p></li>
+        <li><span class="fecha">Año 251</span><h3>El Silencio de Cobre</h3><p>Una galería de Nácar se derrumba durante un pico de extracción. El informe oficial habla de un fallo de mantenimiento. Los registros de frecuencia de esa noche desaparecen del Archivo.</p></li>
+        <li class="cronica-ahora"><span class="fecha">Año 298</span><h3>Registro 00:03</h3><p>Un ascensor se detiene entre los dos niveles. El medidor marca tres pulsos y una pausa larga, el mismo patrón que se borró hace casi cincuenta años. Y tú estás allí.</p></li>
+      </ol>
+    </section>
+
+    <section class="seccion" id="ciudades" aria-labelledby="t-ciudades">
+      <header class="seccion-cabeza">
+        <p class="kicker">02 · Las ciudades</p>
+        <h2 id="t-ciudades">Dos caras del mismo mapa.</h2>
+        <p>Una promete orden. La otra mantiene la maquinaria en marcha. Ninguna entiende la crisis mirando solo sus propias paredes.</p>
+      </header>
+      <div class="ciudades">
+        <article class="ciudad ciudad-aurelia">
+          <img src="arte-propio/aurelia.svg" alt="Arte original de Aurelia, ciudad de piedra clara y observatorios" loading="lazy">
+          <div class="ciudad-texto">
+            <p class="etiqueta">Ciudad elevada</p>
+            <h3>Aurelia</h3>
+            <p>Observatorios, gremios técnicos, pasarelas de cristal y ascensores de contrapesos. Desde sus terrazas el progreso luce impecable, aunque su coste no siempre salga en los informes del Consejo.</p>
+            <ul><li>Plaza del Archivo</li><li>Terrazas del Observatorio</li><li>Patio de Gremios</li><li>Estación de Ascensores</li></ul>
+          </div>
+        </article>
+        <article class="ciudad ciudad-nacar">
+          <img src="arte-propio/nacar.svg" alt="Arte original de Nácar, ciudad subterránea de talleres y canales de vapor" loading="lazy">
+          <div class="ciudad-texto">
+            <p class="etiqueta">Ciudad subterránea</p>
+            <h3>Nácar</h3>
+            <p>Galerías geotérmicas, mercados, clínicas vecinales y jardines de musgo. No es una ruina: es una ciudad que su gente sostiene a mano, válvula a válvula, cada día.</p>
+            <ul><li>Mercado de las Tuberías</li><li>Galerías Geotérmicas</li><li>Jardín de Musgo</li><li>Canal de Cobre</li></ul>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="ticker" aria-label="Ideas centrales"><span>RESONANCIA</span><b>✳</b><span>MEMORIA</span><b>✳</b><span>INFRAESTRUCTURA</span><b>✳</b><span>CONSECUENCIAS</span><b>✳</b><span>COMUNIDAD</span></section>
-
-    <section class="section world" id="mundo">
-      <div class="section-head"><div><p class="eyebrow">01 · EL MUNDO</p><h2>El mapa tiene dos caras.</h2></div><p>Una ciudad promete orden. La otra mantiene la maquinaria en marcha. Ninguna puede entender la crisis mirando solo sus propias paredes.</p></div>
-      <div class="city-grid">
-        <article class="city-card aurelia"><img src="arte-propio/aurelia.svg" alt="Arte conceptual de Aurelia, ciudad de piedra clara y observatorios"><div class="city-content"><span class="city-tag">CIUDAD ELEVADA</span><h3>Aurelia</h3><p>Observatorios, gremios públicos, pasarelas de cristal y ascensores de contrapesos. El progreso luce impecable desde la terraza, aunque sus costes no siempre aparezcan en el informe.</p><ul><li>Piedra caliza y latón patinado</li><li>Archivo de Frecuencias</li><li>Consejos y gremios técnicos</li></ul></div></article>
-        <article class="city-card nacar"><img src="arte-propio/nacar.svg" alt="Arte conceptual de Nácar, ciudad subterránea de talleres y canales de vapor"><div class="city-content"><span class="city-tag">CIUDAD SUBTERRÁNEA</span><h3>Nácar</h3><p>Galerías geotérmicas, talleres de reparación, mercados, clínicas y jardines de musgo. La ciudad no es una ruina: la comunidad la sostiene cada día.</p><ul><li>Hierro ennegrecido y cobre</li><li>Red vecinal de mensajería</li><li>Canales, refugios y cooperativas</li></ul></div></article>
-      </div>
-      <article class="technology-card"><img src="arte-propio/resonancia.svg" alt="Diagrama conceptual original de una red geológica de Resonancia"><div><p class="eyebrow">LA TECNOLOGÍA CENTRAL</p><h3>Resonancia</h3><p>Cristales que registran las vibraciones de la roca y un sistema de amortiguadores que convierte parte de esa energía en trabajo mecánico. Extraer demasiado desestabiliza la red. El dilema no es solo técnico: es quién asume el riesgo.</p><a href="#historia" class="inline-link">Cómo empieza la crisis <span>↗</span></a></div></article>
-    </section>
-
-    <section class="story-band" id="historia"><div class="section story-layout"><div><p class="eyebrow">02 · LA HISTORIA</p><h2>La avería solo es<br>el principio.</h2><p>Un ascensor se detiene. Los registros se contradicen. Una decisión de mantenimiento conecta dos barrios con un pacto que nadie recuerda haber aprobado.</p></div>
-      <div class="parts">
-        <article><span>PARTE I</span><h3>La ciudad bajo la piedra</h3><p>Descubre la frecuencia imposible y a quienes tienen algo que perder si se escucha.</p></article>
-        <article><span>PARTE II</span><h3>El precio de la Resonancia</h3><p>Contrasta archivos, sigue los conductos y reconstruye un acuerdo incompleto.</p></article>
-        <article><span>PARTE III</span><h3>Un pacto que no se hereda</h3><p>Decide cómo compartir una infraestructura sin fingir que las diferencias han desaparecido.</p></article>
-      </div>
-    </div></section>
-
-    <section class="section cast" id="reparto">
-      <div class="section-head"><div><p class="eyebrow">03 · DIEZ VIDAS EN CRUCE</p><h2>Nadie es solo una facción.</h2></div><p>El reparto original combina oficio, contradicción y lealtades que pueden cambiar con tus respuestas. Los prototipos visuales actuales son modelos low-poly de bloqueo, no assets finales riggeados.</p></div>
-      <div class="cast-grid">
-        <article><span>01</span><h3>Iria Venn</h3><p>Ingeniera de contrapesos</p></article><article><span>02</span><h3>Darel Ossan</h3><p>Mecánico de canales</p></article>
-        <article><span>03</span><h3>Saia Merel</h3><p>Archivista de frecuencias</p></article><article><span>04</span><h3>Toren Vale</h3><p>Inspector civil</p></article>
-        <article><span>05</span><h3>Nyra Quell</h3><p>Mensajera de vapor</p></article><article><span>06</span><h3>Bastian Rook</h3><p>Mediador de gremios</p></article>
-        <article><span>07</span><h3>Oren Caldus</h3><p>Geólogo resonante</p></article><article><span>08</span><h3>Maelis Thorn</h3><p>Delegada de los Canales</p></article>
-        <article><span>09</span><h3>Joren Ash</h3><p>Médico de galerías</p></article><article><span>10</span><h3>Edda Lume</h3><p>Piloto de plataformas</p></article>
+    <section class="banda" id="resonancia" aria-labelledby="t-resonancia">
+      <div class="seccion banda-dentro">
+        <img src="arte-propio/resonancia.svg" alt="Diagrama original de una red geológica de Resonancia" loading="lazy">
+        <div>
+          <p class="kicker">03 · La tecnología</p>
+          <h2 id="t-resonancia">Resonancia: energía que alguien tiene que escuchar.</h2>
+          <p>Los cristales registran las vibraciones de la roca. Un sistema de válvulas y amortiguadores convierte una parte en trabajo mecánico: mueve ascensores, bombea aire y calienta las clínicas.</p>
+          <p>El problema es el límite. Si se extrae más de lo que el estrato repone, los canales pierden presión y la piedra se queja. La pregunta del juego no es técnica: <strong>¿quién asume el riesgo cuando la red falla?</strong></p>
+        </div>
       </div>
     </section>
 
-    <section class="section demo-section" id="demo">
-      <div class="demo-panel"><div><p class="eyebrow">PRUEBA ABIERTA · SIN INSTALADOR</p><h2>Empieza por la primera avería.</h2><p>La demo funciona en el navegador y muestra el inicio de ambas rutas. Está pensada para probar el tono y el sistema narrativo, no para representar todas las funciones del juego de escritorio.</p><a class="button primary" href="demo.html">Abrir demo narrativa <span>→</span></a></div><div class="demo-status"><span class="status-dot"></span><strong>En desarrollo activo</strong><p>Version {{VERSION}}</p><p>{{CAPITULOS}} escenas/capítulos detectados por el generador</p><p>{{PERSONAJES}} fichas de personaje en los datos cargados</p></div></div>
+    <section class="seccion" id="partes" aria-labelledby="t-partes">
+      <header class="seccion-cabeza">
+        <p class="kicker">04 · La campaña</p>
+        <h2 id="t-partes">Tres partes, una pregunta.</h2>
+      </header>
+      <div class="partes">
+        <article><span>Parte I</span><h3>La ciudad bajo la piedra</h3><p>Una avería, una frecuencia borrada y gente con mucho que perder si alguien la escucha.</p></article>
+        <article><span>Parte II</span><h3>El precio de la Resonancia</h3><p>Archivos censurados, conductos que no salen en los mapas y un acuerdo que nadie votó.</p></article>
+        <article><span>Parte III</span><h3>Un pacto que no se hereda</h3><p>Decidir cómo compartir una energía sin fingir que las diferencias han desaparecido.</p></article>
+      </div>
     </section>
 
-    <section class="section status-section"><div class="section-head"><div><p class="eyebrow">ESTADO DEL PROYECTO</p><h2>Transparencia antes que promesas.</h2></div><p>Esta página distingue la dirección creativa del contenido que ya está terminado. El juego no se considera listo para publicación hasta superar las pruebas indicadas en su guía.</p></div>
-      <div class="status-grid"><article><span class="status-label ready">PREPARADO</span><h3>Universo y campaña base</h3><p>Se han definido las ciudades, la Resonancia, las tres partes y diez protagonistas originales.</p></article><article><span class="status-label prototype">PROTOTIPO</span><h3>Modelos 3D</h3><p>Los GLB incluidos son bloqueos geométricos. No incluyen rig ni animaciones finales de personaje.</p></article><article><span class="status-label pending">PENDIENTE</span><h3>IA en la nube</h3><p>El servicio necesita que se configure una clave de Ollama Cloud como secreto del servidor y se publique la API.</p></article></div>
+    <section class="seccion" id="reparto" aria-labelledby="t-reparto">
+      <header class="seccion-cabeza">
+        <p class="kicker">05 · Reparto</p>
+        <h2 id="t-reparto">Nadie es solo su ciudad.</h2>
+        <p>Diez personas con oficio, contradicciones y lealtades que cambian según lo que les digas.</p>
+      </header>
+      <div class="fichas">{{REPARTO}}</div>
     </section>
 
-    <section class="section close-cta"><p class="eyebrow">EL SIGUIENTE PASO</p><h2>La verdad también necesita mantenimiento.</h2><p>Lee la guía técnica, revisa el código y sigue el progreso de una historia que se construye desde cero.</p><div class="hero-actions"><a class="button primary" href="demo.html">Jugar la demo <span>→</span></a><a class="button quiet" href="https://github.com/MarinaDP2006/RIFTS-GEARS">Ver el repositorio <span>↗</span></a></div></section>
+    <section class="seccion" id="como-se-juega" aria-labelledby="t-juego">
+      <header class="seccion-cabeza">
+        <p class="kicker">06 · Cómo se juega</p>
+        <h2 id="t-juego">Sin botones de respuesta. Hablas tú.</h2>
+      </header>
+      <div class="pasos">
+        <article><span class="paso-num">1</span><h3>Te preguntamos si conoces el mundo</h3><p>Si es tu primera vez, una introducción breve. Si ya lo conoces, pasas directo a la creación.</p></article>
+        <article><span class="paso-num">2</span><h3>Creas a tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus propias palabras.</p></article>
+        <article><span class="paso-num">3</span><h3>Escribes lo que dices o haces</h3><p>Los personajes te contestan, te preguntan, discuten entre ellos y recuerdan lo que hiciste. La historia la construyes tú, dentro de las reglas del Umbral.</p></article>
+        <article><span class="paso-num">4</span><h3>La IA vive en el servidor</h3><p>No tienes que instalar nada. El rol lo mueve un modelo de Ollama alojado en el servidor del juego, con las reglas del mundo cargadas.</p></article>
+      </div>
+    </section>
+
+    <section class="seccion demo-cta" aria-labelledby="t-demo">
+      <div>
+        <p class="kicker">Prueba abierta · en el navegador</p>
+        <h2 id="t-demo">Empieza por la primera avería.</h2>
+        <p>La demo te deja crear un personaje y vivir la primera escena en Aurelia o en Nácar con conversación libre.</p>
+        <a class="btn btn-primario" href="demo.html">Abrir la demo</a>
+      </div>
+      <ul class="estado">
+        <li><span class="punto punto-listo"></span><strong>Universo y campaña base</strong> Ciudades, Resonancia, tres partes y diez personajes.</li>
+        <li><span class="punto punto-proto"></span><strong>Modelos 3D</strong> Prototipos low-poly, sin rig ni animaciones finales.</li>
+        <li><span class="punto punto-proto"></span><strong>IA en servidor</strong> Funciona cuando el servidor tiene configurada su clave de Ollama Cloud.</li>
+        <li><span class="punto punto-info"></span><strong>Versión</strong> {{VERSION}} · en desarrollo activo.</li>
+      </ul>
+    </section>
   </main>
 
-  <footer class="footer"><a class="brand" href="#inicio"><span class="brand-mark">R/G</span><span><strong>RIFTS &amp; GEARS</strong><small>LAS CIUDADES DEL UMBRAL</small></span></a><p>Universo original de fantasía industrial. Los nombres y diseños del juego son provisionales y deben revisarse antes de la publicación comercial.</p><div><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">GitHub</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS/blob/main/docs/PLAN-UNIVERSO-ORIGINAL.md">Biblia del universo</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS/blob/main/docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md">Prompts 3D</a></div><small>© {{ANIO}} · Rifts &amp; Gears · Hecho paso a paso.</small></footer>
-  <script src="web.js"></script>
-  <script src="pestanas.js" defer></script>
-  <script src="experiencia.js" defer></script>
+  <footer class="pie">
+    <div class="logo"><span class="logo-sello" aria-hidden="true">U</span><span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span></div>
+    <p>Universo original de fantasía industrial creado por MarinaDP2006. Nombres, historia y diseños propios, aún en desarrollo.</p>
+    <nav aria-label="Enlaces del pie"><a href="demo.html">Demo</a><a href="privacidad.html">Privacidad</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">Código</a></nav>
+    <small>© {{ANIO}} Rifts &amp; Gears</small>
+  </footer>
+  <script src="menu.js" defer></script>
 </body>
 </html>

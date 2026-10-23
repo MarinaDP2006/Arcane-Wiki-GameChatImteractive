@@ -141,7 +141,7 @@
       box.innerHTML = '';
       box.append(
         el('h3', {}, 'IA para los chats (opcional)'),
-        el('p', { class: 'muted small' }, 'Con Ollama Cloud puedes escribir con libertad y cada personaje responde en su papel. No necesitas instalar modelos. El servicio alojado debe estar configurado y su uso puede tener límites o costes; los diálogos escritos siguen disponibles.'),
+        el('p', { class: 'muted small' }, 'Roleplay libre con contexto de la temporada 1 y 2: escribe como tu personaje y deja que el reparto responda y pregunte. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
         el('label', { class: 'field' }, el('span', {}, 'Servicio'),
           el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
