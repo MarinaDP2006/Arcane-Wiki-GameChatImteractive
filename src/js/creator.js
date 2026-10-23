@@ -79,10 +79,47 @@
     window.App.go('game');
   }
 
-  // La galería se divide en mujer y hombre (archivos «mujer-N» y «hombre-N»); sin género o no binario salen todos.
-  const avatars = () => Object.entries(window.CustomArt.files.avatares || {})
-    .filter(([, f]) => !/\.(mp4|webm)$/i.test(f))
-    .filter(([n]) => !/^(mujer|hombre)-/.test(n) || !['mujer', 'hombre'].includes(draft.gender) || n.startsWith(`${draft.gender}-`));
+  // La galería se divide en mujer y hombre: archivos «mujer-N» / «hombre-N» (también «chica-», «chico-»)
+  // o las subcarpetas avatares/mujer y avatares/hombre. Con «No binario» salen todos.
+  const GENDER_PREFIX = { mujer: /^(mujer|chica|female|woman)[-_ ]/i, hombre: /^(hombre|chico|male|man)[-_ ]/i };
+  const avatarGender = (name) => Object.keys(GENDER_PREFIX).find((g) => GENDER_PREFIX[g].test(name)) || null;
+  const allAvatars = () => Object.entries(window.CustomArt.files.avatares || {}).filter(([, f]) => !/\.(mp4|webm)$/i.test(f));
+  const binary = (g) => g === 'mujer' || g === 'hombre';
+  // Retratos del género elegido (o todos con «No binario»).
+  const avatars = (g = draft.gender) => allAvatars().filter(([n]) => !binary(g) || avatarGender(n) === g);
+  // Imágenes de tu carpeta sin «mujer-» ni «hombre-» en el nombre: se enseñan aparte.
+  const unsorted = () => (binary(draft.gender) ? allAvatars().filter(([n]) => !avatarGender(n)) : []);
+
+  // Al cambiar de género, el retrato pasa al del mismo número del otro género (o se quita).
+  function setGender(g) {
+    if (draft.gender === g) return;
+    const prev = allAvatars().find(([, url]) => url === draft.photo);
+    draft.gender = g;
+    if (prev && binary(g) && avatarGender(prev[0]) && avatarGender(prev[0]) !== g) {
+      const num = prev[0].match(/(\d+)$/)?.[1];
+      const twin = avatars().find(([n]) => num && n.endsWith(`-${num}`));
+      draft.photo = twin ? twin[1] : null;
+    }
+    Audio2.sfx.choice();
+    rerender();
+  }
+
+  // Tarjetas grandes de Mujer / Hombre con un retrato de muestra, y No binario aparte.
+  function genderPicker() {
+    const sample = (g) => avatars(g).find(([n]) => avatarGender(n) === g)?.[1];
+    const big = C().genders.filter((g) => binary(g.id));
+    const rest = C().genders.filter((g) => !binary(g.id));
+    return el('div', { class: 'gender-pick' },
+      el('div', { class: 'gender-cards' }, big.map((g) => {
+        const img = sample(g.id);
+        return el('button', { class: `gender-card${draft.gender === g.id ? ' active' : ''}`, onclick: () => setGender(g.id) },
+          img ? el('img', { src: img, alt: g.label }) : el('span', { class: 'gender-empty' }),
+          el('strong', {}, g.label),
+          el('small', {}, `${avatars(g.id).length} retratos`));
+      })),
+      el('div', { class: 'seg' }, rest.map((g) =>
+        el('button', { class: draft.gender === g.id ? 'active' : '', onclick: () => setGender(g.id) }, g.label))));
+  }
 
   function statBars(stats) {
     return el('div', { class: 'stat-bars' }, Object.entries(window.STORY.stats).map(([k, meta]) =>
@@ -260,8 +297,6 @@
       class: 'input', maxlength: 28, value: draft.name, placeholder: 'Escribe tu nombre',
       oninput: (e) => { draft.name = e.target.value; body.querySelector('.creator-nav .primary').disabled = !canNext(); $('#stage-name').textContent = draft.name || 'Sin nombre'; },
     });
-    const gender = el('div', { class: 'seg' }, C().genders.map((g) =>
-      el('button', { class: draft.gender === g.id ? 'active' : '', onclick: () => { draft.gender = g.id; rerender(); } }, g.label)));
     const age = el('input', { class: 'input', type: 'number', min: 14, max: 99, value: draft.age, oninput: (e) => { draft.age = e.target.value; } });
     const district = el('select', { class: 'input', onchange: (e) => { draft.district = e.target.value; } },
       o.districts.map((d) => el('option', { value: d, selected: d === draft.district }, d)));
@@ -269,8 +304,11 @@
       el('button', { class: `option${draft.job === j.id ? ' active' : ''}`, onclick: () => { draft.job = j.id; rerender(); } },
         el('strong', {}, tpl(j.label, draft)), el('small', {}, bonusText(j.stats)))));
     body.append(el('h2', {}, 'Quién eres'),
+      el('h3', {}, '¿Hombre o mujer?'),
+      el('p', { class: 'muted' }, 'Los diálogos se adaptan a tu género y en el paso «Retrato» solo verás los retratos de tu género.'),
+      genderPicker(),
       el('div', { class: 'form-grid' },
-        field('Nombre', name), field('Género', gender, 'Los diálogos se adaptan a tu género.'),
+        field('Nombre', name),
         field('Edad', age), field(`Barrio de ${o.label}`, district, 'Es donde empiezas en el mapa.'),
         field('Te atraen', el('div', { class: 'seg' }, C().attractions.map((g) =>
           el('button', { class: draft.attraction === g.id ? 'active' : '', onclick: () => { draft.attraction = g.id; rerender(); } }, g.label))),
@@ -345,22 +383,30 @@
     const file = el('input', { type: 'file', accept: 'image/*', class: 'hidden', onchange: (e) => loadPhoto(e.target.files[0]) });
     const choose = (url) => { draft.photo = url; Audio2.sfx.choice(); rerender(); };
     body.append(el('h2', {}, 'Tu retrato'),
-      el('p', { class: 'muted' }, draft.gender === 'mujer' || draft.gender === 'hombre'
-        ? `Elige quién eres entre los ocho retratos de ${draft.gender === 'mujer' ? 'mujer' : 'hombre'}. Si cambias de género en el primer paso, la galería cambia con él.`
-        : 'Elige quién eres entre los dieciséis retratos. Con el género «Mujer» u «Hombre» solo verás los ocho de cada uno.'),
+      el('div', { class: 'seg portrait-gender' }, C().genders.map((g) =>
+        el('button', { class: draft.gender === g.id ? 'active' : '', onclick: () => setGender(g.id) }, g.label))),
+      el('p', { class: 'muted' }, binary(draft.gender)
+        ? `${draft.gender === 'mujer' ? 'Retratos de mujer' : 'Retratos de hombre'}: ${gallery.length}. Cambia de género arriba y la galería cambia con él.`
+        : `Todos los retratos: ${gallery.length}. Con «Mujer» u «Hombre» solo verás los de ese género.`),
       el('div', { class: 'row gap' },
         el('button', { class: 'btn primary', onclick: () => file.click() }, 'Subir mi foto'),
         window.arcane?.art ? el('button', { class: 'btn ghost', onclick: () => window.arcane.art.open('avatares') }, 'Abrir carpeta avatares') : null,
         window.arcane?.art ? el('button', { class: 'btn ghost', onclick: async () => { await window.CustomArt.load(); rerender(); } }, 'Recargar') : null,
         file));
+    const card = ([name, url]) => el('button', { class: `avatar-card${draft.photo === url ? ' active' : ''}`, title: name, onclick: () => choose(url) },
+      el('img', { src: url, alt: name, loading: 'lazy' }));
     if (!gallery.length) {
       body.append(el('div', { class: 'gallery-empty' },
         el('h3', {}, 'La galería está vacía'),
-        el('p', {}, 'Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) y pulsa Recargar. También puedes subir tu foto.')));
+        el('p', {}, 'Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) con «mujer-» u «hombre-» delante del nombre y pulsa Recargar. También puedes subir tu foto.')));
     } else {
-      body.append(el('div', { class: 'avatar-gallery' }, gallery.map(([name, url]) =>
-        el('button', { class: `avatar-card${draft.photo === url ? ' active' : ''}`, title: name, onclick: () => choose(url) },
-          el('img', { src: url, alt: name, loading: 'lazy' })))));
+      body.append(el('div', { class: 'avatar-gallery' }, gallery.map(card)));
+    }
+    const extra = unsorted();
+    if (extra.length) {
+      body.append(el('h3', {}, 'Otras imágenes de tu carpeta'),
+        el('p', { class: 'muted' }, 'No llevan «mujer-» ni «hombre-» en el nombre. Renómbralas así (o ponlas en avatares/mujer o avatares/hombre) para que salgan solo con su género.'),
+        el('div', { class: 'avatar-gallery' }, extra.map(card)));
     }
     body.append(nav());
   }

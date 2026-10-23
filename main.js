@@ -166,6 +166,12 @@ ipcMain.handle('art:list', () => {
     out[d] = Object.assign({}, listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
   }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
+  // Subcarpetas avatares/mujer y avatares/hombre: sus retratos salen solo con ese género.
+  for (const g of ['mujer', 'hombre']) {
+    for (const root of [...roots, artRoot()]) {
+      for (const [n, url] of Object.entries(listArt(root, path.join('avatares', g)))) out.avatares[`${g}-${n}`] = url;
+    }
+  }
   return out;
 });
 ipcMain.handle('art:open', (_e, sub) => {
