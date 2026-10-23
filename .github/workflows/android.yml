@@ -42,7 +42,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
           mkdir -p ../apk
-          cp app/build/outputs/apk/debug/app-debug.apk "../apk/grietas-and-gears-$(node -p "require('../package.json').version")-tablet.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "../apk/ciudades-del-umbral-$(node -p "require('../package.json').version")-tablet.apk"
       - name: Compilar APK firmado y AAB (si hay llave)
         if: ${{ env.KEYSTORE != '' }}
         env:
@@ -55,14 +55,14 @@ jobs:
           echo "$KEYSTORE" | base64 -d > release.keystore
           ./gradlew assembleRelease bundleRelease --no-daemon
           v=$(node -p "require('../package.json').version")
-          cp app/build/outputs/apk/release/app-release.apk "../apk/grietas-and-gears-$v-firmado.apk"
-          cp app/build/outputs/bundle/release/app-release.aab "../apk/grietas-and-gears-$v.aab"
+          cp app/build/outputs/apk/release/app-release.apk "../apk/ciudades-del-umbral-$v-firmado.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "../apk/ciudades-del-umbral-$v.aab"
           rm release.keystore
       - name: Comprobar que existe el APK
         run: ls -la apk && test -n "$(ls apk/*.apk)"
       - uses: actions/upload-artifact@v4
         with:
-          name: grietas-and-gears-android
+          name: ciudades-del-umbral-android
           path: apk/*
           if-no-files-found: error
       - name: Adjuntar a la versión publicada

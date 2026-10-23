@@ -1,7 +1,7 @@
 # Guía de repositorio, exportación y publicación
 
 ## Proyecto
-Rifts & Gears es un juego narrativo con JavaScript, Three.js, Electron, Capacitor/Android y web estática. La versión de referencia observada en `package.json` es 1.27.0.
+Rifts & Gears es un juego narrativo con JavaScript, Three.js, Electron, Capacitor/Android y web estática. La versión actual está en `package.json`.
 
 ## Preparación
 1. Instala Git y Node.js compatibles.
