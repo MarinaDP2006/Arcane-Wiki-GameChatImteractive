@@ -3,7 +3,7 @@
 name: Compilar escritorio (Windows y Mac)
 on:
   push:
-    branches: [claude/project-thread-9huivc-arcane]
+    branches: [main, claude/project-thread-9huivc-arcane]
     tags: ['arcane-v*']
   workflow_dispatch:
 permissions:
@@ -57,7 +57,7 @@ jobs:
           $files | ForEach-Object { Write-Host $_.Name $_.Length }
       - uses: actions/upload-artifact@v4
         with:
-          name: grietas-and-gears-windows
+          name: arcane-fangame-windows
           path: dist/*.exe
           if-no-files-found: error
   build-mac:
@@ -84,7 +84,7 @@ jobs:
           test "$(ls dist/*.dmg | wc -l)" -ge 2
       - uses: actions/upload-artifact@v4
         with:
-          name: grietas-and-gears-mac
+          name: arcane-fangame-mac
           path: |
             dist/*.dmg
             dist/*.zip
