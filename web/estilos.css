@@ -146,3 +146,6 @@ details p { color: var(--muted); margin: 0.6rem 0 0; }
   html { scroll-behavior: auto; }
   .boton { transition: none; }
 }
+
+/* Galería editorial de capturas auténticas del juego */
+.galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:1.25rem}.captura{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.captura img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.captura figcaption{padding:1rem;color:var(--text);font-weight:600}.captura figcaption small{display:block;color:var(--muted);font-weight:400;margin-top:.3rem}.galeria-vacia{border:1px dashed var(--line);border-radius:var(--radius);padding:2rem;color:var(--muted);grid-column:1/-1}

@@ -1,4 +1,4 @@
-// Monta la página web del juego (carpeta web/) en web-dist/, lista para GitHub Pages.
+// Monta la página web del juego (carpeta web/) en web-dist/, lista para Render.
 // Rellena la plantilla con los datos reales del juego (versión, capítulos, finales, personajes
 // y lugares de src/data) y copia solo las imágenes que usa la web, así la página nunca se
 // queda atrasada respecto al juego. Uso: npm run web  (luego abre web-dist/index.html).
@@ -26,6 +26,25 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 function copy(from, to) {
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(from, to);
+}
+
+function buildCapturas() {
+  const carpeta = path.join(root, 'web', 'capturas');
+  const permitidas = [
+    ['inicio', 'Pantalla de inicio'],
+    ['creacion', 'Creación de personaje'],
+    ['comunicador', 'Comunicador (sin conversaciones)'],
+    ['mapa', 'Mapa del juego'],
+    ['codice', 'Códice'],
+  ];
+  const tarjetas = [];
+  for (const [nombre, titulo] of permitidas) {
+    const archivo = ['webp', 'png', 'jpg', 'jpeg'].map(ext => nombre + '.' + ext).find(f => fs.existsSync(path.join(carpeta, f)));
+    if (!archivo) continue;
+    copy(path.join(carpeta, archivo), path.join(out, 'capturas', archivo));
+    tarjetas.push('<figure class="captura"><a href="capturas/' + archivo + '" target="_blank" rel="noopener"><img src="capturas/' + archivo + '" alt="' + esc(titulo) + '" loading="lazy"></a><figcaption>' + esc(titulo) + '</figcaption></figure>');
+  }
+  return tarjetas.join('') || '<p class="galeria-vacia">Las capturas oficiales estarán disponibles próximamente.</p>';
 }
 
 function build() {
@@ -57,6 +76,7 @@ function build() {
     PERSONAJES: personajes.length,
     LUGARES: ATLAS.places.length,
     TEMAS: dialogos,
+    CAPTURAS: buildCapturas(),
     TARJETAS: tarjetas,
     LISTA_LUGARES: lugares,
     ANIO: new Date().getFullYear(),

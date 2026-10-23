@@ -6,7 +6,7 @@
   <title>Grietas &amp; Gears</title>
   <meta name="description" content="Grietas & Gears: juego narrativo de fans ambientado en Piltover y Zaun. Gratis para Windows, Mac y Android.">
   <meta property="og:title" content="Grietas & Gears">
-  <meta property="og:description" content="Historia interactiva, conversaciones y mundo abierto de Piltover y Zaun. Juego de fans gratuito.">
+  <meta property="og:description" content="Una aventura narrativa gratuita ambientada en Piltover y Zaun. Crea tu personaje, explora las ciudades y descubre sus historias.">
   <meta property="og:image" content="arte/lugares/piltover.webp">
   <link rel="icon" href="icono.png">
   <link rel="stylesheet" href="estilos.css">
@@ -18,6 +18,7 @@
       <a href="#juego">El juego</a>
       <a href="#personajes">Personajes</a>
       <a href="#mapa">Mapa</a>
+      <a href="#capturas">Capturas</a>
       <a href="#preguntas">Preguntas</a>
       <a class="boton boton-sm" href="#descargar">Descargar</a>
     </nav>
@@ -30,7 +31,7 @@
       <div class="portada-texto">
         <p class="antetitulo">Juego de fans · Piltover y Zaun</p>
         <h1>Grietas <span>&amp;</span> Gears</h1>
-        <p class="lema">Arriba, el oro de la ciudad del progreso. Abajo, el neón y la niebla. Tú decides de qué lado caes, en quién confías y cómo acaba la historia.</p>
+        <p class="lema">Dos ciudades, una historia marcada por tus decisiones. Crea tu personaje y descubre Piltover y Zaun desde dentro.</p>
         <div class="acciones">
           <a class="boton" href="#descargar" id="boton-principal">Descargar gratis</a>
           <a class="boton boton-sec" href="#juego">Ver qué incluye</a>
@@ -44,32 +45,29 @@
       <div><strong>{{FINALES}}</strong><span>finales</span></div>
       <div><strong>{{PERSONAJES}}</strong><span>personajes</span></div>
       <div><strong>{{LUGARES}}</strong><span>lugares</span></div>
-      <div><strong>{{TEMAS}}</strong><span>temas de charla</span></div>
+
     </section>
 
     <section id="juego" class="seccion">
       <h2>El juego</h2>
       <div class="rejilla">
         <article class="carta">
-          <h3>Tu historia, tus finales</h3>
-          <p>Crea tu personaje, elige si naces en Piltover o en Zaun y vive una campaña en dos partes donde tus decisiones pueden salvar, o condenar, a quienes conoces.</p>
+          <h3>Una historia con decisiones</h3>
+          <p>Elige tu origen y recorre una campaña narrativa en la que tus decisiones influyen en el desarrollo de la historia y sus desenlaces.</p>
         </article>
         <article class="carta">
-          <h3>Conversaciones de verdad</h3>
-          <p>Habla con el reparto por el comunicador. Cada respuesta abre nuevos temas, y tus decisiones cambian la afinidad y lo que te cuentan.</p>
+          <h3>Comunicador</h3>
+          <p>Consulta el comunicador y mantente al tanto de los personajes y acontecimientos que acompañan tu aventura.</p>
         </article>
         <article class="carta">
-          <h3>Dos ciudades para explorar</h3>
-          <p>Recorre distritos, talleres, tabernas y callejones. Cada lugar te propone algo: charlar, jugar un minijuego o seguir la historia.</p>
+          <h3>Explora Piltover y Zaun</h3>
+          <p>Visita distintos distritos y escenarios de ambas ciudades mientras avanzas en la historia y descubres nuevas actividades.</p>
         </article>
         <article class="carta">
           <h3>Minijuegos</h3>
-          <p>Carreras por los tejados, circuitos de hextec, runas, puntería, regateo en el mercado y más, con récords y recompensas.</p>
+          <p>Participa en actividades y desafíos repartidos por el mundo del juego, con recompensas y marcas que superar.</p>
         </article>
-        <article class="carta">
-          <h3>Modo libre con IA (opcional)</h3>
-          <p>Si quieres, conecta un modelo en tu propio ordenador (Ollama o LM Studio) y charla sin guion con los personajes. Sin IA, el juego funciona igual de completo.</p>
-        </article>
+        <article class="carta"><h3>Creación de personaje</h3><p>Diseña tu protagonista y elige tu origen antes de comenzar la aventura.</p></article>
         <article class="carta">
           <h3>Sin conexión y sin anuncios</h3>
           <p>Todo el arte y los datos van dentro. No pide cuenta, no tiene compras ni anuncios y tus partidas se quedan en tu dispositivo.</p>
@@ -79,7 +77,7 @@
 
     <section id="personajes" class="seccion">
       <h2>Personajes</h2>
-      <p class="intro">Los {{PERSONAJES}} protagonistas tienen voz en la historia y en el chat. Algunos te abrirán la puerta; otros, la pistola.</p>
+      <p class="intro">Descubre algunos de los personajes que encontrarás durante tu recorrido por Piltover y Zaun.</p>
       <ul class="personajes">{{TARJETAS}}
       </ul>
     </section>
@@ -93,9 +91,11 @@
       <img src="arte/codice/mapa-piltover-zaun.webp" alt="Mapa ilustrado de Piltover y Zaun" width="1080" height="909" loading="lazy">
     </section>
 
+    <section id="capturas" class="seccion"><p class="antetitulo">Un vistazo al juego</p><h2>Capturas del juego</h2><p class="intro">Imágenes del inicio de la aventura, la creación de personaje y algunas pantallas del comunicador, el mapa y el códice. Sin revelar conversaciones ni momentos importantes de la historia.</p><div class="galeria">{{CAPTURAS}}</div></section>
+
     <section id="descargar" class="seccion">
       <h2>Descargar</h2>
-      <p class="intro">Gratis, siempre. Elige tu plataforma; los archivos salen de la última versión publicada en GitHub.</p>
+      <p class="intro">Consulta las versiones disponibles y descarga el juego para tu dispositivo.</p>
       <div class="rejilla descargas">
         <article class="carta descarga" data-plataforma="windows">
           <h3>Windows</h3>
@@ -133,7 +133,7 @@
       </details>
       <details>
         <summary>¿Necesito internet?</summary>
-        <p>No. Solo el modo libre con IA necesita un servidor, y puede ser uno que tengas en tu propio ordenador.</p>
+        <p>El juego está diseñado para funcionar sin conexión. Internet solo es necesario para descargarlo o consultar nuevas versiones.</p>
       </details>
       <details>
         <summary>¿En qué idiomas está?</summary>
