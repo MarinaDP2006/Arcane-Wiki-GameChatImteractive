@@ -18,6 +18,7 @@
       <a href="#juego">El juego</a>
       <a href="#personajes">Personajes</a>
       <a href="#mapa">Mapa</a>
+      <a href="#capturas">Capturas</a>
       <a href="#preguntas">Preguntas</a>
       <a class="boton boton-sm" href="#descargar">Descargar</a>
     </nav>
@@ -44,7 +45,7 @@
       <div><strong>{{FINALES}}</strong><span>finales</span></div>
       <div><strong>{{PERSONAJES}}</strong><span>personajes</span></div>
       <div><strong>{{LUGARES}}</strong><span>lugares</span></div>
-      <div><strong>{{TEMAS}}</strong><span>temas de charla</span></div>
+
     </section>
 
     <section id="juego" class="seccion">
@@ -66,10 +67,7 @@
           <h3>Minijuegos</h3>
           <p>Carreras por los tejados, circuitos de hextec, runas, puntería, regateo en el mercado y más, con récords y recompensas.</p>
         </article>
-        <article class="carta">
-          <h3>Modo libre con IA (opcional)</h3>
-          <p>Si quieres, conecta un modelo en tu propio ordenador (Ollama o LM Studio) y charla sin guion con los personajes. Sin IA, el juego funciona igual de completo.</p>
-        </article>
+        <article class="carta"><h3>Creación de personaje</h3><p>Diseña tu protagonista y elige tu origen antes de comenzar la aventura.</p></article>
         <article class="carta">
           <h3>Sin conexión y sin anuncios</h3>
           <p>Todo el arte y los datos van dentro. No pide cuenta, no tiene compras ni anuncios y tus partidas se quedan en tu dispositivo.</p>
@@ -79,7 +77,7 @@
 
     <section id="personajes" class="seccion">
       <h2>Personajes</h2>
-      <p class="intro">Los {{PERSONAJES}} protagonistas tienen voz en la historia y en el chat. Algunos te abrirán la puerta; otros, la pistola.</p>
+      <p class="intro">Conoce a los personajes que dan vida a Piltover y Zaun, sin revelar los secretos de sus conversaciones.</p>
       <ul class="personajes">{{TARJETAS}}
       </ul>
     </section>
@@ -93,9 +91,11 @@
       <img src="arte/codice/mapa-piltover-zaun.webp" alt="Mapa ilustrado de Piltover y Zaun" width="1080" height="909" loading="lazy">
     </section>
 
+    <section id="capturas" class="seccion"><p class="antetitulo">Un vistazo al juego</p><h2>Capturas del juego</h2><p class="intro">Una selección sin spoilers del menú inicial, la creación del personaje, el comunicador sin mensajes privados, el mapa y el códice.</p><div class="galeria">{{CAPTURAS}}</div></section>
+
     <section id="descargar" class="seccion">
       <h2>Descargar</h2>
-      <p class="intro">Gratis, siempre. Elige tu plataforma; los archivos salen de la última versión publicada en GitHub.</p>
+      <p class="intro">Descarga gratuita para las plataformas disponibles. Los instaladores se distribuyen mediante las versiones oficiales del proyecto.</p>
       <div class="rejilla descargas">
         <article class="carta descarga" data-plataforma="windows">
           <h3>Windows</h3>
@@ -133,7 +133,7 @@
       </details>
       <details>
         <summary>¿Necesito internet?</summary>
-        <p>No. Solo el modo libre con IA necesita un servidor, y puede ser uno que tengas en tu propio ordenador.</p>
+        <p>El juego está diseñado para funcionar sin conexión. Internet solo es necesario para descargarlo o consultar nuevas versiones.</p>
       </details>
       <details>
         <summary>¿En qué idiomas está?</summary>
