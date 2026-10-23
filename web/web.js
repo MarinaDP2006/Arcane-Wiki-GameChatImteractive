@@ -1,41 +1,40 @@
-// Web de Grietas & Gears: resalta la descarga de tu sistema y enlaza los archivos reales de la
-// última versión publicada en GitHub. Si no hay red o aún no hay versión, los botones siguen
-// llevando a la página de Releases.
+// Estado de Releases de GitHub y enlaces directos únicamente a archivos publicados.
 (function () {
   const REPO = 'MarinaDP2006/grietas-and-gears';
-
-  // Adivina la plataforma del visitante: android, mac, windows u otra.
-  function plataforma() {
-    const ua = navigator.userAgent;
-    if (/Android/i.test(ua)) return 'android';
-    if (/Mac/i.test(ua) && !/iPhone|iPad/i.test(ua)) return 'mac';
-    if (/Windows/i.test(ua)) return 'windows';
-    return '';
-  }
-
-  const mia = plataforma();
-  const carta = mia && document.querySelector(`.descarga[data-plataforma="${mia}"]`);
-  if (carta) {
-    carta.classList.add('tuya');
-    const nombres = { windows: 'Windows', mac: 'Mac', android: 'Android' };
-    const principal = document.getElementById('boton-principal');
-    if (principal) principal.textContent = `Descargar para ${nombres[mia]}`;
-  }
-
-  // Cambia cada botón por el enlace directo al archivo que corresponde en la última versión.
-  fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } })
-    .then((r) => (r.ok ? r.json() : null))
-    .then((rel) => {
-      if (!rel || !Array.isArray(rel.assets)) return;
-      const assets = rel.assets;
-      document.querySelectorAll('[data-archivo]').forEach((a) => {
-        const clave = a.dataset.archivo;
-        // En Android se prefiere el APK firmado si existe.
-        const encontrado = (clave === '.apk' && assets.find((x) => /firmado\.apk$/.test(x.name))) || assets.find((x) => x.name.includes(clave));
-        if (encontrado) a.href = encontrado.browser_download_url;
+  const RELEASES = 'https://github.com/' + REPO + '/releases';
+  const status = document.getElementById('estado-version');
+  const links = [...document.querySelectorAll('[data-archivo]')];
+  const ua = navigator.userAgent;
+  const platform = /Android/i.test(ua) ? 'android' : /Mac/i.test(ua) && !/iPhone|iPad/i.test(ua) ? 'mac' : /Windows/i.test(ua) ? 'windows' : '';
+  const card = platform && document.querySelector('.descarga[data-plataforma="' + platform + '"]');
+  if (card) card.classList.add('tuya');
+  // Un enlace a Releases nunca se presenta como un instalador directo.
+  links.forEach(a => { a.href = RELEASES; a.dataset.originalText = a.textContent; a.textContent = 'Consultar disponibilidad'; });
+  const match = (asset, key) => {
+    const n = asset.name.toLowerCase();
+    if (key === 'Setup') return /setup.*\\.exe$/.test(n);
+    if (key === 'portable') return /portable.*\\.exe$/.test(n);
+    if (key === 'mac-arm64.dmg') return /arm64.*\\.dmg$/.test(n);
+    if (key === 'mac-x64.dmg') return /(x64|x86_64).*\\.dmg$/.test(n);
+    if (key === '.apk') return /\\.apk$/.test(n);
+    return false;
+  };
+  fetch('https://api.github.com/repos/' + REPO + '/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+    .then(r => { if (!r.ok) throw new Error('No release'); return r.json(); })
+    .then(release => {
+      const assets = Array.isArray(release.assets) ? release.assets : [];
+      let available = 0;
+      links.forEach(a => {
+        const key = a.dataset.archivo;
+        const matches = assets.filter(asset => match(asset, key));
+        const file = key === '.apk' ? (matches.find(x => /firmado/i.test(x.name)) || matches[0]) : matches[0];
+        if (file && /^https:\\/\\/github\\.com\\//.test(file.browser_download_url)) {
+          a.href = file.browser_download_url;
+          a.textContent = a.dataset.originalText;
+          available++;
+        }
       });
-      const estado = document.getElementById('estado-version');
-      if (estado) estado.textContent = `Última versión publicada: ${rel.tag_name}. Próximamente también en itch.io.`;
+      if (status) status.textContent = available ? 'Última versión: ' + release.tag_name + '. Comprueba la plataforma y el archivo antes de instalar.' : 'Última versión: ' + release.tag_name + '. No hay instaladores compatibles publicados en esta versión.';
     })
-    .catch(() => {});
+    .catch(() => { if (status) status.textContent = 'Todavía no hay una versión verificable disponible, o no se ha podido consultar GitHub. Consulta la página oficial de Releases.'; });
 })();
