@@ -33,7 +33,7 @@ npm start          # versión de escritorio (Electron)
 npm run web        # genera la web en web-dist/
 ```
 
-`render.yaml` despliega la web y la API de rol juntas en un servicio Node. La clave `OLLAMA_API_KEY` se configura como secreto en el alojamiento, nunca en el repositorio.
+`render.yaml` despliega la web y la API de rol juntas en un servicio Node (`node scripts/build-web.js` y después `node server/roleplay-server.js`). La clave `OLLAMA_API_KEY` se configura como secreto en el alojamiento, nunca en el repositorio.
 
 ## Estado
 

@@ -3,7 +3,7 @@ services:
     name: rifts-gears-arcane
     runtime: node
     plan: free
-    buildCommand: npm ci && npm run web
+    buildCommand: node scripts/build-web.js
     startCommand: node server/roleplay-server.js
     autoDeployTrigger: commit
     envVars:
@@ -11,7 +11,7 @@ services:
         sync: false
       - key: OLLAMA_MODEL
         value: gemma4:31b
-      - key: ROLEPLAY_MAX_PER_HOUR
-        value: "24"
+      - key: ROLEPLAY_RPM
+        value: "20"
       - key: NODE_VERSION
         value: "22"
