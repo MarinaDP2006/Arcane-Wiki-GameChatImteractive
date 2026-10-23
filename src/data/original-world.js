@@ -212,6 +212,26 @@
         {id:'canal-cobre',name:'Canal de Cobre',x:1500,y:1900,icon:'',codex:'canal',travel:{to:'piltover',at:'ascensor-central',label:'Subir a Aurelia'}}
       ]})
   }};
+  // Datos de navegación propios: los IDs internos piltover/zaun son compatibilidad del motor,
+  // pero todas las ubicaciones y los personajes son del universo original.
+  Object.assign(window.WORLD, {
+    homes: {
+      'iria-venn':'archivo', 'darel-ossan':'mercado-nacar', 'saia-merel':'archivo',
+      'toren-vale':'ascensor-central', 'nyra-quell':'canal-cobre', 'bastian-rook':'gremios',
+      'oren-caldus':'galerias', 'maelis-thorn':'gremios', 'joren-ash':'clinica', 'edda-lume':'mercado-nacar'
+    },
+    chapterLocations: {
+      z1:'mercado-nacar', z2:'galerias', z3:'canal-cobre',
+      p1:'ascensor-central', p2:'archivo', p3:'gremios'
+    },
+    spawns: {
+      'Mercado de las Tuberías':'mercado-nacar', 'Galerías Geotérmicas':'galerias',
+      'Jardín de Musgo':'jardin-musgo', 'Clínica de los Tres Arcos':'clinica', 'Canal de Cobre':'canal-cobre',
+      'Plaza del Archivo':'archivo', 'Terrazas del Observatorio':'observatorio',
+      'Patio de Gremios':'gremios', 'Estación de Ascensores':'ascensor-central', 'Bulevar de Cristal':'cristal'
+    },
+    absent: {}
+  });
   window.ATLAS = {
     credit:'Cartografía original conceptual de Las ciudades del Umbral.',
     places:[
