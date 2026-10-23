@@ -4,7 +4,7 @@ Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas
 
 Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
 
-> **Rama `main` = mundo nuevo.** Todo lo de este universo original vive aquí. El fangame de Arcane está en su propia rama, `arcane/fangame-actualizado`, con su web y su README.
+> **Rama `main` = mundo nuevo.** Todo lo de este universo original vive aquí. El fangame de Arcane está en su propia rama, `claude/project-thread-9huivc-arcane`, con su web y su README.
 
 ## La historia en cinco fechas
 
@@ -29,14 +29,35 @@ La carpeta `web/` contiene la web pública:
 
 `npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, versión). La web no ofrece descargas.
 
-## IA en el servidor, sin instalar nada
+## IA de rol: LM Studio local o servidor remoto
 
-El diálogo libre usa un modelo de Ollama alojado en el servidor (`server/index.js`, endpoint `/api/roleplay`), así que nadie tiene que instalar Ollama en su equipo. Si el servidor no está disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
+La demo y el juego llaman a `/api/roleplay`; la clave del proveedor se queda en el servidor, nunca en el navegador. Si la IA no responde, la demo mantiene un narrador local básico.
 
-Variables del servidor (ver `.env.example`); se configuran como secretos en el alojamiento, nunca en el repositorio:
+### Modelo pequeño para LM Studio
 
-- `OLLAMA_API_KEY`: clave de Ollama Cloud.
-- `OLLAMA_MODEL`: modelo de chat (por defecto `gemma4:31b`).
+Recomendado para empezar: **Qwen3 0.6B GGUF, cuantización Q4_K_M** (aprox. 0,4–0,5 GB de archivo). Es compacto y multilingüe, pero sus respuestas de rol serán más simples que las de un modelo grande. En LM Studio, busca `Qwen3-0.6B-GGUF`, descarga `Q4_K_M`, cárgalo y activa **Developer → Start server**.
+
+Para ejecutar el juego y la web demo en el mismo ordenador, configura las variables de entorno antes de arrancar el servidor:
+
+```env
+AI_PROVIDER=lm-studio
+AI_BASE_URL=http://127.0.0.1:1234/v1
+AI_MODEL=<nombre-exacto-del-modelo-que-muestra-LM-Studio>
+AI_API_KEY=
+```
+
+El nombre de modelo debe coincidir con el identificador que exponga tu versión de LM Studio. Comprueba el servidor con `http://127.0.0.1:1234/v1/models`. No pongas la dirección local `127.0.0.1` en Render: allí apuntaría al servidor de Render, no a tu PC.
+
+### Demo pública alojada
+
+Para que la demo pública use un modelo local, el equipo que ejecuta LM Studio debe exponer una API accesible desde el servidor web mediante una conexión privada o túnel seguro con autenticación. No expongas LM Studio directamente a Internet sin protección. Alternativamente, usa un proveedor de IA alojado.
+
+Variables (ver `.env.example`); configúralas en el entorno local o como secretos del alojamiento, nunca en el repositorio:
+
+- `AI_BASE_URL`: base compatible con OpenAI, incluyendo `/v1`. Si se omite, se usa Ollama Cloud.
+- `AI_MODEL`: identificador exacto del modelo.
+- `AI_API_KEY`: clave para un proveedor remoto; puede quedar vacía para LM Studio local sin autenticación.
+- `OLLAMA_API_KEY` y `OLLAMA_MODEL`: compatibilidad con la configuración previa.
 - `ROLEPLAY_MAX_PER_HOUR`: límite de mensajes por hora y visitante.
 
 `render.yaml` despliega la web y la API juntas: `npm ci && npm run web` y después `node server/index.js`.
