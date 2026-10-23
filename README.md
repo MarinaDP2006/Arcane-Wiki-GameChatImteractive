@@ -2,7 +2,7 @@
 
 Juego narrativo de fans ambientado en Piltover y Zaun e inspirado en la estética de *Arcane*. Crea tu personaje, explora sus distritos, habla con el reparto y toma decisiones que cambian tus relaciones y los finales. Proyecto no oficial.
 
-**Web promocional:** migración a Render preparada en el [PR #42](https://github.com/MarinaDP2006/grietas-and-gears/pull/42); pendiente de integración y despliegue.
+**Web promocional en Render:** https://grietas-and-gears-5saz.onrender.com · [Administrar despliegues](https://dashboard.render.com/static/srv-dbdgglnb9u1s739khst0).
 
 ## Descargar
 
@@ -107,9 +107,9 @@ Cada vez que algo entra en `main`, el workflow **Sincronizar ramas de plataforma
 
 ## Página web promocional
 
-La web está en [`web/`](web/) y se genera con `npm run web` en `web-dist/`. Se ha preparado su migración desde GitHub Pages a **Render Static Site** en el [PR #42](https://github.com/MarinaDP2006/grietas-and-gears/pull/42). **Hasta que se integre y despliegue ese PR, la migración no está activa.**
+La web está en [`web/`](web/) y se genera con `npm run web` en `web-dist/`. La migración desde GitHub Pages a **Render Static Site** se integró en el [PR #42](https://github.com/MarinaDP2006/grietas-and-gears/pull/42). El servicio se creó en **My Workspace** el 23/10/2026 y su dirección es **https://grietas-and-gears-5saz.onrender.com**. El primer despliegue se inició, pero su finalización todavía no está confirmada.
 
-La nueva versión incluye una galería para capturas reales del inicio, creación de personaje, comunicador, mapa y códice, sin conversaciones de personajes ni spoilers. Se han retirado las referencias promocionales a IA, pero las funciones del juego permanecen intactas. Las instrucciones de publicación están incluidas en el PR.
+La nueva versión incluye una galería para capturas reales del inicio, creación de personaje, comunicador, mapa y códice, sin conversaciones de personajes ni spoilers. Se han retirado las referencias promocionales a IA, pero las funciones del juego permanecen intactas. La publicación usa la rama `main`, el comando `node scripts/build-web.js`, la carpeta `web-dist` y actualizaciones automáticas por commit. Configuración: [`render.yaml`](render.yaml). [Ver el servicio en Render](https://dashboard.render.com/static/srv-dbdgglnb9u1s739khst0).
 
 ## Ramas de Claude pendientes de revisión
 
