@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <!-- Ilustración original de Zaun para la web: niebla química, tuberías, chimeneas y neón. -->
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#06131a"/>
+      <stop offset=".55" stop-color="#0d2e2f"/>
+      <stop offset="1" stop-color="#123c33"/>
+    </linearGradient>
+    <radialGradient id="brillo" cx=".5" cy=".75" r=".55">
+      <stop offset="0" stop-color="#6dffb0" stop-opacity=".45"/>
+      <stop offset=".5" stop-color="#2fbf8f" stop-opacity=".15"/>
+      <stop offset="1" stop-color="#2fbf8f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="capa1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#173a3c"/>
+      <stop offset="1" stop-color="#0f2a2c"/>
+    </linearGradient>
+    <linearGradient id="capa2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d2023"/>
+      <stop offset="1" stop-color="#081518"/>
+    </linearGradient>
+    <linearGradient id="capa3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050d10"/>
+      <stop offset="1" stop-color="#020607"/>
+    </linearGradient>
+    <linearGradient id="tubo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4b5d58"/>
+      <stop offset=".5" stop-color="#22302e"/>
+      <stop offset="1" stop-color="#121a19"/>
+    </linearGradient>
+    <filter id="niebla"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="halo"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="grano">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="9"/>
+      <feColorMatrix values="0 0 0 0 .2  0 0 0 0 .5  0 0 0 0 .4  0 0 0 .1 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#fondo)"/>
+  <!-- Luz del puente que se filtra desde arriba -->
+  <path d="M640 0h320L1080 900H520z" fill="#f2d782" opacity=".06"/>
+  <rect width="1600" height="900" fill="url(#brillo)"/>
+
+  <!-- Capa lejana: torres apiladas -->
+  <g fill="url(#capa1)">
+    <path d="M0 620V380h60v-60h80v120h40v-180h90v160h50v-90h70v260h60v-140h40V170h100v220h60v-80h80v300h70V260h90v-60h60v260h50v-140h80v200h60V230h90v150h60v-100h80v340z"/>
+  </g>
+  <!-- Ventanas de neón lejanas -->
+  <g opacity=".8">
+    <g fill="#ff4fa3"><rect x="90" y="400" width="12" height="8"/><rect x="560" y="300" width="12" height="8"/><rect x="1020" y="320" width="12" height="8"/><rect x="1380" y="350" width="12" height="8"/></g>
+    <g fill="#3ff2c9"><rect x="250" y="360" width="12" height="8"/><rect x="430" y="420" width="12" height="8"/><rect x="760" y="380" width="12" height="8"/><rect x="1180" y="420" width="12" height="8"/><rect x="1500" y="380" width="12" height="8"/></g>
+    <g fill="#f2d782"><rect x="330" y="470" width="12" height="8"/><rect x="900" y="300" width="12" height="8"/><rect x="1300" y="450" width="12" height="8"/></g>
+  </g>
+
+  <!-- Niebla verde -->
+  <g fill="#3fe0a0" opacity=".22" filter="url(#niebla)">
+    <ellipse cx="300" cy="640" rx="380" ry="70"/>
+    <ellipse cx="1000" cy="610" rx="460" ry="80"/>
+    <ellipse cx="1500" cy="660" rx="260" ry="60"/>
+  </g>
+
+  <!-- Capa media: pasarelas y tuberías -->
+  <g fill="url(#capa2)">
+    <path d="M0 900V560h140v-90h50v90h120v-50h90v390z"/>
+    <path d="M520 900V520h70v-60h30v60h120v380z"/>
+    <path d="M1150 900V500h110v-70h40v70h80v-40h220v440z"/>
+  </g>
+  <g fill="none" stroke="url(#tubo)" stroke-linecap="round">
+    <path d="M0 520h380q40 0 40 40v60h300q30 0 30-30V420h420" stroke-width="26"/>
+    <path d="M1600 600h-300q-40 0-40-40v-120" stroke-width="20"/>
+    <path d="M200 900V700q0-30 30-30h500" stroke-width="18"/>
+  </g>
+  <g stroke="#3ff2c9" stroke-width="3" opacity=".55">
+    <path d="M410 520v20M760 590v20M1270 420v20"/>
+  </g>
+  <!-- Pasarela con barandilla -->
+  <path d="M0 700h1600v14H0z" fill="#0b1a1c"/>
+  <g stroke="#2a4a46" stroke-width="3">
+    <path d="M0 670h1600"/>
+    <path d="M40 670v30M120 670v30M200 670v30M280 670v30M360 670v30M440 670v30M520 670v30M600 670v30M680 670v30M760 670v30M840 670v30M920 670v30M1000 670v30M1080 670v30M1160 670v30M1240 670v30M1320 670v30M1400 670v30M1480 670v30M1560 670v30"/>
+  </g>
+
+  <!-- Chimeneas con humo -->
+  <g fill="url(#capa3)">
+    <rect x="300" y="300" width="46" height="400"/>
+    <rect x="1380" y="260" width="54" height="440"/>
+  </g>
+  <g fill="#9fd8c0" opacity=".18" filter="url(#niebla)">
+    <ellipse cx="330" cy="260" rx="70" ry="50"/><ellipse cx="380" cy="190" rx="90" ry="60"/><ellipse cx="450" cy="120" rx="110" ry="60"/>
+    <ellipse cx="1410" cy="220" rx="70" ry="50"/><ellipse cx="1360" cy="150" rx="90" ry="60"/><ellipse cx="1300" cy="80" rx="110" ry="60"/>
+  </g>
+
+  <!-- Letreros de neón -->
+  <g filter="url(#halo)" opacity=".9">
+    <rect x="560" y="560" width="120" height="34" rx="6" fill="none" stroke="#ff4fa3" stroke-width="4"/>
+    <rect x="1190" y="540" width="90" height="30" rx="6" fill="none" stroke="#3ff2c9" stroke-width="4"/>
+    <circle cx="160" cy="600" r="16" fill="none" stroke="#f2d782" stroke-width="4"/>
+  </g>
+  <rect x="560" y="560" width="120" height="34" rx="6" fill="none" stroke="#ffc2e0" stroke-width="1.5"/>
+  <rect x="1190" y="540" width="90" height="30" rx="6" fill="none" stroke="#c8fff0" stroke-width="1.5"/>
+
+  <!-- Primer plano: farolas y siluetas de cables -->
+  <g fill="url(#capa3)">
+    <path d="M0 900V780h220v-40h80v160z"/>
+    <path d="M1300 900V760h120v-50h180v190z"/>
+  </g>
+  <path d="M0 120Q400 260 800 150T1600 180" fill="none" stroke="#020607" stroke-width="4"/>
+  <path d="M0 60Q500 200 1000 90T1600 110" fill="none" stroke="#020607" stroke-width="3"/>
+  <g>
+    <path d="M880 900V740" stroke="#020607" stroke-width="8"/>
+    <circle cx="880" cy="730" r="12" fill="#b6ffe0"/>
+    <circle cx="880" cy="730" r="48" fill="#3fe0a0" opacity=".3" filter="url(#halo)"/>
+  </g>
+
+  <!-- Partículas flotantes -->
+  <g fill="#8affc8" opacity=".7">
+    <circle cx="210" cy="480" r="3"/><circle cx="470" cy="380" r="2"/><circle cx="690" cy="460" r="3"/><circle cx="930" cy="520" r="2"/>
+    <circle cx="1110" cy="380" r="3"/><circle cx="1240" cy="300" r="2"/><circle cx="1490" cy="470" r="3"/><circle cx="820" cy="250" r="2"/>
+  </g>
+
+  <rect width="1600" height="900" filter="url(#grano)" opacity=".6"/>
+</svg>

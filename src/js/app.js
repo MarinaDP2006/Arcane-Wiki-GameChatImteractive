@@ -192,9 +192,12 @@
     b.classList.toggle('high-contrast', Boolean(s.highContrast));
     b.classList.toggle('readable-font', Boolean(s.readableFont));
     b.classList.toggle('no-minimap', s.minimap === false);
+    // Colores de la interfaz: según la ciudad en la que estás, o uno fijo elegido en Ajustes.
+    h.dataset.tema = (s.uiTheme || 'ciudad') === 'ciudad' ? (b.dataset.ciudad || 'clasico') : s.uiTheme;
     window.World3D?.applySettings?.();
   }
   App.applyLook = applyLook;
+  App.setCity = (city) => { document.body.dataset.ciudad = city || ''; applyLook(); };
 
   // Copia de seguridad: partidas y ajustes en un archivo .json (la clave de la IA no se copia).
   async function exportData() {
@@ -324,6 +327,9 @@
           [['lento', 'Lento'], ['normal', 'Normal'], ['rapido', 'Rápido'], ['instantaneo', 'Instantáneo']]),
         select('textSize', 'Tamaño de letra', null, [['pequeno', 'Pequeño'], ['normal', 'Normal'], ['grande', 'Grande'], ['enorme', 'Muy grande']]),
         toggle('readableFont', 'Letra más fácil de leer', 'Cambia la letra decorativa por una sencilla (ayuda con la dislexia).'),
+        el('h3', {}, 'Colores'),
+        select('uiTheme', 'Colores de la interfaz', 'Según la ciudad: dorado en Piltover y verde neón en Zaun.',
+          [['ciudad', 'Según la ciudad'], ['clasico', 'Clásico'], ['piltover', 'Piltover (oro y azul)'], ['zaun', 'Zaun (neón verde)'], ['hextec', 'Hextec (azul)'], ['noxus', 'Noxus (carmesí)'], ['brillo', 'Brillo (rosa y violeta)']]),
       ],
       juego: () => [
         el('h3', {}, 'Partida'),
@@ -404,7 +410,7 @@
       return line(id, loc?.name || wiki?.name || id);
     });
     return [
-      'GUÍA DE ARTE · Grietas & Gears: Piltover y Zaun',
+      'GUÍA DE ARTE · Rifts & Gears: Piltover y Zaun',
       '======================================',
       '',
       'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',

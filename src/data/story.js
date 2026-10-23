@@ -27,6 +27,10 @@ window.STORY = {
   // Son los 16 protagonistas cuyas caras están en arte/caras.
   cast: ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino'],
 
+  // Primer capítulo de cada ruta en el que el reparto ya es adulto (tras «Siete años después»).
+  // Antes de él no se ofrece romance en el comunicador.
+  romanceFrom: { zaun: 'z3', piltover: 'p3' },
+
   // Muertes del canon de Arcane: capítulo al final del cual el personaje deja de estar.
   // Desde entonces no habla en la historia ni en el comunicador (sale en «En memoria»).
   deaths: {
@@ -63,7 +67,8 @@ window.STORY = {
           { s: 'vander', t: 'Bueno. Cuéntame qué te trae a mi taberna.', cond: { notKin: 'vander' } },
           { s: 'vander', t: '(Te mira por encima del trapo.) Tienes esa cara de cuando algo te ronda la cabeza. Suéltalo.', cond: { kin: 'vander' } },
         ], choices: [
-          { t: '«Busco trabajo honrado. Si es que eso existe aquí abajo.»', next: 'b', fx: { aff: { vander: 2 } } },
+          { t: '«Busco trabajo honrado. Si es que eso existe aquí abajo.»', next: 'b', req: { notKin: 'vander' }, fx: { aff: { vander: 2 } } },
+          { t: '«Quiero ganarme lo mío, Vander. Algo honrado, que no dependa de tu barra.»', next: 'b', req: { kin: 'vander' }, fx: { aff: { vander: 2 } } },
           { t: '«He oído que tus chavales planean algo gordo.»', next: 'b2', fx: { aff: { vander: -1, vi: 1 } } },
           { t: '(Observar en silencio a la gente de la taberna.)', next: 'b3', fx: { stats: { sigilo: 1 } } },
         ] },

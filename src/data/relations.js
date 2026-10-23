@@ -2,8 +2,9 @@
 // y la personalidad de cada uno para el modo de chat libre con IA.
 //
 // kinds: tipos de relación. Se piden desde «Lo nuestro…» en el comunicador.
-//   amistad (afinidad 4), mejor (amistad + afinidad 8), pareja (afinidad 7 y que os atraigáis),
-//   familia (figura paterna/materna/mentor si a tu personaje le faltan padres), hermandad (afinidad 6).
+//   Cada paso pide afinidad y confianza (tiempo compartido, ver Relations.NEEDS en src/js/relations.js):
+//   amistad (4 · 2), mejor (amistad + 8 · 6), pareja (amistad + 8 · 6, adultos y que os atraigáis),
+//   familia (amistad + 7 · 5, si a tu personaje le faltan padres), hermandad (amistad + 7 · 5).
 // chars[id]:
 //   gender: f | m (para lo que atrae a tu personaje).
 //   romance: géneros del jugador con los que puede salir ([] = nunca).
@@ -27,7 +28,7 @@ window.RELATIONS = {
 
   // Tu familia en la creación crea lazos desde el principio (y con ellos no hay romance).
   familyLinks: {
-    vander: { vander: ['pariente', 'Te acogió como a un{g:| a| e} hij{g:o|a|e}'], vi: ['hermandad', 'Creciste con ella en La Última Gota'], jinx: ['hermandad', 'Era tu hermanita Powder'] },
+    vander: { vander: ['pariente', 'Te acogió como a {g:un hijo|una hija|une hije}'], vi: ['hermandad', 'Creciste con ella en La Última Gota'], jinx: ['hermandad', 'Era tu hermanita Powder'] },
     benzo: { ekko: ['hermandad', 'Benzo os crió a los dos entre cachivaches'] },
     luciernagas: { ekko: ['hermandad', 'Creciste en el árbol de las Luciérnagas'], isha: ['hermandad', 'La cuidas como a una hermana pequeña'] },
     kiramman: { caitlyn: ['pariente', 'Tu prima'], cassandra: ['pariente', 'Tu tía'] },

@@ -55,13 +55,46 @@
   }
 
   // ¿Os podéis atraer el uno al otro?
+  // En los dos primeros capítulos de la Parte I el reparto joven (Powder, Ekko, Vi…) son
+  // niños: el romance solo se abre tras el salto de «Siete años después» (z3 / p3) o en la Parte II.
+  function adultTimeline(G) {
+    const p = G.progress || {};
+    if (p.season === 2 || p.route === 't2') return true;
+    const route = window.STORY?.routes?.[p.route] || [];
+    const from = route.indexOf(window.STORY?.romanceFrom?.[p.route]);
+    const at = route.indexOf(p.chapterId);
+    return from >= 0 && at >= from;
+  }
+
   function canRomance(G, id) {
     const c = info(id);
     if (!c || !c.romance.includes(G.player.gender)) return false;
+    // Con quien es tu familia o tu hermano/a de corazón nunca hay romance.
+    if (['pariente', 'hermandad', 'familia'].includes(status(G, id))) return false;
+    if (!adultTimeline(G)) return false;
     if ((Number(G.player.age) || 20) < 18) return false;
     const likes = ATTRACT[G.player.attraction || 'todos'] || ATTRACT.todos;
     return likes.includes(c.gender);
   }
+
+  // Confianza: tiempo compartido con cada personaje. Sube como mucho una vez por capítulo
+  // por cada tipo de rato (charlar de algo nuevo, pasar la tarde juntos), así que las
+  // relaciones avanzan despacio y con hechos, no solo con afinidad.
+  function together(G, id) {
+    return (G.together || {})[id] || 0;
+  }
+  function spendTime(G, id, what) {
+    state(G);
+    G.together = G.together || {};
+    const key = `${id}:time:${what}:${G.progress.season || 1}:${G.progress.chapterIdx}`;
+    if (G.relDone[key]) return false;
+    G.relDone[key] = true;
+    G.together[id] = together(G, id) + 1;
+    return true;
+  }
+
+  // Lo que pide cada paso (afinidad y confianza). Romance y familia, los más lentos.
+  const NEEDS = { amistad: [4, 2], hermandad: [7, 5], familia: [7, 5], mejor: [8, 6], pareja: [8, 6] };
 
   // Opciones de «Lo nuestro…»: { kind, t, req?, locked? }
   function relOptions(G, id, aff) {
@@ -72,17 +105,20 @@
     const add = (kind, min, extra = {}) => {
       const line = c.rel[kind];
       if (!line?.ask) return;
-      out.push({ t: line.ask, tone: kind === 'pareja' ? 'coqueto' : kind === 'romper' ? 'serio' : 'amable', __rel: kind, req: aff < min ? { aff: min } : undefined, ...extra });
+      const time = NEEDS[kind]?.[1] || 0;
+      const short = aff < min || together(G, id) < time;
+      out.push({ t: line.ask, tone: kind === 'pareja' ? 'coqueto' : kind === 'romper' ? 'serio' : 'amable', __rel: kind, req: short ? { aff: min, time } : undefined, ...extra });
     };
     const family = cur === 'pariente';
-    if (!cur) add('amistad', 4);
-    if (cur === 'amistad' || cur === 'hermandad' || cur === 'familia') add('mejor', 8, { once: true });
-    if (!family && cur !== 'pareja' && canRomance(G, id)) {
+    // Todo empieza por la amistad: nadie pasa de desconocido a pareja o familia de golpe.
+    if (!cur) add('amistad', NEEDS.amistad[0]);
+    if (cur === 'amistad' || cur === 'hermandad' || cur === 'familia') add('mejor', NEEDS.mejor[0], { once: true });
+    if (cur && !family && cur !== 'pareja' && canRomance(G, id)) {
       const other = partner(G);
-      add('pareja', 7, other && other !== id ? { busy: other } : {});
+      add('pareja', NEEDS.pareja[0], other && other !== id ? { busy: other } : {});
     }
-    if (!family && !cur?.match(/^(familia|pareja)$/) && needsFamily(G, id)) add('familia', 6);
-    if (c.sibling && !family && !cur?.match(/^(hermandad|pareja|familia)$/)) add('hermandad', 6);
+    if (cur && !family && !cur.match(/^(familia|pareja)$/) && needsFamily(G, id)) add('familia', NEEDS.familia[0]);
+    if (cur && c.sibling && !family && !cur.match(/^(hermandad|pareja|familia)$/)) add('hermandad', NEEDS.hermandad[0]);
     if (cur === 'pareja') add('romper', -10);
     return out.filter((o) => !(o.__rel === 'mejor' && G.relDone[`${id}:mejor`]));
   }
@@ -96,7 +132,7 @@
       rel[id] = 'amistad';
       return { lines: [pickOne([].concat(line.yes))], aff: -3, kind: 'romper' };
     }
-    if (kind === 'pareja' && (!canRomance(G, id) || aff < 7)) return { lines: [pickOne(line.no || ['Mejor como amigos, ¿vale?'])] };
+    if (kind === 'pareja' && (!canRomance(G, id) || aff < NEEDS.pareja[0] || together(G, id) < NEEDS.pareja[1])) return { lines: [pickOne(line.no || ['Mejor como amigos, ¿vale?'])] };
     if (kind === 'mejor') {
       G.relDone[`${id}:mejor`] = true;
       rel[id] = rel[id] === 'amistad' ? 'mejor' : rel[id];
@@ -144,5 +180,5 @@
     return [].concat(list[i]);
   }
 
-  window.Relations = { status, label, partner, applyFamily, relOptions, ask, greet, hang, hangLabel, small, canRomance, needsFamily, info };
+  window.Relations = { adultTimeline, together, spendTime, NEEDS, status, label, partner, applyFamily, relOptions, ask, greet, hang, hangLabel, small, canRomance, needsFamily, info };
 })();

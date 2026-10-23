@@ -1323,3 +1323,70 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
 .world:not(.map-is-3d) .map-ctrl.only3d { display: none; }
 .map-ctrl.mapview { font: bold 0.85rem var(--display); color: var(--gold); }
 @media (max-height: 620px) { .map-ctrls { gap: 5px; } .map-ctrl { min-width: 40px; height: 40px; } }
+
+/* Iconos de línea de la barra inferior (sustituyen a los emojis) */
+.hud-ico { display: inline-flex; color: var(--gold); font-style: normal; }
+.hud-ico svg { display: block; }
+
+/* Guía rápida de personajes */
+.guia-panel { width: min(1100px, 94vw); max-height: 90vh; overflow: auto; display: flex; flex-direction: column; gap: 0.8rem; padding: 1.4rem; }
+.guia-panel h2 { margin: 0; font-family: var(--display); color: var(--gold); }
+.guia-intro { margin: 0; line-height: 1.55; }
+.guia-rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0.8rem; }
+.guia-ficha { display: grid; grid-template-columns: 84px 1fr; gap: 0.8rem; align-items: start; padding: 0.8rem; border: 1px solid var(--line); border-radius: 12px; background: rgba(13, 11, 20, 0.55); }
+.guia-ficha img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255, 224, 138, 0.45); }
+.guia-ficha h3 { margin: 0; font-family: var(--display); color: var(--gold); font-size: 1.1rem; }
+.guia-ficha p { margin: 0.25rem 0 0; line-height: 1.45; font-size: 0.92rem; }
+.guia-ficha .guia-titulo { color: var(--zaun, #3fbf9f); font-size: 0.85rem; letter-spacing: 0.04em; }
+.guia-otros { margin: 0; font-size: 0.92rem; }
+.guia-panel > .btn { align-self: flex-end; min-width: 180px; }
+
+/* Pantallas táctiles: sin teclas de atajo en la barra inferior */
+@media (pointer: coarse) { .hud-btn kbd { display: none; } }
+
+/* Móvil: el minimapa no tapa la ficha ni el objetivo, y la barra inferior cabe entera */
+@media (max-width: 720px) {
+  .hud-top { max-width: calc(100vw - 132px); }
+  .hud-card { max-width: 100%; padding: 0.45rem 0.6rem; }
+  #world-mini { width: 108px !important; height: auto !important; }
+  .hud-bottom { left: 6px; right: 6px; transform: none; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+  .hud-btn { flex-direction: column; justify-content: center; gap: 2px; padding: 0.4rem 0.1rem; font-size: 0.68rem; min-height: 52px; }
+  .hud-btn kbd { display: none; }
+  .hud-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .guia-rejilla { grid-template-columns: 1fr; }
+  .guia-ficha { grid-template-columns: 64px 1fr; }
+  .guia-ficha img { width: 64px; height: 64px; }
+}
+.cp-trust { margin-left: 0.6rem; color: var(--zaun); }
+/* Creador: consecuencias de cada elección */
+.class-games { color: var(--zaun); }
+.creator-consecuencia { margin: 0.6rem 0; padding: 0.6rem 0.8rem; border-left: 3px solid var(--gold); background: rgba(227, 196, 90, 0.07); border-radius: 0 8px 8px 0; line-height: 1.45; }
+.family-effects { margin: 0.4rem 0 0; padding-left: 1.1rem; text-align: left; font-size: 0.82rem; color: var(--muted); line-height: 1.35; }
+.family-effects li { margin: 0.15rem 0; }
+
+/* Colores de la interfaz (Ajustes → Lectura → Colores). «Según la ciudad» cambia al viajar. */
+html[data-tema] body { transition: background-color 0.6s; }
+html[data-tema="piltover"] {
+  --gold: #f0c96a; --gold2: #c9952f; --line: rgba(240, 201, 106, 0.24); --panel: rgba(22, 26, 46, 0.86);
+  --bg: #0e1020; --bg2: #171a30; --zaun: #6fb6ff; --muted: #b3aec6;
+}
+html[data-tema="zaun"] {
+  --gold: #5ff0c8; --gold2: #2fae8f; --line: rgba(95, 240, 200, 0.22); --panel: rgba(9, 26, 28, 0.86);
+  --bg: #061113; --bg2: #0b1d1f; --zaun: #ff5fae; --muted: #9fbdb6;
+}
+html[data-tema="hextec"] {
+  --gold: #7cc8ff; --gold2: #3d8fd1; --line: rgba(124, 200, 255, 0.24); --panel: rgba(10, 20, 40, 0.86);
+  --bg: #070c18; --bg2: #0e1626; --zaun: #f0c96a; --muted: #a3b2c8;
+}
+html[data-tema="noxus"] {
+  --gold: #ef6a5e; --gold2: #b8392f; --line: rgba(239, 106, 94, 0.24); --panel: rgba(30, 12, 14, 0.86);
+  --bg: #110708; --bg2: #1c0d0f; --zaun: #e3c45a; --muted: #c2a7a5;
+}
+html[data-tema="brillo"] {
+  --gold: #ff7ad9; --gold2: #b84aa8; --line: rgba(255, 122, 217, 0.24); --panel: rgba(28, 12, 34, 0.86);
+  --bg: #0f0614; --bg2: #1a0b21; --zaun: #8affc8; --muted: #c0a6c8;
+}
+html[data-tema]:not([data-tema="clasico"]) body { background-color: var(--bg); }
+html[data-tema]:not([data-tema="clasico"]) .panel,
+html[data-tema]:not([data-tema="clasico"]) .hud-card,
+html[data-tema]:not([data-tema="clasico"]) .hud-btn { background-color: var(--panel); border-color: var(--line); }

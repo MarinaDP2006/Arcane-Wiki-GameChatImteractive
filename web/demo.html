@@ -1,1 +1,29 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Probar demo · Rifts &amp; Gears</title><meta name="theme-color" content="#0d0b14"><link rel="icon" href="icono-rg.svg" type="image/svg+xml"><link rel="stylesheet" href="estilos.css"></head><body class="pagina-demo"><header class="barra"><a class="marca" href="index.html"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a><nav><a href="index.html">← Volver a la web</a></nav></header><main><section id="experiencia" class="seccion demo"><p class="antetitulo">Experiencia interactiva · Demo web</p><h1 class="demo-titulo">Tu decisión, tu camino</h1><p class="intro">Elige tu ruta, toma decisiones y descubre uno de cuatro finales. Esta es una pequeña historia independiente de la partida del juego.</p><div class="demo-panel"><div class="demo-escena"><div class="demo-escena-imagen" aria-hidden="true"></div><p id="demo-capitulo" class="antetitulo">Capítulo 01 · El cruce</p><h3 id="demo-escena-titulo">Dos ciudades. Una decisión.</h3><p id="demo-relato" aria-live="polite">Encuentras un mensaje cifrado entre los puentes de Piltover y los callejones de Zaun. ¿Dónde buscarás la primera pista?</p><div id="demo-opciones" class="demo-opciones"><button type="button" data-eleccion="piltover">Investigar en Piltover</button><button type="button" data-eleccion="zaun">Descender a Zaun</button></div><button id="demo-reiniciar" class="demo-reiniciar" type="button" hidden>↻ Volver a jugar</button></div><aside class="demo-bitacora"><span class="antetitulo">Tu bitácora</span><h3 id="demo-distrito">Destino sin elegir</h3><p id="demo-consecuencia">Cada elección abre una ruta distinta.</p><div class="demo-medidor"><span>Ingenio</span><meter id="demo-ingenio" min="0" max="10" value="5">5 de 10</meter><span>Audacia</span><meter id="demo-audacia" min="0" max="10" value="5">5 de 10</meter></div><p class="demo-nota">La demo es una experiencia narrativa de muestra creada para la web.</p></aside></div></section></main><script src="experiencia.js" defer></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Probar demo · Rifts &amp; Gears</title>
+  <meta name="theme-color" content="#0d0b14">
+  <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body class="pagina-demo">
+  <header class="barra">
+    <a class="marca" href="index.html"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a>
+    <nav><a href="index.html">← Volver a la web</a></nav>
+  </header>
+  <main>
+    <section class="seccion demo-juego" aria-labelledby="demo-titulo">
+      <p class="antetitulo">Demo jugable · Capítulos 1 y 2</p>
+      <h1 id="demo-titulo" class="demo-titulo">Crea tu personaje y elige tu ciudad</h1>
+      <p class="intro">Los dos primeros capítulos de la historia del juego, con las mismas decisiones. El resto de la historia, el mapa, el comunicador y los minijuegos están en el juego completo.</p>
+      <div id="demo-app" class="dj" aria-live="polite">
+        <noscript><p>La demo necesita JavaScript.</p></noscript>
+      </div>
+    </section>
+  </main>
+  <script src="demo-datos.js"></script>
+  <script src="demo-juego.js"></script>
+</body>
+</html>
