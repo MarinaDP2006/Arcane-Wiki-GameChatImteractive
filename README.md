@@ -4,7 +4,7 @@ Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas
 
 Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
 
-> **Rama `main` = mundo nuevo.** Todo lo de este universo original vive aquí. El fangame de Arcane está en su propia rama, `claude/project-thread-9huivc-arcane`, con su web y su README.
+> **Rama `main` = mundo original.** Todo lo de Las ciudades del Umbral vive aquí. La rama de trabajo del fangame de Arcane se conserva separada en `claude/project-thread-9huivc-arcane` y se publicará en el repositorio independiente [Arcane-fangame](https://github.com/MarinaDP2006/Arcane-fangame). No mezclar sus modelos, datos, guardados ni recursos web.
 
 ## La historia en cinco fechas
 
@@ -19,6 +19,8 @@ Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta:
 La campaña tiene tres partes: *La ciudad bajo la piedra*, *El precio de la Resonancia* y *Un pacto que no se hereda*. Hay diez personajes principales, cinco de cada ciudad; sus fichas están en `src/data/original-world.js`.
 
 ## Web y demo
+
+![Concepto visual de Aurelia y Nácar](web/arte-propio/ciudades-umbral.svg)
 
 La carpeta `web/` contiene la web pública:
 
