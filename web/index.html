@@ -8,23 +8,21 @@
   <meta property="og:title" content="Rifts & Gears">
   <meta property="og:description" content="Fangame gratuito en desarrollo. Información del juego, capturas reales y descargas disponibles.">
   <meta property="og:image" content="arte/lugares/piltover.webp">
-  <link rel="icon" href="icono.png">
+  <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
   <header class="barra">
-    <a class="marca" href="#inicio">RIFTS <span>&amp;</span> GEARS</a>
-    <nav>
-      <a href="#juego">El juego</a>
-      <a href="#novedades">Novedades</a>
-      <a href="#experiencia">Jugar</a>
-      <a href="#fichas">Personajes</a>
-      <a href="#desarrollando">Desarrollando R&amp;G</a>
-      
-      
-      <a href="#capturas">Capturas</a>
-      <a href="#preguntas">Preguntas</a>
-      <a class="boton boton-sm" href="#descargar">Descargar</a>
+    <a class="marca" href="#inicio" data-tab="inicio"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a>
+    <nav aria-label="Navegación principal">
+      <a href="#inicio" data-tab="inicio" class="nav-activo">Inicio</a>
+      <a href="#juego" data-tab="juego">El juego</a>
+      <a href="#novedades" data-tab="novedades">Novedades</a>
+      <a href="#fichas" data-tab="fichas">Personajes</a>
+      <a href="#desarrollando" data-tab="desarrollando">Desarrollo</a>
+      <a href="#capturas" data-tab="capturas">Capturas</a>
+      <a href="#descargar" data-tab="descargar">Descargas</a>
+      <a class="boton boton-sm boton-demo-nav" href="demo.html" target="_blank" rel="noopener">✦ Probar demo</a>
     </nav>
   </header>
 
@@ -61,11 +59,6 @@
     </section>
 
 
-    <section id="experiencia" class="seccion demo" aria-labelledby="demo-titulo">
-      <p class="antetitulo">Una experiencia en tu navegador</p><h2 id="demo-titulo">Tu decisión, tu camino</h2>
-      <p class="intro">Una pequeña historia interactiva creada para esta web. No modifica tus partidas del juego.</p>
-      <div class="demo-panel"><div class="demo-escena"><div class="demo-escena-imagen" aria-hidden="true"></div><p id="demo-capitulo" class="antetitulo">Capítulo 01 · El cruce</p><h3 id="demo-escena-titulo">Dos ciudades. Una decisión.</h3><p id="demo-relato" aria-live="polite">Encuentras un mensaje cifrado entre los puentes de Piltover y los callejones de Zaun. ¿Dónde buscarás la primera pista?</p><div id="demo-opciones" class="demo-opciones"><button type="button" data-eleccion="piltover">Investigar en Piltover</button><button type="button" data-eleccion="zaun">Descender a Zaun</button></div><button id="demo-reiniciar" class="demo-reiniciar" type="button" hidden>↻ Volver a jugar</button></div><aside class="demo-bitacora"><span class="antetitulo">Tu bitácora</span><h3 id="demo-distrito">Destino sin elegir</h3><p id="demo-consecuencia">Cada elección abre una ruta distinta.</p><div class="demo-medidor"><span>Ingenio</span><meter id="demo-ingenio" min="0" max="10" value="5">5 de 10</meter><span>Audacia</span><meter id="demo-audacia" min="0" max="10" value="5">5 de 10</meter></div></aside></div>
-    </section>
     <section id="fichas" class="seccion demo" aria-labelledby="fichas-titulo"><p class="antetitulo">Archivo de personajes · Ejemplo original</p><h2 id="fichas-titulo">Ficha de personaje</h2><p class="intro">Conoce a dos personajes originales de demostración, creados para explorar cómo podrían verse las fichas en la web.</p><div class="ficha-panel"><div class="ficha-retrato" aria-hidden="true"><span id="ficha-sigilo">K</span></div><div class="ficha-detalles"><div class="ficha-selector" role="group" aria-label="Seleccionar personaje"><button type="button" class="activo" data-personaje="kael" aria-pressed="true">Kael</button><button type="button" data-personaje="lyra" aria-pressed="false">Lyra</button></div><h3 id="ficha-nombre">Kael</h3><p id="ficha-rol" class="ficha-rol">Ingeniero · Piltover</p><p id="ficha-frase">«Hasta el engranaje más pequeño puede cambiar una ciudad».</p><div class="ficha-stats"><label>Ingenio <meter id="ficha-ingenio" min="0" max="10" value="9"></meter></label><label>Audacia <meter id="ficha-audacia" min="0" max="10" value="6"></meter></label><label>Empatía <meter id="ficha-empatia" min="0" max="10" value="7"></meter></label></div></div><div class="ficha-historia"><div class="ficha-pestanas" role="group" aria-label="Apartado de la ficha"><button type="button" class="activo" data-ficha-tab="historia" aria-pressed="true">Historia</button><button type="button" data-ficha-tab="habilidad" aria-pressed="false">Habilidad</button></div><p id="ficha-texto">Kael diseña pequeños mecanismos para resolver problemas imposibles, pero la curiosidad lo empuja más allá de las puertas de su taller.</p></div></div></section>
     <section id="desarrollando" class="seccion viaje" aria-labelledby="titulo-viaje">
       <div class="viaje-cabecera">
@@ -144,6 +137,6 @@
     <p><a href="https://github.com/MarinaDP2006/grietas-and-gears">Código en GitHub</a> · <a href="privacidad.html">Privacidad</a> · <a href="privacidad.html#aviso-legal">Aviso legal</a> · {{ANIO}}</p>
   </footer>
   <script src="web.js"></script>
-  <script src="experiencia.js" defer></script>
+  <script src="pestanas.js" defer></script>
 </body>
 </html>
