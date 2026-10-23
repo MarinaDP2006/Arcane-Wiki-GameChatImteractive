@@ -1,5 +1,5 @@
 # Versión de escritorio: instalador y portable de Windows + DMG/ZIP de Mac.
-# Se compila desde main, en versiones v* y manualmente; sin ramas duplicadas.
+# Se compila desde la rama Arcane, con etiquetas arcane-v* o manualmente; sin tocar main.
 name: Compilar escritorio (Windows y Mac)
 on:
   push:
