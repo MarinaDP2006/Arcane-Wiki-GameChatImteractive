@@ -206,11 +206,13 @@
 
       function size() {
         const r = stage.getBoundingClientRect();
-        dpr = Math.min(2, window.devicePixelRatio || 1);
-        W = Math.floor(r.width);
-        H = Math.floor(r.height - hud.offsetHeight);
-        canvas.width = Math.round(W * dpr);
-        canvas.height = Math.round(H * dpr);
+        // Limit the pixel fill-rate on high-density tablets and avoid redundant resizes.
+        dpr = Math.min(1.5, window.devicePixelRatio || 1);
+        W = Math.max(1, Math.floor(r.width));
+        H = Math.max(1, Math.floor(r.height - hud.offsetHeight));
+        const pixelW = Math.round(W * dpr), pixelH = Math.round(H * dpr);
+        if (canvas.width !== pixelW) canvas.width = pixelW;
+        if (canvas.height !== pixelH) canvas.height = pixelH;
         canvas.style.height = `${H}px`;
       }
 
@@ -297,7 +299,9 @@
         ctx.restore();
         vignette(ctx, W, H);
         if (count > 0) countdown();
-        hud.innerHTML = game.hud();
+        // Avoid rebuilding the HUD subtree on every animation frame when unchanged.
+        const nextHud = game.hud();
+        if (hud.innerHTML !== nextHud) hud.innerHTML = nextHud;
         if (game.result != null) {
           running = false;
           if (game.result) { FX.flash(0.6, '255,236,180'); buzz(40); } else { FX.hurt(1); buzz([30, 40, 30]); }
