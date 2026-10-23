@@ -44,6 +44,17 @@ function buildCapturas() {
     copy(path.join(carpeta, archivo), path.join(out, 'capturas', archivo));
     tarjetas.push('<figure class="captura"><a href="capturas/' + archivo + '" target="_blank" rel="noopener"><img src="capturas/' + archivo + '" alt="' + esc(titulo) + '" loading="lazy"></a><figcaption>' + esc(titulo) + '</figcaption></figure>');
   }
+  // Capturas históricas aportadas por la autora, ordenadas por nombre de archivo.
+  // Formato recomendado: 01-inicio.webp, 02-menu.png, etc.
+  const historia = path.join(root, 'capturasjuego');
+  if (fs.existsSync(historia)) {
+    const files = fs.readdirSync(historia).filter(name => /^(?!\\.)(?!README\\.md$)[a-zA-Z0-9][a-zA-Z0-9._-]*\\.(webp|png|jpe?g)$/i.test(name)).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+    for (const file of files) {
+      copy(path.join(historia, file), path.join(out, 'capturasjuego', file));
+      const label = file.replace(/\\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+      tarjetas.push('<figure class="captura"><a href="capturasjuego/' + encodeURIComponent(file) + '" target="_blank" rel="noopener noreferrer"><img src="capturasjuego/' + encodeURIComponent(file) + '" alt="Captura histórica: ' + esc(label) + '" loading="lazy"></a><figcaption>' + esc(label) + '</figcaption></figure>');
+    }
+  }
   return tarjetas.join('') || '<p class="galeria-vacia">Las capturas oficiales estarán disponibles próximamente.</p>';
 }
 
@@ -59,7 +70,11 @@ function build() {
   for (const f of ['lugares/piltover.webp', 'lugares/zaun.webp', 'codice/mapa-piltover-zaun.webp', 'simbolos/piltover.png', 'simbolos/zaun.png']) {
     copy(path.join(root, 'src', 'img', 'arte', f), path.join(out, 'arte', f));
   }
-  // Arte existente del juego para la cronología editorial; no se presenta como capturas históricas.\n  for (const name of ['piltover.webp', 'zaun.webp', 'hexpuertas.webp', 'comuna-viktor.webp']) {\n    copy(path.join(root, 'src', 'img', 'arte', 'lugares', name), path.join(out, 'arte', 'historia', name));\n  }\n  copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
+  // Arte existente del juego para la cronología editorial; no se presenta como capturas históricas.
+  for (const name of ['piltover.webp', 'zaun.webp', 'hexpuertas.webp', 'comuna-viktor.webp']) {
+    copy(path.join(root, 'src', 'img', 'arte', 'lugares', name), path.join(out, 'arte', 'historia', name));
+  }
+  copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
 
   const tarjetas = personajes.map((p) => `
         <li class="pj pj-${esc(p.origin)}">
