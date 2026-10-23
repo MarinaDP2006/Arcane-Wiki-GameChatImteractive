@@ -1,12 +1,11 @@
-// Escenarios 2D de Piltover y Zaun con los fotogramas de Arcane como fondo.
-// El lugar se explora desplazando la vista (arrastrar, A/D, flechas o rueda) por la imagen
-// ampliada; encima van niebla, luz y polvo animados para que la escena respire.
+// Escenarios 2D originales para Aurelia y Nácar. El lugar se explora desplazando la vista
+// por ilustraciones propias; encima van niebla, luz y polvo animados para dar profundidad.
 // La pista y el objetivo son puntos de luz sobre la imagen: se pulsan (o E cuando están a la vista).
 (function () {
   let active = null;
   const reduce = () => Boolean(window.App?.settings?.reduceMotion);
 
-  /** Partículas (polvo dorado en Piltover, esporas y humo en Zaun) sobre un lienzo. */
+  /** Partículas (polvo dorado en Aurelia, esporas y vapor en Nácar) sobre un lienzo. */
   function particles(canvas, city) {
     const g = canvas.getContext('2d');
     const zaun = city === 'zaun';
@@ -215,47 +214,27 @@
     return true;
   }
 
-  // Cada lugar del mapa con su fotograma de Arcane (src/img/arte), la posición de la pista y
+  // Cada lugar original con su ilustración vectorial, la posición de la pista y
   // del objetivo (0..1 sobre la imagen) y lo que se descubre al investigar.
   const A = 'img/arte/';
   const PLACES = {
-    // Zaun
-    callejones: ['zaun', A + 'lugares/zaun.webp', [0.62, 0.78], [0.2, 0.62], 'Pasarelas suspendidas, talleres apiñados y luz química en las profundidades.', 'Has encontrado las señales de una ruta de contrabando entre las pasarelas.'],
-    mercado: ['zaun', A + 'lugares/comuna-viktor.webp', [0.42, 0.8], [0.86, 0.6], 'Puestos colgados de las tuberías y regateo a gritos.', 'Un puesto vende piezas marcadas con el sello de una fábrica de Brillo.'],
-    tejados: ['zaun', A + 'lugares/zaun.webp', [0.3, 0.55], [0.8, 0.4], 'Chimeneas, humo y la luz de Piltover allá arriba.', 'Unas marcas de tiza señalan un camino seguro entre las chimeneas.'],
-    'puente-zaun': ['zaun', A + 'lugares/zaun.webp', [0.2, 0.8], [0.6, 0.45], 'El paso entre las dos ciudades, visto desde abajo.', 'Un sello desgastado en una caseta indica quién controlaba el paso.'],
-    arbol: ['zaun', A + 'lugares/arbol.png', [0.12, 0.7], [0.88, 0.62], 'Un refugio vivo, construido sobre las ramas y lejos del Brillo.', 'Descubres el sistema de cuerdas que protege el refugio de las Luciérnagas.'],
-    fabrica: ['zaun', A + 'lugares/zaun.webp', [0.7, 0.75], [0.25, 0.5], 'Turbinas, puentes y neones en el corazón industrial.', 'La consola principal controla las máquinas y las pasarelas de la torre.'],
-    foso: ['zaun', A + 'lugares/zaun.webp', [0.55, 0.85], [0.15, 0.6], 'Gritos, apuestas y sangre en la arena.', 'En la libreta del corredor de apuestas aparece un nombre que conoces.'],
-    'escondite-jinx': ['zaun', A + 'lugares/zaun.webp', [0.85, 0.7], [0.4, 0.45], 'Juguetes rotos, pintura y pólvora.', 'Un dibujo infantil pegado a la pared esconde un mapa de los conductos.'],
-    'ultima-gota': ['zaun', A + 'lugares/ultima-gota.webp', [0.18, 0.78], [0.5, 0.42], 'El local de Vander: hierro oxidado, barra iluminada y puertas de acero.', 'En el libro de cuentas de la barra hay una entrega marcada con tinta roja.'],
-    'tienda-benzo': ['zaun', A + 'lugares/tienda-benzo.png', [0.15, 0.6], [0.82, 0.35], 'Chatarra, piezas y favores que nunca se apuntan.', 'Bajo el mostrador de Benzo hay una caja con piezas hextec robadas.'],
-    sumidero: ['zaun', A + 'lugares/fabrica.png', [0.78, 0.25], [0.45, 0.45], 'La química de Singed, entre frascos verdes y reactores violetas.', 'Un registro del laboratorio revela experimentos y muestras de Brillo.'],
-    invernadero: ['zaun', A + 'lugares/comuna-viktor.webp', [0.2, 0.75], [0.52, 0.28], 'Vidrio, conductos de quimtec y vegetación creciendo en las ruinas.', 'Los conductos del invernadero mezclan aire limpio y quimtec reciclada.'],
-    // Piltover
-    consejo: ['piltover', A + 'lugares/consejo.webp', [0.7, 0.8], [0.45, 0.45], 'Mármol, bronce y decisiones que pesan sobre las dos ciudades.', 'La documentación del Consejo contiene nombres que faltan en el acta.'],
-    academia: ['piltover', A + 'lugares/academia.webp', [0.25, 0.82], [0.75, 0.5], 'Aulas, archivos y el prestigio de la ciencia de Piltover.', 'Un registro de prácticas revela quién utilizó el taller.'],
-    'taller-jayce': ['piltover', A + 'lugares/taller-jayce.webp', [0.2, 0.7], [0.55, 0.3], 'Pizarras, prototipos y cristales hextec.', 'En la pizarra encuentras una ecuación hextec corregida a mano.'],
-    artesanos: ['piltover', A + 'lugares/taller-jayce.webp', [0.3, 0.85], [0.6, 0.55], 'Talleres de relojeros y orfebres bajo los arcos.', 'Un relojero guarda el encargo de alguien que no quiere ser visto.'],
-    hexpuertas: ['piltover', A + 'lugares/hexpuertas.webp', [0.3, 0.82], [0.5, 0.42], 'La torre de las Hexpuertas y los dirigibles entre las nubes.', 'Un registro del tráfico aéreo muestra una ruta que no figura en los permisos.'],
-    plaza: ['piltover', A + 'lugares/piltover.webp', [0.75, 0.82], [0.55, 0.5], 'Fuentes, estatuas y el Día del Progreso.', 'Un cartel arrancado anunciaba una reunión que nadie autorizó.'],
-    'muelle-stillwater': ['piltover', A + 'lugares/stillwater.webp', [0.2, 0.8], [0.48, 0.3], 'La prisión sobre el agua, de noche.', 'Una orden de traslado está firmada por alguien que no debería estar aquí.'],
-    ejecutores: ['piltover', A + 'lugares/ejecutores.png', [0.2, 0.75], [0.6, 0.45], 'Uniformes azules, expedientes y celdas.', 'Un expediente tiene páginas arrancadas justo donde empieza tu caso.'],
-    puente: ['piltover', A + 'lugares/piltover.webp', [0.25, 0.8], [0.62, 0.45], 'El Puente del Progreso, entre el oro y la niebla.', 'Un sello desgastado en una caseta indica quién controlaba el paso.'],
-    'mansion-kiramman': ['piltover', A + 'lugares/mansion-kiramman.png', [0.8, 0.75], [0.35, 0.4], 'Jardines, retratos y secretos de familia.', 'Una carta sin enviar habla de un trato con el Consejo.'],
+    archivo: ['piltover', A + 'lugares/aurelia.svg', [0.28, 0.62], [0.78, 0.42], 'El Archivo de Frecuencias conserva los registros públicos y los huecos que alguien dejó en ellos.', 'Un patrón de tres pulsos aparece en una copia que no figura en el catálogo.'],
+    observatorio: ['piltover', A + 'lugares/aurelia.svg', [0.62, 0.28], [0.42, 0.68], 'Las terrazas del observatorio permiten medir la vibración de la meseta.', 'Un medidor auxiliar registra un desfase imposible en la roca.'],
+    gremios: ['piltover', A + 'lugares/aurelia.svg', [0.35, 0.73], [0.82, 0.56], 'El patio de gremios reúne a quienes mantienen los ascensores y los viaductos.', 'Una orden de mantenimiento fue modificada después de recibir la firma.'],
+    'ascensor-central': ['piltover', A + 'lugares/aurelia.svg', [0.7, 0.76], [0.48, 0.38], 'El ascensor central conecta los niveles de Aurelia y Nácar mediante contrapesos.', 'El registro del freno repite el patrón de la noche del accidente.'],
+    cristal: ['piltover', A + 'lugares/aurelia.svg', [0.18, 0.54], [0.65, 0.46], 'El bulevar de cristal transporta materiales y datos entre los talleres de Aurelia.', 'Una veta de Resonancia pulsa a un ritmo distinto del registrado.'],
+    'mercado-nacar': ['zaun', A + 'lugares/nacar.svg', [0.25, 0.68], [0.76, 0.44], 'El Mercado de las Tuberías vende repuestos, noticias y acuerdos comunitarios.', 'Una válvula lleva una marca de fabricación borrada del registro.'],
+    galerias: ['zaun', A + 'lugares/nacar.svg', [0.62, 0.3], [0.38, 0.72], 'Las galerías geotérmicas convierten pulsos minerales en energía para la ciudad.', 'La frecuencia sube antes de que el medidor principal lo detecte.'],
+    'jardin-musgo': ['zaun', A + 'lugares/nacar.svg', [0.18, 0.72], [0.82, 0.64], 'El jardín de musgo mantiene humedad y aire limpio en un barrio rodeado de maquinaria.', 'Una tubería secundaria desvía agua hacia viviendas que no aparecen en el plano.'],
+    clinica: ['zaun', A + 'lugares/nacar.svg', [0.7, 0.66], [0.45, 0.42], 'La Clínica de los Tres Arcos no puede cerrar mientras las galerías sigan habitadas.', 'La lista de suministros revela quién asumió el coste del último corte.'],
+    'canal-cobre': ['zaun', A + 'lugares/nacar.svg', [0.45, 0.8], [0.78, 0.35], 'El Canal de Cobre recoge el agua de condensación y conecta varios talleres.', 'Una compuerta fue cerrada desde un terminal que debía estar fuera de servicio.'],
+    'aurelia-council': ['piltover', A + 'lugares/aurelia.svg', [0.55, 0.32], [0.82, 0.58], 'La sala del Consejo debate quién puede controlar la red de Resonancia.', 'Un anexo del pacto antiguo no aparece en las copias oficiales.'],
+    'nacar-central': ['zaun', A + 'lugares/nacar.svg', [0.32, 0.68], [0.78, 0.42], 'La estación central de Nácar conecta los talleres con las galerías geotérmicas.', 'La señal coincide con el registro desaparecido del Archivo.'],
   };
-  /**
-   * Imagen del lugar para la temporada que se está jugando (lugares/s1 o lugares/s2, que vienen
-   * de arcaneData/arte/mapa/<ciudad>/<temporada>). En T2 nunca se usa una imagen de T1: si falta,
-   * se entra directamente a las acciones del lugar.
-   */
+  /** Imagen propia del lugar; se permite sustituirla con arte personal sin depender de temporadas. */
   function imageFor(id, fallback) {
-    const A = window.CustomArt;
-    if (!A) return fallback;
-    const season = A.season();
-    const own = A.files[`lugares/${season}`]?.[id] || window.ART_BUNDLED?.[`lugares/${season}`]?.[id];
-    if (own) return own;
-    return season === 's2' ? null : fallback;
+    const custom = window.CustomArt?.files?.lugares?.[id] || window.ART_BUNDLED?.lugares?.[id];
+    return custom || fallback;
   }
   /** ¿Tiene este lugar escenario 2D? */
   function has(id) { return Boolean(PLACES[id]); }
