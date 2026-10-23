@@ -1,6 +1,6 @@
-// Mundo abierto: mapas de Piltover y Zaun, lugares, actividades,
-// fragmentos del Códice (cristales hextec) y farolas hextec. En las calles solo
-// aparecen los personajes de Arcane, no hay habitantes genéricos.
+// Datos base de compatibilidad del mundo abierto; las ciudades visibles se sustituyen por Aurelia y Nácar en original-world.js.
+// lugares y actividades. En las calles solo
+// aparecen los protagonistas originales, no hay habitantes genéricos.
 window.WORLD = {
   maps: {
     piltover: {
