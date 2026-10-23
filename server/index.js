@@ -9,7 +9,7 @@ const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_DIR = path.join(ROOT, 'web-dist');
 const PORT = Number(process.env.PORT || 10000);
 // Compatible con LM Studio (local) y proveedores OpenAI-compatible. Por defecto conserva Ollama Cloud.
-const AI_BASE_URL = String(process.env.AI_BASE_URL || 'https://ollama.com/v1').replace(/\\/+$/, '');
+const AI_BASE_URL = String(process.env.AI_BASE_URL || 'https://ollama.com/v1').replace(/\/+$/, '');
 const MODEL = process.env.AI_MODEL || process.env.OLLAMA_MODEL || 'gemma4:31b';
 const AI_API_KEY = process.env.AI_API_KEY || process.env.OLLAMA_API_KEY || '';
 const AI_PROVIDER = process.env.AI_PROVIDER || (AI_BASE_URL.includes('ollama.com') ? 'ollama-cloud' : 'openai-compatible');
@@ -141,7 +141,7 @@ async function roleplay(req, res) {
     const payload = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
       // No exponer respuesta completa del proveedor: podría contener datos operativos.
-      return send(res, upstream.status >= 500 ? 502 : upstream.status, { error:'El servicio de IA no ha podido responder. Revisa el modelo y el saldo/uso de la cuenta Ollama Cloud.' });
+      return send(res, upstream.status >= 500 ? 502 : upstream.status, { error:'El servicio de IA no ha podido responder. Revisa AI_BASE_URL, el nombre del modelo y las credenciales del proveedor.' });
     }
     const answer = payload?.choices?.[0]?.message?.content;
     if (typeof answer !== 'string' || !answer.trim()) return send(res, 502, { error:'El modelo devolvió una respuesta vacía.' });
