@@ -38,7 +38,7 @@ La respuesta final también depende de la calidad del modelo local de Ollama. La
 - Exploración con calles y escenarios 3D, cámara con seguimiento, colisiones y un mapa 2D de respaldo.
 - Iluminación, niebla ambiental, partículas y posprocesado con un acabado pictórico cinematográfico.
 - Diálogos, decisiones, misiones, afinidad con personajes y varios finales.
-- Atlas y códice, actividades y minijuegos.
+- Atlas y códice, actividades y 10 minijuegos con profundidad: fondos con el arte real de cada lugar (T1 y T2) que cambian en cada partida, paralaje, niebla y suelo en perspectiva. Pelea en el foso, tejados, aerotabla, galería de tiro, circuito hextec, runas, regateo, y los nuevos: persecución en aerodeslizador (carretera en 3D), la mira de Caitlyn y los chompers de Jinx. Se juegan con teclado, ratón o botones táctiles en tableta.
 - Sistema de guardado, opciones gráficas y audio; chat libre con IA opcional.
 
 La estética está inspirada en la serie. No se incluyen ni se prometen modelos o fotogramas oficiales de *Arcane*.
