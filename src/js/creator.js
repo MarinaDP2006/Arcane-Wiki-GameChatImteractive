@@ -307,6 +307,9 @@
             draft.look.outfit = id === 'piltover' ? 'abrigo' : 'chaqueta';
             draft.look.outfitColor = id === 'piltover' ? '#c4c0b8' : '#4a3a5a';
           }
+          document.body.dataset.city = id;
+          document.body.dataset.ciudad = id;
+          window.App?.setCity?.(id);
           Audio2.playMusic(id);
           rerender();
         },
