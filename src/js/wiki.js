@@ -1,8 +1,8 @@
-// Códice del juego: la enciclopedia de Arcane, cuyas entradas se desbloquean
+// Códice del universo original: sus entradas se desbloquean
 // al conocer personajes, visitar lugares y recoger fragmentos en el mapa.
 (function () {
   const { el, norm } = U;
-  const ORIGIN = { zaun: 'Zaun', piltover: 'Piltover', noxus: 'Noxus', otro: 'Runeterra' };
+  const ORIGIN = { zaun: 'Nácar', piltover: 'Aurelia', noxus: 'Otra región', otro: 'Otra región' };
   const state = { cat: 'personajes', query: '', origin: 'todos', selected: null };
   let root = null;
   let opts = { known: () => true };
@@ -73,8 +73,8 @@
     const box = q('#wiki-detail');
     const found = state.selected && findAny(state.selected);
     if (!found) {
-      box.innerHTML = `<div class="wiki-empty"><h2>Códice de Runeterra</h2>
-        <p>Aquí se guarda todo lo que descubres en Piltover y Zaun: personajes, lugares, criaturas, inventos y facciones.</p>
+      box.innerHTML = `<div class="wiki-empty"><h2>Códice de las Ciudades</h2>
+        <p>Aquí se guarda todo lo que descubres en Aurelia y Nácar: personajes, lugares, vida geológica, Resonancia y comunidades.</p>
         <p class="muted">Conoce a gente en la historia, visita lugares y recoge los hexágonos azules del mapa para completarlo.</p></div>`;
       return;
     }
@@ -102,7 +102,7 @@
         class: `spoiler${showSpoilers ? ' revealed' : ''}`,
         title: 'Pulsa para revelar',
         onclick: (ev) => ev.currentTarget.classList.add('revealed'),
-      }, el('strong', {}, 'Spoiler · Temporada 2: '), e.spoiler) : null,
+      }, el('strong', {}, 'Spoiler de campaña: '), e.spoiler) : null,
       e.quote ? el('blockquote', {}, `«${e.quote}»`, el('small', {}, ' — frase inspirada en el personaje')) : null,
       rel.length ? el('h3', {}, 'Relaciones') : null,
       rel.length ? el('div', { class: 'relations' }, rel.map(({ entry: r, cat: rc }) =>
@@ -144,9 +144,9 @@
           <input id="wiki-search" class="input" type="search" placeholder="Buscar en el Códice…" aria-label="Buscar">
           <div class="seg" id="wiki-origin">
             <button data-o="todos" class="active">Todo</button>
-            <button data-o="zaun">Zaun</button>
-            <button data-o="piltover">Piltover</button>
-            <button data-o="noxus">Noxus</button>
+            <button data-o="zaun">Nácar</button>
+            <button data-o="piltover">Aurelia</button>
+            <button data-o="noxus">Otra región</button>
           </div>
           <nav id="wiki-tabs" class="wiki-tabs"></nav>
         </aside>
