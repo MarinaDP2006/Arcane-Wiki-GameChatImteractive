@@ -7,7 +7,7 @@
 (function () {
   const PROVIDERS = {
     off: { label: 'Desactivada' },
-    ollamaCloud: { label: 'Ollama Cloud (alojada, recomendada)', url: (window.ROLEPLAY_CONFIG?.endpoint || (window.location.protocol === 'file:' || window.location.hostname === 'localhost' && window.location.port === '' ? '' : '/api/roleplay')), model: 'gemma4:31b', key: false, help: 'No necesitas instalar Ollama ni descargar el modelo. Se usa Gemma 4 de 31B alojado en Ollama Cloud. El servidor de este fan game debe publicarse con OLLAMA_API_KEY como secreto; en escritorio o Android indica la URL HTTPS del backend. El uso puede tener límites o costes según Ollama Cloud.' },
+    ollamaCloud: { label: 'IA alojada de Arcane (recomendada, sin instalar nada)', url: window.ROLEPLAY_CONFIG?.endpoint || '/api/roleplay', model: window.ROLEPLAY_CONFIG?.model || 'gemma4:31b', key: false, help: 'No hace falta instalar Ollama ni descargar modelos: el juego habla con un servidor propio que usa Gemma 4 31B en Ollama Cloud. Si el servidor llevaba un rato dormido, la primera respuesta puede tardar hasta un minuto.' },
     ollama: { label: 'Ollama (en tu PC, sin internet)', url: 'http://localhost:11434/v1/chat/completions', model: 'gemma3:4b', key: false, help: 'Instala Ollama desde ollama.com y descarga un modelo en una terminal: «ollama pull gemma3:4b» (rápido, unos 3 GB) o «ollama pull gemma3:12b» (mejor conversación, necesita una tarjeta gráfica con 8 GB o más). Pulsa «Buscar mis modelos» para elegir uno de los que ya tienes. Mientras Ollama esté abierto, los personajes te responden sin internet. Solo en el ordenador.' },
     lmstudio: { label: 'LM Studio (en tu PC o por la red de casa)', url: 'http://localhost:1234/v1/chat/completions', model: '', key: false, help: 'Abre LM Studio, descarga un modelo y en la pestaña Developer enciende «Start server» (puerto 1234). En este ordenador deja la dirección como está. Para jugar desde la tablet o el móvil activa también «Serve on Local Network» y escribe aquí la dirección de tu PC, por ejemplo http://192.168.1.40:1234. Pulsa «Buscar mis modelos» para elegir uno. Los pasos están en GUIA-LM-STUDIO.md.' },
     custom: { label: 'Otro servidor compatible', url: '', model: '', key: true, help: 'Cualquier servidor con el formato de OpenAI (KoboldCpp, text-generation-webui, vLLM…). Escribe la dirección completa de /chat/completions.' },
@@ -136,6 +136,12 @@
   let warmed = '';
   function warm() {
     const c = cfg();
+    // El servidor alojado se duerme si nadie juega: una petición vacía lo despierta.
+    if (c.provider === 'ollamaCloud' && c.url && warmed !== c.url) {
+      warmed = c.url;
+      post(c.url, {}, {}).catch(() => { warmed = ''; });
+      return;
+    }
     if (!LOCAL.has(c.provider) || !c.model || warmed === c.model) return;
     warmed = c.model;
     const call = c.provider === 'ollama'
@@ -154,6 +160,7 @@
     // Los modelos que razonan antes de hablar (gpt-oss) gastan parte de los tokens pensando:
     // se les pide que piensen poco y se les deja más margen.
     if (/gpt-oss/.test(c.model)) { body.reasoning_effort = 'low'; body.max_tokens = Math.max(body.max_tokens, 800); }
+    if (c.provider === 'ollamaCloud' && opts.stop?.length) body.stop = opts.stop.slice(0, 4);
     // LM Studio: el modelo se queda cargado 30 min tras el último mensaje (sin recargas lentas)
     // y se corta si empieza a escribir tu parte.
     if (c.provider === 'lmstudio') {
@@ -272,37 +279,134 @@
     return { text: text || '(Se queda en silencio.)', aff };
   }
 
-  // Turno libre dentro de la historia: el jugador escribe lo que quiere y el personaje
-  // responde en su voz. La opción narrativa se selecciona en segundo plano, nunca se muestra
-  // como menú al jugador, para conservar consecuencias y continuidad de la campaña.
-  async function storyTurn(G, id, userText, choices = []) {
-    const candidates = Array.isArray(choices) ? choices : [];
-    const hiddenBranches = candidates.map((c, i) => `[${i}] ${U.tpl(c.t, G.player)}`).join('\n') || '[0] Sigue la escena sin cambiar de lugar.';
-    const continuity = [
-      'MODO HISTORIA LIBRE: el jugador no ve una lista de opciones.',
-      'Responde a su última frase o acción como el personaje, en primera persona y sin hablar por el protagonista.',
-      'Puedes preguntar algo natural, discrepar, dudar o mostrar una emoción coherente. Mantén la continuidad de temporada 1 y 2.',
-      'Después de la respuesta añade dos marcadores técnicos, cada uno en una línea separada: [[opcion:N]] y [[afinidad:0]], sustituyendo N por el índice de la acción narrativa interna que encaje mejor con la intención del jugador, empezando desde 0, y afinidad por -1, 0 o +1.',
-      'Los marcadores nunca se explican ni se mencionan en el diálogo. No reveles las acciones internas ni conviertas la respuesta en un menú. Si la frase del jugador no coincide exactamente con una acción, interpreta su intención y elige la más razonable.',
-      `ACCIONES NARRATIVAS INTERNAS (solo para escoger el marcador):\n${hiddenBranches}`,
-      `Último mensaje del jugador: ${String(userText || '').slice(0, 1500)}`
-    ].join('\n');
+  // ---------- Director de escena: la historia sin opciones ----------
+  // El jugador escribe lo que dice o hace. La IA interpreta a quienes están en la escena
+  // (pueden contestar, preguntar o actuar entre ellos) y decide en secreto si la escena
+  // sigue o si la intención del jugador encaja ya con uno de los caminos del canon, que
+  // es lo que mantiene la partida dentro de la temporada 1 y 2.
+  const nameOf = (id) => window.WIKI.personajes.find((x) => x.id === id)?.name || id;
+
+  function castBrief(G, id) {
+    const info = Relations.info(id);
+    const v = window.AI_VOICES?.[id] || {};
+    const lore = window.ARCANE_LORE?.[id] || {};
+    const aff = G.aff[id] ?? 0;
+    return [
+      `■ ${nameOf(id)} (id: ${id}) · afinidad con el protagonista ${aff}/10${Relations.status(G, id) ? ` · ${U.tpl(Relations.label(G, id), G.player)}` : ''}`,
+      info?.persona ? `  Quién es: ${info.persona}` : '',
+      v.habla ? `  Cómo habla: ${v.habla}` : '',
+      v.contigo ? `  Cómo trata al protagonista: ${v.contigo}` : '',
+      lore.motivaciones ? `  Motivos y miedos: ${lore.motivaciones}` : '',
+      v.nunca ? `  Nunca: ${v.nunca}` : '',
+    ].filter(Boolean).join('\n');
+  }
+
+  function playerBrief(G) {
+    const p = G.player;
+    const C = window.CREATION;
+    return [
+      `${p.name}, ${C.genders.find((g) => g.id === p.gender)?.label.toLowerCase() || ''}, ${p.age} años`,
+      `de ${C.origins[p.origin]?.label} (${p.district})`,
+      U.tpl(p.jobLabel || '', p),
+      p.familyLabel && p.family !== 'ninguna' ? U.tpl(p.familyLabel, p) : '',
+      p.hobbyLabels?.length ? `aficiones: ${p.hobbyLabels.join(', ')}` : '',
+      p.bio ? `biografía: ${p.bio}` : '',
+    ].filter(Boolean).join('; ');
+  }
+
+  // scene: { chapter, intro, cast: [ids], beat: [líneas del canon], paths: [{ t }], turn, mustMove }
+  async function direct(G, scene, userText) {
+    const p = G.player;
+    const name = (s) => (s === 'yo' ? p.name : s === 'narrador' || s === 'sistema' ? 'Narración' : nameOf(s));
+    const log = (G.log || []).filter((m) => m.s !== 'sistema').slice(-24)
+      .map((m) => `${name(m.s)}: ${String(m.t).slice(0, 320)}`).join('\n');
+    const part = G.progress.season === 2 ? 2 : 1;
+    const gone = (G.fallen || []).map(nameOf);
+    const saved = Object.entries(window.STORY?.rescues || {}).filter(([, f]) => G.flags?.[f]).map(([id]) => nameOf(id));
+    const paths = scene.paths.map((c, i) => `[${i + 1}] ${U.tpl(c.t, p)}`).join('\n');
+    const sys = [
+      `Eres el director de escena de un juego de rol de fans de Arcane (Piltover y Zaun). Escribes en ${LANG[window.I18N?.lang] || LANG.es}.`,
+      `CANON: todo debe ser coherente con la temporada 1 y la temporada 2 de Arcane: personalidades, cronología, quién conoce a quién, tecnología (hextec, brillo/shimmer), lugares y tono. Nada de temporadas, juegos o lore de League of Legends que contradigan la serie. El protagonista es original y puede cambiar cosas solo mediante lo que ocurre en esta partida.`,
+      `Estamos en la parte ${part} (${part === 1 ? 'El inicio' : 'Las consecuencias'}), ${scene.chapter}. ${scene.intro || ''}`,
+      gone.length ? `Ya no están (no pueden hablar): ${gone.join(', ')}.` : '',
+      saved.length ? `Siguen vivos gracias al protagonista: ${saved.join(', ')}.` : '',
+      `PROTAGONISTA (lo controla el jugador): ${playerBrief(G)}.`,
+      `PERSONAJES EN ESCENA:\n${scene.cast.map((id) => castBrief(G, id)).join('\n') || '(nadie del reparto; usa solo la narración y figurantes descritos por el narrador)'}`,
+      `LO QUE ACABA DE PASAR EN EL CANON DE ESTA ESCENA:\n${scene.beat.join('\n')}`,
+      `CAMINOS POSIBLES (secretos, nunca los enseñes ni los conviertas en menú):\n${paths || '(ninguno: la escena sigue)'}`,
+      `CÓMO RESPONDER:
+- El jugador escribe lo que su personaje dice o hace, con total libertad. Reacciona a eso de verdad: los personajes contestan, preguntan, discuten, mienten por sus motivos, se callan o actúan.
+- Nunca escribas palabras, pensamientos ni decisiones de ${p.name}. Si el jugador intenta algo imposible o fuera del lore, la escena reacciona con naturalidad (alguien le frena, no funciona…) sin romper la cuarta pared.
+- Cada personaje solo sabe lo que ha presenciado. No adelantes muertes, identidades ocultas ni giros futuros.
+- Formato: de 1 a 4 líneas, cada una empieza por el id del hablante y dos puntos. Usa «narrador:» para acciones y ambiente (breve, en segunda persona). Ejemplo:
+narrador: Vi aprieta los puños.
+vi: ¿Y tú quién demonios eres?
+- Solo pueden hablar los personajes en escena o el narrador. Frases cortas y vivas, sin sermones ni tono de asistente. Romance no explícito, sin violencia gráfica.
+- Al final, en líneas aparte:
+[[camino:N]] si lo que ha hecho o dicho el jugador ya lleva claramente a uno de los caminos (N es su número), o [[camino:0]] si la escena sigue y hay que esperar al siguiente mensaje.${scene.mustMove ? `\n  La escena ya ha durado bastante: esta vez elige OBLIGATORIAMENTE el camino que mejor encaje (no uses 0) y haz que tu respuesta lleve a él.` : ''}
+[[afinidad:id:+1]] o [[afinidad:id:-1]] por cada personaje al que el jugador haya agradado o molestado de verdad (omítelo si no cambia nada).`,
+    ].filter(Boolean).join('\n\n');
     const messages = [
-      { role: 'system', content: systemPrompt(G, id) + '\n\n' + continuity },
-      ...history(G, id),
-      { role: 'user', content: 'Continúa la escena con una respuesta natural en personaje. Devuelve solo la respuesta y los dos marcadores técnicos requeridos.' }
+      { role: 'system', content: sys },
+      { role: 'user', content: `Historial reciente:\n${log}\n\nTurno ${scene.turn + 1} de esta escena. ${p.name} (el jugador) escribe:\n«${String(userText).slice(0, 800)}»` },
     ];
-    const raw = await complete(messages, { max: 480, temperature: 0.82 });
-    const am = raw.match(/\[\[\s*afinidad\s*:\s*([+-]?\d)\s*\]\]/i);
-    const aff = am ? Math.max(-1, Math.min(1, Number(am[1]))) : 0;
-    const cm = raw.match(/\[\[\s*opcion\s*:\s*(\d+)\s*\]\]/i);
-    const choiceIndex = cm ? Number(cm[1]) : 0;
-    const text = raw
-      .replace(/\[\[\s*afinidad\s*:\s*[+-]?\d\s*\]\]/gi, '')
-      .replace(/\[\[\s*opcion\s*:\s*\d+\s*\]\]/gi, '')
-      .replace(/^\s*(Respuesta|Diálogo|Escena)\s*:\s*/i, '')
-      .trim();
-    return { text: text || '(Se queda un momento en silencio antes de responder.)', aff, choiceIndex };
+    const raw = await complete(messages, { max: 420, temperature: 0.85, stop: [`\n${p.name}:`, '\nyo:'] });
+    return parseDirection(raw, scene, p);
+  }
+
+  // Al cambiar de escena después de un turno libre, el guion escrito se adapta a lo que el
+  // jugador ha dicho de verdad: mismos hechos y mismo desenlace del canon, pero con diálogos
+  // que reaccionan a sus palabras y sin poner frases en su boca.
+  async function adapt(G, scene) {
+    const p = G.player;
+    const name = (s) => (s === 'yo' ? p.name : s === 'narrador' || s === 'sistema' ? 'Narración' : nameOf(s));
+    const log = (G.log || []).filter((m) => m.s !== 'sistema').slice(-14)
+      .map((m) => `${name(m.s)}: ${String(m.t).slice(0, 300)}`).join('\n');
+    const sys = [
+      `Eres el guionista de un juego de rol de fans de Arcane. Escribes en ${LANG[window.I18N?.lang] || LANG.es}. Todo debe respetar la temporada 1 y 2 de Arcane.`,
+      `Estamos en ${scene.chapter}. El protagonista es ${playerBrief(G)}; lo controla el jugador.`,
+      `PERSONAJES EN ESCENA:\n${scene.cast.map((id) => castBrief(G, id)).join('\n') || '(solo narración)'}`,
+      `GUION ORIGINAL DE LA ESCENA QUE EMPIEZA AHORA:\n${scene.beat.join('\n')}`,
+      `TAREA: reescribe esta escena para que encaje con lo que el jugador acaba de decir y hacer (está en el historial). Conserva los mismos hechos, lugares, personajes, información importante y el mismo final de la escena; cambia solo las palabras para que los personajes reaccionen a lo que ha dicho el jugador.
+- Nunca escribas frases, pensamientos ni decisiones de ${p.name}: las líneas del guion original que eran suyas se convierten en reacciones de otros o se quitan.
+- Mismo formato que el guion: una línea por intervención, empezando por el id del hablante y dos puntos («narrador:» para acciones). Entre 2 y ${Math.max(3, Math.min(8, scene.beat.length))} líneas.
+- Solo hablan los personajes en escena o el narrador. Nada de comentarios fuera del guion.`,
+    ].join('\n\n');
+    const raw = await complete([{ role: 'system', content: sys }, { role: 'user', content: `Historial reciente:\n${log}\n\nEscribe la escena adaptada.` }],
+      { max: 520, temperature: 0.75, stop: [`\n${p.name}:`, '\nyo:'] });
+    return parseDirection(raw, { cast: scene.cast, paths: [] }, p).lines;
+  }
+
+  function parseDirection(raw, scene, p) {
+    const allowed = new Set([...scene.cast, 'narrador']);
+    const byName = new Map(scene.cast.map((id) => [nameOf(id).toLowerCase(), id]));
+    scene.cast.forEach((id) => byName.set(nameOf(id).split(' ')[0].toLowerCase(), id));
+    const cm = raw.match(/\[\[\s*camino\s*:\s*(\d+)\s*\]\]/i);
+    let path = cm ? Number(cm[1]) - 1 : -1;
+    if (path >= scene.paths.length) path = -1;
+    const aff = {};
+    for (const m of raw.matchAll(/\[\[\s*afinidad\s*:\s*([a-z]+)\s*:\s*([+-]?\d)\s*\]\]/gi)) {
+      const id = m[1].toLowerCase();
+      if (scene.cast.includes(id)) aff[id] = Math.max(-1, Math.min(1, Number(m[2])));
+    }
+    const lines = [];
+    for (let row of raw.replace(/\[\[[^\]]*\]\]/g, '').split('\n')) {
+      row = row.replace(/^[\s*_-]+/, '').replace(/\*\*/g, '').trim();
+      if (!row) continue;
+      const m = row.match(/^([A-Za-zÁÉÍÓÚáéíóúñÑ' ]{2,24}):\s*(.+)$/);
+      let s = 'narrador';
+      let t = row;
+      if (m) {
+        const k = m[1].trim().toLowerCase();
+        const id = allowed.has(k) ? k : byName.get(k) || (/narra/.test(k) ? 'narrador' : null);
+        // Si la IA escribe por el protagonista, se descarta esa línea.
+        if (k === p.name.toLowerCase() || k === 'yo') continue;
+        if (id) { s = id; t = m[2]; }
+      }
+      lines.push({ s, t: t.trim() });
+    }
+    if (!lines.length) lines.push({ s: 'narrador', t: 'Un silencio tenso llena la escena.' });
+    return { lines: lines.slice(0, 6), path, aff };
   }
 
   // Prueba la conexión y mide cuánto tarda (la primera vez incluye cargar el modelo).
@@ -312,5 +416,5 @@
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 
-  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, storyTurn, test, warm, models, ollamaModels, lmstudioModels };
+  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, direct, adapt, test, warm, models, ollamaModels, lmstudioModels };
 })();

@@ -1,8 +1,8 @@
 {
-  "name": "rifts-gears-umbral",
-  "productName": "Las ciudades del Umbral",
+  "name": "grietas-and-gears",
+  "productName": "Rifts & Gears",
   "version": "1.27.0",
-  "description": "Aventura narrativa original de fantasía industrial, Resonancia y dos ciudades conectadas por una red de ascensores.",
+  "description": "Juego narrativo original de fantasía industrial, dos ciudades y tecnología de Resonancia; historia interactiva y mundo explorable.",
   "main": "main.js",
   "author": "MarinaDP2006",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "android:sync": "node scripts/build-mobile.js && cap sync android",
     "dist:mac": "electron-builder --mac",
     "web": "node scripts/build-web.js",
-    "serve:web": "node server/index.js"
+    "serve:web": "node server/roleplay-server.js"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.3",
@@ -28,8 +28,8 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.marinadp2006.ciudadesdelumbral",
-    "productName": "Las ciudades del Umbral",
+    "appId": "com.marinadp2006.arcanewikigame",
+    "productName": "Rifts & Gears",
     "files": [
       "main.js",
       "modelos.js",
@@ -64,11 +64,11 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Las ciudades del Umbral",
+      "shortcutName": "Rifts & Gears",
       "artifactName": "Rifts-and-Gears-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "Ciudades-del-Umbral-${version}-portable.${ext}"
+      "artifactName": "Rifts-and-Gears-${version}-portable.${ext}"
     },
     "mac": {
       "category": "public.app-category.role-playing-games",
@@ -90,11 +90,10 @@
       ],
       "icon": "build/icon.png",
       "identity": null,
-      "artifactName": "Ciudades-del-Umbral-${version}-mac-${arch}.${ext}"
+      "artifactName": "Rifts-and-Gears-${version}-mac-${arch}.${ext}"
     },
     "dmg": {
       "title": "Rifts & Gears ${version}"
-    },
-    "artifactName": "Ciudades-del-Umbral-Setup-${version}.${ext}"
+    }
   }
 }

@@ -81,7 +81,7 @@
   // Valores de fábrica de todos los ajustes (Ajustes → Datos → Restablecer).
   const SETTINGS_DEFAULTS = {
     volume: 0.6, music: true, musicVolume: 1, sfxVolume: 1, ambience: true, ambienceVolume: 1, muteBackground: true,
-    textSpeed: 'normal', textSize: 'normal', spoilers: false,
+    textSpeed: 'normal', storyMode: 'libre', textSize: 'normal', spoilers: false,
     quality: 'alta', renderScale: 1, shadows: true, postfx: true, paintStyle: true, particles: true, cameraSway: true, models3d: true, staticNpcModels: true, brightness: 1, showFps: false,
     difficulty: 'normal', objectiveArrow: true, minimap: true, names: false, confirmExit: true,
     camSpeed: 1, invertCam: false, vibration: true, shake: 1,
