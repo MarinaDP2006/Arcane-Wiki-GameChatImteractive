@@ -7,6 +7,10 @@ La web pública es una **Static Site** independiente del ejecutable del juego.
 3. Comprueba la URL asignada por Render. GitHub se mantiene como repositorio y fuente de las descargas, no como hosting web.
 4. Cuando el PR esté fusionado, usa la rama `main` para el despliegue definitivo.
 
+## Capturas históricas de todas las versiones
+
+Sube tus imágenes reales a **`/capturasjuego/`** en la raíz del repositorio, siguiendo [su guía](capturasjuego/README.md). Se copiarán automáticamente a Render y aparecerán en la galería. No se inventarán capturas de versiones antiguas.
+
 ## Capturas oficiales
 
 Añade archivos reales en `web/capturas/` con estos nombres y extensiones `.webp`, `.png`, `.jpg` o `.jpeg`:

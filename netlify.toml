@@ -1,6 +1,0 @@
-[build]
-  command = "npm run web"
-  publish = "web-dist"
-
-[build.environment]
-  NODE_ENV = "production"

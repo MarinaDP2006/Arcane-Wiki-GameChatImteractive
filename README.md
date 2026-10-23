@@ -1,7 +1,11 @@
 # Grietas & Gears
 Juego narrativo de fans ambientado en Piltover y Zaun e inspirado en la estética de *Arcane*. Crea tu personaje, explora sus distritos, habla con el reparto y toma decisiones que cambian tus relaciones y los finales.
 
-**Web promocional:** https://arcfangame.netlify.app/
+**Web promocional:** https://grietas-and-gears-5saz.onrender.com/
+
+**Web oficial (Render):** https://grietas-and-gears-5saz.onrender.com/ · [Guía de despliegue](GUIA-WEB-RENDER.md) · [Capturas históricas](capturasjuego/README.md).
+
+La web estática se genera con `node scripts/build-web.js` y se publica desde `web-dist` en Render; las descargas del juego se distribuyen por GitHub Releases, no por Render.
 
 ## Descargar
 Entra en **[Releases](https://github.com/MarinaDP2006/grietas-and-gears/releases)** y elige:
