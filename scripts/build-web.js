@@ -13,7 +13,7 @@ const out = path.join(root, 'web-dist');
 function loadData() {
   const ctx = { window: {} };
   vm.createContext(ctx);
-  for (const f of ['wiki.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'atlas.js']) {
+  for (const f of ['wiki.js', 'creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'world.js', 'atlas.js', 'arte.js', 'arcane-lore.js', 'ai-voices.js', 'original-world.js']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
   }
   return ctx.window;
@@ -47,7 +47,8 @@ function buildCapturas() {
   // Capturas históricas aportadas por la autora, ordenadas por nombre de archivo.
   // Formato recomendado: 01-inicio.webp, 02-menu.png, etc.
   const historia = path.join(root, 'capturasjuego');
-  if (fs.existsSync(historia)) {
+  // La rama original no copia capturas antiguas de Piltover/Zaun: no son parte de su universo.
+  if (!fs.existsSync(path.join(root, 'src', 'data', 'original-world.js')) && fs.existsSync(historia)) {
     const files = fs.readdirSync(historia).filter(name => /^(?!\.)(?!README\.md$)[a-zA-Z0-9][a-zA-Z0-9._-]*\.(webp|png|jpe?g)$/i.test(name)).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
     for (const file of files) {
       copy(path.join(historia, file), path.join(out, 'capturasjuego', file));
@@ -64,7 +65,7 @@ const DEMO_CAPITULOS = { zaun: ['z1', 'z2'], piltover: ['p1', 'p2'] };
 function loadDemoExtras() {
   const ctx = { window: {} };
   vm.createContext(ctx);
-  for (const f of ['creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'guia.js']) {
+  for (const f of ['wiki.js', 'creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'guia.js', 'world.js', 'atlas.js', 'arte.js', 'arcane-lore.js', 'ai-voices.js', 'original-world.js']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
   }
   return ctx.window;
