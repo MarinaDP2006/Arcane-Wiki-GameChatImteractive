@@ -174,7 +174,7 @@
         status.textContent = 'Buscando…';
         try {
           const list = await window.AI.models();
-          const empty = a.provider === 'lmstudio' ? 'LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).' : 'Ollama no tiene ningún modelo. Abre una terminal y escribe «ollama pull gemma3:4b».';
+          const empty = a.provider === 'lmstudio' ? 'LM Studio no tiene ningún modelo. Busca Qwen3 0.6B GGUF Q4_K_M (archivo de unos 0,4–0,5 GB) y descárgalo desde Discover.' : 'Ollama no tiene ningún modelo. Abre una terminal y escribe «ollama pull gemma3:4b».';
           status.textContent = list.length ? 'Elige uno (los pequeños responden antes).' : empty;
           models.replaceChildren(...list.map((m) => el('button', {
             class: `chip${m.name === (a.model || d.model) ? ' active' : ''}`,
