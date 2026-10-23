@@ -1,72 +1,67 @@
-# Rama de trabajo: modelos 3D, LM Studio y audio
+# Plan de trabajo: 3D, LM Studio y audio
 
-Rama de trabajo original: `feat/arcane-3d-lm-studio`.
+Este documento describe objetivos y criterios de aceptación. **No es una lista de funciones certificadas como terminadas.** Comprueba el código actual y ejecuta pruebas en la plataforma objetivo antes de dar una tarea por completada.
 
-El plan documental y las guías operativas se fusionaron en `main` mediante el PR #65. Este archivo sigue siendo una especificación de trabajo, no una confirmación de que todos los objetivos de implementación estén terminados.
+## Estado conocido
 
-## Estado y alcance
+- **Motor 3D:** el proyecto ya utiliza Three.js y contiene módulos de mundo y avatares. Esto no significa que existan modelos originales completos para cada personaje o que todas las zonas tengan escenarios 3D finales.
+- **Chat con IA:** el proyecto incluye un chat opcional. El proveedor, el modelo y la conectividad se configuran aparte; LM Studio debe verificarse en el código y en una prueba real antes de anunciar compatibilidad para una versión concreta.
+- **Audio:** `src/js/audio.js` genera música procedural con Web Audio. Los temas actuales son `wiki` (menú), `piltover` y `zaun`. No se han confirmado tres archivos renderizados independientes integrados.
+- **Arte:** los conceptos visuales sirven como referencia de producción, no como modelos 3D listos para integrar.
 
-Este repositorio ya contiene renderizado 3D con Three.js, módulos de mundo, avatares y chat con IA. Los cambios de esta rama deben extender esa arquitectura y preservar la compatibilidad de partidas guardadas.
+## Objetivos
 
-### Objetivos
+1. Preguntar durante el inicio si la persona conoce el universo. Si no lo conoce, mostrar una introducción breve y sin spoilers; si lo conoce, permitir continuar al creador de personaje.
+2. Mejorar navegación, contraste, tamaños táctiles, controles de teclado y diseño adaptable a escritorio, móvil y tableta.
+3. Crear escenarios originales con identidad visual diferenciada para la ciudad alta y la ciudad subterránea. No usar fotogramas, capturas ni imágenes oficiales como texturas.
+4. Mantener conversaciones abiertas con personajes, pero reservar al código del juego la validación de misiones, inventario, decisiones y finales.
+5. Permitir conectar opcionalmente un servidor local compatible con la API de OpenAI, como LM Studio, solo si la integración está implementada y probada.
+6. Diseñar tres pistas instrumentales originales para menú, Zaun y Piltover. No copiar melodías, stems ni grabaciones de la banda sonora de *Arcane*.
 
-- Mantener el juego accesible a quienes conocen el universo y a quienes llegan por primera vez.
-- En el onboarding, preguntar si el jugador conoce el mundo. Si responde que no, mostrar una introducción breve y sin spoilers; si responde que sí, pasar directamente al creador de personaje.
-- Mejorar navegación, contraste, tamaños táctiles, teclado y diseño adaptable para escritorio, móvil y tableta.
-- Añadir escenarios originales de inspiración steampunk-fantástica para una ciudad alta luminosa y una ciudad subterránea industrial. No usar fotogramas, capturas ni imágenes oficiales como texturas.
-- Permitir diálogo libre con personajes, memoria acotada por partida y continuidad narrativa, dejando que el código del juego valide misiones, inventario y eventos.
-- Conectar opcionalmente LM Studio a través de su API compatible con OpenAI en `http://127.0.0.1:1234/v1` por defecto.
-- Añadir tres pistas originales: menú principal, ciudad subterránea y ciudad alta.
+## Reglas de seguridad y calidad para LM Studio
 
-## Reglas de integración con LM Studio
-
-1. La IA es opcional; si no hay servidor o modelo disponible, el juego sigue funcionando con sus diálogos locales.
-2. Configurar base URL y nombre del modelo en Ajustes. No guardar tokens, secretos ni datos privados en Git.
-3. Usar `/chat/completions` con `messages`, temperatura moderada y límite de tokens.
-4. Incluir solo contexto relevante: identidad del personaje, ubicación, hechos recientes y resumen de memoria.
-5. No enviar una partida completa en cada petición. Limitar y resumir el historial.
-6. Tratar la respuesta del modelo como texto no confiable. Nunca ejecutar HTML, JS ni acciones del juego que vengan del modelo.
-7. Aplicar un timeout, un indicador de carga, cancelación cuando sea posible y mensajes de error útiles.
-8. En un navegador, el servidor local debe permitir conexiones desde el origen del juego; no desactivar protecciones del navegador de forma global. En móvil, `localhost` apunta al dispositivo móvil, no al PC. Documentar la dirección LAN y los riesgos; no exponer el servidor a Internet sin autenticación y controles.
-9. La lógica de progreso, inventario, misiones y finales pertenece al juego, no al LLM.
+- La IA debe ser opcional; si el servidor no está disponible, el juego debe seguir funcionando con diálogos escritos.
+- No guardar tokens, contraseñas ni secretos en Git.
+- Enviar solo contexto relevante y limitar el historial enviado al modelo.
+- Tratar la respuesta del modelo como texto no confiable. No ejecutar HTML, JavaScript ni acciones del juego generadas por el modelo.
+- Usar timeout, estado de carga y errores comprensibles.
+- En móvil, `localhost` apunta al móvil, no al PC. Para conectarse al PC se necesita una dirección de red local y configuración segura.
+- No abrir el puerto del servidor al Internet público. En una red local, otros dispositivos autorizados podrían alcanzar el servicio según la configuración del equipo y del cortafuegos.
+- La lógica de progreso, inventario, misiones y finales pertenece al juego, no al modelo de lenguaje.
 
 ## Modelos y escenarios 3D
 
-- Priorizar GLB/GLTF con materiales PBR y mallas optimizadas.
-- Mantener modelos originales, con licencia documentada y atribución si procede.
-- Proporcionar LOD, texturas comprimidas, límites de tamaño y fallback 2D para móviles modestos.
-- Los conceptos visuales generados son referencias de producción, no modelos 3D listos para usar.
-- Para Blender, exportar a GLB y comprobar escala, orientación, texturas, esqueletos y licencias antes de integrar.
-- Separar entorno, iluminación, efectos y personajes para facilitar optimización.
+- Priorizar GLB/GLTF, materiales PBR y mallas optimizadas.
+- Documentar procedencia, permisos y atribución de cada recurso.
+- Considerar LOD, compresión de texturas, límites de tamaño y un modo alternativo para móviles modestos.
+- Exportar desde Blender a GLB y comprobar escala, orientación, materiales, texturas, esqueleto y licencia.
+- Separar geometría, iluminación, efectos y personajes para facilitar la optimización.
 
 ## Música
 
-Tres pistas instrumentales originales, con loop limpio:
-- `menu-theme.ogg`: piano, cuerdas y síntesis hextech; misterio y descubrimiento.
-- `zaun-theme.ogg`: trip-hop industrial, percusión metálica, bajos y niebla sonora.
-- `piltover-theme.ogg`: cuerdas, piano, metales suaves y arpegios luminosos.
+Dirección artística propuesta:
 
-No copiar melodías, temas, stems ni grabaciones de la banda sonora de Arcane. Guardar solo archivos finales con licencia de uso comercial/juego comprobada. Comprimir en OGG/Opus y aplicar fundidos/loop points. La generación musical se hará en un servicio que el usuario tenga autorizado; Suno no queda habilitado automáticamente por este documento.
+- **Menú:** piano, cuerdas y síntesis de aire hextech; misterio y descubrimiento.
+- **Zaun:** percusión industrial, bajos y texturas oscuras.
+- **Piltover:** cuerdas, piano y arpegios luminosos.
 
-## Pruebas de aceptación
+Antes de integrar archivos, confirmar que la composición es original y que su licencia permite el uso previsto. Exportar OGG/Opus con un loop limpio y probar volumen, silencio, cambio de zona y consumo de memoria. Suno u otro servicio no se considera habilitado por el mero hecho de documentarlo; debe usarse una cuenta con acceso y revisar sus condiciones.
 
-- El flujo de bienvenida tiene ramas correctas para persona nueva y fan.
-- Se puede completar la creación de personaje con teclado y táctil.
-- La web funciona a 360 px de ancho, tablet y escritorio sin scroll horizontal accidental.
-- Piltover y Zaun son distinguibles por geometría, materiales, composición y luz, no solo por tintado.
-- El juego sigue funcionando si LM Studio está apagado, tarda o devuelve error.
-- El chat libre no altera directamente estado crítico sin validación del juego.
-- Las tres pistas pueden activarse, pausarse y cambiar según la ubicación; se respetan las preferencias de volumen y silencio.
-- Las partidas antiguas cargan sin migraciones destructivas.
-- Ejecutar las pruebas existentes y registrar cualquier prueba manual que requiera Windows, Android o GPU real.
+## Criterios de aceptación
 
-## Referencias de producción
+- El onboarding ofrece una ruta para personas nuevas y otra para fans.
+- El creador de personaje funciona con teclado y controles táctiles.
+- Las vistas principales se adaptan a móvil, tableta y escritorio sin desplazamiento horizontal accidental.
+- Las ciudades se distinguen por geometría, materiales, composición y luz, no solo por el color.
+- El juego sigue funcionando si el servidor de IA está apagado, tarda o devuelve un error.
+- El chat no puede modificar directamente estado crítico sin validación del motor.
+- Los temas de audio respetan volumen, silencio y cambios de ubicación.
+- Las partidas antiguas se cargan sin migraciones destructivas.
+- Se ejecutan las pruebas automatizadas y se documentan las pruebas manuales en Windows, Android y dispositivos reales cuando proceda.
 
-- LM Studio server: https://lmstudio.ai/docs/developer/core/server
-- LM Studio API: https://lmstudio.ai/docs/developer/openai
-- Blender glTF export: https://docs.blender.org/manual/en/latest/addons/import_export/scene_gltf2.html
-- Three.js: https://threejs.org/docs/
+## Referencias
 
-## Importante
-
-Este documento es el plan de implementación de la rama, no una afirmación de que todas las funciones o los assets ya estén terminados. No fusionar sin revisión, pruebas de juego y verificación de licencias.
+- [Documentación del servidor de LM Studio](https://lmstudio.ai/docs/developer/core/server)
+- [API compatible con OpenAI de LM Studio](https://lmstudio.ai/docs/developer/openai)
+- [Exportación glTF de Blender](https://docs.blender.org/manual/en/latest/addons/import_export/scene_gltf2.html)
+- [Documentación de Three.js](https://threejs.org/docs/)
