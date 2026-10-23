@@ -3,151 +3,140 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rifts &amp; Gears</title>
-  <meta name="description" content="Rifts & Gears: juego narrativo de fans ambientado en Piltover y Zaun. Gratis para Windows, Mac y Android.">
-  <meta property="og:title" content="Rifts & Gears">
-  <meta property="og:description" content="Fangame gratuito en desarrollo. Información del juego, capturas reales y descargas disponibles.">
-  <meta property="og:image" content="arte-propio/portada.jpg">
+  <meta name="theme-color" content="#0b0d14">
+  <meta name="description" content="Rifts &amp; Gears: fangame de rol libre ambientado en Arcane. Crea tu personaje en Piltover o Zaun y habla con sus personajes sin opciones fijas, fiel al canon de las temporadas 1 y 2.">
+  <meta property="og:title" content="Rifts &amp; Gears · Fangame de Arcane">
+  <meta property="og:description" content="Dos ciudades, un puente y tu propia historia entre Piltover y Zaun.">
+  <title>Rifts &amp; Gears · Fangame de Arcane</title>
   <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <header class="barra">
-    <a class="marca" href="#inicio" data-tab="inicio"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a>
-    <nav aria-label="Navegación principal">
-      <a href="#inicio" data-tab="inicio" class="nav-activo">Inicio</a>
-      <a href="#juego" data-tab="juego">El juego</a>
-      <a href="#novedades" data-tab="novedades">Novedades</a>
-      <a href="#fichas" data-tab="fichas">Personajes</a>
-      <a href="#desarrollando" data-tab="desarrollando">Desarrollo</a>
-      <a href="#capturas" data-tab="capturas">Capturas</a>
-      <a href="#descargar" data-tab="descargar">Descargas</a>
-      <a class="boton boton-sm boton-demo-nav" href="demo.html" target="_blank" rel="noopener">✦ Probar demo</a>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <a class="logo" href="#inicio" aria-label="Rifts and Gears, inicio">
+      <span class="logo-sello" aria-hidden="true">R&amp;G</span>
+      <span class="logo-texto"><strong>Rifts &amp; Gears</strong><small>Fangame de Arcane</small></span>
+    </a>
+    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <nav id="menu" class="menu" aria-label="Navegación principal">
+      <a href="#nuevo">¿Nuevo en Arcane?</a>
+      <a href="#ciudades">Ciudades</a>
+      <a href="#personajes">Personajes</a>
+      <a href="#como-se-juega">Cómo se juega</a>
+      <a class="btn btn-primario btn-sm" href="demo.html">Jugar la demo</a>
     </nav>
   </header>
 
-  <main>
-    <section id="inicio" class="portada">
-      <div class="mitad mitad-piltover" aria-hidden="true"></div>
-      <div class="mitad mitad-zaun" aria-hidden="true"></div>
+  <main id="contenido">
+    <section class="portada" id="inicio">
+      <div class="portada-fondo" aria-hidden="true"><span class="lado-piltover"></span><span class="lado-zaun"></span></div>
       <div class="portada-texto">
-        
-        <h1>Rifts <span>&amp;</span> Gears</h1>
-        <p class="lema">Dos ciudades, incontables decisiones. Descubre cómo un pequeño proyecto narrativo se convirtió en un mundo de historias, mapas, personajes y posibilidades.</p>
-        <div class="acciones"><a class="boton" href="#descargar">Ver descargas</a><a class="boton boton-sec" href="#novedades">Descubrir novedades</a></div>
-        
+        <p class="kicker">Fangame gratuito · rol libre · canon de las temporadas 1 y 2</p>
+        <h1>Arriba, el progreso. Abajo, la supervivencia. <em>En medio, tú.</em></h1>
+        <p class="entradilla">Crea tu personaje en Piltover o en Zaun y entra en la historia de Arcane. No hay respuestas prefabricadas: escribes lo que dices o haces, y Jinx, Silco, Jayce, Caitlyn y compañía te contestan como lo harían ellos.</p>
+        <div class="acciones">
+          <a class="btn btn-primario" href="demo.html">Probar la demo</a>
+          <a class="btn btn-borde" href="#nuevo">No conozco Arcane</a>
+        </div>
+        <dl class="cifras">
+          <div><dt>Ciudades</dt><dd>2</dd></div>
+          <div><dt>Personajes</dt><dd>{{PERSONAJES}}</dd></div>
+          <div><dt>Temporadas</dt><dd>1 y 2</dd></div>
+          <div><dt>Opciones fijas</dt><dd>0</dd></div>
+        </dl>
       </div>
     </section>
 
-    <section class="seccion estado-desarrollo" aria-label="Estado del proyecto"><p class="antetitulo">Proyecto independiente de fans</p><h2>Un videojuego en desarrollo</h2><p class="intro">Rifts &amp; Gears es un proyecto gratuito y no oficial. Puedes consultar las compilaciones publicadas y seguir su evolución.</p></section>
-
-    <section id="juego" class="seccion"><p class="antetitulo">Sobre el proyecto</p><h2>El juego</h2><div class="rejilla"><article class="carta"><h3>Aventura narrativa</h3><p>Un videojuego de fans ambientado en un universo inspirado por Piltover y Zaun, con decisiones, exploración y sistemas que siguen evolucionando.</p></article><article class="carta"><h3>Desarrollo activo</h3><p>El proyecto todavía está en construcción. Las capturas muestran pantallas reales del desarrollo y pueden cambiar en versiones posteriores.</p></article><article class="carta"><h3>Acceso gratuito</h3><p>Consulta las compilaciones disponibles para ordenador y Android. No necesitas registrarte en esta web para acceder a la información ni a las descargas públicas.</p></article></div><h2 style="margin-top:3rem">Próximas etapas de desarrollo</h2><div class="rejilla"><article class="carta"><h3>IA local opcional</h3><p>El código incluye conectores para Ollama y LM Studio. Su funcionamiento depende de la configuración y del modelo local disponible.</p></article><article class="carta"><h3>Personajes en 3D</h3><p>Creación e integración futura de modelos tridimensionales y sus animaciones dentro del juego.</p></article><article class="carta"><h3>Ciudades y escenarios 3D</h3><p>Planificación de entornos exteriores tridimensionales, ubicaciones y recorridos de las ciudades. No es todavía un mundo 3D completo jugable.</p></article></div></section>
-
-    <section id="novedades" class="seccion" aria-labelledby="titulo-novedades">
-      <p class="antetitulo">Evolución del juego</p>
-      <h2 id="titulo-novedades">Novedades de octubre de 2026</h2>
-      
-      <div class="rejilla">
-        <article class="carta"><h3>Mapa interactivo</h3><p>Explora el mapa ilustrado de Piltover y Zaun, selecciona lugares y consulta sus actividades.</p></article>
-        <article class="carta"><h3>Controles táctiles</h3><p>Botones de dirección e interacción para las escenas 2D y mejoras de pulsación en los minijuegos de móvil y tablet.</p></article>
-        <article class="carta"><h3>Conversaciones ramificadas</h3><p>Nuevos hilos de diálogo con los 16 personajes del comunicador.</p></article>
-        <article class="carta"><h3>Minijuegos con profundidad</h3><p>Efectos de paralaje, arte de los lugares y tres actividades adicionales.</p></article>
-        <article class="carta"><h3>Partidas portátiles</h3><p>Exporta e importa partidas entre ordenador y tablet desde el menú de partidas.</p></article>
-        <article class="carta"><h3>Mejor rendimiento</h3><p>Menos redibujados innecesarios y ajustes de resolución para reducir la carga gráfica.</p></article>
+    <section class="seccion nuevo" id="nuevo" aria-labelledby="t-nuevo">
+      <header class="seccion-cabeza">
+        <p class="kicker">01 · Si nunca has visto Arcane</p>
+        <h2 id="t-nuevo">Lo justo para no perderte.</h2>
+        <p>El juego te pregunta al empezar si conoces la serie. Si dices que no, te da esta introducción. Si dices que sí, pasas directo a crear tu personaje.</p>
+      </header>
+      <div class="claves">
+        <article><span>La ciudad de arriba</span><h3>Piltover</h3><p>La Ciudad del Progreso. Inventores, academias y un Consejo de familias poderosas que decide por todos.</p></article>
+        <article><span>La ciudad de abajo</span><h3>Zaun</h3><p>Aire químico, neón y bandas. Quien manda aquí es Silco, gracias a una droga llamada brillo.</p></article>
+        <article><span>Lo que las separa</span><h3>Un robo que salió mal</h3><p>Hace siete años, dos hermanas de Zaun, Vi y Powder, se perdieron la una a la otra. Powder ahora se llama Jinx.</p></article>
+        <article><span>Lo que lo cambia todo</span><h3>El hextec</h3><p>Jayce y Viktor han unido magia y tecnología. Piltover lo llama progreso. Zaun se pregunta quién pagará el precio.</p></article>
       </div>
-      
     </section>
 
-
-    <section id="fichas" class="seccion demo" aria-labelledby="fichas-titulo"><p class="antetitulo">Archivo de personajes · Ejemplo original</p><h2 id="fichas-titulo">Ficha de personaje</h2><p class="intro">Así es la ficha dentro del juego. Kael y Lyra son personajes originales de ejemplo, creados con el mismo creador y el mismo retrato pintado que usa el juego.</p>
-      <div class="ficha-selector" role="group" aria-label="Seleccionar personaje"><button type="button" class="activo" data-personaje="kael" aria-pressed="true">Kael · Piltover</button><button type="button" data-personaje="lyra" aria-pressed="false">Lyra · Zaun</button></div>
-      <article class="fj" id="ficha-juego" aria-live="polite">
-        <span class="fj-esquina fj-si" aria-hidden="true"></span><span class="fj-esquina fj-sd" aria-hidden="true"></span><span class="fj-esquina fj-ii" aria-hidden="true"></span><span class="fj-esquina fj-id" aria-hidden="true"></span>
-        <header class="fj-cabeza"><img id="fj-retrato" class="fj-retrato" src="arte-propio/ficha-kael.jpg" alt="Retrato pintado de Kael" width="160" height="160"><div><small>Ficha de personaje</small><h3 id="fj-nombre">Kael</h3><span id="fj-ciudad" class="fj-chip fj-chip-piltover">Piltover</span></div></header>
-        <dl class="fj-lista" id="fj-lista"></dl>
-        <h4>Estadísticas</h4><div class="fj-barras" id="fj-stats"></div>
-        <h4>Reputación</h4><div class="fj-barras" id="fj-rep"></div>
-        <h4>Relaciones</h4><div class="fj-rels" id="fj-rels"></div>
-        <h4>Progreso</h4><p id="fj-progreso"></p>
-      </article></section>
-    <section id="desarrollando" class="seccion viaje" aria-labelledby="titulo-viaje">
-      <div class="viaje-cabecera">
-        <div><p class="antetitulo">Diario de creación</p><h2 id="titulo-viaje">Desarrollando R&amp;G</h2></div>
-
-      </div>
-      <div class="linea-tiempo">
-        <article class="hito"><div class="hito-contenido"><h3>El primer latido</h3><p>Nace la aplicación de escritorio: menú, historia, partidas y primeras conversaciones. La aventura deja de ser solo una idea.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Las historias toman caminos</h3><p>La temporada 2, el chat local con Ollama y las opciones de diálogo dan forma a una aventura con decisiones y un Atlas de las Dos Ciudades.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Un universo con rostro</h3><p>Llegan los retratos, el creador de personajes, un menú cinematográfico y los primeros experimentos de mapas 2D y 3D.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Más plataformas, más decisiones</h3><p>Se incorpora Android, la selección de idiomas, las relaciones entre personajes y una experiencia que puede funcionar sin conexión para las funciones locales.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Las ciudades se pueden recorrer</h3><p>Se amplía la historia, llegan ambientes musicales propios, escenas ilustradas en 2D y la exportación e importación de partidas entre dispositivos.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Un mundo que responde</h3><p>El mapa 2D interactivo, los diálogos de 16 personajes, nuevos minijuegos, los controles táctiles y las optimizaciones acercan el proyecto a una experiencia jugable más completa.</p></div></article>
-        <article class="hito hito-futuro"><div class="hito-contenido"><h3>Rifts &amp; Gears mira al futuro</h3><p>La web oficial, el nuevo nombre y el plan de personajes 3D marcan la siguiente etapa. Los modelos definitivos y el mundo 3D completo aún no están terminados.</p></div></article>
-      </div>
-      
-    </section>
-
-    <section id="capturas" class="seccion"><p class="antetitulo">Un vistazo al juego</p><h2>Capturas del juego</h2><div class="galeria">{{CAPTURAS}}</div></section>
-
-    <section id="descargar" class="seccion">
-      <h2>Descargar</h2>
-      
-      <div class="rejilla descargas">
-        <article class="carta descarga" data-plataforma="windows">
-          <h3>Windows</h3>
-          <p>Instalador con acceso directo, o versión portable sin instalar.</p>
-          <a class="boton" data-archivo="Setup" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Instalador .exe</a>
-          <a class="enlace" data-archivo="portable" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Portable .exe</a>
-          <p class="nota">Descarga solo archivos de la página oficial de GitHub y comprueba el editor antes de abrir un ejecutable.</p>
+    <section class="seccion" id="ciudades" aria-labelledby="t-ciudades">
+      <header class="seccion-cabeza">
+        <p class="kicker">02 · Dónde empiezas</p>
+        <h2 id="t-ciudades">Elige de qué lado del puente naces.</h2>
+      </header>
+      <div class="ciudades">
+        <article class="ciudad ciudad-piltover">
+          <div class="ciudad-arte" aria-hidden="true"></div>
+          <div class="ciudad-texto">
+            <p class="etiqueta">Latón, oro y ambición</p>
+            <h3>Piltover</h3>
+            <p>Puedes ser estudiante de la Academia, agente novato, periodista de sociedad o inventor por tu cuenta. Las puertas se abren con apellido o con talento, y lo segundo cuesta más.</p>
+            <ul><li>La Academia</li><li>El Consejo</li><li>Los muelles</li><li>El puente</li></ul>
+          </div>
         </article>
-        <article class="carta descarga" data-plataforma="mac">
-          <h3>Mac</h3>
-          <p>Para Apple Silicon (M1 en adelante) o Intel.</p>
-          <a class="boton" data-archivo="mac-arm64.dmg" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Apple Silicon .dmg</a>
-          <a class="enlace" data-archivo="mac-x64.dmg" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Intel .dmg</a>
-          <p class="nota">La primera vez, abre la app con clic derecho → «Abrir», porque no está firmada por Apple.</p>
-        </article>
-        <article class="carta descarga" data-plataforma="android">
-          <h3>Android</h3>
-          <p>Compilación Android para móvil y tableta, si está disponible en la última versión publicada.</p>
-          <a class="boton" data-archivo=".apk" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Descargar APK</a>
-          <p class="nota">Permite «instalar apps de origen desconocido» para tu navegador o gestor de archivos.</p>
+        <article class="ciudad ciudad-zaun">
+          <div class="ciudad-arte" aria-hidden="true"></div>
+          <div class="ciudad-texto">
+            <p class="etiqueta">Química, neón y supervivencia</p>
+            <h3>Zaun</h3>
+            <p>Puedes ser mecánico de quimtec, contrabandista, luchador de foso o médico clandestino. Aquí nadie te regala nada, pero la gente cuida de los suyos.</p>
+            <ul><li>Los Callejones</li><li>El Sumidero</li><li>La Última Gota</li><li>El Mercado de las Tuberías</li></ul>
+          </div>
         </article>
       </div>
-      <p class="intro pequeno" id="estado-version" role="status" aria-live="polite" hidden></p>
     </section>
 
-    <section id="preguntas" class="seccion">
-      <h2>Preguntas frecuentes</h2>
-      <details>
-        <summary>¿Cuesta algo?</summary>
-        <p>No. Es un proyecto de fans gratuito y sin ánimo de lucro.</p>
-      </details>
-      <details>
-        <summary>¿Dónde se guardan mis partidas?</summary>
-        <p>En tu dispositivo. En Windows, en <code>%APPDATA%\Arcane Piltover y Zaun\partidas</code>; en Android, dentro de la app. Desde la pantalla de Partidas puedes exportarlas a un archivo y llevarlas de la tableta al PC, o al revés.</p>
-      </details>
-      <details>
-        <summary>¿Está terminado el juego?</summary>
-        <p>No. Sigue en desarrollo. La conexión a LM Studio ya figura en el código, pero requiere un servidor configurado. Los siete modelos 3D definitivos y los escenarios 3D completos siguen pendientes.</p>
-      </details>
-      <details>
-        <summary>¿En qué idiomas está?</summary>
-        <p>Español, inglés y francés. Se cambia en Ajustes.</p>
-      </details>
-      <details>
-        <summary>¿Recoge datos?</summary>
-        <p>Las partidas se guardan localmente. Algunas funciones opcionales y el alojamiento web pueden implicar servicios externos. Lee la <a href="privacidad.html">política de privacidad</a>.</p>
-      </details>
+    <section class="seccion" id="personajes" aria-labelledby="t-personajes">
+      <header class="seccion-cabeza">
+        <p class="kicker">03 · Con quién hablas</p>
+        <h2 id="t-personajes">Personajes que te contestan como ellos.</h2>
+        <p>Cada personaje conoce solo lo que ha vivido hasta el momento de tu partida: sin poderes inventados y sin salirse del canon.</p>
+      </header>
+      <div class="fichas">{{REPARTO}}</div>
+    </section>
+
+    <section class="banda" id="como-se-juega" aria-labelledby="t-juego">
+      <div class="seccion">
+        <header class="seccion-cabeza">
+          <p class="kicker">04 · Cómo se juega</p>
+          <h2 id="t-juego">Sin menús de respuesta. Escribes y te contestan.</h2>
+        </header>
+        <div class="pasos">
+          <article><span class="paso-num">1</span><h3>¿Conoces Arcane?</h3><p>Si no, una intro breve. Si sí, directo a crear tu personaje.</p></article>
+          <article><span class="paso-num">2</span><h3>Creas tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus palabras.</p></article>
+          <article><span class="paso-num">3</span><h3>Haces tu historia</h3><p>Hablas, preguntas, mientes o ayudas. Los personajes responden, te preguntan y recuerdan, siempre dentro del lore de las temporadas 1 y 2.</p></article>
+          <article><span class="paso-num">4</span><h3>IA en el servidor</h3><p>No instalas nada. El rol lo lleva Gemma 4 31B alojado en Ollama Cloud, con el bloqueo de canon cargado.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion demo-cta" aria-labelledby="t-demo">
+      <div>
+        <p class="kicker">Demo en el navegador</p>
+        <h2 id="t-demo">Una noche en La Última Gota, o una tarde en la Academia.</h2>
+        <p>La demo te deja crear tu personaje y vivir la primera escena en Zaun o en Piltover hablando con libertad.</p>
+        <a class="btn btn-primario" href="demo.html">Abrir la demo</a>
+      </div>
+      <ul class="estado">
+        <li><span class="punto punto-listo"></span><strong>Historia y personajes</strong> Piltover, Zaun y {{PERSONAJES}} fichas de personaje.</li>
+        <li><span class="punto punto-listo"></span><strong>Rol libre</strong> Sin opciones fijas, con bloqueo de canon de las temporadas 1 y 2.</li>
+        <li><span class="punto punto-proto"></span><strong>IA en servidor</strong> Gemma 4 31B en Ollama Cloud. Funciona cuando el servidor tiene su clave configurada.</li>
+        <li><span class="punto punto-proto"></span><strong>Modelos 3D</strong> Prototipos de fan-art, sin rig ni animaciones finales.</li>
+        <li><span class="punto punto-info"></span><strong>Versión</strong> {{VERSION}} · en desarrollo.</li>
+      </ul>
     </section>
   </main>
 
   <footer class="pie">
-    <p class="legal">Rifts &amp; Gears es un fangame independiente y no está patrocinado, autorizado ni respaldado por Riot Games. Las marcas y elementos originales de Riot Games pertenecen a sus titulares. La gratuidad y el carácter no oficial no implican autorización para usar propiedad intelectual de terceros.</p>
-    <p><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">Código en GitHub</a> · <a href="privacidad.html">Privacidad</a> · <a href="privacidad.html#aviso-legal">Aviso legal</a> · {{ANIO}}</p>
+    <div class="logo"><span class="logo-sello" aria-hidden="true">R&amp;G</span><span class="logo-texto"><strong>Rifts &amp; Gears</strong><small>Fangame de Arcane</small></span></div>
+    <p>Proyecto de fans gratuito y no oficial creado por MarinaDP2006. No está respaldado por Riot Games. Arcane, League of Legends, Piltover, Zaun y sus personajes pertenecen a Riot Games.</p>
+    <nav aria-label="Enlaces del pie"><a href="demo.html">Demo</a><a href="privacidad.html">Privacidad y aviso legal</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS/tree/arcane/fangame-actualizado">Código</a></nav>
+    <small>© {{ANIO}} Rifts &amp; Gears · fan game</small>
   </footer>
-  <script src="web.js"></script>
-  <script src="pestanas.js" defer></script>
-  <script src="experiencia.js" defer></script>
+  <script src="menu.js" defer></script>
 </body>
 </html>

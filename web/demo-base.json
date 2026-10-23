@@ -1,0 +1,43 @@
+{
+  "id": "arcane",
+  "pregunta": "¿Conoces la serie Arcane?",
+  "introTitulo": "Piltover y Zaun en un minuto",
+  "intro": [
+    "Piltover es la Ciudad del Progreso: academias, inventores, un Consejo de familias ricas y calles de latón y oro. Debajo, literalmente, está Zaun: la ciudad de abajo, con su aire químico, sus luces de neón y gente que sobrevive como puede.",
+    "Hace siete años, un robo en Piltover acabó mal y separó a dos hermanas de Zaun, Vi y Powder. Desde entonces Silco controla la ciudad de abajo con una droga llamada brillo, y Powder se hace llamar Jinx.",
+    "Mientras, en Piltover, Jayce y Viktor han conseguido domar la magia con la tecnología: el hextec. El progreso está a punto de cambiarlo todo, y no para todos igual. Tú vives en una de las dos ciudades."
+  ],
+  "canon": "Eres el narrador de un fangame de rol ambientado en Arcane (temporadas 1 y 2). Interpretas al narrador y a los personajes presentes con su personalidad, su forma de hablar y sus relaciones del canon. MOMENTO DE LA HISTORIA: temporada 1, acto 2, siete años después del robo fallido de Vi y Powder y la muerte de Vander. Silco gobierna Zaun con el brillo; Jinx es su protegida; Vi está presa en Stillwater; Jayce y Viktor desarrollan el hextec en la Academia; Caitlyn es una agente joven a la que no toman en serio; Mel Medarda está en el Consejo. BLOQUEO DE CANON: respeta el lore de las temporadas 1 y 2 de Arcane. Los personajes solo saben lo que han vivido hasta este momento: no reveles acontecimientos futuros, muertes ni secretos. No inventes poderes, lugares, parentescos ni tecnologías fuera de ese canon y no menciones otras obras. El personaje del jugador es original y puede hacer su propia historia, relacionarse y cambiar cosas pequeñas a su alrededor, pero los grandes hechos del canon no se rompen de golpe: si intenta algo que lo haría, el mundo reacciona con lógica (le detienen, alguien interviene, no le sale bien). Tono: Arcane es adulto, emotivo y con humor seco; nada de infantilizar.",
+  "escenas": {
+    "zaun": {
+      "titulo": "Bajo el neón de La Última Gota",
+      "lugar": "La Última Gota",
+      "presentes": ["silco", "jinx", "sevika"],
+      "contexto": "Noche en la taberna que antes era de Vander y ahora es de Silco. Sevika cobra deudas y vigila la puerta. Jinx juguetea con un artilugio en la barra. Silco busca a alguien de confianza para un encargo discreto relacionado con un cargamento de brillo que no ha llegado.",
+      "apertura": "La Última Gota huele a humo, a alcohol barato y a algo químico que pica en la garganta. Las luces de neón parpadean sobre la barra. Tú, {nombre}, {oficio}, acabas de entrar y ya hay tres miradas encima de ti.\nSevika: Mira quién llega. ¿Vienes a pagar o vienes a dar problemas? Elige rápido.\nJinx: ¡Ooooh, cara nueva! ¿Sabes algo de explosivos? No, espera, no contestes. Mejor me sorprendes.\nSilco: Siéntate. He oído que eres de fiar. Vamos a comprobarlo.",
+      "giros": [
+        "Una caja de la barra empieza a soltar chispas. Jinx la mira con demasiada ilusión.",
+        "Un matón entra empapado en sudor y le susurra algo a Sevika. Ella aprieta la mandíbula.",
+        "Silco hace girar un vaso entre los dedos y su ojo rojo no se aparta de ti.",
+        "Desde la calle llega el silbido de los guardianes de Piltover. Alguien ha dado un soplo.",
+        "Jinx dibuja con tiza en la mesa una cara con una cruz encima y se ríe sola.",
+        "Las luces se apagan un segundo. Cuando vuelven, falta alguien en la barra."
+      ]
+    },
+    "piltover": {
+      "titulo": "Chispas en el taller de hextec",
+      "lugar": "La Academia",
+      "presentes": ["jayce", "viktor", "caitlyn"],
+      "contexto": "Tarde en el taller de Jayce y Viktor en la Academia de Piltover. Están a punto de presentar el hextec al Consejo. Caitlyn aparece porque investiga, sin permiso de sus superiores, unas pistas sobre Zaun y el robo de hace siete años.",
+      "apertura": "El taller de la Academia está lleno de planos, engranajes y un zumbido azul que te eriza la piel. Tú, {nombre}, {oficio}, has venido a entregar un encargo y te encuentras en mitad de algo importante.\nJayce: ¡Cuidado con esa mesa! Si eso se cae, mañana no hay presentación ante el Consejo.\nViktor: Tranquilo, Jayce. Parece que tenemos visita con buen pulso. ¿Te interesa la ciencia, o solo pasabas por aquí?\nCaitlyn: Perdón por interrumpir. Necesito hablar con alguien que conozca bien el camino a la ciudad de abajo. ¿Por casualidad eres tú?",
+      "giros": [
+        "El cristal hextec del banco de trabajo brilla más fuerte durante un segundo. Viktor apunta algo a toda prisa.",
+        "Un mensajero del Consejo trae una nota con el sello de los Kiramman. Caitlyn la reconoce y suspira.",
+        "Por la ventana se ve el puente hacia Zaun, envuelto en niebla verde.",
+        "Jayce se pasa la mano por el pelo: el discurso de mañana todavía no está escrito.",
+        "Viktor tose y se apoya en su bastón, pero aparta la mirada cuando alguien le pregunta si está bien.",
+        "Alguien llama a la puerta con prisas: un guardián busca a Caitlyn y no parece contento."
+      ]
+    }
+  }
+}

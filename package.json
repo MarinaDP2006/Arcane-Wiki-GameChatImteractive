@@ -14,7 +14,8 @@
     "dist:win": "electron-builder --win",
     "android:sync": "node scripts/build-mobile.js && cap sync android",
     "dist:mac": "electron-builder --mac",
-    "web": "node scripts/build-web.js"
+    "web": "node scripts/build-web.js",
+    "serve:web": "node server/roleplay-server.js"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.3",
