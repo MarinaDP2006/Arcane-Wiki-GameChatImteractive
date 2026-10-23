@@ -422,8 +422,8 @@
     ctx.fillStyle = '#05040a';
     ctx.fillRect(0, 0, cw, ch);
     if (!map.bg || (!map.bgArt && ready(cityArt(mapId)))) paintBackground();
-    // El desenfoque por frame es muy caro en WebView Android: se omite en móviles/tabletas.
-    const art = mobileGPU ? null : cityArt(mapId);
+    // Fuera de la carta (pantallas más anchas que la ciudad): la panorámica desenfocada.
+    const art = cityArt(mapId);
     if (ready(art)) {
       const s = Math.max(cw / art.naturalWidth, ch / art.naturalHeight) * 1.1;
       ctx.save();
@@ -1106,10 +1106,6 @@
   }
 
   // ---------- Bucle ----------
-  // Reducir trabajo de Canvas en dispositivos táctiles con GPU limitada.
-  const mobileGPU = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 0 && Math.min(screen.width, screen.height) < 900);
-  const frameInterval = mobileGPU ? 1000 / 30 : 0;
-  let lastPaint = 0;
   let fpsEl = null;
   let fpsN = 0;
   let fpsT = 0;
@@ -1125,17 +1121,13 @@
     const dt = Math.min(0.05, (t - last) / 1000 || 0);
     last = t;
     requestAnimationFrame((nt) => frame(nt, id));
-    if (document.hidden) return;
     // Con un minijuego o una cinemática a pantalla completa encima no hace falta dibujar.
     if (paused && document.querySelector('.mg:not(.out), .cine, .scene2d')) return;
     try {
       if (!paused) update(dt);
       else if (fly) update(dt);
-      if (!frameInterval || t - lastPaint >= frameInterval) {
-        draw(t);
-        lastPaint = t;
-        fpsMeter(t);
-      }
+      draw(t);
+      fpsMeter(t);
     } catch (err) {
       console.error(err);
     }
@@ -1148,7 +1140,7 @@
     const rel = zoom / (fit || 1);
     cw = Math.max(320, Math.floor(box.width));
     ch = Math.max(240, Math.floor(box.height));
-    dpr = Math.min(mobileGPU ? 1.25 : 2, window.devicePixelRatio || 1);
+    dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(ch * dpr);
     fit = Math.min(cw / map.w, (ch - PAD_TOP - PAD_BOTTOM) / map.h);

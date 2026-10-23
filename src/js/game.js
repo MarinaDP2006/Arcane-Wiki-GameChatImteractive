@@ -322,11 +322,9 @@
       const stat = S().stats[a.stat].label;
       const tag = a.game ? 'Minijuego' : 'Actividad';
       if (!done && !maxed) rows.push(act(tag, a.label, `Recompensa: +1 ${stat}`, () => doActivity(loc, key)));
-      else if (a.game) rows.push(act(tag, `${a.label} (práctica)`, done ? 'Ya ganaste la recompensa en este capítulo.' : `${stat} ya está al máximo.`, () => practice(a.game, loc.id)));
+      else if (a.game) rows.push(act(tag, `${a.label} (práctica)`, done ? 'Ya ganaste la recompensa en este capítulo.' : `${stat} ya está al máximo.`, () => practice(a.game)));
       else rows.push(act(tag, a.label, done ? 'Ya lo hiciste en este capítulo.' : `${stat} ya está al máximo.`, () => {}, { disabled: true }));
     }
-    // Otros minijuegos que encajan en este lugar (sin recompensa, con el arte del lugar de fondo)
-    for (const mg of Minigames.forPlace(loc.id).filter((m) => m.id !== loc.activity?.game)) rows.push(act('Minijuego', mg.title, mg.goal, () => practice(mg.id, loc.id)));
 
     // Explorar el escenario 2D (pista del capítulo)
     if (window.Scenes2D?.has(loc.id) && window.Scenes2D.imageFor(loc.id, place[1])) {
@@ -355,9 +353,9 @@
   }
 
   /** Minijuego sin recompensa desde el menú de un lugar. */
-  async function practice(game, place) {
+  async function practice(game) {
     World.pause(true);
-    await Minigames.play(game, { bonus: mgBonus(game), place });
+    await Minigames.play(game, { bonus: mgBonus(game) });
     World.pause(false);
   }
 
