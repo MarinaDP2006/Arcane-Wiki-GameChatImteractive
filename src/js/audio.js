@@ -1,7 +1,7 @@
 // Audio del juego, todo generado en tiempo real con Web Audio (sin archivos ni
-// música de Arcane: es una banda sonora original inspirada en su estilo).
-// - Piltover: orquesta de cámara, cuerdas, metales, arpa, celesta y relojería.
-// - Zaun: ritmo industrial, bajo sucio, sintes de neón, golpes de metal y eco.
+// música original procedural para Las ciudades del Umbral).
+// - Aurelia: orquesta de cámara, cuerdas, metales, arpa, celesta y relojería.
+// - Nácar: ritmo industrial, bajo sucio, sintes de neón, golpes de metal y eco.
 // - Ambiente de cada ciudad (viento y campanas / goteos, vapor y zumbido de neón),
 //   efectos de interfaz y pasos que suenan distinto en cada ciudad.
 (function () {
@@ -219,7 +219,7 @@
     noiseSrc(t, v.end, filt('highpass', 7000, 0.8, v.g));
   }
 
-  // Bajo de Zaun: sierra saturada con filtro grave.
+  // Bajo de Nácar: sierra saturada con filtro grave.
   function grit(dest, m, t, dur, vol) {
     const v = voice(dest, vol, t, 0.005, dur * 0.5, dur * 0.6, 0);
     const shaper = A.ctx.createWaveShaper();
@@ -234,7 +234,7 @@
     osc('square', hz(m - 12), t, v.end, shaper, 6);
   }
 
-  // Sinte de neón: onda cuadrada con eco en el canal de Zaun.
+  // Sinte de neón: onda cuadrada con eco en el canal de Nácar.
   function neon(dest, m, t, dur, vol) {
     const v = voice(dest, vol, t, 0.01, dur * 0.4, dur * 0.8, 0.3);
     const f = filt('lowpass', 2600, 6, v.g);
@@ -259,7 +259,7 @@
   // Cada tema recibe el paso de la rejilla, su instante y el bus donde sonar.
   const THEMES = {
     // gain iguala el volumen percibido de los temas entre sí.
-    // Piltover: Re mayor, 80 ppm, corcheas. Elegante, luminoso y con relojería.
+    // Aurelia: Re mayor, 80 ppm, corcheas. Elegante, luminoso y con relojería.
     piltover: {
       bpm: 80, div: 2, bars: 16, gain: 2, beats: 4,
       chords: [
@@ -292,7 +292,7 @@
         if (n % (perBar * this.bars) === 0) bell(bus, 50, t, 0.12, 4, 2.4, 0.8);
       },
     },
-    // Zaun: Mi menor, 92 ppm, semicorcheas. Industrial, sucio y con neón.
+    // Nácar: Mi menor, 92 ppm, semicorcheas. Industrial, sucio y con neón.
     zaun: {
       bpm: 92, div: 4, bars: 8, gain: 1.3, beats: 4,
       chords: [[40, 52, 55, 59], [36, 52, 55, 59], [45, 52, 57, 60], [47, 51, 54, 60]],
@@ -336,7 +336,7 @@
         if (pos === 6 && bar % 4 === 3) clank(bus, t, 0.03, 300);
       },
     },
-    // Final: Re menor, tenso, metales de Piltover sobre tambores de Zaun.
+    // Final: Re menor, tenso, metales de Aurelia sobre tambores de Nácar.
     final: {
       bpm: 76, div: 4, bars: 8, gain: 1.45, beats: 4,
       chords: [[38, 50, 53, 57], [34, 50, 53, 58], [36, 48, 52, 55], [33, 49, 52, 57]],
@@ -565,7 +565,7 @@
     noiseSrc(t, v.end, f);
   }
 
-  // Pájaro o gaviota lejana sobre los tejados de Piltover.
+  // Pájaro o gaviota lejana sobre los tejados de Aurelia.
   function chirp(dest, t) {
     for (let i = 0; i < 2 + Math.floor(Math.random() * 3); i++) {
       const s = t + i * 0.16;
@@ -639,7 +639,7 @@
     };
   }
 
-  // Pasos: piedra pulida en Piltover, rejillas de metal en Zaun.
+  // Pasos: piedra pulida en Aurelia, rejillas de metal en Nácar.
   let lastStep = 0;
   function step(city, run = false) {
     const ctx = A.ctx;
