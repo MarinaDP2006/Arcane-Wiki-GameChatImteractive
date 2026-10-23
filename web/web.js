@@ -1,8 +1,9 @@
 // Estado de Releases de GitHub y enlaces directos únicamente a archivos publicados.
 (function () {
-  const REPO = 'MarinaDP2006/grietas-and-gears';
+  const REPO = 'MarinaDP2006/RIFTS-GEARS';
   const RELEASES = 'https://github.com/' + REPO + '/releases';
   const status = document.getElementById('estado-version');
+  if (status) status.hidden = true;
   const links = [...document.querySelectorAll('[data-archivo]')];
   const ua = navigator.userAgent;
   const platform = /Android/i.test(ua) ? 'android' : /Mac/i.test(ua) && !/iPhone|iPad/i.test(ua) ? 'mac' : /Windows/i.test(ua) ? 'windows' : '';
@@ -34,7 +35,7 @@
           available++;
         }
       });
-      if (status) status.textContent = available ? 'Última versión: ' + release.tag_name + '. Comprueba la plataforma y el archivo antes de instalar.' : 'Última versión: ' + release.tag_name + '. No hay instaladores compatibles publicados en esta versión.';
+      if (status) { status.hidden = false; status.textContent = available ? 'Última versión: ' + release.tag_name + '. Comprueba la plataforma y el archivo antes de instalar.' : 'Última versión: ' + release.tag_name + '. No hay instaladores compatibles publicados en esta versión.'; }
     })
-    .catch(() => { if (status) status.textContent = 'Todavía no hay una versión verificable disponible, o no se ha podido consultar GitHub. Consulta la página oficial de Releases.'; });
+    .catch(() => { if (status) status.hidden = true; });
 })();
