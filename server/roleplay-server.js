@@ -12,6 +12,13 @@ const WEB_ROOT = path.join(ROOT, 'web-dist');
 const FALLBACK_ROOT = path.join(ROOT, 'web');
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = Number(process.env.PORT || 3000);
+const AI_BASE_URL = String(process.env.AI_BASE_URL || 'https://ollama.com/v1').replace(/\/+$/, '');
+const AI_MODEL = process.env.AI_MODEL || process.env.OLLAMA_MODEL || 'gemma4:31b';
+const AI_API_KEY = process.env.AI_API_KEY || process.env.OLLAMA_API_KEY || '';
+function requiresApiKey() {
+  try { const u = new URL(AI_BASE_URL); return !['localhost', '127.0.0.1', '::1'].includes(u.hostname) && !AI_API_KEY; }
+  catch { return true; }
+}
 const MAX_BODY = 64 * 1024;
 const MAX_MESSAGES = 18;
 const MAX_CONTENT = 6000;
@@ -61,7 +68,7 @@ function readBody(req) {
 }
 async function roleplay(req, res) {
   if (!rateLimit(req)) return send(res, 429, { error: 'Demasiadas peticiones. Espera un minuto.' });
-  if (!process.env.OLLAMA_API_KEY) return send(res, 503, { error: 'La IA no está configurada; la demo puede usar el narrador local.' });
+  if (requiresApiKey()) return send(res, 503, { error: 'Falta AI_API_KEY (o OLLAMA_API_KEY) para el proveedor remoto; la demo puede usar el narrador local.' });
   let body;
   try { body = await readBody(req); }
   catch (e) { return send(res, e.status || 400, { error: e.message || 'Petición no válida' }); }
@@ -76,11 +83,13 @@ async function roleplay(req, res) {
     messages.push({ role: m.role, content: m.content });
   }
   try {
-    const upstream = await fetch('https://ollama.com/v1/chat/completions', {
+    const headers = { 'Content-Type': 'application/json' };
+    if (AI_API_KEY) headers.Authorization = 'Bearer ' + AI_API_KEY;
+    const upstream = await fetch(AI_BASE_URL + '/chat/completions', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + process.env.OLLAMA_API_KEY, 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
-        model: process.env.OLLAMA_MODEL || 'gemma4:31b',
+        model: AI_MODEL,
         messages,
         temperature: Math.min(1.2, Math.max(0, Number(body.temperature) || 0.85)),
         max_tokens: Math.min(500, Math.max(80, Number(body.max_tokens) || 380))
