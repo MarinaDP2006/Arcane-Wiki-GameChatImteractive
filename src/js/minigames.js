@@ -14,6 +14,7 @@
   const buzz = (ms) => { try { if (U.touch && opt().vibration !== false) navigator.vibrate?.(ms); } catch { /* sin vibración */ } };
   // Dificultad de Ajustes: fácil da una ventaja más, difícil quita una.
   const DIFF = { facil: 1, normal: 0, dificil: -1 };
+  const reduced = () => Boolean(opt().reduceMotion);
 
   // ---------- Emblemas (iconos de línea dorada) ----------
   const EMBLEM = {
@@ -48,7 +49,8 @@
   function makeFX() {
     const parts = [];
     const texts = [];
-    const S = { shake: 0, flash: 0, flashCol: '255,255,255', hurt: 0, slow: 0 };
+    const rings = [];
+    const S = { shake: 0, flash: 0, flashCol: '255,255,255', hurt: 0, slow: 0, stop: 0, frame: 0, fx: 0, fy: 0, frameCol: '255,255,255' };
     return {
       // kind: spark (estela), dot (punto brillante), smoke (humo suave), shard (esquirla que gira)
       burst(x, y, n, o = {}) {
@@ -63,6 +65,18 @@
         }
       },
       text(x, y, txt, col = '#ffe08a', size = 30) { texts.push({ x, y, txt, col, size, life: 1 }); },
+      // Golpe al estilo de la serie: salpicadura de pintura, trazos de pincel que salen disparados,
+      // onda expansiva y, si es fuerte, un fotograma de impacto con rayos y una pausa breve.
+      impact(x, y, o = {}) {
+        const cols = o.colors || ['#e0457b', '#3fd0ff', '#ffe08a'];
+        const k = o.power ?? 1;
+        this.burst(x, y, Math.round(14 * k), { color: cols, kind: 'paint', speed: 420 * k, life: 0.9, size: 5 * k, gravity: 600, drag: 3 });
+        this.burst(x, y, Math.round(10 * k), { color: o.stroke || '#fff6e0', kind: 'stroke', speed: 1100 * k, life: 0.22, size: 4 * k, gravity: 0, drag: 7 });
+        rings.push({ x, y, r: 8, max: 120 * k, life: 1, col: o.ring || cols[0] });
+        if (k >= 1 && !reduced()) { S.frame = 0.09; S.fx = x; S.fy = y; S.frameCol = o.frameCol || '255,246,224'; }
+        if (o.stop ?? k >= 1) S.stop = Math.max(S.stop, 0.06 * k);
+      },
+      stopped() { return S.stop > 0; },
       shake(v) { S.shake = Math.max(S.shake, v * (opt().shake ?? 1)); },
       flash(a = 0.5, col = '255,255,255') { S.flash = Math.max(S.flash, a); S.flashCol = col; },
       hurt(a = 1) { S.hurt = Math.max(S.hurt, a); },
@@ -79,6 +93,10 @@
         if (parts.length > 700) parts.splice(0, parts.length - 700);
         for (const t of texts) { t.y -= 46 * dt; t.life -= dt * 1.25; }
         for (let i = texts.length - 1; i >= 0; i--) if (texts[i].life <= 0) texts.splice(i, 1);
+        for (const r of rings) { r.life -= dt * 3.2; r.r += (r.max - r.r) * Math.min(1, dt * 14); }
+        for (let i = rings.length - 1; i >= 0; i--) if (rings[i].life <= 0) rings.splice(i, 1);
+        S.stop = Math.max(0, S.stop - dt);
+        S.frame = Math.max(0, S.frame - dt);
         S.shake = Math.max(0, S.shake - dt * 40);
         S.flash = Math.max(0, S.flash - dt * 2.6);
         S.hurt = Math.max(0, S.hurt - dt * 1.6);
@@ -88,6 +106,30 @@
         ctx.save();
         for (const p of parts) {
           const a = Math.max(0, Math.min(1, p.life));
+          if (p.kind === 'paint') {
+            // Mancha de pintura: gota principal con salpicaduras alrededor
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = Math.min(1, a * 1.6);
+            ctx.fillStyle = p.col;
+            ctx.beginPath(); ctx.ellipse(p.x, p.y, p.size * 1.3, p.size * (0.8 + Math.abs(Math.sin(p.rot)) * 0.5), p.rot, 0, TAU); ctx.fill();
+            for (let k = 0; k < 3; k++) {
+              const ang = p.rot + k * 2.1;
+              ctx.beginPath(); ctx.arc(p.x + Math.cos(ang) * p.size * 1.7, p.y + Math.sin(ang) * p.size * 1.7, p.size * (0.25 + k * 0.12), 0, TAU); ctx.fill();
+            }
+            continue;
+          }
+          if (p.kind === 'stroke') {
+            // Trazo de pincel afilado en la dirección del movimiento
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = a;
+            const len = Math.hypot(p.vx, p.vy) * 0.07 + p.size * 3;
+            const ang = Math.atan2(p.vy, p.vx);
+            ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(ang);
+            ctx.fillStyle = p.col;
+            ctx.beginPath(); ctx.moveTo(0, -p.size * 0.6); ctx.quadraticCurveTo(-len * 0.4, -p.size * 0.3, -len, 0); ctx.quadraticCurveTo(-len * 0.4, p.size * 0.3, 0, p.size * 0.6); ctx.closePath(); ctx.fill();
+            ctx.restore();
+            continue;
+          }
           if (p.kind === 'smoke') {
             ctx.globalCompositeOperation = 'source-over';
             ctx.globalAlpha = a * 0.35;
@@ -112,6 +154,29 @@
           ctx.drawImage(glowSprite(p.col), p.x - s / 2, p.y - s / 2, s, s);
         }
         ctx.globalCompositeOperation = 'source-over';
+        for (const r of rings) {
+          ctx.globalAlpha = Math.max(0, r.life);
+          ctx.strokeStyle = r.col;
+          ctx.lineWidth = 5 * r.life + 1;
+          ctx.beginPath(); ctx.ellipse(r.x, r.y, r.r, r.r * 0.8, 0, 0, TAU); ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        if (S.frame) {
+          // Fotograma de impacto: la escena se oscurece y salen rayos de pincel desde el golpe
+          ctx.fillStyle = 'rgba(12,6,16,0.45)';
+          ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = `rgba(${S.frameCol},0.85)`;
+          const R = Math.max(w, h);
+          for (let i = 0; i < 22; i++) {
+            const ang = (i / 22) * TAU + (i % 3) * 0.07;
+            const r0 = 40 + (i % 4) * 18;
+            ctx.beginPath();
+            ctx.moveTo(S.fx + Math.cos(ang - 0.012) * r0, S.fy + Math.sin(ang - 0.012) * r0);
+            ctx.lineTo(S.fx + Math.cos(ang) * R, S.fy + Math.sin(ang) * R);
+            ctx.lineTo(S.fx + Math.cos(ang + 0.012) * r0, S.fy + Math.sin(ang + 0.012) * r0);
+            ctx.fill();
+          }
+        }
         for (const t of texts) {
           const k = t.life > 0.85 ? 1 + (t.life - 0.85) * 3 : 1;
           ctx.globalAlpha = Math.min(1, t.life * 1.6);
@@ -281,12 +346,14 @@
         const raw = Math.max(0, Math.min(0.25, (now - last) / 1000));
         const dt = Math.min(0.05, raw);
         last = now;
-        const input = { keys, pressed: pressed.splice(0), mouse: { ...mouse, clicks: mouse.clicks.splice(0) } };
+        // Durante la pausa de impacto las pulsaciones esperan a que siga el juego.
+        const hold = count <= 0 && FX.stopped();
+        const input = { keys, pressed: hold ? [] : pressed.splice(0), mouse: { ...mouse, clicks: hold ? [] : mouse.clicks.splice(0) } };
         if (count > 0) {
           const before = Math.ceil(count - 0.6);
           count -= raw;
           if (Math.ceil(count - 0.6) !== before) { Audio2.sfx.click(); buzz(15); }
-        } else game.update(dt, input);
+        } else if (!FX.stopped()) game.update(dt, input);
         FX.update(dt);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, W, H);
@@ -425,6 +492,101 @@
     ctx.closePath();
   }
 
+  // Aerotabla de las Luciérnagas (sin piloto): tabla curvada de chapa y madera, núcleo verde
+  // que late, aletas traseras y dos toberas cuyo chorro crece al acelerar.
+  function drawHoverboard(ctx, x, y, t, o = {}) {
+    const s = o.scale || 1;
+    ctx.save();
+    ctx.translate(x, y + Math.sin(t * 6) * 2);
+    ctx.rotate(o.tilt || 0);
+    ctx.scale(s, s);
+    // Resplandor bajo la tabla y chorros
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.55 + Math.sin(t * 9) * 0.1;
+    ctx.drawImage(glowSprite('#5affd0'), -46, 2, 92, 34);
+    const jet = (o.thrust ? 1 : 0.45) * (0.85 + Math.random() * 0.3);
+    for (const jy of [3, 9]) {
+      const jg = ctx.createLinearGradient(-38, 0, -38 - 46 * jet, 0);
+      jg.addColorStop(0, 'rgba(220,255,245,0.95)'); jg.addColorStop(0.3, 'rgba(90,255,208,0.7)'); jg.addColorStop(1, 'rgba(90,255,208,0)');
+      ctx.fillStyle = jg;
+      ctx.beginPath(); ctx.moveTo(-36, jy - 3); ctx.quadraticCurveTo(-38 - 30 * jet, jy - 4, -38 - 46 * jet, jy); ctx.quadraticCurveTo(-38 - 30 * jet, jy + 4, -36, jy + 3); ctx.fill();
+    }
+    ctx.restore();
+    // Aletas traseras
+    ctx.fillStyle = '#2a3a34';
+    ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(-40, -12); ctx.lineTo(-24, -2); ctx.closePath(); ctx.fill();
+    // Casco de la tabla con morro levantado
+    const deck = new Path2D('M-36 2 Q-38 -2 -32 -3 L22 -3 Q34 -4 40 -12 Q44 -6 38 2 Q30 10 18 10 L-28 10 Q-36 9 -36 2 Z');
+    const dg = ctx.createLinearGradient(0, -12, 0, 10);
+    dg.addColorStop(0, '#8a6a3a'); dg.addColorStop(0.35, '#5a3e22'); dg.addColorStop(0.36, '#2a3a34'); dg.addColorStop(1, '#0e1612');
+    ctx.fillStyle = dg; ctx.fill(deck);
+    ctx.lineWidth = 1.4; ctx.strokeStyle = '#d8aa50'; ctx.stroke(deck);
+    // Vetas de la madera y remaches
+    ctx.strokeStyle = 'rgba(30,18,8,0.5)'; ctx.lineWidth = 0.8;
+    for (const vx of [-24, -12, 0, 12]) { ctx.beginPath(); ctx.moveTo(vx, -3); ctx.lineTo(vx + 3, 1); ctx.stroke(); }
+    ctx.fillStyle = '#f0d080';
+    for (const rx of [-30, -6, 18]) { ctx.beginPath(); ctx.arc(rx, 6, 1.2, 0, TAU); ctx.fill(); }
+    // Pintura de las Luciérnagas: franja y tres puntos
+    ctx.fillStyle = '#5affd0';
+    ctx.fillRect(-20, 4, 26, 2);
+    for (const px of [10, 14, 18]) { ctx.beginPath(); ctx.arc(px, 5, 1, 0, TAU); ctx.fill(); }
+    // Núcleo que late
+    const pulse = 0.7 + Math.sin(t * 8) * 0.3;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = pulse;
+    ctx.drawImage(glowSprite('#7affd0'), -16, -8, 32, 32);
+    ctx.restore();
+    ctx.fillStyle = '#c8fff0';
+    ctx.beginPath(); ctx.arc(0, 8, 3.2, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+
+  // Monopatín pintado al estilo de Jinx (sin piloto): tabla con colas levantadas, grafitis de neón,
+  // ruedas que giran y una voltereta (kickflip) cuando se hace el doble salto.
+  function drawSkate(ctx, x, y, t, o = {}) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(o.tilt || 0);
+    ctx.scale(o.scale || 1, o.scale || 1);
+    const flip = Math.cos((o.flip || 0) * TAU);
+    // Ruedas y ejes (la base es el suelo)
+    const wheels = (wx) => {
+      ctx.fillStyle = '#6a6a74'; ctx.fillRect(wx - 6, -9 * Math.abs(flip) - 3, 12, 3);
+      ctx.save(); ctx.translate(wx, -4);
+      ctx.fillStyle = '#3fd0ff'; ctx.beginPath(); ctx.arc(0, 0, 4.2, 0, TAU); ctx.fill();
+      ctx.strokeStyle = '#0e2a3a'; ctx.lineWidth = 1.2; ctx.rotate(o.spin || 0);
+      ctx.beginPath(); ctx.moveTo(-3, 0); ctx.lineTo(3, 0); ctx.moveTo(0, -3); ctx.lineTo(0, 3); ctx.stroke();
+      ctx.restore();
+    };
+    if (flip > 0) { wheels(-18); wheels(18); }
+    // Tabla: se aplasta y se da la vuelta durante la voltereta
+    ctx.save();
+    ctx.translate(0, -12);
+    ctx.scale(1, Math.max(0.12, Math.abs(flip)) * Math.sign(flip || 1));
+    const deck = new Path2D('M-30 -4 Q-36 -10 -34 -12 Q-30 -9 -26 -2 L26 -2 Q30 -9 34 -12 Q36 -10 30 -4 Q28 3 22 3 L-22 3 Q-28 3 -30 -4 Z');
+    ctx.fillStyle = flip > 0 ? '#2a1a3a' : '#1a2a5a';
+    ctx.fill(deck);
+    ctx.save();
+    ctx.clip(deck);
+    if (flip > 0) {
+      // Grafiti de Jinx: zigzag rosa, nube azul y ojos de chomper
+      ctx.strokeStyle = '#ff4aa0'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-26, 0); for (let i = 0; i < 9; i++) ctx.lineTo(-24 + i * 6, i % 2 ? -4 : 1); ctx.stroke();
+      ctx.fillStyle = '#3fd0ff';
+      ctx.beginPath(); ctx.arc(14, -1, 3, 0, TAU); ctx.arc(18, -2, 2.4, 0, TAU); ctx.arc(10, -1, 2, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#ffe08a'; ctx.beginPath(); ctx.arc(-6, -1, 1.2, 0, TAU); ctx.arc(-2, -1, 1.2, 0, TAU); ctx.fill();
+    } else {
+      ctx.fillStyle = '#ff4aa0'; for (let i = -30; i < 30; i += 10) ctx.fillRect(i, -6, 4, 12);
+    }
+    ctx.restore();
+    ctx.lineWidth = 1.2; ctx.strokeStyle = '#ff7ab8'; ctx.stroke(deck);
+    ctx.restore();
+    if (flip <= 0) { wheels(-18); wheels(18); }
+    ctx.restore();
+  }
+
   // Placa metálica con biselado (fondos de piezas, botones dibujados).
   function plate(ctx, x, y, w, h, o = {}) {
     const c = o.cut ?? 8;
@@ -539,6 +701,7 @@
               const ang = ARROW_ANG[keyHit];
               FX.burst(cx + Math.cos(ang) * s * 0.3, cy + Math.sin(ang) * s * 0.3, perfect ? 40 : 22, { color: perfect ? ['#fff3c0', '#ffd060', '#ff9a3a'] : ['#ffd0a0', '#ff7a5a'], speed: perfect ? 520 : 360, life: 0.5, size: 3.5 });
               FX.burst(cx, py, 14, { color: '#ffe08a', speed: 200, kind: 'dot', life: 0.5, gravity: 0, size: 2 });
+              FX.impact(cx + Math.cos(ang) * s * 0.3, cy + Math.sin(ang) * s * 0.3, { power: perfect ? 1.1 : 0.6, colors: ['#e0457b', '#ff9a3a', '#fff3c0'] });
               FX.text(cx + (Math.random() - 0.5) * 80, cy - s * 0.55, perfect ? '¡GOLPE PERFECTO!' : `-${dmg}`, perfect ? '#ffe08a' : '#ffb07a', perfect ? 34 : 30);
               if (g.combo >= 3) FX.text(cx, cy + s * 0.62, `Combo ×${g.combo}`, '#7affd8', 22);
               FX.shake(perfect ? 10 : 6);
@@ -660,12 +823,15 @@
         const g = {
           // La cámara recorre el cuadro de izquierda a derecha durante la carrera.
           cam() { return { x: -0.9 + Math.min(1.8, (g.t / goal) * 1.8), y: fly ? (g.y / h - 0.5) * 0.8 : -0.1 - g.vy / 4000, zoom: 1.05 }; },
-          t: 0, x: w * 0.22, y: fly ? h / 2 : ground, vy: 0, jumps: 0, speed: 320, obs: [], spawn: 1, result: null, dist: 0, run: 0, land: 0, crashed: false,
+          t: 0, x: w * 0.22, y: fly ? h / 2 : ground, want: false, flip: 0, wheel: 0, vy: 0, jumps: 0, speed: 320, obs: [], spawn: 1, result: null, dist: 0, run: 0, land: 0, crashed: false,
           update(dt, inp) {
             g.t += dt;
             g.speed = 320 + g.t * 12;
             g.dist += g.speed * dt;
             const want = inp.keys.has(' ') || inp.keys.has('arrowup') || inp.keys.has('w') || inp.mouse.down;
+            g.want = want;
+            g.flip = Math.max(0, (g.flip || 0) - dt * 2.4);
+            g.wheel = (g.wheel || 0) + (g.speed * dt) / 5;
             if (fly) {
               g.vy += (want ? -900 : 700) * dt;
               g.vy = Math.max(-420, Math.min(460, g.vy));
@@ -676,6 +842,7 @@
               const jumpNow = inp.pressed.some((k) => [' ', 'arrowup', 'w'].includes(k)) || inp.mouse.clicks.length;
               if (jumpNow && g.jumps < 2) {
                 g.vy = -620; g.jumps++; Audio2.sfx.click();
+                if (g.jumps === 2) { g.flip = 1; FX.burst(g.x, g.y + 10, 10, { color: ['#ff4aa0', '#3fd0ff', '#ffe08a'], kind: 'paint', speed: 220, life: 0.7, size: 3, gravity: 500 }); }
                 FX.burst(g.x, g.y + 18, g.jumps === 2 ? 14 : 8, { color: g.jumps === 2 ? '#7affd8' : '#c8bca0', kind: g.jumps === 2 ? 'dot' : 'smoke', speed: 120, life: 0.45, gravity: g.jumps === 2 ? 0 : -40, size: g.jumps === 2 ? 2 : 6 });
               }
               g.vy += 1700 * dt;
@@ -709,6 +876,7 @@
             if (g.result === false && !g.crashed) {
               g.crashed = true;
               FX.burst(g.x, g.y, 40, { color: ['#ffd060', '#ff7a3a', '#fff'], speed: 460, life: 0.6 });
+              FX.impact(g.x, g.y, { power: 1.2, colors: fly ? ['#5affd0', '#e0457b', '#ffe08a'] : ['#ff4aa0', '#3fd0ff', '#ffe08a'] });
               FX.shake(20);
             }
             g.obs = g.obs.filter((ob) => ob.x + ob.w > -40);
@@ -800,47 +968,13 @@
             }
             // Jugador (con sombra de contacto que se encoge al saltar)
             if (!fly) Depth.shadow(ctx, g.x, ground + 18, Math.max(5, 16 - (ground - g.y) / 14), 4, 0.55);
-            ctx.save();
-            ctx.translate(g.x, g.y);
-            if (fly) {
-              ctx.rotate(g.vy / 1300);
-              // Aerotabla con propulsores
-              ctx.save();
-              ctx.globalCompositeOperation = 'lighter';
-              ctx.globalAlpha = 0.8;
-              ctx.drawImage(glowSprite('#5affd0'), -36, 6, 72, 26);
-              ctx.restore();
-              const bg = ctx.createLinearGradient(-26, 0, 26, 0);
-              bg.addColorStop(0, '#2a4a42'); bg.addColorStop(0.5, '#6ad8b8'); bg.addColorStop(1, '#2a4a42');
-              ctx.fillStyle = bg;
-              ctx.beginPath(); ctx.ellipse(0, 16, 28, 5, 0, 0, TAU); ctx.fill();
-              ctx.fillStyle = '#d8aa50';
-              ctx.fillRect(-20, 19, 8, 4); ctx.fillRect(12, 19, 8, 4);
+            if (fly) drawHoverboard(ctx, g.x, g.y, t, { tilt: g.vy / 1300, thrust: g.want, scale: 1.15 });
+            else {
+              const air = g.y < ground - 1;
+              drawSkate(ctx, g.x, g.y + 16 + g.land * 2, t, { tilt: air ? Math.max(-0.35, Math.min(0.25, g.vy / 1800)) : 0, flip: 1 - g.flip, spin: g.wheel, scale: 1.5 });
+              // Chispas de las ruedas al rodar por las tejas
+              if (!air && Math.random() < 0.35) FX.burst(g.x - 18, g.y + 14, 1, { color: ['#ffe08a', '#ff9a3a'], kind: 'spark', angle: Math.PI * 1.1, spread: 0.5, speed: 160, life: 0.25, gravity: 300, size: 1.4 });
             }
-            // Figura con capucha y bufanda al viento
-            const leg = fly ? 0.3 : g.y < ground - 1 ? 0.6 : Math.sin(g.run);
-            ctx.strokeStyle = '#1a1420';
-            ctx.lineCap = 'round';
-            ctx.lineWidth = 6;
-            ctx.beginPath(); ctx.moveTo(0, 2); ctx.lineTo(-leg * 9, 16 - g.land * 3); ctx.moveTo(0, 2); ctx.lineTo(leg * 9, 16 - g.land * 3); ctx.stroke();
-            ctx.strokeStyle = '#e0457b';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(-2, -12);
-            ctx.quadraticCurveTo(-16, -14 + Math.sin(t * 14) * 3, -26, -8 + Math.sin(t * 12) * 4);
-            ctx.stroke();
-            const body = ctx.createLinearGradient(-10, -14, 10, 4);
-            body.addColorStop(0, '#5a2a3a'); body.addColorStop(1, '#2a1420');
-            ctx.fillStyle = body;
-            ctx.beginPath(); ctx.moveTo(-9, 4); ctx.lineTo(-7, -12); ctx.lineTo(7, -12); ctx.lineTo(9, 4); ctx.closePath(); ctx.fill();
-            ctx.strokeStyle = '#2a1420';
-            ctx.lineWidth = 4;
-            ctx.beginPath(); ctx.moveTo(-5, -8); ctx.lineTo(-12 - leg * 4, 0); ctx.moveTo(5, -8); ctx.lineTo(12 + leg * 4, -2); ctx.stroke();
-            ctx.fillStyle = '#e8b394';
-            ctx.beginPath(); ctx.arc(1, -19, 7, 0, TAU); ctx.fill();
-            ctx.fillStyle = '#2a1a24';
-            ctx.beginPath(); ctx.arc(0, -20, 8.5, Math.PI * 0.9, Math.PI * 2.05); ctx.fill();
-            ctx.restore();
             // Líneas de velocidad
             ctx.strokeStyle = 'rgba(255,255,255,0.08)';
             ctx.lineWidth = 1.5;
@@ -862,7 +996,7 @@
   // ---------- 3. Galería de tiro ----------
   GAMES.tiro = {
     title: 'Galería de tiro', icon: '', scene: 'ejecutores', grade: 'hex', backdrops: ['ejecutores', 'stillwater', 'muelle-stillwater', 'hexpuertas', 'plaza', 'consejo'],
-    desc: 'Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no toques los muñecos de civiles.',
+    desc: 'Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no rompas los faroles de gas.',
     controls: 'Ratón: apunta y haz clic para disparar.', touchControls: 'Toca los objetivos para disparar.', goal: 'Consigue 15 puntos en 30 segundos.',
     winText: 'Caitlyn estaría orgullosa. Puntería de francotirador.', loseText: 'Demasiadas balas perdidas. Respira, apunta, exhala.',
     create(w, h, o = {}) {
@@ -894,14 +1028,15 @@
               hit.life = 0;
               if (hit.civ) {
                 g.score -= 3; g.streak = 0;
-                FX.text(c.x, c.y - 20, '-3 ¡Civil!', '#ff6a6a', 28); FX.hurt(0.6);
-                FX.burst(c.x, c.y, 18, { color: ['#d9c9a0', '#8a7a5a'], kind: 'shard', speed: 260, size: 4, life: 0.8 });
+                FX.text(c.x, c.y - 20, '-3 ¡Un farol!', '#ff6a6a', 28); FX.hurt(0.6);
+                FX.burst(c.x, c.y, 22, { color: ['#fff3c0', '#ffb050', '#c8a050'], kind: 'shard', speed: 300, size: 4, life: 0.8 });
               } else {
                 const center = Math.hypot(hit.x - c.x, hit.y - c.y) < hit.r * 0.35;
                 g.score += 1; g.streak++;
                 FX.text(c.x, c.y - 20, center ? '¡Diana! +1' : '+1', center ? '#ffe08a' : '#7fd0ff', center ? 30 : 26);
                 FX.burst(c.x, c.y, center ? 34 : 22, { color: ['#7fd0ff', '#bfeaff', '#3fa9f5'], kind: 'shard', speed: center ? 420 : 300, size: 3.5, life: 0.7 });
                 FX.burst(c.x, c.y, 10, { color: '#ffe08a', kind: 'spark', speed: 300, life: 0.4 });
+                FX.impact(c.x, c.y, { power: center ? 0.8 : 0.5, colors: ['#3fa9f5', '#bfeaff', '#ffe08a'], stop: center });
               }
             } else {
               g.holes.push({ x: c.x, y: c.y, life: 3 });
@@ -946,16 +1081,25 @@
             ctx.fillStyle = '#2a2a30';
             ctx.fillRect(-3 * tg.z, tg.r * 0.8, 6 * tg.z, tg.r * 0.8);
             if (tg.civ) {
-              // Silueta de cartón de un civil
-              ctx.fillStyle = '#cdb88e';
-              ctx.strokeStyle = '#6a5a3a';
-              ctx.lineWidth = 2;
-              ctx.beginPath(); ctx.arc(0, -tg.r * 0.45, tg.r * 0.38, 0, TAU); ctx.fill(); ctx.stroke();
-              ctx.beginPath(); ctx.moveTo(-tg.r * 0.6, tg.r * 0.9); ctx.quadraticCurveTo(-tg.r * 0.6, -tg.r * 0.05, 0, -tg.r * 0.05); ctx.quadraticCurveTo(tg.r * 0.6, -tg.r * 0.05, tg.r * 0.6, tg.r * 0.9); ctx.closePath(); ctx.fill(); ctx.stroke();
-              ctx.fillStyle = '#c0453a';
-              ctx.font = `bold ${Math.round(tg.r * 0.3)}px Cinzel, Georgia, serif`;
-              ctx.textAlign = 'center';
-              ctx.fillText('CIVIL', 0, tg.r * 0.55);
+              // Farol de gas de Piltover (no se dispara): cristal con llama, casquete de latón
+              const r = tg.r;
+              ctx.save();
+              ctx.globalCompositeOperation = 'lighter';
+              ctx.globalAlpha = 0.7 + Math.sin(t * 9 + tg.x) * 0.1;
+              ctx.drawImage(glowSprite('#ffb050'), -r * 1.4, -r * 1.4, r * 2.8, r * 2.8);
+              ctx.restore();
+              const glass = ctx.createLinearGradient(-r * 0.5, 0, r * 0.5, 0);
+              glass.addColorStop(0, 'rgba(255,200,120,0.35)'); glass.addColorStop(0.5, 'rgba(255,240,200,0.75)'); glass.addColorStop(1, 'rgba(255,170,80,0.35)');
+              ctx.fillStyle = glass;
+              ctx.beginPath(); ctx.moveTo(-r * 0.38, -r * 0.55); ctx.lineTo(r * 0.38, -r * 0.55); ctx.lineTo(r * 0.5, r * 0.55); ctx.lineTo(-r * 0.5, r * 0.55); ctx.closePath(); ctx.fill();
+              ctx.fillStyle = '#fff3c0';
+              ctx.beginPath(); ctx.ellipse(0, r * 0.12 + Math.sin(t * 14 + tg.x) * 2, r * 0.1, r * 0.22, 0, 0, TAU); ctx.fill();
+              ctx.strokeStyle = '#8a6424'; ctx.lineWidth = 2.5;
+              ctx.beginPath(); ctx.moveTo(-r * 0.38, -r * 0.55); ctx.lineTo(-r * 0.5, r * 0.55); ctx.moveTo(r * 0.38, -r * 0.55); ctx.lineTo(r * 0.5, r * 0.55); ctx.moveTo(0, -r * 0.55); ctx.lineTo(0, r * 0.55); ctx.stroke();
+              ctx.fillStyle = '#c8a050';
+              ctx.beginPath(); ctx.moveTo(-r * 0.55, -r * 0.55); ctx.lineTo(0, -r * 0.95); ctx.lineTo(r * 0.55, -r * 0.55); ctx.closePath(); ctx.fill();
+              ctx.fillRect(-r * 0.6, r * 0.55, r * 1.2, r * 0.14);
+              ctx.beginPath(); ctx.arc(0, -r * 1.02, r * 0.1, 0, TAU); ctx.fill();
             } else {
               // Diana hextec: anillos de latón y núcleo azul
               ctx.shadowColor = '#3fa9f5';
@@ -1281,7 +1425,6 @@
       const min = 38 + Math.floor(Math.random() * 18);
       const goal = 60 + 5 * (o.bonus || 0);
       const maxPat = 4 + (o.bonus || 0);
-      const vendor = paintedImg({ skin: '#c9946a', face: 'redondo', eyes: 'cansados', eyeColor: '#5a3a1a', brows: 'gruesas', hair: '#6a6a7a', style: 'bun', outfit: 'harapos', outfitColor: '#6a3a5a', accents: ['goggles'] }, '#f0a040', ['#4a2a3a', '#0a0608']);
       // Botones dibujados (para ratón; en móvil están los botones grandes)
       const btns = U.touch ? [] : [
         { id: 'minus', label: '−', x: w / 2 - 190, y: h * 0.8, w: 60, h: 52 },
@@ -1336,24 +1479,68 @@
           ctx.globalAlpha = 0.5 + Math.sin(t * 7) * 0.04;
           ctx.drawImage(glowSprite('#f0a040'), w / 2 - 260, -120, 520, 420);
           ctx.restore();
-          // Vendedora
+          // Balanza de latón: tus monedas a la izquierda y el cachivache hextec a la derecha.
+          // El brazo se inclina según la distancia entre lo que pide y lo que ofreces.
           const ps = Math.min(h * 0.34, 210);
           const px = w / 2;
-          const py = h * 0.24;
-          const sh = g.mood < 0 && g.moodT ? Math.sin(t * 50) * 6 * g.moodT : 0;
+          const top = h * 0.07;
+          const sh = g.mood < 0 && g.moodT ? Math.sin(t * 50) * 4 * g.moodT : 0;
           const rim = g.mood < 0 && g.moodT ? '#e05a5a' : g.mood > 0 && g.moodT ? '#e3c45a' : '#f0a040';
-          ctx.save();
-          ctx.shadowColor = rim; ctx.shadowBlur = 30;
-          hexPath(ctx, px + sh, py, ps / 2 + 8, Math.PI / 6);
-          ctx.fillStyle = '#1a1014'; ctx.fill();
+          const tilt = Math.max(-0.35, Math.min(0.35, (g.shownAsk - g.shownOffer) / 160)) + Math.sin(t * 1.6) * 0.015 + sh * 0.01;
+          const arm = ps * 0.9;
+          const pivot = { x: px, y: top + ps * 0.12 };
+          // Columna y base
+          const col = ctx.createLinearGradient(px - 8, 0, px + 8, 0);
+          col.addColorStop(0, '#5a3e14'); col.addColorStop(0.5, '#f0d080'); col.addColorStop(1, '#5a3e14');
+          ctx.fillStyle = col;
+          ctx.fillRect(px - 6, pivot.y, 12, ps * 0.78);
+          Depth.box(ctx, px - ps * 0.32, top + ps * 0.9, ps * 0.64, ps * 0.1, 0.1, px, h * 0.6, { front: '#8a6424', frontDark: '#3a2a10', top: '#c8a050', side: '#2a1a08' });
+          // Engranaje que gira en el pivote
+          ctx.save(); ctx.translate(pivot.x, pivot.y); ctx.rotate(tilt * 4);
+          ctx.fillStyle = '#c8a050';
+          ctx.beginPath(); for (let i = 0; i < 16; i++) { const ang = (i / 16) * TAU; const rr = i % 2 ? ps * 0.07 : ps * 0.09; ctx[i ? 'lineTo' : 'moveTo'](Math.cos(ang) * rr, Math.sin(ang) * rr); } ctx.closePath(); ctx.fill();
+          ctx.fillStyle = '#2a1a08'; ctx.beginPath(); ctx.arc(0, 0, ps * 0.03, 0, TAU); ctx.fill();
           ctx.restore();
-          ctx.save();
-          hexPath(ctx, px + sh, py, ps / 2, Math.PI / 6);
-          ctx.clip();
-          if (vendor.complete) ctx.drawImage(vendor, px + sh - ps / 2, py - ps / 2, ps, ps);
-          ctx.restore();
-          hexPath(ctx, px + sh, py, ps / 2 + 3, Math.PI / 6);
-          ctx.lineWidth = 3; ctx.strokeStyle = rim; ctx.stroke();
+          // Brazo
+          const ends = [-1, 1].map((d) => ({ x: pivot.x + Math.cos(tilt) * arm * d, y: pivot.y + Math.sin(tilt) * arm * d }));
+          ctx.strokeStyle = '#d8aa50'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(ends[0].x, ends[0].y); ctx.lineTo(ends[1].x, ends[1].y); ctx.stroke();
+          ctx.save(); ctx.shadowColor = rim; ctx.shadowBlur = 18; ctx.strokeStyle = rim; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(ends[0].x, ends[0].y - 4); ctx.lineTo(ends[1].x, ends[1].y - 4); ctx.stroke(); ctx.restore();
+          // Platillos colgando de cadenas
+          ends.forEach((e, i) => {
+            const py = e.y + ps * 0.42;
+            ctx.strokeStyle = 'rgba(216,170,80,0.8)'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x - ps * 0.18, py); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + ps * 0.18, py); ctx.stroke();
+            const pg = ctx.createLinearGradient(0, py - 6, 0, py + 10);
+            pg.addColorStop(0, '#f0d080'); pg.addColorStop(1, '#5a3e14');
+            ctx.fillStyle = pg;
+            ctx.beginPath(); ctx.ellipse(e.x, py, ps * 0.22, ps * 0.05, 0, 0, Math.PI); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(e.x, py, ps * 0.22, ps * 0.025, 0, 0, TAU); ctx.fill();
+            if (i === 0) {
+              // Pila de monedas que crece con tu oferta
+              const n = Math.max(1, Math.round(g.shownOffer / 12));
+              for (let k = 0; k < n; k++) {
+                const cy = py - 4 - k * 4;
+                const cgr = ctx.createLinearGradient(e.x - 12, cy, e.x + 12, cy);
+                cgr.addColorStop(0, '#8a6422'); cgr.addColorStop(0.5, '#ffe08a'); cgr.addColorStop(1, '#8a6422');
+                ctx.fillStyle = cgr;
+                ctx.beginPath(); ctx.ellipse(e.x + ((k * 7) % 5) - 2, cy, 13, 4, 0, 0, TAU); ctx.fill();
+              }
+            } else {
+              // El cachivache: un mecanismo con una gema que brilla y un engranaje que gira
+              ctx.save(); ctx.translate(e.x, py - ps * 0.1);
+              ctx.globalCompositeOperation = 'lighter';
+              ctx.drawImage(glowSprite('#3fd0ff'), -ps * 0.16, -ps * 0.16, ps * 0.32, ps * 0.32);
+              ctx.globalCompositeOperation = 'source-over';
+              ctx.rotate(t * 1.2);
+              ctx.strokeStyle = '#c8a050'; ctx.lineWidth = 3;
+              ctx.beginPath(); ctx.arc(0, 0, ps * 0.07, 0, TAU); ctx.stroke();
+              for (let k = 0; k < 8; k++) { const ang = (k / 8) * TAU; ctx.beginPath(); ctx.moveTo(Math.cos(ang) * ps * 0.07, Math.sin(ang) * ps * 0.07); ctx.lineTo(Math.cos(ang) * ps * 0.095, Math.sin(ang) * ps * 0.095); ctx.stroke(); }
+              ctx.restore();
+              Depth.orb(ctx, e.x, py - ps * 0.1, ps * 0.04, '#3fd0ff', { glow: true, dark: '#062030' });
+            }
+          });
           // Bocadillo
           ctx.font = "italic 24px 'Alegreya Sans', Georgia, serif";
           const tw = Math.min(w - 60, ctx.measureText(`«${g.msg}»`).width + 50);
@@ -1383,17 +1570,6 @@
             ctx.fillRect(-7, -7, 14, 14);
             ctx.restore();
             glowText(ctx, lab(Math.round(v)), x, by - 28, 15, col, 'system-ui, sans-serif');
-          }
-          // Monedas que crecen con tu oferta
-          const coins = Math.round(g.shownOffer / 10);
-          for (let i = 0; i < coins; i++) {
-            const cx = w / 2 - 50 + (i % 5) * 26;
-            const cy = h * 0.735 - Math.floor(i / 5) * 6;
-            const cg = ctx.createLinearGradient(cx - 10, cy - 4, cx + 10, cy + 4);
-            cg.addColorStop(0, '#8a6422'); cg.addColorStop(0.5, '#ffe08a'); cg.addColorStop(1, '#8a6422');
-            ctx.fillStyle = cg;
-            ctx.beginPath(); ctx.ellipse(cx, cy, 11, 4.5, 0, 0, TAU); ctx.fill();
-            ctx.strokeStyle = '#5a3a10'; ctx.lineWidth = 1; ctx.stroke();
           }
           glowText(ctx, `${g.offer}`, w / 2, h * 0.8 + 26, 42, '#ffe08a');
           for (const b of btns) {

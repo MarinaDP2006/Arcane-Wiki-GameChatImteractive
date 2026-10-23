@@ -5162,6 +5162,15 @@ window.I18N_DATA.en = {
   "Hay tanto que contar…": "There's so much to tell…",
   "Otra ronda de preguntas.": "Another round of questions.",
   "Siempre.": "Always.",
-  "Kino, ¿hablamos largo y tendido?": "Kino, shall we have a long talk?"
+  "Kino, ¿hablamos largo y tendido?": "Kino, shall we have a long talk?",
   // <<< chat-deep
+  "Desde un tejado, con el rifle hextec de Caitlyn. Silco ha escondido botes de brillo por la ciudad: búscalos con la mira, contén la respiración para que no tiemble y reviéntalos. No rompas los faroles hextec.": "On a rooftop, with Caitlyn's hextech rifle. Silco has hidden shimmer canisters around the city: find them through the scope, hold your breath to steady it and burst them. Don't break the hextech lamps.",
+  "Revienta 6 botes de brillo en 50 segundos sin romper 2 faroles.": "Burst 6 shimmer canisters in 50 seconds without breaking 2 lamps.",
+  "Los botes desaparecen de los tejados. Respira hondo y otra vez.": "The canisters vanish from the rooftops. Breathe deep and try again.",
+  "Botes": "Canisters",
+  "Faroles: {0}/2": "Lamps: {0}/2",
+  "¡Reventado!": "Burst!",
+  "¡Un farol!": "A lamp!",
+  "Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no rompas los faroles de gas.": "Hextech targets pop up and vanish. Shoot the blue targets and don't break the gas lamps.",
+  "-3 ¡Un farol!": "-3 A lamp!"
 };
