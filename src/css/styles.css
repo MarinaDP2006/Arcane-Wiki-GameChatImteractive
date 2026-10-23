@@ -1168,3 +1168,57 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
 #view-settings .settings { background: #000; }
 .overlay.show:has(.settings) { background: #000 !important; backdrop-filter: none !important; }
 .overlay.show:has(.settings) .overlay-scroll { background: #000 !important; }
+
+/* ============ Mapa interactivo 2D y menú de cada lugar ============ */
+#world-canvas { cursor: grab; touch-action: none; }
+#world-mini { cursor: pointer; }
+.map-ctrls { position: absolute; z-index: 6; right: 14px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.map-ctrl {
+  min-width: 46px; height: 46px; padding: 0 0.8rem; border-radius: 12px; border: 1px solid var(--line);
+  background: rgba(13, 11, 20, 0.85); color: var(--text); font-size: 1.25rem; line-height: 1; backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45); transition: 0.15s;
+}
+.map-ctrl:hover { border-color: var(--gold); transform: translateX(-2px); }
+.map-ctrl.gold { color: #ffe08a; border-color: rgba(255, 224, 138, 0.55); }
+.map-ctrl.city { font-family: var(--display); font-size: 0.95rem; color: var(--gold); }
+.world-prompt { bottom: 84px; }
+
+.place-menu { width: min(620px, 94vw); max-height: 92vh; padding: 0; overflow: hidden; gap: 0; border-width: 1px; }
+.place-menu.place-zaun { border-color: rgba(63, 191, 159, 0.5); box-shadow: 0 0 40px rgba(63, 191, 159, 0.18); }
+.place-menu.place-piltover { border-color: rgba(227, 196, 90, 0.55); box-shadow: 0 0 40px rgba(227, 196, 90, 0.16); }
+.place-hero { position: relative; min-height: 210px; background: #15121f center / cover no-repeat; display: flex; align-items: flex-end; }
+.place-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 8, 16, 0) 30%, rgba(10, 8, 16, 0.92) 100%); }
+.place-hero-txt { position: relative; z-index: 1; padding: 1rem 1.2rem 0.9rem; }
+.place-hero-txt small { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.72rem; color: var(--muted); }
+.place-hero-txt h2 { margin: 0.15rem 0 0.25rem; font-size: 1.7rem; text-shadow: 0 2px 8px #000; }
+.place-zaun .place-hero-txt h2 { color: #8ff0d2; }
+.place-hero-txt p { margin: 0; color: #d9d2e6; font-size: 0.92rem; text-shadow: 0 1px 4px #000; }
+.place-badge { position: absolute; z-index: 1; top: 12px; right: 12px; background: #ffe08a; color: #2a1e08; font: bold 0.75rem var(--display); letter-spacing: 0.1em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 6px; }
+.place-acts { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.9rem 1rem 0.4rem; overflow-y: auto; max-height: calc(92vh - 300px); }
+.place-menu > .btn.ghost { margin: 0.5rem 1rem 1rem; }
+.place-act { display: flex; align-items: center; gap: 0.75rem; text-align: left; min-height: 56px; }
+.place-act .place-tag {
+  flex: 0 0 auto; min-width: 86px; text-align: center; font: bold 0.68rem var(--font); text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 0.28rem 0.4rem; border-radius: 6px; background: rgba(227, 196, 90, 0.12); color: var(--gold); border: 1px solid rgba(227, 196, 90, 0.3);
+}
+.place-zaun .place-act .place-tag { background: rgba(63, 191, 159, 0.12); color: var(--zaun); border-color: rgba(63, 191, 159, 0.35); }
+.place-act-txt { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.place-act-txt small { color: var(--muted); font-size: 0.8rem; }
+.place-act .place-face { order: 2; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid var(--line); margin-left: auto; }
+.place-act .place-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.place-act.gold { border-color: rgba(255, 224, 138, 0.65); box-shadow: 0 0 16px rgba(255, 224, 138, 0.2); }
+.place-act.gold .place-tag { background: #ffe08a; color: #2a1e08; }
+.place-act.muted-act { opacity: 0.8; }
+.place-act:disabled { opacity: 0.5; }
+
+@media (pointer: coarse) {
+  .map-ctrls { top: auto; bottom: 86px; transform: none; right: 10px; }
+  .map-ctrl { min-width: 50px; height: 50px; }
+  .place-act { min-height: 62px; }
+}
+@media (max-width: 720px) {
+  .map-ctrls { top: auto; bottom: 86px; transform: none; right: 10px; }
+  .place-menu { width: 100vw; max-height: 100%; border-radius: 16px 16px 0 0; align-self: end; }
+  .place-hero { min-height: 160px; }
+  .place-acts { max-height: calc(100vh - 260px); }
+}
