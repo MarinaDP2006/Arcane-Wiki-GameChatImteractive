@@ -16,10 +16,10 @@ def signingValue = { String env, String prop -> System.getenv(env) ?: keystorePr
 def storeFilePath = signingValue('ANDROID_KEYSTORE_FILE', 'storeFile')
 
 android {
-    namespace = "com.marinadp2006.arcanewikigame"
+    namespace = "com.marinadp2006.ciudadesdelumbral"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.marinadp2006.arcanewikigame"
+        applicationId "com.marinadp2006.ciudadesdelumbral"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode

@@ -47,7 +47,7 @@ function buildCapturas() {
   // Capturas históricas aportadas por la autora, ordenadas por nombre de archivo.
   // Formato recomendado: 01-inicio.webp, 02-menu.png, etc.
   const historia = path.join(root, 'capturasjuego');
-  // La rama original no copia capturas antiguas de Piltover/Zaun: no son parte de su universo.
+  // La rama original no copia capturas antiguas de Aurelia/Nácar: no son parte de su universo.
   if (!fs.existsSync(path.join(root, 'src', 'data', 'original-world.js')) && fs.existsSync(historia)) {
     const files = fs.readdirSync(historia).filter(name => /^(?!\.)(?!README\.md$)[a-zA-Z0-9][a-zA-Z0-9._-]*\.(webp|png|jpe?g)$/i.test(name)).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
     for (const file of files) {

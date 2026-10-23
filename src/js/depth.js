@@ -1,7 +1,7 @@
-// Profundidad para los minijuegos: arte real de Arcane como fondo con paralaje y desenfoque,
+// Profundidad para los minijuegos: arte del lugar como fondo con paralaje y desenfoque,
 // niebla en capas, rayos de luz, suelo en perspectiva, bloques extruidos hacia un punto de fuga
 // y caras reales de los personajes. Todo en canvas 2D para que vaya igual en PC y en tableta.
-// Depth.backdrop(['tejados', 'callejones']) elige al azar uno de esos lugares (de T1 o T2).
+// Depth.backdrop(['galerias', 'canal-cobre']) elige al azar uno de esos lugares (de T1 o T2).
 (function () {
   const TAU = Math.PI * 2;
   const opt = () => window.App?.settings || {};
@@ -11,8 +11,8 @@
 
   // Tonos de color por ambiente: [luz alta, sombra, niebla].
   const GRADES = {
-    piltover: ['#ffd89a', '#3a2418', '255,226,170'],
-    zaun: ['#7affd0', '#06140f', '120,230,190'],
+    aurelia: ['#ffd89a', '#3a2418', '255,226,170'],
+    nacar: ['#7affd0', '#06140f', '120,230,190'],
     foso: ['#ff7a5a', '#1a0406', '255,120,90'],
     hex: ['#8fd4ff', '#08142a', '140,200,255'],
     noche: ['#b0a0ff', '#0a0814', '170,160,230'],
@@ -27,7 +27,7 @@
   }
   const ready = (im) => Boolean(im && im.complete && im.naturalWidth);
 
-  const PORTRAITS = new Set(['arbol', 'ejecutores', 'fabrica', 'mansion-kiramman', 'noxus', 'tienda-benzo', 'comuna-viktor']);
+  const PORTRAITS = new Set([]);
   // Todas las imágenes de un lugar: temporada 1, temporada 2 y la general. Durante la historia
   // se respeta la temporada (nunca arte de T1 en T2); en la sala de juegos vale todo.
   function placeUrls(id) {
@@ -63,7 +63,7 @@
     const choices = pool(ids);
     const chosen = o.url ? { id: ids[0], url: o.url } : choices.length ? pick(choices) : null;
     const im = chosen && image(chosen.url);
-    const grade = GRADES[o.grade] || GRADES.zaun;
+    const grade = GRADES[o.grade] || GRADES.nacar;
     const blur = o.blur ?? 1.6;
     let cache = null;
     function prepare(w, h) {

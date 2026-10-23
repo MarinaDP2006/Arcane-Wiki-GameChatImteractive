@@ -1,7 +1,7 @@
 ﻿# Inspecciona los ZIP 3D del usuario sin extraer ni modificar los modelos.
 # Uso: powershell -ExecutionPolicy Bypass -File scripts/comprobar-modelos.ps1
 param(
-  [string]$Carpeta = "$env:APPDATA\Arcane Piltover y Zaun\arte\modelos"
+  [string]$Carpeta = "$env:APPDATA\Arcane Aurelia y Nácar\arte\modelos"
 )
 
 Add-Type -AssemblyName System.IO.Compression

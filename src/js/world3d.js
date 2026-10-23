@@ -1,8 +1,8 @@
 // Escena 3D bajo el mapa interactivo (world.js pinta encima, en 2D, los medallones de los
 // lugares, las caras y los rótulos). Nada de cubos sueltos ni de una imagen alrededor:
-// - Piltover: meseta de piedra sobre los acantilados, con cielo dorado, sol, mar de nubes y
+// - Aurelia: meseta de piedra sobre los acantilados, con cielo dorado, sol, mar de nubes y
 //   torres con cúpulas de oro y tejados de cobre.
-// - Zaun: una caverna oculta bajo Piltover: bóveda de roca con estalactitas, grietas por las que
+// - Nácar: una caverna oculta bajo Aurelia: bóveda de roca con estalactitas, grietas por las que
 //   cae la luz de arriba, pilas de chabolas de metal con neones, tuberías y niebla química.
 // Las texturas se pintan a mano en lienzos (pinceladas, ruido, ventanas), sin descargar nada.
 (function () {
@@ -44,7 +44,7 @@
   }
 
   // Fachadas (lienzos de 256x512 que se repiten en altura)
-  function facadePiltover(seed) {
+  function facadeAurelia(seed) {
     const r = rng(seed);
     const c = canvas(256, 512);
     const g = c.getContext('2d');
@@ -75,7 +75,7 @@
     }
     return tex(c);
   }
-  function facadeZaun(seed) {
+  function facadeNácar(seed) {
     const r = rng(seed);
     const c = canvas(256, 512);
     const g = c.getContext('2d');
@@ -183,7 +183,7 @@
   }
 
   /** Edificios instanciados: un cuerpo por fachada y remates (tejados, cúpulas, agujas). */
-  function buildings(group, map, zaun) {
+  function buildings(group, map, nacar) {
     const r = rng(map.def.seed * 7 + 3);
     const q = quality();
     const list = map.buildings.filter(() => r() < q);
@@ -203,12 +203,12 @@
       const near = Math.min(...locs.map((l) => Math.hypot(l.x - cx, l.y - cz)));
       const boost = Math.max(0, 1 - near / 700);
       let h;
-      if (zaun) h = 70 + r() * 160 + boost * 120 + (b.tall > 0.85 ? 160 : 0);
+      if (nacar) h = 70 + r() * 160 + boost * 120 + (b.tall > 0.85 ? 160 : 0);
       else h = 60 + r() * 120 + boost * 160 + (b.tall > 0.9 ? 220 : 0);
-      const shrink = zaun ? 0.92 : 0.86;
+      const shrink = nacar ? 0.92 : 0.86;
       const w = b.w * shrink; const d = b.h * shrink;
-      // Piltover: algunas torres redondas con cúpula, el resto edificios escalonados con cornisas.
-      if (!zaun && r() < 0.22) {
+      // Aurelia: algunas torres redondas con cúpula, el resto edificios escalonados con cornisas.
+      if (!nacar && r() < 0.22) {
         const rad = Math.min(w, d) * 0.42;
         towers.push({ x: cx, y: h / 2, z: cz, r: rad, h });
         cornices.push({ x: cx, y: h * 0.62, z: cz, sx: rad * 2.25, sy: 7, sz: rad * 2.25 });
@@ -216,20 +216,20 @@
         spires.push({ x: cx, y: h + rad, z: cz });
         continue;
       }
-      const tiers = zaun ? 1 + Math.floor(r() * 3) : h > 240 ? 3 : h > 130 ? 2 : 1;
+      const tiers = nacar ? 1 + Math.floor(r() * 3) : h > 240 ? 3 : h > 130 ? 2 : 1;
       let y0 = 0; let tw = w; let td = d;
       for (let t = 0; t < tiers; t++) {
         const th = h / tiers;
-        const ox = zaun ? (r() - 0.5) * w * 0.25 : 0;
-        const oz = zaun ? (r() - 0.5) * d * 0.25 : 0;
-        bodies[Math.floor(r() * nFac)].push({ x: cx + ox, y: y0 + th / 2, z: cz + oz, sx: tw, sy: th, sz: td, ry: zaun ? (r() - 0.5) * 0.2 : 0 });
-        if (zaun && r() < 0.55) neons.push({ x: cx + ox, y: y0 + th * (0.3 + r() * 0.6), z: cz + oz + td / 2 + 1, sx: tw * (0.3 + r() * 0.5), c: Math.floor(r() * 4) });
+        const ox = nacar ? (r() - 0.5) * w * 0.25 : 0;
+        const oz = nacar ? (r() - 0.5) * d * 0.25 : 0;
+        bodies[Math.floor(r() * nFac)].push({ x: cx + ox, y: y0 + th / 2, z: cz + oz, sx: tw, sy: th, sz: td, ry: nacar ? (r() - 0.5) * 0.2 : 0 });
+        if (nacar && r() < 0.55) neons.push({ x: cx + ox, y: y0 + th * (0.3 + r() * 0.6), z: cz + oz + td / 2 + 1, sx: tw * (0.3 + r() * 0.5), c: Math.floor(r() * 4) });
         y0 += th;
-        if (!zaun) cornices.push({ x: cx, y: y0, z: cz, sx: tw * 1.08, sy: 6, sz: td * 1.08 });
-        tw *= zaun ? 0.8 + r() * 0.25 : 0.72;
-        td *= zaun ? 0.8 + r() * 0.25 : 0.72;
+        if (!nacar) cornices.push({ x: cx, y: y0, z: cz, sx: tw * 1.08, sy: 6, sz: td * 1.08 });
+        tw *= nacar ? 0.8 + r() * 0.25 : 0.72;
+        td *= nacar ? 0.8 + r() * 0.25 : 0.72;
       }
-      if (!zaun) {
+      if (!nacar) {
         // Remate sobre el último piso (tw/td ya están reducidos para el siguiente)
         const lw = tw / 0.72; const ld = td / 0.72;
         if (h > 200 && r() < 0.55) { domes.push({ x: cx, y: y0, z: cz, s: Math.min(lw, ld) * 0.45 }); spires.push({ x: cx, y: y0 + Math.min(lw, ld) * 0.42, z: cz }); } else roofs.push({ x: cx, y: y0, z: cz, sx: lw * 0.98, sy: 14 + Math.min(lw, ld) * 0.35, sz: ld * 0.98 });
@@ -246,22 +246,22 @@
     };
     const box = new T.BoxGeometry(1, 1, 1);
     bodies.forEach((arr, i) => {
-      const mat = new T.MeshStandardMaterial({ map: zaun ? facadeZaun(map.def.seed + i) : facadePiltover(map.def.seed + i), roughness: zaun ? 0.85 : 0.7, metalness: zaun ? 0.25 : 0.05 });
-      if (zaun) { mat.emissive = new T.Color('#ffb070'); mat.emissiveMap = mat.map; mat.emissiveIntensity = 0.28; }
+      const mat = new T.MeshStandardMaterial({ map: nacar ? facadeNácar(map.def.seed + i) : facadeAurelia(map.def.seed + i), roughness: nacar ? 0.85 : 0.7, metalness: nacar ? 0.25 : 0.05 });
+      if (nacar) { mat.emissive = new T.Color('#ffb070'); mat.emissiveMap = mat.map; mat.emissiveIntensity = 0.28; }
       inst(box, mat, arr, (o) => { dummy.position.set(o.x, o.y, o.z); dummy.rotation.y = o.ry; dummy.scale.set(o.sx, o.sy, o.sz); });
     });
     // Torres redondas y cornisas doradas
-    if (!zaun) {
-      inst(new T.CylinderGeometry(1, 1.06, 1, 16, 1), new T.MeshStandardMaterial({ map: facadePiltover(map.def.seed + 9), roughness: 0.7 }), towers,
+    if (!nacar) {
+      inst(new T.CylinderGeometry(1, 1.06, 1, 16, 1), new T.MeshStandardMaterial({ map: facadeAurelia(map.def.seed + 9), roughness: 0.7 }), towers,
         (o) => { dummy.position.set(o.x, o.y, o.z); dummy.scale.set(o.r, o.h, o.r); });
       inst(box, new T.MeshStandardMaterial({ color: '#c9a04a', roughness: 0.45, metalness: 0.7 }), cornices,
         (o) => { dummy.position.set(o.x, o.y, o.z); dummy.scale.set(o.sx, o.sy, o.sz); });
     }
-    // Tejados a cuatro aguas de cobre verdoso (Piltover) o chapa (Zaun)
+    // Tejados a cuatro aguas de cobre verdoso (Aurelia) o chapa (Nácar)
     const pyr = new T.ConeGeometry(0.71, 1, 4, 1);
     pyr.rotateY(Math.PI / 4);
     pyr.translate(0, 0.5, 0);
-    inst(pyr, new T.MeshStandardMaterial({ color: zaun ? '#3a3430' : '#4f9a8c', roughness: 0.6, metalness: zaun ? 0.4 : 0.35, flatShading: true }), roofs,
+    inst(pyr, new T.MeshStandardMaterial({ color: nacar ? '#3a3430' : '#4f9a8c', roughness: 0.6, metalness: nacar ? 0.4 : 0.35, flatShading: true }), roofs,
       (o) => { dummy.position.set(o.x, o.y, o.z); dummy.scale.set(o.sx, o.sy, o.sz); });
     // Cúpulas doradas y agujas
     const dome = new T.SphereGeometry(1, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2);
@@ -270,8 +270,8 @@
     const spire = new T.ConeGeometry(4, 70, 8);
     spire.translate(0, 35, 0);
     inst(spire, new T.MeshStandardMaterial({ color: '#e8c060', roughness: 0.3, metalness: 0.9 }), spires, (o) => { dummy.position.set(o.x, o.y, o.z); });
-    // Neones de Zaun
-    if (zaun && neons.length) {
+    // Neones de Nácar
+    if (nacar && neons.length) {
       const cols = ['#ff3fa0', '#3fffd0', '#b6ff3f', '#c86bff'];
       cols.forEach((c, ci) => {
         inst(new T.BoxGeometry(1, 5, 2), new T.MeshBasicMaterial({ color: c, toneMapped: false }), neons.filter((n) => n.c === ci),
@@ -281,7 +281,7 @@
   }
 
   /** Suelo: la carta pintada de la ciudad (calles, barrios, agua) como textura. */
-  function ground(group, map, groundCanvas, zaun) {
+  function ground(group, map, groundCanvas, nacar) {
     const t = tex(groundCanvas);
     const geo = new T.PlaneGeometry(map.w, map.h, 1, 1);
     geo.rotateX(-Math.PI / 2);
@@ -289,9 +289,9 @@
     const m = new T.Mesh(geo, new T.MeshStandardMaterial({ map: t, roughness: 0.95, metalness: 0 }));
     m.receiveShadow = true;
     group.add(m);
-    // Bordes de la meseta: acantilado de piedra (Piltover) o roca húmeda (Zaun)
-    const rock = rockTexture(zaun ? 21 : 9, zaun ? ['#23261f', '#34362c', '#1a1d18', '#3b3a2c'] : ['#8a7a64', '#6e604e', '#a8957a', '#5a4e40', '#c2ae8a'], [8, 1]);
-    const depth = zaun ? 260 : 900;
+    // Bordes de la meseta: acantilado de piedra (Aurelia) o roca húmeda (Nácar)
+    const rock = rockTexture(nacar ? 21 : 9, nacar ? ['#23261f', '#34362c', '#1a1d18', '#3b3a2c'] : ['#8a7a64', '#6e604e', '#a8957a', '#5a4e40', '#c2ae8a'], [8, 1]);
+    const depth = nacar ? 260 : 900;
     const sides = [
       [map.w, map.w / 2, -depth / 2, 0, 0], [map.w, map.w / 2, -depth / 2, map.h, Math.PI],
       [map.h, 0, -depth / 2, map.h / 2, -Math.PI / 2], [map.h, map.w, -depth / 2, map.h / 2, Math.PI / 2],
@@ -312,7 +312,7 @@
     }
   }
 
-  function piltoverWorld(scene, map) {
+  function aureliaWorld(scene, map) {
     const r = rng(77);
     scene.background = null;
     // Cielo: gran esfera con degradado dorado; el sol y un mar de nubes por debajo de la meseta.
@@ -366,7 +366,7 @@
     return { key, tick(t, dt) { clouds.children.forEach((c) => { c.position.x += c.userData.v * dt; if (c.position.x > map.w / 2 + 9500) c.position.x -= 19000; }); } };
   }
 
-  function zaunWorld(scene, map) {
+  function nacarWorld(scene, map) {
     const r = rng(31);
     scene.background = new T.Color('#05080a');
     // Caverna: un elipsoide de roca visto desde dentro, deformado con ruido, con estalactitas.
@@ -402,7 +402,7 @@
       im.setMatrixAt(i, dmy.matrix);
     }
     scene.add(im);
-    // Grietas por las que se cuela la luz de Piltover
+    // Grietas por las que se cuela la luz de Aurelia
     const shafts = new T.Group();
     const shaftMat = new T.MeshBasicMaterial({ color: '#ffe0a0', transparent: true, opacity: 0.08, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false });
     for (let i = 0; i < 6; i++) {
@@ -458,9 +458,9 @@
     };
   }
 
-  /** Canal químico del Sumidero / mar bajo Piltover: agua animada. */
-  function water(group, map, zaun) {
-    if (zaun) {
+  /** Canal químico del Sumidero / mar bajo Aurelia: agua animada. */
+  function water(group, map, nacar) {
+    if (nacar) {
       const pts = [[-50, 1780], [700, 1640], [1300, 1980], [1900, 1800], [2400, 1640], [2700, 1960], [3050, 1760]].map(([x, z]) => new T.Vector3(x, 3, z));
       const curve = new T.CatmullRomCurve3(pts);
       const shape = new T.Mesh(new T.TubeGeometry(curve, 80, 55, 6, false), new T.MeshBasicMaterial({ color: '#7dff5a', transparent: true, opacity: 0.35, toneMapped: false }));
@@ -506,13 +506,13 @@
     function setMap(map, groundCanvas) {
       if (scene) scene.traverse((o) => { o.geometry?.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map?.dispose(); m.dispose(); }); });
       scene = new T.Scene();
-      const zaun = map.id === 'zaun';
+      const nacar = map.id === 'nacar';
       const group = new T.Group();
-      ground(group, map, groundCanvas, zaun);
-      buildings(group, map, zaun);
-      water(group, map, zaun);
+      ground(group, map, groundCanvas, nacar);
+      buildings(group, map, nacar);
+      water(group, map, nacar);
       scene.add(group);
-      world = zaun ? zaunWorld(scene, map) : piltoverWorld(scene, map);
+      world = nacar ? nacarWorld(scene, map) : aureliaWorld(scene, map);
       if (shadows && world.key) {
         world.key.castShadow = true;
         const s = world.key.shadow;

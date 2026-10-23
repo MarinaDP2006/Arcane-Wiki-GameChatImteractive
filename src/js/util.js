@@ -87,38 +87,38 @@
     camSpeed: 1, invertCam: false, vibration: true, shake: 1,
     reduceMotion: false, highContrast: false, readableFont: false, uiTheme: 'ciudad',
   };
-  const desktop = window.arcane?.isDesktop;
+  const desktop = window.umbral?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).
   const touch = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
   const store = {
     async listSlots() {
-      if (desktop) return window.arcane.saves.list();
+      if (desktop) return window.umbral.saves.list();
       return ['1', '2', '3'].map((slot) => {
-        const d = LS.get(`arcane-slot-${slot}`, null);
+        const d = LS.get(`umbral-slot-${slot}`, null);
         return { slot, empty: !d, name: d?.player?.name, origin: d?.player?.origin, chapter: d?.progress?.chapterTitle, savedAt: d?.savedAt, playTimeSeconds: d?.playTimeSeconds || 0 };
       });
     },
     async load(slot) {
-      return desktop ? window.arcane.saves.load(slot) : LS.get(`arcane-slot-${slot}`, null);
+      return desktop ? window.umbral.saves.load(slot) : LS.get(`umbral-slot-${slot}`, null);
     },
     async save(slot, data) {
-      if (desktop) return window.arcane.saves.write(slot, data);
-      LS.set(`arcane-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
+      if (desktop) return window.umbral.saves.write(slot, data);
+      LS.set(`umbral-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
       return true;
     },
     async remove(slot) {
-      if (desktop) return window.arcane.saves.remove(slot);
-      LS.del(`arcane-slot-${slot}`);
+      if (desktop) return window.umbral.saves.remove(slot);
+      LS.del(`umbral-slot-${slot}`);
       return true;
     },
     async getSettings() {
       const base = { ...SETTINGS_DEFAULTS };
-      if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
-      return { ...base, ...LS.get('arcane-settings', {}) };
+      if (desktop) return { ...base, ...(await window.umbral.settings.get()) };
+      return { ...base, ...LS.get('umbral-settings', {}) };
     },
     async setSettings(patch) {
-      if (desktop) return window.arcane.settings.set(patch);
-      LS.set('arcane-settings', { ...LS.get('arcane-settings', {}), ...patch });
+      if (desktop) return window.umbral.settings.set(patch);
+      LS.set('umbral-settings', { ...LS.get('umbral-settings', {}), ...patch });
       return true;
     },
   };
@@ -142,32 +142,19 @@
 
   // Nombres alternativos (también en inglés) con los que se reconoce cada lugar.
   const PLACE_ALIASES = {
-    'ultima-gota': ['last-drop', 'bar-ultima-gota', 'bar-de-vander'],
-    callejones: ['lanes', 'zaun-callejones'],
-    sumidero: ['sump', 'laboratorio-sumidero', 'laboratorio-de-singed', 'lab-singed'],
-    academia: ['academy', 'piltover-academy'],
-    zaun: ['undercity', 'ciudad-subterranea'],
-    'taller-jayce': ['jaycetaller'],
-    consejo: ['council', 'council-chamber', 'sala-consejo'],
-    hexpuertas: ['hexgates', 'hexgate', 'hexpuerta'],
-    puente: ['bridge', 'bridge-of-progress', 'puente-progreso'],
-    arbol: ['firelights', 'firelight', 'arbol-luciernagas', 'luciernagas', 'firelight-tree'],
-    'escondite-jinx': ['jinx-hideout', 'guarida-jinx', 'guarida-de-jinx'],
-    fabrica: ['shimmer-factory', 'fabrica-brillo', 'fabrica-de-shimmer'],
-    ejecutores: ['enforcers', 'jefatura', 'comisaria'],
-    'mansion-kiramman': ['kiramman', 'kiramman-mansion', 'casa-kiramman'],
-    'taller-jayce': ['jayce-workshop', 'taller', 'laboratorio-jayce'],
-    stillwater: ['prision-stillwater', 'stillwater-prison', 'prision'],
-    'muelle-stillwater': ['muelle', 'stillwater-dock', 'muelles'],
-    mercado: ['mercado-tuberias', 'mercado-zaun', 'zaun-market'],
-    artesanos: ['mercado-artesanos', 'artisans', 'artisan-market'],
-    plaza: ['plaza-progreso', 'plaza-del-progreso', 'progress-plaza'],
-    'tienda-benzo': ['benzo', 'tienda-de-benzo', 'benzo-shop'],
-    tejados: ['rooftops', 'tejados-chimeneas', 'chimeneas'],
-    foso: ['pit', 'fight-pit', 'foso-peleas', 'foso-de-peleas'],
+    archivo: ['archivo-de-frecuencias', 'archivo-frecuencias'],
+    observatorio: ['terrazas-del-observatorio', 'terrazas'],
+    gremios: ['patio-de-gremios', 'patio-gremios'],
+    'ascensor-central': ['estacion-de-ascensores', 'ascensor', 'ascensores'],
+    cristal: ['bulevar-de-cristal', 'bulevar'],
+    'mercado-nacar': ['mercado-de-las-tuberias', 'mercado'],
+    galerias: ['galerias-geotermicas'],
+    'jardin-musgo': ['jardin-de-musgo', 'jardin'],
+    clinica: ['clinica-de-los-tres-arcos'],
+    'canal-cobre': ['canal-de-cobre', 'canal'],
   };
-  // Si falta un lugar, usa la imagen de su gemelo antes que el fondo pintado.
-  const PLACE_FALLBACK = { callejones: 'zaun', sumidero: 'zaun', mercado: 'zaun', fabrica: 'zaun', 'puente-zaun': 'puente', puente: 'puente-zaun', 'muelle-stillwater': 'stillwater', stillwater: 'muelle-stillwater', plaza: 'piltover', piltover: 'plaza', zaun: 'mercado' };
+  // Si falta un lugar, usa la imagen de su ciudad antes que el fondo pintado.
+  const PLACE_FALLBACK = {};
 
   // Asigna los archivos de lugares/ a los ids del juego aunque el nombre no sea exacto.
   function matchPlaces(raw) {
@@ -179,7 +166,7 @@
     for (const id of ids) {
       for (const k of new Set([id, slug(id), names[id] && slug(names[id]), ...(PLACE_ALIASES[id] || [])].filter(Boolean))) keys.push([k, id]);
     }
-    keys.sort((a, b) => b[0].length - a[0].length); // «puente-zaun» antes que «puente»
+    keys.sort((a, b) => b[0].length - a[0].length); // «mercado-nacar» antes que «mercado»
     const out = {};
     const unknown = [];
     const files = Object.entries(raw).map(([f, url]) => [slug(f), f, url]);
@@ -205,8 +192,8 @@
     files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {} },
     report: { found: [], missing: [], borrowed: [], unknown: [] },
     async load() {
-      if (window.arcane?.art) {
-        try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
+      if (window.umbral?.art) {
+        try { this.files = await window.umbral.art.list(); } catch { /* sin carpeta */ }
       } else {
         // Navegador y Android: recursos empaquetados, incluidas las carpetas por temporada.
         for (const dir of new Set([...Object.keys(this.files), ...Object.keys(window.ART_BUNDLED || {})])) this.files[dir] = { ...(window.ART_BUNDLED?.[dir] || {}) };

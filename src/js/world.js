@@ -1,10 +1,10 @@
-// Mapa interactivo de Piltover y Zaun. Con WebGL, la ciudad es una escena 3D (world3d.js:
-// Piltover bajo el cielo, Zaun en una caverna) que se puede inclinar y girar; sin WebGL, o con
-// la vista 2D elegida, es una carta ilustrada (arte de Arcane de la temporada de fondo, barrios,
+// Mapa interactivo de Aurelia y Nácar. Con WebGL, la ciudad es una escena 3D (world3d.js:
+// Aurelia bajo el cielo, Nácar en una caverna) que se puede inclinar y girar; sin WebGL, o con
+// la vista 2D elegida, es una carta ilustrada (arte propio de la ciudad de fondo, barrios,
 // calles, canales y edificios). En las dos se arrastra, se amplía con la rueda o pellizcando y se toca.
 // Encima, siempre en 2D, van los lugares, las caras y los rótulos. Los lugares son medallones con su imagen: al
 // pulsar uno NO se entra, se abre su menú (historia, conversar, minijuego, explorar, viajar).
-// Las caras de los personajes salen junto a su lugar y los cristales hextec se recogen tocándolos.
+// Las caras de los personajes salen junto a su lugar y los cristales de Resonancia se recogen tocándolos.
 (function () {
   const W = () => window.WORLD;
   const BG_SCALE = 0.6; // resolución del fondo cacheado respecto al mundo (3000x2200)
@@ -58,7 +58,7 @@
     const def = W().maps[id];
     const [w, h] = def.size;
     const r = rng(def.seed);
-    // Piltover: manzanas grandes. Zaun: bloques apiñados.
+    // Aurelia: manzanas grandes. Nácar: bloques apiñados.
     const BLOCK = def.block || 250;
     const STREET = def.street || 74;
     const keepClear = [
@@ -123,28 +123,15 @@
     return img;
   }
   const ready = (img) => img && img.complete && img.naturalWidth;
-  // Personajes: su avatar de chat (carpeta caras, imágenes de la Arcane Wiki).
+  // Personajes: su avatar de chat (carpeta caras del arte personal o retrato pintado).
   function charImg(id) { return loadImg(`c:${id}`, Portrait.customChar(id, false) || Portrait.charURL(id, 96)); }
 
-  // Imagen de cada lugar: la de su temporada (lugares/s1|s2), la de la carpeta de arte o la del Atlas.
-  const ATLAS_IMG = {
-    academia: 'piltover-academy', 'taller-jayce': 'hextech-lab', consejo: 'council-chamber', ejecutores: 'stillwater-hold',
-    'mansion-kiramman': 'kiramman-estate', plaza: 'piltover', artesanos: 'airship-docks', hexpuertas: 'the-hexgates',
-    'muelle-stillwater': 'stillwater-hold', puente: 'bridge-of-progress', 'puente-zaun': 'bridge-of-progress',
-    fabrica: 'shimmer-factory', foso: 'undercity', tejados: 'zaun', 'ultima-gota': 'the-last-drop', callejones: 'the-lanes',
-    'tienda-benzo': 'benzos-pawn-shop', mercado: 'undercity', sumidero: 'zaun', 'escondite-jinx': 'the-lanes', arbol: 'firelight-sanctuary',
-    invernadero: 'viktors-commune',
-  };
-  /** URL de la imagen de un lugar para la temporada que se juega. */
-  // Imágenes de la carpeta lugares/ que son escudos y no escenarios (no sirven de medallón).
-  const EMBLEMS = new Set(['mansion-kiramman', 'noxus']);
+  // Imagen de cada lugar: la de la carpeta de arte personal o su ilustración propia.
   function placeURL(id) {
     const own = window.CustomArt?.image('lugares', id);
-    if (own && !(EMBLEMS.has(id) && /lugares\/[^/]+\.png$/.test(own))) return own;
-    if (own && ATLAS_IMG[id]) return `img/atlas/${ATLAS_IMG[id]}.webp`;
+    if (own) return own;
     const p = window.Scenes2D?.PLACES?.[id];
-    const scene = p && window.Scenes2D.imageFor(id, p[1]);
-    return scene || (ATLAS_IMG[id] && `img/atlas/${ATLAS_IMG[id]}.webp`) || null;
+    return (p && window.Scenes2D.imageFor(id, p[1])) || null;
   }
   function placeImg(l) {
     const url = placeURL(l.id);
@@ -152,7 +139,7 @@
   }
   /** Panorámica de la ciudad para el fondo del mapa. */
   function cityArt(id) {
-    const url = window.CustomArt?.image('lugares', id) || `img/arte/lugares/${id}.webp`;
+    const url = window.CustomArt?.image('lugares', id) || `img/umbral/lugares/${id}.svg`;
     return loadImg(`city:${url}`, url);
   }
 
@@ -191,9 +178,9 @@
   const sync3d = () => r3d?.place(camState());
   const toScreen = (x, y, h = 0) => (r3d ? r3d.project(x, y, h) : { x: (x - G.world.x) * zoom + cw / 2, y: (y - G.world.y) * zoom + ch / 2 });
   const toWorld = (sx, sy) => (r3d && r3d.pick(sx, sy)) || { x: (sx - cw / 2) / zoom + G.world.x, y: (sy - ch / 2) / zoom + G.world.y };
-  // En la caverna de Zaun la cámara no puede subir más que la bóveda.
+  // En la caverna de Nácar la cámara no puede subir más que la bóveda.
   const zMin = () => {
-    if (r3d && mapId === 'zaun') return Math.max(fit * 0.92, (ch / 2) / (Math.tan((45 * Math.PI) / 360) * (1150 / Math.cos(pitch))));
+    if (r3d && mapId === 'nacar') return Math.max(fit * 0.92, (ch / 2) / (Math.tan((45 * Math.PI) / 360) * (1150 / Math.cos(pitch))));
     return fit * 0.92;
   };
   const PAD_TOP = 26; // px de pantalla libres arriba y abajo (la barra de botones tapa el borde inferior)
@@ -240,7 +227,7 @@
 
   // ---------- Fondo pintado (se dibuja una vez por ciudad) ----------
   function paintBackground(forGround = false) {
-    const zaun = mapId === 'zaun';
+    const nacar = mapId === 'nacar';
     const P = map.def.palette;
     const c = document.createElement('canvas');
     c.width = Math.round(map.w * BG_SCALE);
@@ -251,15 +238,15 @@
 
     g.fillStyle = P.ground;
     g.fillRect(0, 0, map.w, map.h);
-    // Arte de Arcane de la ciudad, muy oscurecido y difuminado, como lavado de acuarela.
+    // Arte de la ciudad, muy oscurecido y difuminado, como lavado de acuarela.
     const art = cityArt(mapId);
     if (forGround) {
-      g.fillStyle = zaun ? '#1a2420' : '#8f7c5a';
+      g.fillStyle = nacar ? '#1a2420' : '#8f7c5a';
       g.fillRect(0, 0, map.w, map.h);
-      // Suelo de la escena 3D: adoquín (Piltover) o roca húmeda (Zaun), sin imagen encima.
+      // Suelo de la escena 3D: adoquín (Aurelia) o roca húmeda (Nácar), sin imagen encima.
       for (let i = 0; i < 9000; i++) {
         g.globalAlpha = 0.05 + r() * 0.1;
-        g.fillStyle = zaun ? ['#2a3a30', '#141c18', '#3a3a2a', '#1f2e2a'][i % 4] : ['#a8916a', '#7d6a4a', '#c4ad82', '#8a7656'][i % 4];
+        g.fillStyle = nacar ? ['#2a3a30', '#141c18', '#3a3a2a', '#1f2e2a'][i % 4] : ['#a8916a', '#7d6a4a', '#c4ad82', '#8a7656'][i % 4];
         g.beginPath();
         g.ellipse(r() * map.w, r() * map.h, 10 + r() * 50, 4 + r() * 12, r() * 3, 0, Math.PI * 2);
         g.fill();
@@ -276,15 +263,15 @@
     }
     const wash = g.createLinearGradient(0, 0, 0, map.h);
     if (forGround) { wash.addColorStop(0, 'rgba(0,0,0,0)'); wash.addColorStop(1, 'rgba(0,0,0,0)'); } else {
-    wash.addColorStop(0, zaun ? 'rgba(14,22,20,0.35)' : 'rgba(42,36,24,0.35)');
-    wash.addColorStop(1, zaun ? 'rgba(6,14,10,0.62)' : 'rgba(24,20,12,0.62)');
+    wash.addColorStop(0, nacar ? 'rgba(14,22,20,0.35)' : 'rgba(42,36,24,0.35)');
+    wash.addColorStop(1, nacar ? 'rgba(6,14,10,0.62)' : 'rgba(24,20,12,0.62)');
     }
     g.fillStyle = wash;
     g.fillRect(0, 0, map.w, map.h);
 
-    // Agua: el mar de las Hexpuertas en Piltover y el canal químico del Sumidero en Zaun.
+    // Agua: el mar de las Hexpuertas en Aurelia y el canal químico del Sumidero en Nácar.
     g.save();
-    if (zaun) {
+    if (nacar) {
       g.strokeStyle = 'rgba(120,200,80,0.22)';
       g.lineWidth = 120;
       g.lineCap = 'round';
@@ -331,7 +318,7 @@
       g.closePath();
       g.fillStyle = d.tint.replace(/[\d.]+\)$/, (m) => `${Math.min(0.3, parseFloat(m) * 1.3)})`);
       g.fill();
-      g.strokeStyle = zaun ? 'rgba(63,191,159,0.22)' : 'rgba(227,196,90,0.25)';
+      g.strokeStyle = nacar ? 'rgba(63,191,159,0.22)' : 'rgba(227,196,90,0.25)';
       g.lineWidth = 3;
       g.setLineDash([14, 10]);
       g.stroke();
@@ -344,7 +331,7 @@
       g.globalAlpha = 0.22;
       g.fillStyle = 'rgba(0,0,0,0.7)';
       g.fillRect(b.x + 5, b.y + 7, b.w, b.h);
-      g.globalAlpha = zaun ? 0.16 : 0.14;
+      g.globalAlpha = nacar ? 0.16 : 0.14;
       g.fillStyle = b.color;
       g.fillRect(b.x, b.y, b.w, b.h);
       g.fillStyle = b.roof;
@@ -354,7 +341,7 @@
       g.strokeStyle = P.outline;
       g.lineWidth = 1.5;
       g.strokeRect(b.x, b.y, b.w, b.h);
-      if (zaun && b.tall > 0.75) {
+      if (nacar && b.tall > 0.75) {
         g.globalAlpha = 0.55;
         g.fillStyle = b.roof;
         g.fillRect(b.x + b.w * 0.2, b.y + b.h - 10, b.w * 0.6, 4);
@@ -362,8 +349,8 @@
     }
     g.globalAlpha = 1;
 
-    // Tuberías de Zaun
-    if (zaun) {
+    // Tuberías de Nácar
+    if (nacar) {
       g.strokeStyle = 'rgba(143,191,58,0.22)';
       g.lineWidth = 10;
       for (let i = 0; i < 6; i++) {
@@ -376,7 +363,7 @@
 
     // Calles entre los lugares: firme oscuro con bordillo de color.
     for (const rd of map.roads) {
-      for (const [col, wid] of [['rgba(0,0,0,0.55)', 46], [zaun ? '#1f2a26' : '#5a4a30', 34], [zaun ? 'rgba(63,191,159,0.18)' : 'rgba(255,236,190,0.16)', 4]]) {
+      for (const [col, wid] of [['rgba(0,0,0,0.55)', 46], [nacar ? '#1f2a26' : '#5a4a30', 34], [nacar ? 'rgba(63,191,159,0.18)' : 'rgba(255,236,190,0.16)', 4]]) {
         g.strokeStyle = col;
         g.lineWidth = wid;
         g.lineCap = 'round';
@@ -393,7 +380,7 @@
     for (const d of map.def.districts) {
       const [x, y, w, h] = d.rect;
       g.font = 'italic bold 64px Georgia, serif';
-      g.fillStyle = zaun ? 'rgba(170,255,220,0.16)' : 'rgba(255,240,200,0.18)';
+      g.fillStyle = nacar ? 'rgba(170,255,220,0.16)' : 'rgba(255,240,200,0.18)';
       g.fillText(d.name.toUpperCase(), x + w / 2, y + h - 70);
     }
 
@@ -401,7 +388,7 @@
       // Plazas empedradas alrededor de cada lugar
       for (const l of map.def.locations) {
         const gr = g.createRadialGradient(l.x, l.y, 10, l.x, l.y, 130);
-        gr.addColorStop(0, zaun ? 'rgba(63,191,159,0.35)' : 'rgba(255,230,170,0.45)');
+        gr.addColorStop(0, nacar ? 'rgba(63,191,159,0.35)' : 'rgba(255,230,170,0.45)');
         gr.addColorStop(1, 'rgba(0,0,0,0)');
         g.fillStyle = gr;
         g.beginPath(); g.arc(l.x, l.y, 130, 0, Math.PI * 2); g.fill();
@@ -411,7 +398,7 @@
     // Rosa de los vientos
     g.save();
     g.translate(map.w - 200, map.h - 220);
-    g.strokeStyle = zaun ? 'rgba(63,191,159,0.45)' : 'rgba(227,196,90,0.55)';
+    g.strokeStyle = nacar ? 'rgba(63,191,159,0.45)' : 'rgba(227,196,90,0.55)';
     g.fillStyle = g.strokeStyle;
     g.lineWidth = 3;
     g.beginPath(); g.arc(0, 0, 90, 0, Math.PI * 2); g.stroke();
@@ -435,7 +422,7 @@
       g.fillStyle = r() < 0.5 ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.05)';
       g.fillRect(r() * map.w, r() * map.h, 3 + r() * 6, 3 + r() * 6);
     }
-    const frame = zaun ? '#3fbf9f' : '#e3c45a';
+    const frame = nacar ? '#3fbf9f' : '#e3c45a';
     g.strokeStyle = frame;
     g.globalAlpha = 0.7;
     g.lineWidth = 8;
@@ -468,14 +455,14 @@
   const pinR = () => Math.max(26, Math.min(48, 34 * Math.sqrt(zoom / Math.max(0.2, fit))));
 
   function draw(t, dt) {
-    const zaun = mapId === 'zaun';
+    const nacar = mapId === 'nacar';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (!map.bg || (!map.bgArt && ready(cityArt(mapId)))) paintBackground();
     if (r3d) {
       try {
         ctx.clearRect(0, 0, cw, ch);
         r3d.render(camState(), t / 1000, dt);
-        drawOverlay(t, zaun);
+        drawOverlay(t, nacar);
         return;
       } catch (err) {
         // Si el 3D falla en este equipo, se sigue con la carta 2D en vez de dejar la pantalla negra.
@@ -507,11 +494,11 @@
     const o = toScreen(0, 0);
     ctx.imageSmoothingQuality = 'medium';
     ctx.drawImage(map.bg, o.x, o.y, map.w * zoom, map.h * zoom);
-    drawOverlay(t, zaun);
+    drawOverlay(t, nacar);
   }
 
   /** Lo que va encima del mapa (2D o 3D): ruta, ambiente, cristales, lugares, caras y rótulos. */
-  function drawOverlay(t, zaun) {
+  function drawOverlay(t, nacar) {
     const PIN_H = r3d ? 95 : 0; // altura a la que flotan los medallones en 3D
 
     // Ruta animada hasta el objetivo por las calles.
@@ -540,10 +527,10 @@
       ctx.restore();
     }
 
-    // Ambiente: humo químico en Zaun, polvo dorado en Piltover.
+    // Ambiente: humo químico en Nácar, polvo dorado en Aurelia.
     if (opt().particles !== false && !opt().reduceMotion) {
       for (const p of particles) {
-        if (zaun) {
+        if (nacar) {
           const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
           gr.addColorStop(0, `rgba(120,220,170,${0.07 * Math.min(1, p.life / 3)})`);
           gr.addColorStop(1, 'rgba(120,220,170,0)');
@@ -555,7 +542,7 @@
       }
     }
 
-    // Cristales hextec (fragmentos del Códice)
+    // Cristales de Resonancia (fragmentos del Códice)
     drawn = { pins: [], frags: [] };
     for (const f of map.def.fragments) {
       if (G.codex.includes(f.codex)) continue;
@@ -581,7 +568,7 @@
       if (r3d) {
         const g0 = toScreen(l.x, l.y, 0);
         const beam = ctx.createLinearGradient(g0.x, g0.y, s.x, s.y);
-        const col = isObj ? '255,224,138' : zaun ? '63,191,159' : '227,196,90';
+        const col = isObj ? '255,224,138' : nacar ? '63,191,159' : '227,196,90';
         beam.addColorStop(0, `rgba(${col},0.9)`);
         beam.addColorStop(1, `rgba(${col},0.15)`);
         ctx.strokeStyle = beam;
@@ -595,7 +582,7 @@
       const here = people.filter((n) => n.loc === l.id);
       const faces = here.map((n, i) => {
         const p = facePos(s.x, s.y, rr, i, here.length);
-        drawFace(charImg(n.id), p.x, p.y, p.r, zaun ? '#3fbf9f' : '#e3c45a', hover?.kind === 'char' && hover.id === n.id);
+        drawFace(charImg(n.id), p.x, p.y, p.r, nacar ? '#3fbf9f' : '#e3c45a', hover?.kind === 'char' && hover.id === n.id);
         return { n, p };
       });
       drawn.pins.push({ l, x: s.x, y: s.y, R: rr, faces });
@@ -604,7 +591,7 @@
     // Rótulos encima de todo
     for (const { l, x, y, isObj, hov, R } of labels) {
       if (isObj) ribbon('OBJETIVO', x, y - R * 2 - 60, '#ffe08a');
-      if (r3d || zoom > fit * 0.95 || isObj || hov) plate(l.name, x, y, isObj ? '#ffe08a' : hov ? '#fff' : (zaun ? '#bff5e6' : '#fbe9b8'), hov);
+      if (r3d || zoom > fit * 0.95 || isObj || hov) plate(l.name, x, y, isObj ? '#ffe08a' : hov ? '#fff' : (nacar ? '#bff5e6' : '#fbe9b8'), hov);
       if (hov) {
         const acts = cb.locationActions?.(l) || [];
         const summary = acts.length ? acts.slice(0, 3).join(' · ') + (acts.length > 3 ? ' …' : '') : 'Toca para ver el lugar';
@@ -616,13 +603,13 @@
       plate(`Hablar con ${hover.name}`, p.x, p.y - p.r - 16, '#fff', true, 13);
     } else if (hover?.kind === 'frag') {
       const s = toScreen(hover.x, hover.y, r3d ? 45 : 0);
-      plate('Cristal hextec · tócalo para recogerlo', s.x, s.y - 36, '#bfe6ff', true, 13);
+      plate('Cristal de Resonancia · tócalo para recogerlo', s.x, s.y - 36, '#bfe6ff', true, 13);
     }
 
     // Viñeta
     const v = ctx.createRadialGradient(cw / 2, ch / 2, Math.min(cw, ch) * 0.35, cw / 2, ch / 2, Math.max(cw, ch) * 0.75);
     v.addColorStop(0, 'transparent');
-    v.addColorStop(1, zaun ? 'rgba(0,16,8,0.6)' : r3d ? 'rgba(40,24,0,0.25)' : 'rgba(20,12,0,0.45)');
+    v.addColorStop(1, nacar ? 'rgba(0,16,8,0.6)' : r3d ? 'rgba(40,24,0,0.25)' : 'rgba(20,12,0,0.45)');
     ctx.fillStyle = v;
     ctx.fillRect(0, 0, cw, ch);
 
@@ -643,14 +630,14 @@
     return { x: x + Math.cos(a) * (R + r * 0.85), y: y + Math.sin(a) * (R + r * 0.85), r };
   }
 
-  /** Medallón de un lugar: imagen recortada en círculo con marco hextec. */
+  /** Medallón de un lugar: imagen recortada en círculo con marco de latón. */
   function medallion(l, x, y, R, isObj, hov, t, isNew) {
-    const zaun = mapId === 'zaun';
-    const frame = isObj ? '#ffe08a' : zaun ? '#3fbf9f' : '#e3c45a';
+    const nacar = mapId === 'nacar';
+    const frame = isObj ? '#ffe08a' : nacar ? '#3fbf9f' : '#e3c45a';
     // Halo
     const pulse = 0.5 + Math.sin(t / 420) * 0.5;
     const halo = ctx.createRadialGradient(x, y, R * 0.6, x, y, R * (isObj ? 2.4 : 1.8));
-    halo.addColorStop(0, isObj ? `rgba(255,220,120,${0.35 + pulse * 0.3})` : hov ? 'rgba(255,255,255,0.25)' : (zaun ? 'rgba(63,191,159,0.22)' : 'rgba(227,196,90,0.2)'));
+    halo.addColorStop(0, isObj ? `rgba(255,220,120,${0.35 + pulse * 0.3})` : hov ? 'rgba(255,255,255,0.25)' : (nacar ? 'rgba(63,191,159,0.22)' : 'rgba(227,196,90,0.2)'));
     halo.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = halo;
     ctx.beginPath();
@@ -678,7 +665,7 @@
       const ih = img.naturalHeight * s;
       ctx.drawImage(img, x - iw / 2, y - ih / 2, iw, ih);
     } else {
-      ctx.fillStyle = zaun ? '#1f2a26' : '#4a3f2a';
+      ctx.fillStyle = nacar ? '#1f2a26' : '#4a3f2a';
       ctx.fillRect(x - R, y - R, R * 2, R * 2);
     }
     // Brillo de cristal
@@ -738,7 +725,7 @@
     if (l.travel) {
       ctx.fillStyle = frame;
       ctx.beginPath();
-      const dir = mapId === 'zaun' ? -1 : 1;
+      const dir = mapId === 'nacar' ? -1 : 1;
       ctx.moveTo(x + R * 0.78, y + dir * -2);
       ctx.lineTo(x + R * 0.78 + 9, y + dir * 10);
       ctx.lineTo(x + R * 0.78 - 9, y + dir * 10);
@@ -781,7 +768,7 @@
     ctx.fillStyle = 'rgba(10,8,16,0.82)';
     roundRect(x - w / 2, y - h / 2, w, h, 7);
     ctx.fill();
-    ctx.strokeStyle = mapId === 'zaun' ? 'rgba(63,191,159,0.45)' : 'rgba(227,196,90,0.45)';
+    ctx.strokeStyle = mapId === 'nacar' ? 'rgba(63,191,159,0.45)' : 'rgba(227,196,90,0.45)';
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.fillStyle = color;
@@ -803,7 +790,7 @@
     ctx.fillText(text, x, y + 1);
   }
 
-  // Cristal hextec: gema azul con marco dorado hexagonal y anillo de runas girando.
+  // Cristal de Resonancia: gema con marco dorado hexagonal y anillo de runas girando.
   function hexCrystal(x, y, t, k = 1) {
     ctx.save();
     ctx.translate(x, y);
@@ -988,9 +975,9 @@
     clampView();
     G.world.zoom = zoom / fit;
 
-    if (particles.length < (mapId === 'zaun' ? 26 : 60) && Math.random() < 0.4) {
-      const zaun = mapId === 'zaun';
-      particles.push({ x: Math.random() * cw, y: ch + 10, vy: -(15 + Math.random() * 35), vx: (Math.random() - 0.5) * 12, life: 7 + Math.random() * 6, r: zaun ? 50 + Math.random() * 90 : 1.2 + Math.random() * 2 });
+    if (particles.length < (mapId === 'nacar' ? 26 : 60) && Math.random() < 0.4) {
+      const nacar = mapId === 'nacar';
+      particles.push({ x: Math.random() * cw, y: ch + 10, vy: -(15 + Math.random() * 35), vx: (Math.random() - 0.5) * 12, life: 7 + Math.random() * 6, r: nacar ? 50 + Math.random() * 90 : 1.2 + Math.random() * 2 });
     }
     particles.forEach((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; });
     particles = particles.filter((p) => p.life > 0);
@@ -1239,8 +1226,8 @@
         flyTo(o.x, o.y, Math.max(zoom, fit * 1.8));
       }, 'gold'),
     );
-    const other = mapId === 'zaun' ? 'piltover' : 'zaun';
-    const sw = mk(mapId === 'zaun' ? 'Subir a Piltover' : 'Bajar a Zaun', `Ver ${W().maps[other].label}`, () => {
+    const other = mapId === 'nacar' ? 'aurelia' : 'nacar';
+    const sw = mk(mapId === 'nacar' ? 'Subir a Aurelia' : 'Bajar a Nácar', `Ver ${W().maps[other].label}`, () => {
       const br = map.def.locations.find((l) => l.travel);
       setMap(other, br?.travel?.at);
       cb.onTravel?.(other);
@@ -1324,7 +1311,7 @@
     // La cámara se pone del lado del centro de la ciudad, mirando hacia fuera desde los bordes
     // (al llegar por el puente se ve el cielo y el mar, no la pared del acantilado).
     yaw = loc ? Math.atan2(map.w / 2 - loc.x, map.h / 2 - loc.y) : 0;
-    pitch = id === 'zaun' ? 1.05 : 1.02;
+    pitch = id === 'nacar' ? 1.05 : 1.02;
     clampView();
     hover = null;
     particles = [];
@@ -1378,7 +1365,7 @@
       canvas.addEventListener('contextmenu', (e) => e.preventDefault());
       mini?.addEventListener('click', onMiniClick);
       if (!G.world.map) {
-        const spawn = W().spawns[G.player.district] || (G.player.origin === 'zaun' ? 'callejones' : 'plaza');
+        const spawn = W().spawns[G.player.district] || (G.player.origin === 'nacar' ? 'mercado-nacar' : 'ascensor-central');
         setMap(G.player.origin, spawn);
       } else setMap(G.world.map);
       running = true;

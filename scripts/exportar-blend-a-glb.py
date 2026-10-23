@@ -6,7 +6,7 @@
 #   "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b copia.blend --python scripts\exportar-blend-a-glb.py -- salida.glb [materiales_a_quitar|-] [girar]
 #   materiales_a_quitar: nombres separados por comas cuyas caras se eliminan de la copia (o «-»).
 #   girar: gira el modelo 180° si en el juego aparece de espaldas.
-#   Ejemplo: ... -- "%APPDATA%\Arcane Piltover y Zaun\arte\modelos\ekko.glb" - girar
+#   Ejemplo: ... -- "%APPDATA%\Arcane Aurelia y Nácar\arte\modelos\ekko.glb" - girar
 import bpy, bmesh, sys
 args = sys.argv[sys.argv.index('--') + 1:]
 out = args[0]

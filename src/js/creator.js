@@ -1,4 +1,4 @@
-// Creador de personaje estilo selección de campeón: clase, habilidades,
+// Creador de personaje por pasos: clase, habilidades,
 // aptitudes, retrato elegido de la galería (carpeta «avatares») o foto propia, y ficha.
 (function () {
   const { $, el, tpl, pick } = U;
@@ -166,7 +166,7 @@
   }
 
   // ---------- Estructura ----------
-  // Retrato grande al estilo de la selección de campeón, con nombre, clase y título.
+  // Retrato grande de la ficha, con nombre, clase y título.
   function splash() {
     const cls = C().classes.find((c) => c.id === draft.cls);
     return el('div', { class: `splash${draft.photo ? '' : ' empty'}`, id: 'splash', title: '¡Haz clic!', onclick: () => quip() },
@@ -182,7 +182,7 @@
   function layout() {
     const root = $('#view-creator');
     root.innerHTML = '';
-    const city = draft.origin === 'piltover' ? 'piltover' : draft.origin === 'zaun' ? 'zaun' : 'puente';
+    const city = draft.origin === 'aurelia' ? 'aurelia' : draft.origin === 'nacar' ? 'nacar' : 'ascensor-central';
     const bgImg = window.CustomArt.image('lugares', city);
     const bg = el('div', { class: `creator-bg creator-bg-${draft.origin || 'none'}`, style: bgImg ? `background-image:url("${bgImg}")` : null });
     const side = el('div', { class: 'creator-stage' },
@@ -261,10 +261,10 @@
     const who = `${draft.name || 'yo'}${draft.title ? `, ${tpl(draft.title, draft)}` : ''}`;
     const lines = [
       `¿Qué miras? Soy ${who}.`,
-      cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'piltover' ? 'Piltover' : 'Zaun'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
+      cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'aurelia' ? 'Aurelia' : 'Nácar'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
       '¡Eh, sin tocar!',
       'Si me vuelves a pinchar, te lanzo una bomba de pintura.',
-      draft.origin === 'piltover' ? 'El progreso no espera, y yo tampoco.' : 'Aquí abajo nadie viene a salvarnos.',
+      draft.origin === 'aurelia' ? 'El progreso no espera, y yo tampoco.' : 'Aquí abajo nadie viene a salvarnos.',
     ];
     const sp = $('#splash');
     if (!sp) return;
@@ -294,7 +294,7 @@
 
   // ----- Paso 1: Origen -----
   function stepOrigin(body) {
-    body.append(el('h2', {}, '¿De qué lado del puente vienes?'),
+    body.append(el('h2', {}, '¿De qué ciudad vienes?'),
       el('p', { class: 'muted' }, 'Tu origen decide tu ruta, los personajes que conoces primero y cómo te miran los demás.'));
     const grid = el('div', { class: 'origin-grid' });
     for (const [id, o] of Object.entries(C().origins)) {
@@ -304,8 +304,8 @@
         onclick: () => {
           if (draft.origin !== id) {
             draft.origin = id; draft.district = o.districts[0]; draft.job = o.jobs[0].id; draft.family = 'ninguna';
-            draft.look.outfit = id === 'piltover' ? 'abrigo' : 'chaqueta';
-            draft.look.outfitColor = id === 'piltover' ? '#c4c0b8' : '#4a3a5a';
+            draft.look.outfit = id === 'aurelia' ? 'abrigo' : 'chaqueta';
+            draft.look.outfitColor = id === 'aurelia' ? '#c4c0b8' : '#4a3a5a';
           }
           document.body.dataset.city = id;
           document.body.dataset.ciudad = id;
@@ -314,9 +314,9 @@
           rerender();
         },
       }, cv, el('div', { class: 'origin-info' }, el('h3', {}, o.label), el('p', {}, o.tagline),
-        el('small', {}, id === 'zaun' ? 'Empiezas con: Vander, Vi, Jinx' : 'Empiezas con: Jayce, Viktor, Heimerdinger')));
+        el('small', {}, id === 'nacar' ? 'Empiezas con: Darel Ossan, Nyra Quell, Joren Ash' : 'Empiezas con: Iria Venn, Saia Merel, Toren Vale')));
       grid.append(card);
-      requestAnimationFrame(() => Scenes.mount(cv, id === 'zaun' ? 'zaun' : 'piltover'));
+      requestAnimationFrame(() => Scenes.mount(cv, id === 'nacar' ? 'nacar' : 'aurelia'));
     }
     body.append(grid, nav());
   }
@@ -373,7 +373,7 @@
   const SLOT_INFO = { Q: 'Ataque', W: 'Movimiento', E: 'Utilidad', R: 'Definitiva' };
   function stepAbilities(body) {
     body.append(el('h2', {}, 'Habilidades'),
-      el('p', { class: 'muted' }, 'Elige una habilidad para cada tecla, como en la selección de campeón. Cada una suma una estadística y te da ventaja en un minijuego.'));
+      el('p', { class: 'muted' }, 'Elige una habilidad para cada tecla (Q, W, E y R). Cada una suma una estadística y te da ventaja en un minijuego.'));
     for (const k of ['Q', 'W', 'E', 'R']) {
       body.append(el('div', { class: 'ability-slot' },
         el('div', { class: 'slot-key' }, el('kbd', {}, k), el('small', {}, SLOT_INFO[k])),
@@ -424,8 +424,8 @@
         : `Todos los retratos: ${gallery.length}. Con «Mujer» u «Hombre» solo verás los de ese género.`),
       el('div', { class: 'row gap' },
         el('button', { class: 'btn primary', onclick: () => file.click() }, 'Subir mi foto'),
-        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: () => window.arcane.art.open('avatares') }, 'Abrir carpeta avatares') : null,
-        window.arcane?.art ? el('button', { class: 'btn ghost', onclick: async () => { await window.CustomArt.load(); rerender(); } }, 'Recargar') : null,
+        window.umbral?.art ? el('button', { class: 'btn ghost', onclick: () => window.umbral.art.open('avatares') }, 'Abrir carpeta avatares') : null,
+        window.umbral?.art ? el('button', { class: 'btn ghost', onclick: async () => { await window.CustomArt.load(); rerender(); } }, 'Recargar') : null,
         file));
     const card = ([name, url]) => el('button', { class: `avatar-card${draft.photo === url ? ' active' : ''}`, title: name, onclick: () => choose(url) },
       el('img', { src: url, alt: name, loading: 'lazy' }));

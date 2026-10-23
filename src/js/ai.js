@@ -46,8 +46,8 @@
   // Envía la petición por el camino que no tenga problemas de CORS: el proceso
   // principal en escritorio, el HTTP nativo en Android y fetch en el navegador.
   async function post(url, headers, body) {
-    if (window.arcane?.ai) {
-      const r = await window.arcane.ai(url, headers, body);
+    if (window.umbral?.ai) {
+      const r = await window.umbral.ai(url, headers, body);
       if (r.error) throw new Error(r.error);
       return r;
     }
@@ -68,8 +68,8 @@
 
   // GET corto (listas de modelos), por el mismo camino que post().
   async function get(url) {
-    if (window.arcane?.aiGet) {
-      const r = await window.arcane.aiGet(url);
+    if (window.umbral?.aiGet) {
+      const r = await window.umbral.aiGet(url);
       if (r.error) throw new Error(r.error);
       return r.data;
     }
@@ -204,7 +204,7 @@
     const v = window.AI_VOICES?.[id] || {};
     const origin = window.CREATION?.origins?.[p.origin]?.label || p.origin || '';
     const feel = aff <= -3 ? 'Le tienes antipatía y desconfías.' : aff < 1 ? 'Le tratas con cautela.' : aff < 5 ? 'Te cae bien.' : aff < 8 ? 'Le aprecias mucho.' : 'Es una de las personas más importantes para ti.';
-    const lore = window.ARCANE_LORE?.[id] || {};
+    const lore = window.WORLD_LORE?.[id] || {};
     const part = G.progress.season === 2 || G.progress.route === 't2' ? 2 : 1;
     const gone = new Set(G.fallen || []);
     const acquaintances = (G.met || []).map((person) => window.WIKI.personajes.find((w) => w.id === person)?.name || person);
@@ -224,7 +224,7 @@
     ].filter(Boolean).join('\n');
 
     return [
-      `Eres ${name}, de la serie Arcane (Piltover y Zaun). Interpreta a ${name} en un chat dentro de un juego de fans, siempre en su papel y en primera persona.`,
+      `Eres ${name}, de Las ciudades del Umbral (Aurelia y Nácar). Interpreta a ${name} en un chat dentro del juego, siempre en su papel y en primera persona.`,
       `Personalidad: ${info?.persona || window.WIKI.personajes.find((x) => x.id === id)?.role || ''}`,
       v.habla ? `Cómo hablas: ${v.habla}` : '',
       samples.length ? `Así hablas (frases tuyas en el juego): ${samples.join(' ')}` : '',
@@ -274,7 +274,7 @@
   // Prueba la conexión y mide cuánto tarda (la primera vez incluye cargar el modelo).
   async function test() {
     const t0 = performance.now();
-    const text = await complete([{ role: 'user', content: 'Di «¡Hola desde Zaun!» y nada más.' }], { max: 20, temperature: 0 });
+    const text = await complete([{ role: 'user', content: 'Di «¡Hola desde Nácar!» y nada más.' }], { max: 20, temperature: 0 });
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 

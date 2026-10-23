@@ -6,7 +6,7 @@ const vm = require('vm');
 
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['wiki.js', 'creation.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'relations.js', 'world.js', 'atlas.js']) {
+for (const f of ['creation.js', 'relations.js', 'guia.js', 'world.js', 'original-world.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', f), 'utf8'), ctx, { filename: f });
 }
 const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS, RELATIONS } = ctx.window;
@@ -70,7 +70,7 @@ for (const [id, chId] of Object.entries(deaths)) {
   if (!cast.has(id)) errors.push(`muertes: "${id}" no es del reparto`);
   if (!STORY.chapters.find((c) => c.id === chId)) errors.push(`muertes: capítulo "${chId}" de ${id} no existe`);
 }
-const s1 = new Set([...STORY.routes.zaun, ...STORY.routes.piltover]);
+const s1 = new Set([...STORY.routes.nacar, ...STORY.routes.aurelia]);
 for (const [r, ids] of Object.entries(STORY.routes)) {
   // Capítulos ya terminados antes de cada capítulo de la ruta (en la T2, toda la T1).
   ids.forEach((chId, i) => {
@@ -185,11 +185,11 @@ for (const [fam, links] of Object.entries(RELATIONS.familyLinks)) {
   Object.entries(links).forEach(([id, [kind]]) => { if (!cast.has(id) || !RELATIONS.kinds[kind]) errors.push(`relaciones ${fam}: lazo con "${id}" (${kind})`); });
 }
 
-// Atlas de las Dos Ciudades
+// Atlas del Umbral
 for (const p of ATLAS.places) {
   if (p.codex && !allIds.has(p.codex)) errors.push(`atlas ${p.id}: entrada de Códice "${p.codex}" no existe`);
   p.people.forEach((id) => { if (!chars.has(id)) errors.push(`atlas ${p.id}: personaje "${id}" no existe`); });
-  if (!fs.existsSync(path.join(__dirname, '..', 'src', 'img', 'atlas', `${p.id}.webp`))) errors.push(`atlas ${p.id}: falta la imagen`);
+  if (!fs.existsSync(path.join(__dirname, '..', 'src', 'img', 'umbral', 'lugares', `${p.id}.svg`))) errors.push(`atlas ${p.id}: falta la imagen`);
   if (p.x < 0 || p.x > 100 || p.y < 0 || p.y > 100) errors.push(`atlas ${p.id}: fuera del mapa`);
 }
 
@@ -209,7 +209,7 @@ for (const ch of STORY.chapters) {
   Object.keys(ch.nodes).filter((id) => !seen.has(id)).forEach((id) => errors.push(`${ch.id}.${id}: escena inalcanzable desde "${ch.start}"`));
 }
 // Los finales que dependen de flags solo se alcanzan si alguna decisión activa esas flags.
-const storySrc = ['story.js', 'story-expansion.js', 'alternate-fates.js'].map((n) => fs.readFileSync(path.join(__dirname, '..', 'src', 'data', n), 'utf8')).join('\n');
+const storySrc = ['original-world.js'].map((n) => fs.readFileSync(path.join(__dirname, '..', 'src', 'data', n), 'utf8')).join('\n');
 for (const e of [...STORY.endings, ...(STORY.endings2 || [])]) {
   for (const [, flag] of String(e.test).matchAll(/flags\.(\w+)/g)) {
     if (!FLAG_SET.has(flag) && !new RegExp(`flags:\\s*\\[[^\\]]*'${flag}'`).test(storySrc)) errors.push(`final ${e.id}: la flag "${flag}" nunca se activa`);

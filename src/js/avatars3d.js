@@ -1,10 +1,10 @@
 // Personajes en 3D para el mundo abierto: el jugador y los protagonistas caminan, corren y
-// respiran por las calles de Piltover y Zaun en vez de ser iconos redondos.
+// respiran por las calles de Aurelia y Nácar en vez de ser iconos redondos.
 //
 // Cada personaje se monta con un modelo propio:
 //  1. Si hay un modelo .glb (por ejemplo, de Mixamo) en la carpeta «modelos» de tu carpeta de
 //     arte (o en src/models), se usa con sus animaciones de reposo, andar y correr.
-//     Archivos: modelos/<id>.glb (vi.glb, jinx.glb…), modelos/jugador.glb, modelos/generico.glb
+//     Archivos: modelos/<id>.glb (iria-venn.glb, darel-ossan.glb…), modelos/jugador.glb, modelos/generico.glb
 //     y, para todos, modelos/animaciones/reposo.glb, andar.glb y correr.glb (Mixamo «In Place»).
 //  2. Si no hay modelo, se construye un muñeco articulado pintado a mano con los colores de la
 //     serie (pelo, piel, ropa), la cara de su retrato y una animación procedural de andar y correr.
@@ -102,7 +102,7 @@
       g.fill();
       g.save();
       g.clip();
-      const iris = sx < 0 && acc.includes('scar') && spec.id === 'silco' ? '#d03020' : L.eyeColor || '#4a3a2a';
+      const iris = sx < 0 && acc.includes('scar') && spec.id === 'oren-caldus' ? '#b5a579' : L.eyeColor || '#4a3a2a';
       g.fillStyle = iris;
       g.beginPath();
       g.arc(ex + sx * 1, ey + 1, eh * 1.05, 0, Math.PI * 2);
@@ -152,8 +152,10 @@
     }
     if (acc.includes('tattoo')) {
       g.fillStyle = 'rgba(150,30,70,0.85)';
-      g.font = 'bold 22px Cinzel, Georgia, serif';
-      g.fillText('VI', 66, 186);
+      // Tatuaje de onda de Resonancia: tres arcos.
+      g.lineWidth = 3;
+      g.strokeStyle = g.fillStyle;
+      for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(78, 196 - i * 7, 6 + i * 4, Math.PI * 1.15, Math.PI * 1.85); g.stroke(); }
     }
     if (acc.includes('scar')) {
       g.strokeStyle = 'rgba(110,40,50,0.8)';
@@ -192,19 +194,13 @@
 
   // ---------- Complexión y vestuario de cada protagonista ----------
   const BUILD = {
-    heimerdinger: { scale: 0.55, head: 1.55, wide: 1.1, ears: true },
-    isha: { scale: 0.62, head: 1.25 },
-    vander: { scale: 1.1, wide: 1.25 },
-    ambessa: { scale: 1.08, wide: 1.15, coat: 'coat' },
-    mel: {},
-    cassandra: {},
-    sevika: { scale: 1.04, wide: 1.15, metalArm: true },
-    kino: { wide: 1.1 },
-    silco: { wide: 0.9 },
-    jinx: { wide: 0.82 },
-    viktor: { wide: 0.88 },
-    jayce: { scale: 1.04, wide: 1.05 },
-    caitlyn: { coat: 'coat' },
+    'bastian-rook': { scale: 1.04, wide: 1.15, coat: 'coat' },
+    'oren-caldus': { scale: 1.02, wide: 1.1 },
+    'maelis-thorn': { coat: 'coat' },
+    'toren-vale': { scale: 1.04, coat: 'coat' },
+    'saia-merel': { wide: 0.9 },
+    'edda-lume': { wide: 0.88 },
+    'nyra-quell': { wide: 0.86 },
   };
   const OUTFIT_COAT = { abrigo: 'coat', bata: 'coat', vestido: 'dress' };
 
@@ -262,7 +258,7 @@
         add(new T.BoxGeometry(r * 0.35, r * 0.7, r * 2.1), 0, r * 0.9, -r * 0.1);
         break;
       case 'undercut': {
-        // Rapado por un lado y el resto peinado hacia el otro (Vi, Sevika).
+        // Rapado por un lado y el resto peinado hacia el otro.
         const c = cap(1.08, 0.42);
         c.rotation.z = -0.45;
         g.add(c);
@@ -285,7 +281,7 @@
     if (style === 'ponytail') { add(new T.SphereGeometry(r * 0.35, 10, 8), 0, r * 0.4, -r * 1.0); add(new T.CylinderGeometry(r * 0.3, r * 0.12, r * 2.4, 8).translate(0, -r * 1.2, 0), 0, r * 0.4, -r * 1.1, 0.2); }
     if (style === 'pigtails') { add(new T.SphereGeometry(r * 0.6, 12, 10), r * 1.05, r * 0.15, -r * 0.2); add(new T.SphereGeometry(r * 0.6, 12, 10), -r * 1.05, r * 0.15, -r * 0.2); }
     if (style === 'braids') {
-      // Las trenzas larguísimas de Jinx (o las de Ambessa): cuelgan hasta la cadera.
+      // Trenzas larguísimas (como las de Maelis Thorn): cuelgan hasta la cadera.
       const braids = [];
       for (const sx of [-1, 1]) {
         const b = mesh(new T.CylinderGeometry(r * 0.2, r * 0.12, r * 5.6, 8).translate(0, -r * 2.8, 0), m);
@@ -489,13 +485,13 @@
   // ---------- Modelos .glb (Mixamo) ----------
   let index = null; // nombres de modelo disponibles (escritorio) o null (se prueba a pedirlos)
   const parsed = new Map();
-  const desktop = () => Boolean(window.arcane?.models);
+  const desktop = () => Boolean(window.umbral?.models);
 
   /** Enumera los modelos 3D compatibles disponibles en el proyecto. */
   async function listModels() {
     if (index) return index;
     try {
-      index = desktop() ? new Set(await window.arcane.models.list()) : new Set(await fetch('models/index.json').then((r) => (r.ok ? r.json() : [])));
+      index = desktop() ? new Set(await window.umbral.models.list()) : new Set(await fetch('models/index.json').then((r) => (r.ok ? r.json() : [])));
     } catch { index = new Set(); }
     return index;
   }
@@ -503,7 +499,7 @@
   /** Lee el archivo tridimensional elegido para el personaje. */
   async function readModel(name) {
     if (desktop()) {
-      const buf = await window.arcane.models.read(name);
+      const buf = await window.umbral.models.read(name);
       if (!buf || buf.kind) return buf;
       return buf.buffer ? buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) : buf;
     }
@@ -606,7 +602,7 @@
     'basecolor', 'base', 'color', 'colour', 'col', 'diffuse', 'albedo', 'texture', 'tex', 'map', 'final', 'new', 'copy']);
   // Texturas que no son de color (relieve, rugosidad, brillo…): nunca se usan como color.
   const NOT_COLOR = /(normal|_n$|rough|metal|_ao$|ambient|occlusion|mask|emissive|emission|_e$|spec|_s$|_s@|@channels|height|bump|opacity|alpha|gloss|displace)/i;
-  /** Separa un nombre en palabras útiles («ViktorHead_Low_lambert1» → viktor, head). */
+  /** Separa un nombre en palabras útiles («DarelHead_Low_lambert1» → darel, head). */
   const words = (s) => String(s || '').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase().split(/[^a-z]+/)
     .filter((w) => w.length >= 3 && !STOP.has(w) && !/^lambert|^blinn|^phong|^sg$/.test(w));
 
@@ -912,7 +908,7 @@
 
   // ---------- Interfaz ----------
   // Crea un personaje. El jugador empieza con el muñeco y, si hay modelo .glb, lo cambia en
-  // cuanto carga. Los personajes de Arcane solo aparecen con su propio modelo 3D: sin muñeco
+  // cuanto carga. Los personajes del reparto solo aparecen con su propio modelo 3D: sin muñeco
   // provisional ni modelo genérico (hasta que carga, el hueco queda vacío).
   function create({ id, player }) {
     const spec = specFor(id, player);

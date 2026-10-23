@@ -1,6 +1,6 @@
 // Escenarios pintados y animados para la historia, el menú, las cinemáticas y el Códice.
 // Cada escena tiene una capa estática pintada (en caché) y efectos animados encima:
-// niebla, partículas, rayos de luz, neones que parpadean y brillos hextec.
+// niebla, partículas, rayos de luz, neones que parpadean y destellos de Resonancia.
 // Si la jugadora pone una imagen propia en la carpeta de arte, se usa como capa base.
 (function () {
   function rng(seed) {
@@ -15,31 +15,19 @@
 
   // Temas de escena. type: ciudad dorada, ciudad química, interiores, naturaleza…
   const THEMES = {
-    piltover: { type: 'gold', sky: ['#f6c879', '#e0874a', '#5a2a3a'], sun: [0.7, 0.32, '#fff0c0'], fx: 'dust', seed: 11 },
-    plaza: { type: 'gold', sky: ['#f3d48a', '#d98a4a', '#4a2a2a'], sun: [0.3, 0.3, '#fff3d0'], fx: 'dust', seed: 17 },
-    artesanos: { type: 'gold', sky: ['#e9b86a', '#b0603a', '#3a1a1a'], sun: [0.5, 0.26, '#ffe0a0'], fx: 'dust', seed: 23 },
-    consejo: { type: 'hall', tint: '#d4a73f', glass: ['#3fa9f5', '#e3c45a', '#c0453a'], fx: 'rays', seed: 5 },
-    academia: { type: 'library', tint: '#e3c45a', fx: 'rays', seed: 8 },
-    'taller-jayce': { type: 'workshop', tint: '#3fa9f5', fx: 'hex', seed: 9 },
-    'mansion-kiramman': { type: 'hall', tint: '#5a7ac4', glass: ['#5a7ac4', '#e3c45a', '#a0c0e0'], fx: 'rays', seed: 31 },
-    ejecutores: { type: 'hall', tint: '#4a6aa0', glass: ['#2f4a8a', '#d0d8e0', '#2f4a8a'], fx: 'rays', seed: 41 },
-    hexpuertas: { type: 'gate', sky: ['#9ad0f0', '#e0a070', '#3a2a40'], fx: 'hex', seed: 13 },
-    puente: { type: 'bridge', sky: ['#f0b070', '#a05a5a', '#1a2a2a'], fx: 'dust', seed: 3 },
-    'puente-zaun': { type: 'bridge', sky: ['#c08060', '#3a4a4a', '#0a1414'], fx: 'smoke', seed: 4 },
-    stillwater: { type: 'prison', fx: 'rain', seed: 19 },
-    'muelle-stillwater': { type: 'prison', fx: 'rain', seed: 20 },
-    noxus: { type: 'fortress', fx: 'embers', seed: 29 },
-    zaun: { type: 'chem', sky: ['#1a3a34', '#0c1c1a', '#050a0a'], neon: ['#3fbf9f', '#e0457b', '#bf3abf', '#8fbf3a'], fx: 'smoke', seed: 2 },
-    callejones: { type: 'chem', sky: ['#2a2a4a', '#141428', '#06060c'], neon: ['#e0457b', '#7a5abf', '#3fbf9f', '#f0a040'], fx: 'smoke', seed: 6 },
-    mercado: { type: 'chem', sky: ['#3a2a3a', '#1a1018', '#08060a'], neon: ['#f0a040', '#e0457b', '#3fbf9f'], fx: 'smoke', seed: 21 },
-    tejados: { type: 'chem', sky: ['#4a4a5a', '#1a1a24', '#08080c'], neon: ['#bf3abf', '#3fbf9f'], fx: 'smoke', seed: 27 },
-    fabrica: { type: 'chem', sky: ['#2a3a1a', '#121a0a', '#050805'], neon: ['#8fbf3a', '#bf3abf'], fx: 'smoke', seed: 33 },
-    foso: { type: 'chem', sky: ['#3a1a1a', '#1a0a0a', '#050202'], neon: ['#e0457b', '#f0a040'], fx: 'embers', seed: 37 },
-    'ultima-gota': { type: 'tavern', tint: '#e0a050', fx: 'dustwarm', seed: 7 },
-    'tienda-benzo': { type: 'workshop', tint: '#f0a040', fx: 'dustwarm', seed: 43 },
-    sumidero: { type: 'sump', fx: 'spores', seed: 12 },
-    'escondite-jinx': { type: 'hideout', fx: 'sparks', seed: 15 },
-    arbol: { type: 'tree', fx: 'fireflies', seed: 14 },
+    aurelia: { type: 'gold', sky: ['#f4dca0', '#d9a85a', '#6a4a2a'], sun: [0.7, 0.32, '#fff4d8'], fx: 'dust', seed: 11 },
+    archivo: { type: 'library', tint: '#d9b46a', fx: 'rays', seed: 8 },
+    observatorio: { type: 'hall', tint: '#e3c47a', glass: ['#f0dca0', '#c99a3b', '#8aa0b8'], fx: 'rays', seed: 5 },
+    gremios: { type: 'workshop', tint: '#c99a3b', fx: 'dustwarm', seed: 9 },
+    'ascensor-central': { type: 'gate', sky: ['#f0e0b8', '#c9a060', '#4a3a2a'], fx: 'dust', seed: 13 },
+    cristal: { type: 'gold', sky: ['#f6e6c0', '#e0b070', '#5a3a2a'], sun: [0.3, 0.3, '#fff8e0'], fx: 'dust', seed: 17 },
+    nacar: { type: 'chem', sky: ['#12302a', '#0a1a16', '#040908'], neon: ['#3fbf7f', '#8fdf6a', '#2f9f8f', '#c9e08a'], fx: 'smoke', seed: 2 },
+    'mercado-nacar': { type: 'chem', sky: ['#1e3026', '#0e1812', '#050806'], neon: ['#8fdf6a', '#3fbf7f', '#e0b050'], fx: 'smoke', seed: 21 },
+    galerias: { type: 'chem', sky: ['#2a3a1a', '#121a0a', '#050805'], neon: ['#8fbf3a', '#3fbf7f'], fx: 'embers', seed: 33 },
+    'jardin-musgo': { type: 'tree', fx: 'fireflies', seed: 14 },
+    clinica: { type: 'workshop', tint: '#6abf8a', fx: 'dustwarm', seed: 43 },
+    'canal-cobre': { type: 'bridge', sky: ['#4a6a50', '#1a2a22', '#060c0a'], fx: 'smoke', seed: 4 },
+    resonancia: { type: 'sump', fx: 'spores', seed: 12 },
   };
 
   const has = (id) => Boolean(THEMES[id]);
@@ -124,7 +112,7 @@
   }
 
   function paintStatic(id, w, h) {
-    const T = THEMES[id] || THEMES.zaun;
+    const T = THEMES[id] || THEMES.nacar;
     const c = document.createElement('canvas');
     c.width = w;
     c.height = h;
@@ -351,7 +339,7 @@
   function drawFx(ctx, st, t, w, h, P) {
     const { dyn, theme } = st;
     const s = h / 600;
-    // Brillos (lámparas, gemas hextec, charcos químicos)
+    // Brillos (lámparas, cristales de Resonancia, charcos químicos)
     for (const g of dyn.glows) {
       const pulse = g.lamp ? 0.85 + Math.sin(t * 9 + g.x) * 0.05 + (Math.random() < 0.02 ? -0.3 : 0) : 0.7 + Math.sin(t * 2 + g.x) * 0.3;
       const rg = ctx.createRadialGradient(g.x, g.y, 2, g.x, g.y, g.r * (1 + pulse * 0.2));
@@ -376,7 +364,7 @@
       ctx.fillRect(n.x, n.y, n.w, n.h);
       ctx.restore();
     }
-    // Portal hextec
+    // Portal de Resonancia
     if (dyn.gate) {
       const { x, y, r } = dyn.gate;
       ctx.save();

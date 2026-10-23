@@ -1,7 +1,7 @@
 // Puente seguro entre la interfaz y el proceso principal.
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('arcane', {
+contextBridge.exposeInMainWorld('umbral', {
   isDesktop: true,
   platform: process.platform,
   quit: () => ipcRenderer.invoke('app:quit'),

@@ -533,9 +533,8 @@
           ctx.strokeStyle = 'rgba(255,200,200,0.4)'; ctx.lineWidth = 1;
           ctx.beginPath(); ctx.moveTo(216, 140); ctx.lineTo(242, 200); ctx.stroke();
         } else if (a === 'tattoo') {
-          ctx.fillStyle = 'rgba(40,40,110,0.75)';
-          ctx.font = 'bold 15px Georgia, serif';
-          ctx.fillText('VI', 232, 206);
+          ctx.strokeStyle = 'rgba(40,40,110,0.75)'; ctx.lineWidth = 2;
+          for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(240, 212 - i * 5, 4 + i * 3, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
         } else if (a === 'paint') {
           ctx.strokeStyle = '#5affd0'; ctx.lineWidth = 4; ctx.lineCap = 'round';
           ctx.shadowColor = '#5affd0'; ctx.shadowBlur = 10 + Math.sin(S.t * 3) * 4;
