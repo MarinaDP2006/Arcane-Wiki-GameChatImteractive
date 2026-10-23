@@ -24,6 +24,8 @@ jobs:
         run: npm ci
       - name: Comprobar datos del juego
         run: npm run check
+      - name: Construir web y demo
+        run: npm run web
       - name: Verificar sintaxis del motor
         shell: pwsh
         run: |
