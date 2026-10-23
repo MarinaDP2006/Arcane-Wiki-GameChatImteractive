@@ -1,13 +1,18 @@
-# Compilación y validación exclusiva para Windows.
-name: Compilar Windows
+# Versión de escritorio: instalador y portable de Windows + DMG/ZIP de Mac.
+# Se compila en la rama «escritorio» (que se sincroniza sola desde main, ver sync-ramas.yml),
+# en las etiquetas v* y en cada pull request (en los PR solo Windows, para no gastar Mac).
+name: Compilar escritorio (Windows y Mac)
 on:
   push:
-    branches: ['**']
+    branches: [escritorio]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: escritorio-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -54,15 +59,49 @@ jobs:
           name: grietas-and-gears-windows
           path: dist/*.exe
           if-no-files-found: error
+  build-mac:
+    if: github.event_name != 'pull_request'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Comprobar datos del juego
+        run: npm run check
+      # Sin certificado de Apple: la app sale sin firmar. La primera vez en el Mac hay que
+      # abrirla con clic derecho → Abrir (lo explica la web y el README).
+      - name: Compilar DMG y ZIP de Mac (Intel y Apple Silicon)
+        run: npm run dist:mac -- --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Comprobar que existen los DMG
+        run: |
+          ls -la dist
+          test "$(ls dist/*.dmg | wc -l)" -ge 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: grietas-and-gears-mac
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build-windows
+    needs: [build-windows, build-mac]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: grietas-and-gears-windows
+          pattern: grietas-and-gears-*
           path: dist
+          merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.exe
+          files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
