@@ -1,4 +1,4 @@
-// Campaña ampliada de Grietas & Gears en dos partes. Se aplica después de story.js.
+// Campaña ampliada de Rifts & Gears en dos partes. Se aplica después de story.js.
 // Mantiene los IDs originales y la propiedad interna season para que puedan cargar
 // las partidas antiguas. Los episodios añadidos dan agencia al personaje del jugador.
 (function () {

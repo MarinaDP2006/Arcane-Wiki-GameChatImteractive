@@ -105,7 +105,7 @@
         // Android: se escribe en la caché de la app y se abre el menú Compartir
         // (Drive, correo, «Guardar en Archivos», Quick Share...).
         const { uri } = await Filesystem.writeFile({ path: file, data: text, directory: 'CACHE', encoding: 'utf8' });
-        await Share.share({ title: 'Partida de Grietas & Gears', files: [uri], dialogTitle: 'Guardar o enviar la partida' }).catch(() => {});
+        await Share.share({ title: 'Partida de Rifts & Gears', files: [uri], dialogTitle: 'Guardar o enviar la partida' }).catch(() => {});
         return;
       }
       const a = document.createElement('a');
@@ -133,7 +133,7 @@
       } catch {
         data = null;
       }
-      if (!data?.player || !data?.progress) return toast('Ese archivo no es una partida de Grietas & Gears', 'warn');
+      if (!data?.player || !data?.progress) return toast('Ese archivo no es una partida de Rifts & Gears', 'warn');
       if (!s.empty && !confirm((window.I18N?.t || ((x) => x))(`La ranura ${s.slot} tiene la partida de ${s.name}. ¿Reemplazarla por la de ${data.player.name}?`))) return;
       await store.save(s.slot, data);
       toast(`Partida de ${data.player.name} importada en la ranura ${s.slot}`, 'good');
@@ -406,6 +406,34 @@
       el('button', { class: 'btn primary', onclick: closeOverlay }, 'Continuar')));
   }
 
+  /** Guía rápida de personajes (src/data/guia.js) para quien no ha visto Arcane. */
+  function showGuide(kind, after) {
+    const g = window.GUIA;
+    if (!g?.orden?.[kind]) { after?.(); return; }
+    World.pause(true);
+    const box = $('#overlay');
+    box.innerHTML = '';
+    box.className = 'overlay show';
+    const nameOf = (id) => window.WIKI.personajes.find((x) => x.id === id)?.name || id;
+    const cards = g.orden[kind].map((id) => {
+      const f = g.fichas[id] || {};
+      return el('article', { class: 'guia-ficha' },
+        el('img', { src: `img/arte/caras/${id}.webp`, alt: '', loading: 'lazy' }),
+        el('div', {},
+          el('h3', {}, nameOf(id)),
+          el('p', { class: 'guia-titulo' }, f.titulo || ''),
+          el('p', {}, f.quien || ''),
+          el('p', { class: 'muted' }, f.porque || '')));
+    });
+    box.append(el('div', { class: 'panel guia-panel' },
+      el('h2', {}, g.titulo),
+      el('p', { class: 'guia-intro' }, g.intro[kind] || ''),
+      el('div', { class: 'guia-rejilla' }, ...cards),
+      g.otros?.[kind] ? el('p', { class: 'muted guia-otros' }, g.otros[kind]) : null,
+      el('button', { class: 'btn primary', onclick: () => { closeOverlay(); after?.(); } }, 'Continuar')));
+  }
+  const guideKind = () => (G.progress.season === 2 ? 't2' : G.player.origin);
+
   /** Traslada al jugador entre lugares o ciudades. */
   async function travel(t) {
     Audio2.sfx.choice();
@@ -488,6 +516,7 @@
         el('button', { class: 'btn', onclick: () => openArcade() }, 'Salón de minijuegos'),
         el('button', { class: 'btn', onclick: () => openSettingsOverlay() }, 'Ajustes'),
         el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, 'Controles'),
+        el('button', { class: 'btn', onclick: () => showGuide(guideKind()) }, 'Guía de personajes'),
         el('button', { class: 'btn ghost', onclick: async () => { if (window.App.settings.confirmExit !== false && !confirm('¿Salir al menú principal? La partida se guarda.')) return; await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
         U.desktop ? el('button', { class: 'btn ghost', onclick: async () => { await persist(); window.arcane.quit(); } }, '✕ Salir del juego') : null));
       return;
@@ -712,6 +741,7 @@
   /** Sale al menú principal conservando el estado necesario. */
   function exitToTitle() {
     World.stop();
+    window.App.setCity?.('');
     G = null;
     overlayKind = null;
     window.App.go('home');
@@ -724,7 +754,17 @@
     root.innerHTML = '';
     const canvas = el('canvas', { id: 'world-canvas' });
     const mini = el('canvas', { id: 'world-mini', width: 210, height: 154 });
-    const hudBtn = (label, key, fn, icon) => el('button', { class: 'hud-btn', title: key, onclick: fn }, el('i', { class: 'hud-ico' }, icon), el('span', { class: 'hud-label' }, label), el('kbd', {}, key));
+    // Iconos de línea propios (sin emojis): se pintan con el color del texto.
+    const svgIco = (d) => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const ICO = {
+      historia: svgIco('<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6"/><path d="M6 3a2 2 0 0 0-2 2v1h4V5a2 2 0 0 0-2-2zM9 8h7M9 12h7M9 16h4"/>'),
+      chats: svgIco('<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'),
+      ficha: svgIco('<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'),
+      codice: svgIco('<path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v14c-3-1-5-1-8 1-3-2-5-2-8-1z"/><path d="M12 6v14"/>'),
+      atlas: svgIco('<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'),
+      pausa: svgIco('<path d="M9 5v14M15 5v14"/>'),
+    };
+    const hudBtn = (label, key, fn, icon) => el('button', { class: 'hud-btn', title: key, onclick: fn }, el('i', { class: 'hud-ico', html: icon }), el('span', { class: 'hud-label' }, label), el('kbd', {}, key));
     root.append(el('div', { class: 'world' },
       canvas,
       el('div', { class: 'hud hud-top' },
@@ -735,19 +775,25 @@
       el('div', { class: 'hud hud-mini' }, mini, el('small', { id: 'hud-codex', class: 'muted' })),
       el('div', { id: 'world-prompt', class: 'world-prompt', onclick: () => World.interact() }),
       el('div', { class: 'hud hud-bottom' },
-        hudBtn('Historia', 'H', () => openOverlay('historia'), '📜'),
-        hudBtn('Comunicador', 'C', () => openOverlay('chats'), '💬'),
-        hudBtn('Ficha', 'F', () => openOverlay('ficha'), '👤'),
-        hudBtn('Códice', 'K', () => openOverlay('codice'), '📖'),
-        hudBtn('Atlas', 'M', () => openOverlay('codice', null, 'atlas'), '🗺'),
-        hudBtn('Pausa', 'Esc', () => openOverlay('menu'), '⏸')),
+        hudBtn('Historia', 'H', () => openOverlay('historia'), ICO.historia),
+        hudBtn('Comunicador', 'C', () => openOverlay('chats'), ICO.chats),
+        hudBtn('Ficha', 'F', () => openOverlay('ficha'), ICO.ficha),
+        hudBtn('Códice', 'K', () => openOverlay('codice'), ICO.codice),
+        hudBtn('Atlas', 'M', () => openOverlay('codice', null, 'atlas'), ICO.atlas),
+        hudBtn('Pausa', 'Esc', () => openOverlay('menu'), ICO.pausa)),
       el('div', { id: 'overlay', class: 'overlay' })));
     World.start(G, worldCallbacks(), canvas, mini);
     updateHud();
-    if (!G.flags.__help) {
+    const help = () => {
+      if (G.flags.__help) return;
       G.flags.__help = true;
       showHelp();
-    }
+    };
+    // Al empezar una partida, antes del primer capítulo: quién es quién en tu ciudad.
+    if (!G.flags.__guia && !G.progress.started && G.progress.season !== 2) {
+      G.flags.__guia = true;
+      showGuide(G.player.origin, help);
+    } else help();
   }
 
   /** Crea un botón de navegación entre pestañas. */
@@ -1270,7 +1316,7 @@
     await persist();
     closeOverlay();
     await Cinematic.play([
-      { scene: 'puente-zaun', dur: 6, kicker: 'Grietas & Gears', title: 'Parte II · Las consecuencias', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
+      { scene: 'puente-zaun', dur: 6, kicker: 'Rifts & Gears', title: 'Parte II · Las consecuencias', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
       { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
       { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
       { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
@@ -1278,6 +1324,7 @@
     Audio2.playMusic('final');
     toast(`Parte II · Las consecuencias: ve a ${objectiveName()}`, 'good');
     updateHud();
+    showGuide('t2');
   }
 
   // Vuelve a empezar la ruta conservando ficha, finales y personajes desbloqueados.
@@ -1319,6 +1366,7 @@
     const season = G.progress.season || 1;
     if (typeof req.aff === 'number' && affOf(id) < req.aff) return false;
     if (Array.isArray(req.aff) && affOf(req.aff[0]) < req.aff[1]) return false;
+    if (req.time && Relations.together(G, id) < req.time) return false;
     if (req.stat && (G.stats[req.stat] || 0) < req.min) return false;
     if (req.season && season < req.season) return false;
     if (req.maxSeason && season > req.maxSeason) return false;
@@ -1337,6 +1385,7 @@
   function reqLabel(req) {
     if (!req) return '';
     if (req.stat) return `[${S().stats[req.stat].label} ${req.min}]`;
+    if (typeof req.aff === 'number' && req.time) return `[Afinidad ${req.aff} · Confianza ${Math.min(Relations.together(G, contact), req.time)}/${req.time}]`;
     if (typeof req.aff === 'number') return `[Afinidad ${req.aff}]`;
     if (req.aff) return `[Afinidad con ${charName(req.aff[0])} ${req.aff[1]}]`;
     return '';
@@ -1355,7 +1404,7 @@
       const extra = [{ t: 'Charlar un rato…', tone: 'amable', go: '__charla', __menu: true }];
       const hang = Relations.hangLabel(G, id);
       if (hang) extra.push({ t: hang, tone: 'amable', __hang: true });
-      if (Relations.status(G, id) || Relations.relOptions(G, id, affOf(id)).length) extra.push({ t: 'Lo nuestro…', tone: 'serio', go: '__rel', __menu: true });
+      if (Relations.relOptions(G, id, affOf(id)).length) extra.push({ t: 'Lo nuestro…', tone: 'serio', go: '__rel', __menu: true });
       base = [...base, ...extra];
     }
     const seen = talkState().seen;
@@ -1430,7 +1479,8 @@
       aff.innerHTML = '';
       aff.append(el('span', { class: 'cp-aff-label' }, 'Afinidad'),
         el('span', { class: `cp-gems${a < 0 ? ' neg' : ''}` }, ...Array.from({ length: 10 }, (_, i) => el('i', { class: i < Math.abs(a) ? 'on' : '' }))),
-        el('b', {}, `${a}/10`));
+        el('b', {}, `${a}/10`),
+        el('span', { class: 'cp-aff-label cp-trust', title: 'Tiempo compartido: sube al charlar de temas nuevos y al pasar el rato (una vez por capítulo).' }, `Confianza ${Relations.together(G, id)}`));
     }
     const rel = $('#chat-rel');
     if (rel) {
@@ -1585,6 +1635,9 @@
     const first = !o.__bye && !o.__back && !talkState().seen[key];
     if (!o.__bye && !o.__back) talkState().seen[key] = true;
     if (first && o.fx && !(o.__small === 'cumplido' && affOf(id) < 0)) applyTalkFx(id, o.fx);
+    // Tiempo compartido: charlar de algo nuevo o pasar el rato suma confianza (una vez por capítulo).
+    if (o.__hang) Relations.spendTime(G, id, 'rato');
+    else if (first && !o.__bye && !o.__back && !o.__menu && !o.__rel) Relations.spendTime(G, id, 'charla');
     // Celos: tontear con alguien que no es tu pareja.
     const mate = Relations.partner(G);
     if (first && o.tone === 'coqueto' && mate && mate !== id && !o.__rel && G.unlocked.includes(mate)) {

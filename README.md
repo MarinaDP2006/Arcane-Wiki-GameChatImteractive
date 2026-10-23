@@ -1,4 +1,4 @@
-# Grietas & Gears
+# Rifts & Gears
 Juego narrativo de fans ambientado en Piltover y Zaun e inspirado en la estética de *Arcane*. Crea tu personaje, explora sus distritos, habla con el reparto y toma decisiones que cambian tus relaciones y los finales.
 
 **Web promocional:** https://grietas-and-gears-5saz.onrender.com/
@@ -8,11 +8,13 @@ Juego narrativo de fans ambientado en Piltover y Zaun e inspirado en la estétic
 La web estática se genera con `node scripts/build-web.js` y se publica desde `web-dist` en Render; las descargas del juego se distribuyen por GitHub Releases, no por Render.
 
 ## Descargar
-Entra en **[Releases](https://github.com/MarinaDP2006/grietas-and-gears/releases)** y elige:
+Entra en **[Releases](https://github.com/MarinaDP2006/RIFTS-GEARS/releases)** y elige:
 
-- **Windows** 
-- **Mac** 
-- **Android (móvil y tableta)** 
+- **Windows** · `Rifts-and-Gears-Setup-VERSION.exe` (instalador con acceso directo) o `Rifts-and-Gears-VERSION-portable.exe` (sin instalar).
+- **Mac** · `Rifts-and-Gears-VERSION-mac-arm64.dmg` (Apple Silicon, M1 en adelante) o `…-mac-x64.dmg` (Intel). No lleva firma de Apple: la primera vez ábrelo con clic derecho → **Abrir**.
+- **Android (móvil y tableta)** · `grietas-and-gears-VERSION-tablet.apk`.
+
+Si aún no hay una versión publicada, abre [Actions](https://github.com/MarinaDP2006/RIFTS-GEARS/actions) → **Compilar escritorio (Windows y Mac)** o **Compilar móvil (Android)** → ejecución correcta → artefacto `grietas-and-gears-windows`, `-mac` o `-android`. Extrae el ZIP antes de usar el archivo.
 
 **Importante:** la primera instalación puede mostrar un aviso de Windows SmartScreen si la aplicación no tiene firma digital. Descarga únicamente desde este repositorio y verifica el origen.
 

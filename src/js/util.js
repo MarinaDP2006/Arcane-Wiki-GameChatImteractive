@@ -85,7 +85,7 @@
     quality: 'alta', renderScale: 1, shadows: true, postfx: true, paintStyle: true, particles: true, cameraSway: true, models3d: true, staticNpcModels: true, brightness: 1, showFps: false,
     difficulty: 'normal', objectiveArrow: true, minimap: true, names: false, confirmExit: true,
     camSpeed: 1, invertCam: false, vibration: true, shake: 1,
-    reduceMotion: false, highContrast: false, readableFont: false,
+    reduceMotion: false, highContrast: false, readableFont: false, uiTheme: 'ciudad',
   };
   const desktop = window.arcane?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).

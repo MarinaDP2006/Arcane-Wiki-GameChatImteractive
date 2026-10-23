@@ -1307,6 +1307,7 @@
     backdrop = null;
     map = buildMap(id);
     G.world.map = id;
+    window.App?.setCity?.(id);
     use3d(G.world.view !== '2d');
     resize();
     const loc = atLocId && map.def.locations.find((l) => l.id === atLocId);

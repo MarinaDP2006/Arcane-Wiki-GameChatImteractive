@@ -133,6 +133,34 @@
     return el('label', { class: 'field' }, el('span', {}, label), input, hint ? el('small', { class: 'muted' }, hint) : null);
   }
 
+  // Nombres de los minijuegos en los que una clase o habilidad da ventaja.
+  function gamesText(bonus = {}) {
+    return Object.keys(bonus).map((k) => window.Minigames?.GAMES?.[k]?.title || k).join(', ');
+  }
+
+  // Qué cambia en la partida al elegir una familia: con quién empiezas unido y quién te aprecia.
+  function familyEffects(f) {
+    const links = window.RELATIONS.familyLinks[f.id] || {};
+    const names = (id) => window.WIKI.personajes.find((x) => x.id === id)?.name || id;
+    const out = Object.entries(links).map(([id, [, label]]) => `${names(id)}: ${tpl(label, draft)}`);
+    const aff = Object.entries(f.aff || {}).filter(([id]) => !links[id]).map(([id, n]) => `${names(id)} te aprecia (+${n})`);
+    if (!out.length && !aff.length) return ['Nadie te conoce: cada primer encuentro de la historia es de verdad el primero.'];
+    return [...out, ...aff, out.length ? 'La historia tiene escenas y diálogos propios con tu familia. Con ellos nunca hay romance.' : 'Te abre puertas y conversaciones de su círculo.'];
+  }
+
+  // Quién puede llegar a ser tu familia elegida según los padres que tengas.
+  function chosenFamily() {
+    const p = draft.parents;
+    const names = Object.entries(window.RELATIONS.chars).filter(([, c]) => {
+      const role = c.family;
+      if (!role) return false;
+      if (role === 'padre') return p === 'madre' || p === 'ninguno';
+      if (role === 'madre') return p === 'padre' || p === 'ninguno';
+      return p !== 'ambos';
+    }).map(([id]) => window.WIKI.personajes.find((x) => x.id === id)?.name || id);
+    return names.length ? `Podrán ser tu familia elegida (con mucha confianza): ${names.join(', ')}.` : 'Con tus dos padres, nadie ocupará ese lugar, pero sí puedes tener mejores amigos y hermanos de corazón.';
+  }
+
   function bonusText(stats = {}) {
     return Object.entries(stats).map(([k, v]) => `+${v} ${window.STORY.stats[k].label}`).join(', ') || 'sin bonificación';
   }
@@ -331,7 +359,10 @@
       el('small', { class: 'class-role' }, c.role),
       el('p', {}, c.desc),
       el('div', { class: 'class-passive' }, el('b', {}, `Pasiva · ${c.passive.name}`), el('span', {}, c.passive.desc)),
-      el('small', { class: 'gold' }, bonusText(c.stats))))));
+      el('small', { class: 'gold' }, bonusText(c.stats)),
+      gamesText(c.passive.bonus) ? el('small', { class: 'class-games' }, `Destaca en: ${gamesText(c.passive.bonus)}`) : null))));
+    const chosen = C().classes.find((c) => c.id === draft.cls);
+    if (chosen) body.append(el('p', { class: 'creator-consecuencia' }, `En la historia, tus estadísticas abren respuestas que otros no tienen: con ${tpl(chosen.label, draft)} empiezas con ${bonusText(chosen.stats)}, y en los minijuegos de tu especialidad tienes ventaja.`));
     body.append(nav());
   }
 
@@ -441,11 +472,13 @@
       el('p', { class: 'muted' }, 'La familia es opcional. Si perteneces a una familia conocida, algunos personajes te tratarán distinto.'));
     body.append(el('div', { class: 'option-grid' }, o.families.map((f) =>
       el('button', { class: `option${draft.family === f.id ? ' active' : ''}`, onclick: () => { draft.family = f.id; rerender(); } },
-        el('strong', {}, tpl(f.label, draft)), el('small', {}, bonusText(f.stats))))));
+        el('strong', {}, tpl(f.label, draft)), el('small', {}, bonusText(f.stats)),
+        el('ul', { class: 'family-effects' }, familyEffects(f).map((t) => el('li', {}, t)))))));
     body.append(el('h3', {}, 'Tus padres'),
       el('p', { class: 'muted' }, 'Si te falta tu padre, tu madre o los dos, algunos personajes podrán convertirse en tu familia elegida.'),
       el('div', { class: 'chips wrap' }, C().parents.map((x) =>
-        el('button', { class: `chip${draft.parents === x.id ? ' active' : ''}`, onclick: () => { draft.parents = x.id; rerender(); } }, tpl(x.label, draft)))));
+        el('button', { class: `chip${draft.parents === x.id ? ' active' : ''}`, onclick: () => { draft.parents = x.id; rerender(); } }, tpl(x.label, draft)))),
+      el('p', { class: 'creator-consecuencia' }, chosenFamily()));
     body.append(el('h3', {}, `Aficiones (elige hasta ${C().maxHobbies})`));
     body.append(el('div', { class: 'option-grid small' }, C().hobbies.map((h) => {
       const on = draft.hobbies.includes(h.id);

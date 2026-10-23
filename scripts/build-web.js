@@ -58,29 +58,41 @@ function buildCapturas() {
   return tarjetas.join('') || '<p class="galeria-vacia">Las capturas oficiales estarán disponibles próximamente.</p>';
 }
 
+// Datos de la demo web: el creador y los capítulos 1 y 2 reales de cada ciudad.
+const DEMO_CAPITULOS = { zaun: ['z1', 'z2'], piltover: ['p1', 'p2'] };
+
+function loadDemoExtras() {
+  const ctx = { window: {} };
+  vm.createContext(ctx);
+  for (const f of ['creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'guia.js']) {
+    vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
+  }
+  return ctx.window;
+}
+
+function demoData(w, personajes) {
+  const ids = Object.values(DEMO_CAPITULOS).flat();
+  const datos = {
+    creation: { genders: w.CREATION.genders, origins: w.CREATION.origins, hobbies: w.CREATION.hobbies },
+    familyLinks: w.RELATIONS.familyLinks,
+    stats: w.STORY.stats,
+    rutas: DEMO_CAPITULOS,
+    capitulos: w.STORY.chapters.filter((c) => ids.includes(c.id)),
+    guia: w.GUIA,
+    nombres: Object.fromEntries(personajes.map((p) => [p.id, p.name])),
+  };
+  return '// Generado por scripts/build-web.js a partir de src/data. No editar a mano.\nwindow.DEMO = ' + JSON.stringify(datos) + ';\n';
+}
+
 function build() {
   const { WIKI, STORY, CHAT, ATLAS } = loadData();
   const pkg = require(path.join(root, 'package.json'));
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
 
-  const caras = path.join(root, 'src', 'img', 'arte', 'caras');
-  const personajes = WIKI.personajes.filter((p) => fs.existsSync(path.join(caras, `${p.id}.webp`)));
-  personajes.forEach((p) => copy(path.join(caras, `${p.id}.webp`), path.join(out, 'arte', 'caras', `${p.id}.webp`)));
-  for (const f of ['lugares/piltover.webp', 'lugares/zaun.webp', 'codice/mapa-piltover-zaun.webp', 'simbolos/piltover.png', 'simbolos/zaun.png']) {
-    copy(path.join(root, 'src', 'img', 'arte', f), path.join(out, 'arte', f));
-  }
-  // Arte existente del juego para la cronología editorial; no se presenta como capturas históricas.
-  for (const name of ['piltover.webp', 'zaun.webp', 'hexpuertas.webp', 'comuna-viktor.webp']) {
-    copy(path.join(root, 'src', 'img', 'arte', 'lugares', name), path.join(out, 'arte', 'historia', name));
-  }
+  // La web no publica arte de Arcane: solo ilustraciones propias (web/arte-propio) y el icono.
+  const personajes = WIKI.personajes;
   copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
-
-  const tarjetas = personajes.map((p) => `
-        <li class="pj pj-${esc(p.origin)}">
-          <img src="arte/caras/${esc(p.id)}.webp" alt="" width="160" height="160" loading="lazy">
-          <div><h3>${esc(p.name)}</h3><p class="rol">${esc(p.role)}</p><p>${esc(p.summary)}</p></div>
-        </li>`).join('');
   const lugares = ATLAS.places.map((l) => `<li class="lugar-${esc(l.city)}">${esc(l.name)}</li>`).join('');
   const dialogos = Object.values(CHAT).reduce((n, c) => n + Object.keys(c.nodes || {}).length, 0);
 
@@ -92,13 +104,15 @@ function build() {
     LUGARES: ATLAS.places.length,
     TEMAS: dialogos,
     CAPTURAS: buildCapturas(),
-    TARJETAS: tarjetas,
     LISTA_LUGARES: lugares,
     ANIO: new Date().getFullYear(),
   };
   for (const f of fs.readdirSync(path.join(root, 'web'))) {
     const src = path.join(root, 'web', f);
-    if (fs.statSync(src).isDirectory()) continue;
+    if (fs.statSync(src).isDirectory()) {
+      if (f === 'arte-propio') for (const a of fs.readdirSync(src)) copy(path.join(src, a), path.join(out, f, a));
+      continue;
+    }
     if (/\.(html|css|js)$/.test(f)) {
       const txt = fs.readFileSync(src, 'utf8').replace(/\{\{(\w+)\}\}/g, (m, k) => (k in datos ? datos[k] : m));
       fs.writeFileSync(path.join(out, f), txt);
@@ -111,6 +125,7 @@ function build() {
       copy(path.join(notas, file), path.join(out, 'notas-desarrollo', file));
     }
   }
+  fs.writeFileSync(path.join(out, 'demo-datos.js'), demoData(loadDemoExtras(), personajes));
   fs.writeFileSync(path.join(out, '.nojekyll'), '');
   console.log(`✓ Web lista en web-dist/ (v${pkg.version}, ${personajes.length} personajes, ${ATLAS.places.length} lugares)`);
 }
