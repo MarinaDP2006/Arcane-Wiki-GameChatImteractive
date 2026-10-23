@@ -46,6 +46,7 @@
     const s = active; active = null;
     cancelAnimationFrame(s.raf);
     window.removeEventListener('resize', s.layout);
+    s.root._blurController?.abort();
     window.removeEventListener('keydown', s.keydown);
     window.removeEventListener('keyup', s.keyup);
     s.root.remove();
@@ -81,14 +82,24 @@
     const shade = document.createElement('div'); shade.className = 'scene2d-shade';
     const hud = document.createElement('div'); hud.className = `${city}-interior-hud scene2d-hud`;
     const title = document.createElement('h2'); title.textContent = cfg.title;
-    const hint = document.createElement('p'); hint.textContent = (cfg.desc ? cfg.desc + ' · ' : '') + 'Arrastra, A/D o flechas para mirar · pulsa las luces o E · Esc para salir';
+    const hint = document.createElement('p'); hint.textContent = (cfg.desc ? cfg.desc + ' · ' : '') + (matchMedia('(pointer: coarse)').matches ? 'Desliza o usa las flechas para mirar · pulsa ✦ o toca las luces' : 'Arrastra, A/D o flechas para mirar · pulsa las luces o E · Esc para salir');
     const status = document.createElement('p'); status.className = `${city}-interior-objective`;
     const exit = document.createElement('button'); exit.className = 'btn'; exit.textContent = city === 'zaun' ? 'Salir al mapa' : 'Volver al mapa'; exit.onclick = close;
     hud.append(title, hint, status, exit);
     const card = document.createElement('div'); card.className = 'scene2d-card'; card.hidden = true;
     const arrowL = document.createElement('div'); arrowL.className = 'scene2d-arrow scene2d-arrow-l'; arrowL.textContent = '‹';
     const arrowR = document.createElement('div'); arrowR.className = 'scene2d-arrow scene2d-arrow-r'; arrowR.textContent = '›';
-    root.append(stage, fx, shade, arrowL, arrowR, hud, card);
+    // Botones táctiles: mover la cámara y activar la pista sin teclado.
+    const touchBar = document.createElement('div');
+    touchBar.className = 'scene2d-touch-controls';
+    const touchButtons = [
+      ['◀', 'Mirar a la izquierda', 'arrowleft'],
+      ['▶', 'Mirar a la derecha', 'arrowright'],
+      ['▲', 'Mirar arriba', 'arrowup'],
+      ['▼', 'Mirar abajo', 'arrowdown'],
+      ['✦', 'Investigar o continuar', 'interact'],
+    ];
+    root.append(stage, fx, shade, arrowL, arrowR, hud, card, touchBar);
     document.body.append(root);
 
     // Vista: la imagen cubre la pantalla con un margen de zoom para poder recorrerla.
@@ -96,6 +107,21 @@
     let size = { w: 0, h: 0, sx: 0, sy: 0 };
     let inspected = Boolean(cfg.skipClue), done = false;
     const keys = new Set();
+    for (const [label, name, key] of touchButtons) {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'scene2d-touch-btn';
+      button.textContent = label; button.setAttribute('aria-label', name);
+      if (key === 'interact') {
+        button.addEventListener('click', (e) => { e.stopPropagation(); const kind = inspected ? 'goal' : 'clue'; if (visible(kind)) act(kind); else status.textContent = 'Mueve la vista hasta encontrar la luz.'; });
+      } else {
+        const release = (e) => { keys.delete(key); button.classList.remove('pressed'); if (e?.pointerId != null && button.hasPointerCapture?.(e.pointerId)) button.releasePointerCapture(e.pointerId); };
+        button.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); button.setPointerCapture?.(e.pointerId); keys.add(key); button.classList.add('pressed'); });
+        button.addEventListener('pointerup', release);
+        button.addEventListener('pointercancel', release);
+        button.addEventListener('lostpointercapture', () => { keys.delete(key); button.classList.remove('pressed'); });
+      }
+      touchBar.append(button);
+    }
     function layout() {
       const W = root.clientWidth, H = root.clientHeight;
       const ar = (img.naturalWidth || 16) / (img.naturalHeight || 9);
@@ -149,14 +175,15 @@
     window.addEventListener('keyup', keyup);
     // Arrastrar con ratón o dedo; la rueda desplaza en horizontal.
     let drag = null;
-    root.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; drag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y }; root.setPointerCapture?.(e.pointerId); });
+    root.addEventListener('pointerdown', (e) => { if (e.target.closest('button')) return; drag = { id: e.pointerId, x: e.clientX, y: e.clientY, vx: view.x, vy: view.y }; root.setPointerCapture?.(e.pointerId); });
     root.addEventListener('pointermove', (e) => {
-      if (!drag) return;
+      if (!drag || drag.id !== e.pointerId) return;
       view.x = drag.vx - (e.clientX - drag.x) / Math.max(1, size.sx);
       view.y = drag.vy - (e.clientY - drag.y) / Math.max(1, size.sy);
     });
-    root.addEventListener('pointerup', () => { drag = null; });
-    root.addEventListener('pointercancel', () => { drag = null; });
+    root.addEventListener('pointerup', (e) => { if (drag?.id === e.pointerId) drag = null; });
+    root.addEventListener('pointercancel', (e) => { if (drag?.id === e.pointerId) drag = null; });
+    window.addEventListener('blur', () => keys.clear(), { signal: (() => { const c = new AbortController(); root._blurController = c; return c.signal; })() });
     root.addEventListener('wheel', (e) => { view.x += (e.deltaY + e.deltaX) / Math.max(400, size.sx * 2); e.preventDefault(); }, { passive: false });
     window.addEventListener('resize', layout);
 
