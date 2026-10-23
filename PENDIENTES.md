@@ -6,7 +6,6 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 
 - [ ] **Clave de Ollama Cloud en el servidor publicado.** Poner `OLLAMA_API_KEY` como secreto en Render (nunca en el repositorio). Sin ella, la demo web y el chat con IA usan el narrador local de respaldo.
 - [ ] **Separar el repositorio.** Descargar esta rama y crear el repositorio propio del mundo nuevo (ver [docs/GUIA-EXPORTAR-REPOSITORIO.md](docs/GUIA-EXPORTAR-REPOSITORIO.md)).
-- [ ] **Modelo de LM Studio para el chat libre.** En el juego: Ajustes → IA → LM Studio con `http://localhost:1234` (o la IP del PC en casa). Para la web en Render hace falta un túnel propio hacia el PC (por ejemplo Cloudflare Tunnel) en `AI_BASE_URL`, con `AI_MODEL`; si no, Ollama Cloud. El ID de dispositivo de LM Link no sirve para conectar desde fuera.
 - [ ] **Probar en dispositivos reales**: instalador de Windows, app de Android y la web en el móvil.
 
 ## Arte y 3D
