@@ -1,8 +1,8 @@
-# Hoja de ruta: personajes, animación 2D/3D y LM Studio
+# Hoja de ruta: universo original, personajes, animación 2D/3D y LM Studio
 
 ## Objetivo
 
-Mantener el juego jugable mientras se prepara una actualización 3D por fases. Los modelos tridimensionales completos quedan **pendientes**; no se sustituyen los avatares actuales por modelos incompletos ni se simula que el personaje ya camina en el mundo.
+Mantener el juego jugable mientras se prepara una actualización 3D por fases y migrar la narrativa y la identidad a una IP original. Consulta PLAN-UNIVERSO-ORIGINAL.md para las tres partes, las ciudades provisionales y la dirección visual. Los modelos tridimensionales completos quedan **pendientes**; no se sustituyen los avatares actuales por modelos incompletos ni se simula que el personaje ya camina en el mundo.
 
 ## Orden recomendado
 
