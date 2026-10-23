@@ -1360,7 +1360,11 @@
     const list = base.filter((o) => !dlgHidden(o.req, id) && !(o.once && seen[dlgKey(id, at, o)]))
       .map((o) => ({ ...o, __node: at }));
     if (at === 'hub') list.push({ t: 'Hasta luego.', tone: 'amable', go: 'bye', __node: at, __bye: true });
-    else if (at.startsWith('__') || !data.nodes[at].noBack) list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
+    else if (at.startsWith('__') || !data.nodes[at].noBack) {
+      // Desde cualquier rama puedes cambiar de tema o despedirte.
+      list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
+      list.push({ t: 'Hasta luego.', tone: 'amable', go: 'bye', __node: at, __bye: true });
+    }
     return list;
   }
 
@@ -1603,7 +1607,7 @@
     }
     await speak(id, said);
     talkState().at[id] = go;
-    if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, [].concat(data.nodes[go].say));
+    if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, nodeLines(id, go, data.nodes[go]));
     talking = false;
     if (tab === 'chats' && contact) {
       refreshChatHead(contact);
@@ -1613,6 +1617,16 @@
     }
     renderContacts();
     persist();
+  }
+
+  // Lo que dice el personaje al llegar a una rama. Si ya habías pasado por ella y tiene `again`,
+  // usa esas frases por turnos para que las conversaciones largas no se repitan.
+  function nodeLines(id, nid, node) {
+    const visits = (talkState().visits = talkState().visits || {});
+    const k = `${id}:${nid}`;
+    visits[k] = (visits[k] || 0) + 1;
+    if (visits[k] > 1 && node.again?.length) return [node.again[(visits[k] - 2) % node.again.length]];
+    return [].concat(node.say);
   }
 
   /** Presenta un aviso de cambio de relación o afinidad. */
