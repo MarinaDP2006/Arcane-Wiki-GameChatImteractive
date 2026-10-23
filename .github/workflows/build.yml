@@ -42,7 +42,6 @@ jobs:
           node --check src/data/alternate-fates.js
           node --check src/data/chat-expansion.js
           node --check src/data/chat-deep.js
-          node --check src/data/arcane-lore.js
       - name: Compilar instalador y portable de Windows
         run: npm run dist:win -- --publish never
         env:
