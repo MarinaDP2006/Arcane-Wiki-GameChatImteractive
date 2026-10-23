@@ -963,5 +963,22 @@
   // Olvida los modelos leídos (después de añadir archivos a la carpeta).
   function reload() { index = null; parsed.clear(); }
 
-  window.Avatars3D = { create, update, dispose, heightOf, reload, listModels };
+  /**
+   * Escenario o decorado .glb (el taller de Viktor y Jayce, un guardia…) tal cual viene,
+   * sin muñeco ni animación. Devuelve una copia lista para añadir a la escena, o null.
+   */
+  async function prop(name) {
+    const gltf = await loadGLB(name);
+    if (!gltf) return null;
+    const model = window.THREE_GLTF.SkeletonUtils.clone(gltf.scene);
+    model.traverse((o) => {
+      if (!o.isMesh) return;
+      o.castShadow = true;
+      o.receiveShadow = true;
+      for (const m of [].concat(o.material)) if (m?.map) m.map.colorSpace = T.SRGBColorSpace;
+    });
+    return model;
+  }
+
+  window.Avatars3D = { create, update, dispose, heightOf, reload, listModels, prop };
 })();

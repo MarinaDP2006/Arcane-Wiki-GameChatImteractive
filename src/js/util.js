@@ -89,7 +89,11 @@
   };
   const desktop = window.arcane?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).
-  const touch = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+  // La app de Android siempre cuenta como táctil, aunque la tableta diga que tiene un puntero fino.
+  const touch = Boolean(window.Capacitor?.isNativePlatform?.() || window.matchMedia?.('(pointer: coarse)').matches
+    || (navigator.maxTouchPoints > 0 && !window.matchMedia?.('(pointer: fine)').matches));
+  // Con pantalla táctil se ocultan todas las teclas (<kbd>) que la interfaz pone como ayuda.
+  if (touch) document.documentElement.classList.add('is-touch');
   const store = {
     async listSlots() {
       if (desktop) return window.arcane.saves.list();
