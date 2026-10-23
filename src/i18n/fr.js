@@ -1073,7 +1073,6 @@ window.I18N_DATA.fr = {
   "Cruzan igual. Horas después, solo vuelve Ekko. Heimerdinger se quedó al otro lado para que él pudiera volver.": "Ils traversent quand même. Des heures plus tard, seul Ekko revient. Heimerdinger est resté de l'autre côté pour qu'il puisse rentrer.",
   "Cruzar la grieta con Ekko y el profesor.": "Traverser la faille avec Ekko et le professeur.",
   "Créame: la paciencia nunca pasa de moda.": "Croyez-moi : la patience ne se démode jamais.",
-  "Cualquier servidor con el formato de OpenAI (LM Studio, KoboldCpp, text-generation-webui…). Escribe la dirección completa de /chat/completions.": "N'importe quel serveur au format OpenAI (LM Studio, KoboldCpp, text-generation-webui…). Écris l'adresse complète de /chat/completions.",
   "Cuando Sevika llega, el Brillo ya arde en el canal con un humo violeta que sube hasta las chimeneas.": "Quand Sevika arrive, le Shimmer brûle déjà dans le canal, avec une fumée violette qui monte jusqu'aux cheminées.",
   "Cuando Viktor sale a toser al pasillo, Jayce baja la voz.": "Quand Viktor sort tousser dans le couloir, Jayce baisse la voix.",
   "Cuando era niño, una maga me salvó la vida en una tormenta de nieve. Desde entonces solo quiero una cosa: que la magia sea de todos. No solo de unos pocos.": "Quand j'étais enfant, une mage m'a sauvé la vie dans une tempête de neige. Depuis, je ne veux qu'une chose : que la magie appartienne à tous. Pas seulement à quelques-uns.",

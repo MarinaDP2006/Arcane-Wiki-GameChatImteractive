@@ -18,3 +18,6 @@ arcaneData/partidas/
 arcaneData/partidas guardadas/*
 !arcaneData/partidas guardadas/LEEME.md
 arcaneData/ajustes.json
+
+# Web montada (se genera con npm run web)
+web-dist/

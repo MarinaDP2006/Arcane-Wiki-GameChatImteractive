@@ -1,0 +1,67 @@
+# Mantiene las ramas de plataforma al día con main, para no duplicar trabajo:
+#   main        → todo el código del juego (lo que se programa va siempre aquí)
+#   escritorio  → copia de main que compila Windows + Mac (build.yml)
+#   movil       → copia de main que compila el APK de Android (android.yml)
+# Cada vez que algo entra en main, se fusiona en las dos ramas y se lanzan sus compilaciones.
+# Si una rama no existe todavía, se crea desde main.
+#
+# Límite de GitHub: el token automático (GITHUB_TOKEN) no puede subir commits que cambien
+# archivos de .github/workflows. Si eso pasa, este trabajo falla con un aviso claro. Hay dos
+# soluciones: lanzar «Sincronizar ramas» a mano tras fusionar con otra herramienta, o crear un
+# token personal con permiso «workflows» y guardarlo en el secreto SYNC_TOKEN (ver README).
+name: Sincronizar ramas de plataforma
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency: sync-ramas
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
+      - name: Fusionar main en escritorio y movil
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          fallos=""
+          for rama in escritorio movil; do
+            if git ls-remote --exit-code --heads origin "$rama" >/dev/null; then
+              git checkout -q -B "$rama" "origin/$rama"
+              if ! git merge --no-edit -m "Sincronizar $rama con main" origin/main; then
+                git merge --abort
+                echo "::error::$rama tiene un conflicto con main: hay que resolverlo a mano"
+                fallos="$fallos $rama"
+                continue
+              fi
+            else
+              git checkout -q -B "$rama" origin/main
+            fi
+            if git push -q origin "$rama"; then
+              echo "$rama al día con main" >> "$GITHUB_STEP_SUMMARY"
+              echo "$rama" >> /tmp/subidas
+            else
+              echo "::error::No se pudo subir $rama (si main cambió workflows, hace falta el secreto SYNC_TOKEN)"
+              fallos="$fallos $rama"
+            fi
+          done
+          test -z "$fallos"
+      # Una subida hecha con GITHUB_TOKEN no dispara otros workflows, así que se lanzan a mano.
+      # Con SYNC_TOKEN la subida ya los dispara sola.
+      - name: Lanzar compilaciones
+        if: always() && env.SYNC_TOKEN == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -f /tmp/subidas || exit 0
+          grep -qx escritorio /tmp/subidas && gh workflow run build.yml --ref escritorio
+          grep -qx movil /tmp/subidas && gh workflow run android.yml --ref movil
+          true
