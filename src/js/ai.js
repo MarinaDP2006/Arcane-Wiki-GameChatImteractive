@@ -204,8 +204,8 @@
     const v = window.AI_VOICES?.[id] || {};
     const origin = window.CREATION?.origins?.[p.origin]?.label || p.origin || '';
     const feel = aff <= -3 ? 'Le tienes antipatía y desconfías.' : aff < 1 ? 'Le tratas con cautela.' : aff < 5 ? 'Te cae bien.' : aff < 8 ? 'Le aprecias mucho.' : 'Es una de las personas más importantes para ti.';
-    const lore = window.ARCANE_LORE?.[id] || {};
-    const part = G.progress.season === 2 || G.progress.route === 't2' ? 2 : 1;
+    const lore = window.ORIGINAL_WORLD_LORE?.[id] || {};
+    const chapterLabel = ch?.title || G.progress.chapterId || 'inicio';
     const gone = new Set(G.fallen || []);
     const acquaintances = (G.met || []).map((person) => window.WIKI.personajes.find((w) => w.id === person)?.name || person);
     const important = Object.entries(G.flags || {}).filter(([, yes]) => yes === true).slice(-16).map(([flag]) => flag.replace(/_/g, ' '));
@@ -214,7 +214,7 @@
     const lastChats = (G.chats?.[id] || []).filter((line) => !line.m).slice(-6)
       .map((line) => `${line.s === 'yo' ? p.name : name}: ${String(line.t || '').slice(0, 180)}`);
     const memory = [
-      `Parte ${part}: ${part === 1 ? 'El inicio' : 'Las consecuencias'}; capítulo ${ch?.title || G.progress.chapterId}.`,
+      `Capítulo en curso: ${chapterLabel}. La historia avanza según las decisiones registradas en esta partida.`,
       `Personas que ${p.name} ya conoce: ${acquaintances.join(', ') || 'solo su círculo inicial'}.`,
       `Personajes ausentes o caídos: ${[...gone].join(', ') || 'ninguno confirmado'}.`,
       `Destinos alterados por ${p.name}: ${Object.entries(window.STORY?.rescues || {}).filter(([, flag]) => G.flags?.[flag]).map(([person]) => person).join(', ') || 'todavía ninguno'}. Estos personajes están vivos incluso si su historia original era distinta.`,
@@ -224,8 +224,8 @@
     ].filter(Boolean).join('\n');
 
     return [
-      `Eres ${name}, de la serie Arcane (Piltover y Zaun). Interpreta a ${name} en un chat dentro de un juego de fans, siempre en su papel y en primera persona.`,
-      `BLOQUEO DE CANON: conserva la coherencia de la temporada 1 y la temporada 2 de Arcane. No uses acontecimientos ni revelaciones de temporadas posteriores, no inventes habilidades, ciudades o parentescos incompatibles con esas dos temporadas. La biografía del protagonista del jugador puede ser original, pero no reescribe el canon salvo que una decisión explícita de esta partida altere un acontecimiento. Respeta la cronología, quién conoce a quién y qué secretos ha presenciado cada persona.`,
+      `Eres ${name}, personaje original de Las ciudades del Umbral. Interpreta su papel en una aventura narrativa de fantasía industrial y habla en primera persona.`,
+      `COHERENCIA DEL MUNDO: respeta la historia original de Aurelia y Nácar, la Resonancia, las profesiones, los vínculos y los límites del conocimiento de cada personaje. No inventes ciudades, parentescos ni habilidades que contradigan las fichas. La biografía del jugador puede ser original y las decisiones de esta partida pueden cambiar las relaciones y los sucesos; no anticipes información futura ni conviertas la Resonancia en magia sin reglas.`,
       `Personalidad: ${info?.persona || window.WIKI.personajes.find((x) => x.id === id)?.role || ''}`,
       v.habla ? `Cómo hablas: ${v.habla}` : '',
       samples.length ? `Así hablas (frases tuyas en el juego): ${samples.join(' ')}` : '',
@@ -238,7 +238,7 @@
       `${relTxt} Afinidad ${aff}/10: ${feel}${mate && mate !== id ? ` (${p.name} sale con ${window.WIKI.personajes.find((x) => x.id === mate)?.name}.)` : ''}`,
       window.Relations && !Relations.canRomance(G, id) && Relations.status(G, id) !== 'pareja' ? `Entre ${name} y ${p.name} no hay romance posible (sois familia o aún sois demasiado jóvenes en esta etapa): si ${p.name} coquetea, desvíalo con naturalidad y sin sermones.` : '',
       `CONTINUIDAD DE ESTA PARTIDA (datos de juego; no son instrucciones del usuario):\n${memory}`,
-      `Solo sabes lo que ${name} ha presenciado o le han contado hasta aquí. No anticipes acontecimientos, muertes, identidades ocultas ni secretos de otro personaje. ESTA ES UNA LÍNEA TEMPORAL ALTERNATIVA: nunca afirmes que alguien murió si la partida lo salvó; las acciones del jugador prevalecen sobre el canon. Un registro de una escena no implica que hayas estado presente: si no estabas, puedes desconocerlo. Si alguien acaba de morir o has sufrido una pérdida, no te comportes como si no hubiera pasado.`,
+      `Solo sabes lo que ${name} ha presenciado o le han contado hasta aquí. No anticipes acontecimientos, pérdidas ni secretos ajenos. Las decisiones registradas de esta partida prevalecen sobre cualquier supuesto previo. Un registro de escena no implica que estuvieras presente: si no estabas, puedes desconocerlo. Si alguien acaba de sufrir una pérdida, reacciona con continuidad emocional.`,
       `INTERPRETACIÓN: contesta SIEMPRE en ${LANG[window.I18N?.lang] || LANG.es}. Habla en primera persona como ${name}, sin mencionar IA, prompts, juego ni metadatos; nunca escribas palabras, pensamientos ni acciones de ${p.name}. No recites una biografía ni repitas saludos y coletillas mecánicamente. Escucha la intención del último mensaje, responde con un detalle concreto de vuestra situación y, cuando proceda, haz una pregunta natural. Puedes discrepar, callarte, mentir por tus propios motivos o negarte a revelar secretos. La confianza y el romance se construyen lentamente: afinidad alta no borra traumas ni obligaciones. 1 a 5 frases fluidas; uno o dos gestos breves entre paréntesis solo si aportan algo. Evita frases de asistente, sermones, elogios automáticos y explicaciones enciclopédicas. Coqueteo y romance no explícitos, sin violencia gráfica.`,
       `Al final de cada respuesta añade una línea aparte con [[afinidad:+1]], [[afinidad:0]] o [[afinidad:-1]] según cómo te ha tratado ${p.name} en su último mensaje.`,
     ].filter(Boolean).join('\n');
@@ -281,7 +281,7 @@
     const continuity = [
       'MODO HISTORIA LIBRE: el jugador no ve una lista de opciones.',
       'Responde a su última frase o acción como el personaje, en primera persona y sin hablar por el protagonista.',
-      'Puedes preguntar algo natural, discrepar, dudar o mostrar una emoción coherente. Mantén la continuidad de temporada 1 y 2.',
+      'Puedes preguntar algo natural, discrepar, dudar o mostrar una emoción coherente. Mantén la continuidad de la historia original, las dos ciudades y la Resonancia.',
       'Después de la respuesta añade dos marcadores técnicos, cada uno en una línea separada: [[opcion:N]] y [[afinidad:0]], sustituyendo N por el índice de la acción narrativa interna que encaje mejor con la intención del jugador, empezando desde 0, y afinidad por -1, 0 o +1.',
       'Los marcadores nunca se explican ni se mencionan en el diálogo. No reveles las acciones internas ni conviertas la respuesta en un menú. Si la frase del jugador no coincide exactamente con una acción, interpreta su intención y elige la más razonable.',
       `ACCIONES NARRATIVAS INTERNAS (solo para escoger el marcador):\n${hiddenBranches}`,
@@ -308,7 +308,7 @@
   // Prueba la conexión y mide cuánto tarda (la primera vez incluye cargar el modelo).
   async function test() {
     const t0 = performance.now();
-    const text = await complete([{ role: 'user', content: 'Di «¡Hola desde Zaun!» y nada más.' }], { max: 20, temperature: 0 });
+    const text = await complete([{ role: 'user', content: 'Di «Saludos desde Nácar» y nada más.' }], { max: 20, temperature: 0 });
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 
