@@ -665,7 +665,7 @@
   const ARROW_ANG = { arrowup: -Math.PI / 2, arrowdown: Math.PI / 2, arrowleft: Math.PI, arrowright: 0 };
   GAMES.foso = {
     touchKeys: [['arrowup', '▲'], ['arrowleft', '◀'], ['arrowdown', '▼'], ['arrowright', '▶']], touchLayout: 'dpad',
-    title: 'Pelea en el foso', icon: '', scene: 'foso', grade: 'foso', backdrops: ['canal-cobre', 'mercado-nacar', 'galerias', 'nacar'],
+    title: 'Prueba de fuerza', icon: '', scene: 'canal-cobre', grade: 'foso', backdrops: ['canal-cobre', 'mercado-nacar', 'galerias', 'nacar'],
     desc: 'La multitud ruge. Tu rival ataca rápido: responde con la flecha correcta antes de que el anillo se cierre para esquivar y contraatacar.',
     controls: 'Flechas del teclado (o W A S D).', touchControls: 'Pulsa la flecha que aparece con los botones de la derecha.', goal: 'Deja a tu rival sin energía antes de que te pase a ti.',
     winText: 'Tu rival besa la lona. El foso corea tu nombre.', loseText: 'Acabas en el suelo. Levántate e inténtalo otra vez.',
