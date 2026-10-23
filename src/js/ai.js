@@ -272,6 +272,39 @@
     return { text: text || '(Se queda en silencio.)', aff };
   }
 
+  // Turno libre dentro de la historia: el jugador escribe lo que quiere y el personaje
+  // responde en su voz. La opción narrativa se selecciona en segundo plano, nunca se muestra
+  // como menú al jugador, para conservar consecuencias y continuidad de la campaña.
+  async function storyTurn(G, id, userText, choices = []) {
+    const candidates = Array.isArray(choices) ? choices : [];
+    const hiddenBranches = candidates.map((c, i) => `[${i}] ${U.tpl(c.t, G.player)}`).join('\n') || '[0] Sigue la escena sin cambiar de lugar.';
+    const continuity = [
+      'MODO HISTORIA LIBRE: el jugador no ve una lista de opciones.',
+      'Responde a su última frase o acción como el personaje, en primera persona y sin hablar por el protagonista.',
+      'Puedes preguntar algo natural, discrepar, dudar o mostrar una emoción coherente. Mantén la continuidad de temporada 1 y 2.',
+      'Después de la respuesta añade dos marcadores técnicos, cada uno en una línea separada: [[opcion:N]] y [[afinidad:0]], sustituyendo N por el índice de la acción narrativa interna que encaje mejor con la intención del jugador, empezando desde 0, y afinidad por -1, 0 o +1.',
+      'Los marcadores nunca se explican ni se mencionan en el diálogo. No reveles las acciones internas ni conviertas la respuesta en un menú. Si la frase del jugador no coincide exactamente con una acción, interpreta su intención y elige la más razonable.',
+      `ACCIONES NARRATIVAS INTERNAS (solo para escoger el marcador):\n${hiddenBranches}`,
+      `Último mensaje del jugador: ${String(userText || '').slice(0, 1500)}`
+    ].join('\n');
+    const messages = [
+      { role: 'system', content: systemPrompt(G, id) + '\n\n' + continuity },
+      ...history(G, id),
+      { role: 'user', content: 'Continúa la escena con una respuesta natural en personaje. Devuelve solo la respuesta y los dos marcadores técnicos requeridos.' }
+    ];
+    const raw = await complete(messages, { max: 480, temperature: 0.82 });
+    const am = raw.match(/\[\[\s*afinidad\s*:\s*([+-]?\d)\s*\]\]/i);
+    const aff = am ? Math.max(-1, Math.min(1, Number(am[1]))) : 0;
+    const cm = raw.match(/\[\[\s*opcion\s*:\s*(\d+)\s*\]\]/i);
+    const choiceIndex = cm ? Number(cm[1]) : 0;
+    const text = raw
+      .replace(/\[\[\s*afinidad\s*:\s*[+-]?\d\s*\]\]/gi, '')
+      .replace(/\[\[\s*opcion\s*:\s*\d+\s*\]\]/gi, '')
+      .replace(/^\s*(Respuesta|Diálogo|Escena)\s*:\s*/i, '')
+      .trim();
+    return { text: text || '(Se queda un momento en silencio antes de responder.)', aff, choiceIndex };
+  }
+
   // Prueba la conexión y mide cuánto tarda (la primera vez incluye cargar el modelo).
   async function test() {
     const t0 = performance.now();
@@ -279,5 +312,5 @@
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 
-  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, test, warm, models, ollamaModels, lmstudioModels };
+  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, storyTurn, test, warm, models, ollamaModels, lmstudioModels };
 })();
