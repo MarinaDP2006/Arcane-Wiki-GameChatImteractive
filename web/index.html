@@ -8,21 +8,21 @@
   <meta property="og:title" content="Rifts & Gears">
   <meta property="og:description" content="Fangame gratuito en desarrollo. Información del juego, capturas reales y descargas disponibles.">
   <meta property="og:image" content="arte/lugares/piltover.webp">
-  <link rel="icon" href="icono.png">
+  <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
   <header class="barra">
-    <a class="marca" href="#inicio">RIFTS <span>&amp;</span> GEARS</a>
-    <nav>
-      <a href="#juego">El juego</a>
-      <a href="#novedades">Novedades</a>
-      <a href="#desarrollando">Desarrollando R&amp;G</a>
-      
-      
-      <a href="#capturas">Capturas</a>
-      <a href="#preguntas">Preguntas</a>
-      <a class="boton boton-sm" href="#descargar">Descargar</a>
+    <a class="marca" href="#inicio" data-tab="inicio"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a>
+    <nav aria-label="Navegación principal">
+      <a href="#inicio" data-tab="inicio" class="nav-activo">Inicio</a>
+      <a href="#juego" data-tab="juego">El juego</a>
+      <a href="#novedades" data-tab="novedades">Novedades</a>
+      <a href="#fichas" data-tab="fichas">Personajes</a>
+      <a href="#desarrollando" data-tab="desarrollando">Desarrollo</a>
+      <a href="#capturas" data-tab="capturas">Capturas</a>
+      <a href="#descargar" data-tab="descargar">Descargas</a>
+      <a class="boton boton-sm boton-demo-nav" href="demo.html" target="_blank" rel="noopener">✦ Probar demo</a>
     </nav>
   </header>
 
@@ -58,6 +58,8 @@
       
     </section>
 
+
+    <section id="fichas" class="seccion demo" aria-labelledby="fichas-titulo"><p class="antetitulo">Archivo de personajes · Ejemplo original</p><h2 id="fichas-titulo">Ficha de personaje</h2><p class="intro">Conoce a dos personajes originales de demostración, creados para explorar cómo podrían verse las fichas en la web.</p><div class="ficha-panel"><div class="ficha-retrato" aria-hidden="true"><span id="ficha-sigilo">K</span></div><div class="ficha-detalles"><div class="ficha-selector" role="group" aria-label="Seleccionar personaje"><button type="button" class="activo" data-personaje="kael" aria-pressed="true">Kael</button><button type="button" data-personaje="lyra" aria-pressed="false">Lyra</button></div><h3 id="ficha-nombre">Kael</h3><p id="ficha-rol" class="ficha-rol">Ingeniero · Piltover</p><p id="ficha-frase">«Hasta el engranaje más pequeño puede cambiar una ciudad».</p><div class="ficha-stats"><label>Ingenio <meter id="ficha-ingenio" min="0" max="10" value="9"></meter></label><label>Audacia <meter id="ficha-audacia" min="0" max="10" value="6"></meter></label><label>Empatía <meter id="ficha-empatia" min="0" max="10" value="7"></meter></label></div></div><div class="ficha-historia"><div class="ficha-pestanas" role="group" aria-label="Apartado de la ficha"><button type="button" class="activo" data-ficha-tab="historia" aria-pressed="true">Historia</button><button type="button" data-ficha-tab="habilidad" aria-pressed="false">Habilidad</button></div><p id="ficha-texto">Kael diseña pequeños mecanismos para resolver problemas imposibles, pero la curiosidad lo empuja más allá de las puertas de su taller.</p></div></div></section>
     <section id="desarrollando" class="seccion viaje" aria-labelledby="titulo-viaje">
       <div class="viaje-cabecera">
         <div><p class="antetitulo">Diario de creación</p><h2 id="titulo-viaje">Desarrollando R&amp;G</h2></div>
@@ -102,7 +104,7 @@
           <p class="nota">Permite «instalar apps de origen desconocido» para tu navegador o gestor de archivos.</p>
         </article>
       </div>
-      <p class="intro pequeno" id="estado-version" role="status" aria-live="polite">Comprobando si existen versiones publicadas…</p>
+      <p class="intro pequeno" id="estado-version" role="status" aria-live="polite" hidden></p>
     </section>
 
     <section id="preguntas" class="seccion">
@@ -135,5 +137,6 @@
     <p><a href="https://github.com/MarinaDP2006/grietas-and-gears">Código en GitHub</a> · <a href="privacidad.html">Privacidad</a> · <a href="privacidad.html#aviso-legal">Aviso legal</a> · {{ANIO}}</p>
   </footer>
   <script src="web.js"></script>
+  <script src="pestanas.js" defer></script>
 </body>
 </html>
