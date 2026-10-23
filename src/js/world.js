@@ -994,7 +994,18 @@
       lastDistrict = name;
       const el = document.getElementById('world-district');
       if (el) el.textContent = name;
+      cityBanner();
     }
+  }
+
+  // Rótulo grande de la ciudad en la que estás, con su símbolo y su lema.
+  const CITY_MOTTO = { aurelia: 'La ciudad elevada', nacar: 'La ciudad bajo la piedra' };
+  function cityBanner() {
+    const box = document.getElementById('city-banner');
+    const id = G.world.map;
+    if (!box || box.dataset.city === id || !CITY_MOTTO[id]) return;
+    box.dataset.city = id;
+    box.innerHTML = `<img src="img/umbral/simbolos/${id}.svg" alt=""><span><strong>${U.esc(map.def.label)}</strong><small>${CITY_MOTTO[id]}</small></span>`;
   }
 
   /** Aviso inferior: qué hay bajo el ratón o cómo se usa el mapa. */

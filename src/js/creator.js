@@ -53,9 +53,12 @@
 
   const STEPS = ['Origen', 'Identidad', 'Clase', 'Habilidades', 'Aptitudes', 'Retrato', 'Familia y aficiones', 'Ficha final'];
 
+  // Columna izquierda: logo y pasos en vertical (en móvil, los pasos van en fila arriba).
   function header() {
-    return el('ol', { class: 'steps' }, STEPS.map((s, i) =>
-      el('li', { class: i === step ? 'active' : i < step ? 'done' : '', onclick: () => { if (i < step) go(i); } }, el('span', {}, i + 1), s)));
+    return el('aside', { class: 'creator-side' },
+      el('div', { class: 'creator-logo', 'aria-hidden': 'true' }, el('b', {}, 'Rifts'), el('i', {}, '&'), el('b', {}, 'Gears')),
+      el('ol', { class: 'steps' }, STEPS.map((s, i) =>
+        el('li', { class: i === step ? 'active' : i < step ? 'done' : '', onclick: () => { if (i < step) go(i); } }, el('span', {}, i + 1), s))));
   }
 
   function canNext() {
@@ -183,7 +186,7 @@
     const root = $('#view-creator');
     root.innerHTML = '';
     const city = draft.origin === 'aurelia' ? 'aurelia' : draft.origin === 'nacar' ? 'nacar' : 'ascensor-central';
-    const bgImg = window.CustomArt.image('lugares', city);
+    const bgImg = window.CustomArt.image('lugares', city) || `img/umbral/lugares/${city}.svg`;
     const bg = el('div', { class: `creator-bg creator-bg-${draft.origin || 'none'}`, style: bgImg ? `background-image:url("${bgImg}")` : null });
     const side = el('div', { class: 'creator-stage' },
       el('div', { id: 'stage-splash' }, splash()),
@@ -197,6 +200,8 @@
   }
 
   function rerender() {
+    // Siempre hay un retrato a la vista: el primero de la galería hasta que elijas otro.
+    if (!draft.photo) draft.photo = avatars()[0]?.[1] || null;
     const body = layout();
     [stepOrigin, stepIdentity, stepClass, stepAbilities, stepAptitudes, stepPortrait, stepFamily, stepSummary][step](body);
     body.classList.add('enter');

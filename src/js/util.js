@@ -194,6 +194,8 @@
     async load() {
       if (window.umbral?.art) {
         try { this.files = await window.umbral.art.list(); } catch { /* sin carpeta */ }
+        // Lo incluido con el juego (como los avatares) sale también; lo de la carpeta propia manda.
+        for (const [dir, list] of Object.entries(window.ART_BUNDLED || {})) this.files[dir] = { ...list, ...(this.files[dir] || {}) };
       } else {
         // Navegador y Android: recursos empaquetados, incluidas las carpetas por temporada.
         for (const dir of new Set([...Object.keys(this.files), ...Object.keys(window.ART_BUNDLED || {})])) this.files[dir] = { ...(window.ART_BUNDLED?.[dir] || {}) };

@@ -768,6 +768,7 @@
           el('span', { class: 'avatar', html: Portrait.forPlayer(G.player) }),
           el('div', {}, el('strong', {}, G.player.name), el('small', { id: 'world-district', class: 'muted' }, ''), el('div', { id: 'hud-stats', class: 'hud-stats' }))),
         el('div', { id: 'hud-objective', class: 'hud-card objective', onclick: () => { if (G.progress.started) openStory(); } })),
+      el('div', { id: 'city-banner', class: 'city-banner', 'aria-live': 'polite' }),
       el('div', { class: 'hud hud-mini' }, mini, el('small', { id: 'hud-codex', class: 'muted' })),
       el('div', { id: 'world-prompt', class: 'world-prompt', onclick: () => World.interact() }),
       el('div', { class: 'hud hud-bottom' },
