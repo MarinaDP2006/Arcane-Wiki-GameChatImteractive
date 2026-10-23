@@ -181,9 +181,9 @@ function staticFile(req, res) {
 const server = http.createServer((req, res) => {
   if (req.url.split('?')[0] === '/api/health') {
     if (req.method !== 'GET') return send(res, 405, { error:'Método no permitido.' }, { Allow:'GET' });
-    return send(res, 200, { ok:true, provider:AI_PROVIDER, model:MODEL, configured:Boolean(process.env.OLLAMA_API_KEY) });
+    return send(res, 200, { ok:true, provider:AI_PROVIDER, model:MODEL, configured:Boolean(AI_API_KEY || !requiresApiKey()) });
   }
   if (req.url.split('?')[0] === '/api/roleplay') return roleplay(req,res);
   return staticFile(req,res);
 });
-server.listen(PORT, '0.0.0.0', () => console.log(`Web + roleplay API listening on :${PORT}; model=${MODEL}; key-configured=${Boolean(process.env.OLLAMA_API_KEY)}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Web + roleplay API listening on :${PORT}; model=${MODEL}; key-configured=${Boolean(AI_API_KEY || !requiresApiKey())}`));
