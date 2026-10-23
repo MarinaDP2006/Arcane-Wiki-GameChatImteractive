@@ -3992,6 +3992,8 @@ window.I18N_DATA.fr = {
   "Pulsa «Buscar mis modelos»": "Appuie sur «Chercher mes modèles»",
   "LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).": "LM Studio n'a aucun modèle. Télécharges-en un depuis sa recherche (par exemple Gemma 3 12B).",
   "En la tablet o el móvil escribe: {0}": "Sur la tablette ou le téléphone, écris : {0}",
+  "Mueve el ratón para abrir la grieta entre Piltover y Zaun": "Bouge la souris pour ouvrir la faille entre Piltover et Zaun",
+  "Desliza el dedo para abrir la grieta entre Piltover y Zaun": "Fais glisser ton doigt pour ouvrir la faille entre Piltover et Zaun",
   // >>> chat-deep
   "(Se sienta en una caja, haciendo crujir los nudillos.) Sin prisa, ¿eh? Vale. Dispara.": "(Elle s'assoit sur une caisse en faisant craquer ses jointures.) Sans se presser, hein ? D'accord. Vas-y.",
   "¿Otra vez tú? No me quejo. ¿De qué hablamos ahora?": "Encore toi ? Je ne me plains pas. On parle de quoi, maintenant ?",

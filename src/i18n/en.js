@@ -4000,6 +4000,8 @@ window.I18N_DATA.en = {
   "Pulsa «Buscar mis modelos»": "Press «Find my models»",
   "LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).": "LM Studio has no models. Download one from its search (for example Gemma 3 12B).",
   "En la tablet o el móvil escribe: {0}": "On your tablet or phone type: {0}",
+  "Mueve el ratón para abrir la grieta entre Piltover y Zaun": "Move your mouse to open the rift between Piltover and Zaun",
+  "Desliza el dedo para abrir la grieta entre Piltover y Zaun": "Swipe to open the rift between Piltover and Zaun",
   // >>> chat-deep
   "(Se sienta en una caja, haciendo crujir los nudillos.) Sin prisa, ¿eh? Vale. Dispara.": "(Sits on a crate, cracking her knuckles.) No rush, huh? Fine. Shoot.",
   "¿Otra vez tú? No me quejo. ¿De qué hablamos ahora?": "You again? Not complaining. What now?",
