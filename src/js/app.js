@@ -58,7 +58,7 @@
   }
   App.tiltAll = tiltAll;
 
-  // Menú principal: Piltover (cielo) y Zaun (cueva) pintadas a la vez, separadas por una grieta
+  // Menú principal: Aurelia (ciudad elevada) y Nácar (ciudad subterránea), unidas por la red de ascensores.
   // de luz que sigue al ratón o al dedo. Los efectos viven en js/title-fx.js.
   const TITLE_ART = {
     pilt: [['piltover', '50% 40%'], ['hexpuertas', '50% 30%']],
@@ -100,14 +100,14 @@
       el('div', { class: 'home-panel' },
         el('div', { class: 'home-logo' },
           el('h1', { class: 'home-title', 'aria-label': 'Rifts & Gears' }, el('span', { class: 'home-word' }, ...letters('RIFTS', 0)), amp, el('span', { class: 'home-word' }, ...letters('GEARS', 6))),
-          el('div', { class: 'home-cities' }, city('piltover', 'Piltover'), el('b', {}), city('zaun', 'Zaun'))),
+          el('div', { class: 'home-cities' }, city('piltover', 'Aurelia'), el('b', {}), city('zaun', 'Nácar'))),
         el('nav', { class: 'home-menu' },
           hasSave ? btn('Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,
           btn('Nueva partida', () => Game.newGame(), hasSave ? '' : 'primary'),
           btn('Cargar partida', () => App.go('game')),
           btn('Ajustes', () => App.go('settings')),
           U.desktop ? btn('Salir', () => window.arcane.quit(), 'quiet') : null)),
-      el('div', { class: 'home-hint' }, U.touch ? 'Desliza el dedo para abrir la grieta entre Piltover y Zaun' : 'Mueve el ratón para abrir la grieta entre Piltover y Zaun'));
+      el('div', { class: 'home-hint' }, U.touch ? 'Desliza el dedo para explorar el umbral entre Aurelia y Nácar' : 'Mueve el ratón para explorar el umbral entre Aurelia y Nácar'));
     root.append(home);
     Audio2.playMusic('wiki');
     stopTitleFx = window.TitleFX.mount(home, { reduce: s.reduceMotion, particles: s.particles, low: s.quality === 'baja' });
@@ -141,7 +141,7 @@
       box.innerHTML = '';
       box.append(
         el('h3', {}, 'IA para los chats (opcional)'),
-        el('p', { class: 'muted small' }, 'Roleplay libre con contexto de la temporada 1 y 2: escribe como tu personaje y deja que el reparto responda y pregunte. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
+        el('p', { class: 'muted small' }, 'Roleplay libre de la campaña original: escribe como tu personaje y deja que el reparto responda y pregunte. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
         el('label', { class: 'field' }, el('span', {}, 'Servicio'),
           el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
@@ -305,15 +305,15 @@
         el('h3', {}, 'Pantalla'),
         U.desktop ? el('button', { class: 'btn small', onclick: () => window.arcane.toggleFullscreen() }, 'Pantalla completa (F11)') : null,
         toggle('confirmExit', 'Preguntar antes de salir al menú', 'Evita perder el hilo por un clic sin querer.'),
-        toggle('spoilers', 'Mostrar spoilers de la segunda temporada', 'En el Códice y en las conversaciones.'),
+        toggle('spoilers', 'Mostrar spoilers de la campaña', 'En el Códice y en las conversaciones.'),
       ],
       graficos: () => [
         el('h3', {}, 'Calidad'),
         select('quality', 'Calidad gráfica', 'Baja va fluido en ordenadores y móviles modestos; Ultra pide una buena tarjeta gráfica.',
           [['baja', 'Baja'], ['media', 'Media'], ['alta', 'Alta'], ['ultra', 'Ultra']]),
         toggle('shadows', 'Sombras', 'Sombras de edificios y personajes (no se usan en calidad Baja).'),
-        toggle('postfx', 'Efectos de cámara', 'Resplandor de luces, gradación de color estilo Arcane y viñeta.'),
-        toggle('particles', 'Partículas', 'Polvo dorado en Piltover y esporas de neón en Zaun.'),
+        toggle('postfx', 'Efectos de cámara', 'Resplandor de luces, gradación de color cinematográfica y viñeta.'),
+        toggle('particles', 'Partículas', 'Polvo dorado en Aurelia y vapor luminoso en Nácar.'),
         toggle('cameraSway', 'Balanceo de cámara', 'La cámara respira un poco y sigue al ratón.'),
         slider('brightness', 'Brillo', null, 0.6, 1.4, 0.05, pct),
         toggle('showFps', 'Mostrar FPS', 'Contador de fotogramas por segundo en una esquina.'),
@@ -325,12 +325,12 @@
         slider('sfxVolume', 'Efectos de sonido', null, 0, 1, 0.05, pct),
         slider('ambienceVolume', 'Ambiente de la ciudad', null, 0, 1, 0.05, pct),
         el('h3', {}, 'Música y ambiente'),
-        toggle('music', 'Música ambiental', 'Banda sonora original que se crea mientras juegas: orquesta y relojería en Piltover, ritmo industrial y neón en Zaun.'),
-        toggle('ambience', 'Sonido ambiente', 'Viento, campanas y engranajes en Piltover; goteos, vapor y zumbido de neón en Zaun.'),
+        toggle('music', 'Música ambiental', 'Banda sonora original que se crea mientras juegas: cuerdas y relojería en Aurelia, percusión industrial y vapor en Nácar.'),
+        toggle('ambience', 'Sonido ambiente', 'Viento, campanas y engranajes en Aurelia; goteos, vapor y canales en Nácar.'),
         row('Escuchar cada ciudad', 'Suena unos segundos y vuelve a la música de antes. Los efectos y los pasos también cambian según la ciudad.',
           el('span', { class: 'chips' },
-            el('button', { class: 'chip', onclick: (e) => { e.preventDefault(); Audio2.previewCity('piltover'); } }, 'Piltover'),
-            el('button', { class: 'chip', onclick: (e) => { e.preventDefault(); Audio2.previewCity('zaun'); } }, 'Zaun'))),
+            el('button', { class: 'chip', onclick: (e) => { e.preventDefault(); Audio2.previewCity('piltover'); } }, 'Aurelia'),
+            el('button', { class: 'chip', onclick: (e) => { e.preventDefault(); Audio2.previewCity('zaun'); } }, 'Nácar'))),
         toggle('muteBackground', 'Silenciar al cambiar de ventana', 'El sonido se pausa si el juego queda en segundo plano.'),
       ],
       lectura: () => [
@@ -340,8 +340,8 @@
         select('textSize', 'Tamaño de letra', null, [['pequeno', 'Pequeño'], ['normal', 'Normal'], ['grande', 'Grande'], ['enorme', 'Muy grande']]),
         toggle('readableFont', 'Letra más fácil de leer', 'Cambia la letra decorativa por una sencilla (ayuda con la dislexia).'),
         el('h3', {}, 'Colores'),
-        select('uiTheme', 'Colores de la interfaz', 'Según la ciudad: dorado en Piltover y verde neón en Zaun.',
-          [['ciudad', 'Según la ciudad'], ['clasico', 'Clásico'], ['piltover', 'Piltover (oro y azul)'], ['zaun', 'Zaun (neón verde)'], ['hextec', 'Hextec (azul)'], ['noxus', 'Noxus (carmesí)'], ['brillo', 'Brillo (rosa y violeta)']]),
+        select('uiTheme', 'Colores de la interfaz', 'Según la ciudad: marfil y latón en Aurelia; turquesa y metal en Nácar.',
+          [['ciudad', 'Según la ciudad'], ['clasico', 'Clásico'], ['piltover', 'Aurelia (marfil y latón)'], ['zaun', 'Nácar (turquesa y metal)'], ['hextec', 'Resonancia (azul)'], ['noxus', 'Cobre (ámbar)'], ['brillo', 'Brillo (rosa y violeta)']]),
       ],
       juego: () => [
         el('h3', {}, 'Partida'),
@@ -394,7 +394,7 @@
       acerca: () => [
         el('h3', {}, 'Acerca de'),
         el('p', { class: 'muted small' }, 'Juego de fans gratuito y sin ánimo de lucro: no se vende, no tiene anuncios ni compras. Todas las imágenes y datos vienen dentro del juego y la música se sintetiza en tiempo real: no necesita internet (solo el chat libre con IA, si lo activas con un servicio en línea).'),
-        el('p', { class: 'muted small' }, 'Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.'),
+        el('p', { class: 'muted small' }, 'Las ciudades, personajes e historia de esta versión son contenido original de Rifts & Gears. Las bibliotecas y recursos de terceros mantienen sus propias licencias.'),
         el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo. Si activas la IA para los chats, lo que escribes en el comunicador (y el contexto del personaje) se envía al servicio que elijas, con tu propia clave; con Ollama no sale de tu ordenador.'),
       ],
     };
@@ -422,7 +422,7 @@
       return line(id, loc?.name || wiki?.name || id);
     });
     return [
-      'GUÍA DE ARTE · Rifts & Gears: Piltover y Zaun',
+      'GUÍA DE ARTE · Las ciudades del Umbral',
       '======================================',
       '',
       'Pon tus archivos en estas carpetas con estos nombres. En lugares/ también vale el nombre largo',
@@ -431,7 +431,7 @@
       'Reinicia el juego después de añadir archivos.',
       '',
       'avatares/     RETRATOS PARA TU PERSONAJE (cualquier nombre de archivo). Aparecen en la galería del creador.',
-      '              Mejor verticales (3:4), estilo Arcane: concept art, fan art, capturas...',
+      '              Mejor verticales (3:4), concepto original: siluetas, ropa, peinados y paletas propias...',
       '',
       'personajes/   CUERPO ENTERO (vertical, la cara en la parte de arriba): bustos de la historia y fichas del Códice',
       ...W.personajes.map((p) => line(p.id, p.name)),
@@ -468,7 +468,7 @@
         el('button', { class: 'btn small', onclick: () => window.arcane.art.open() }, 'Abrir carpeta de arte'),
         ...['avatares', 'personajes', 'caras', 'lugares', 'codice', 'modelos'].map((d) => el('button', { class: 'btn ghost small', onclick: () => window.arcane.art.open(d) }, `${d}`)),
         el('button', { class: 'btn ghost small', onclick: async () => { await window.CustomArt.load(); window.World3D?.resetActors(); toast('Arte recargado. Algunas imágenes se verán al cambiar de pantalla.', 'good'); renderSettings(root, onBack); } }, 'Recargar arte')),
-      el('p', { class: 'muted small' }, 'Todo el arte viene dentro del juego y funciona sin internet. Puedes añadir imágenes a tu carpeta de arte, separadas por Piltover y Zaun.'));
+      el('p', { class: 'muted small' }, 'El arte conceptual propio viene dentro del juego y funciona sin internet. Puedes añadir imágenes a tu carpeta de arte, separadas por Aurelia y Nácar.'));
   }
 
   /** Inicializa el menú y carga los ajustes guardados. */
@@ -476,7 +476,7 @@
     App.settings = await store.getSettings();
     window.I18N.setLang(App.settings.lang);
     applyLook();
-    // Las letras de Arcane también se usan en los minijuegos (canvas): se cargan ya para que no salgan en Georgia.
+    // Las fuentes locales se cargan antes de dibujar los minijuegos para mantener la tipografía coherente.
     document.fonts?.load?.('700 20px Cinzel').catch(() => {});
     // Sin sonido cuando el juego queda en segundo plano (si así se ha elegido).
     document.addEventListener('visibilitychange', () => {
