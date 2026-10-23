@@ -140,15 +140,15 @@
       const lan = el('small', { class: 'muted ai-lan' });
       box.innerHTML = '';
       box.append(
-        el('h3', {}, 'IA para los chats (opcional)'),
-        el('p', { class: 'muted small' }, 'Roleplay libre con contexto de la temporada 1 y 2: escribe como tu personaje y deja que el reparto responda y pregunte. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
+        el('h3', {}, 'IA de la historia y los chats'),
+        el('p', { class: 'muted small' }, 'Roleplay libre fiel a la temporada 1 y 2: escribes como tu personaje y el reparto te responde, te pregunta y la historia avanza según lo que hagas. La opción recomendada ya viene puesta: una IA alojada en internet, sin instalar nada. Si alguna vez no responde, el juego te ofrece los diálogos escritos para no quedarte atascada.'),
         el('label', { class: 'field' }, el('span', {}, 'Servicio'),
           el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
         a.provider !== 'off' ? el('p', { class: 'small ai-help' }, d.help) : null,
         d.key ? el('label', { class: 'field' }, el('span', {}, 'Clave (API key)'),
           el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.key || '', placeholder: 'Pega aquí tu clave', onchange: (e) => save({ key: e.target.value.trim() }) })) : null,
-        (local || a.provider === 'custom' || a.provider === 'ollamaCloud') ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
+        (local || a.provider === 'custom') ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
           el('input', { class: 'input', value: a.url || d.url, placeholder: a.provider === 'lmstudio' ? 'http://192.168.1.40:1234' : a.provider === 'ollamaCloud' ? 'https://tu-servicio.onrender.com/api/roleplay' : 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
         a.provider === 'lmstudio' ? lan : null,
         a.provider !== 'off' ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
@@ -345,6 +345,8 @@
       ],
       juego: () => [
         el('h3', {}, 'Partida'),
+        select('storyMode', 'Cómo hablas en la historia', 'Libre: escribes lo que dice o hace tu personaje y la escena te responde con la IA, sin salirse de la temporada 1 y 2. Opciones: los diálogos escritos de siempre.',
+          [['libre', 'Libre (escribes tú, con IA)'], ['opciones', 'Opciones escritas']]),
         select('difficulty', 'Dificultad de los minijuegos', 'Fácil te da una ventaja extra; Difícil te la quita.',
           [['facil', 'Fácil'], ['normal', 'Normal'], ['dificil', 'Difícil']]),
         toggle('objectiveArrow', 'Flecha hacia el objetivo', 'Señala en el mapa a dónde tienes que ir.'),

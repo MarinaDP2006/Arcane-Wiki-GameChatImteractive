@@ -1052,7 +1052,24 @@
     busy = true;
     skipping = false;
     showChoices([]);
-    const lines = node.lines.filter(lineVisible);
+    let lines = node.lines.filter(lineVisible);
+    // Historia libre: el guion no habla por el jugador y, tras un turno libre, se adapta a lo
+    // que ha escrito (si la IA falla, sale el guion original).
+    const adapting = freeStory() && G.progress.adaptNext;
+    if (freeStory()) {
+      const cast = sceneCast(node);
+      lines = lines.filter((l) => l.s !== 'yo');
+      if (G.progress.adaptNext && lines.length) {
+        const typing = tab === 'historia' ? typingIndicator(cast[0] || 'narrador') : null;
+        try {
+          const ch2 = chapterById(G.progress.chapterId);
+          const adapted = await window.AI.adapt(G, { chapter: ch2.title, cast, beat: lines.map((l) => `${l.s}: ${tpl(l.t, G.player)}`) });
+          if (adapted.length) lines = adapted;
+        } catch { /* se queda el guion escrito */ }
+        typing?.remove();
+      }
+    }
+    G.progress.adaptNext = false;
     // Quien habla en una escena pasa a ser alguien que ya conoces.
     lines.forEach((l) => { if (S().cast.includes(l.s) && !G.met.includes(l.s)) G.met.push(l.s); });
     for (const line of lines) {
@@ -1079,7 +1096,11 @@
     G.progress.linesShown = true;
     await persist();
     if (node.end) return endChapter();
-    if (node.next && !node.choices) return advance(node.next);
+    if (node.next && !node.choices) {
+      // Las escenas encadenadas siguen adaptándose a lo que dijo el jugador.
+      G.progress.adaptNext = adapting;
+      return advance(node.next);
+    }
     showChoices(currentChoices());
   }
 
@@ -1102,6 +1123,8 @@
   /** Avanza al siguiente mensaje o nodo narrativo. */
   function advance(next) {
     G.progress.linesShown = false;
+    G.progress.freeTurns = 0;
+    aiFailedNode = null;
     playNode(next);
   }
 
@@ -1137,6 +1160,7 @@
     const box = $('#choices');
     if (!box) return;
     box.innerHTML = '';
+    box.classList.remove('ai-box', 'story-free');
     if (G.progress.finished) {
       box.append(el('div', { class: 'end-actions' },
         (!window.GAME_UNIVERSE && G.progress.season !== 2) ? el('button', { class: 'btn primary hex-btn', onclick: startSeason2 }, 'Comenzar la Parte II · Las consecuencias') : null,
@@ -1145,6 +1169,7 @@
         el('button', { class: 'btn ghost', onclick: replayRoute }, 'Rejugar la ruta con este personaje')));
       return;
     }
+    if (freeStory() && choices.length && !choices.some((c) => c.__next)) return showStoryInput(box, choices);
     choices.filter((c) => !reqHidden(c.req)).forEach((c, i) => {
       const ok = reqMet(c.req);
       box.append(el('button', {
@@ -1154,6 +1179,118 @@
         onclick: () => choose(c),
       }, el('span', { class: 'num' }, i + 1), tpl(c.t, G.player), !ok ? el('em', {}, '') : null));
     });
+  }
+
+  // ---------- Historia libre (sin opciones) ----------
+  // Con la IA lista, el jugador escribe lo que dice o hace y los personajes de la escena
+  // responden. Los caminos escritos del canon siguen existiendo, pero ocultos: la IA decide
+  // cuándo lo que ha hecho el jugador lleva a uno de ellos, y así la partida avanza por la
+  // temporada 1 y 2 con sus consecuencias (afinidad, flags, minijuegos, muertes y rescates).
+  let aiFailedNode = null;
+  const MUST_MOVE = 4; // a partir de este turno la escena tiene que avanzar
+  const FORCE_MOVE = 6; // red de seguridad si la IA no elige camino
+
+  function freeStory() {
+    return window.App.settings.storyMode !== 'opciones' && window.AI.ready() && aiFailedNode !== `${G.progress.chapterId}.${G.progress.node}`;
+  }
+
+  /** Personajes del reparto presentes en la escena actual. */
+  function sceneCast(node) {
+    const ids = new Set((node.lines || []).filter(lineVisible).map((l) => l.s).filter((id) => S().cast.includes(id)));
+    if (!ids.size) {
+      const last = [...G.log].reverse().find((m) => S().cast.includes(m.s));
+      if (last) ids.add(last.s);
+    }
+    return [...ids].filter((id) => !isFallen(id));
+  }
+
+  function showStoryInput(box, choices) {
+    const paths = choices.filter((c) => !reqHidden(c.req) && reqMet(c.req));
+    box.classList.add('ai-box', 'story-free');
+    const input = el('textarea', { class: 'input ai-input', rows: 2, maxlength: 600,
+      placeholder: U.touch ? 'Escribe lo que dices o haces…' : 'Escribe lo que dices o haces… (Intro para enviar)',
+      'aria-label': `Lo que dice o hace ${G.player.name}`,
+      onkeydown: (e) => { if (e.key !== 'Escape') e.stopPropagation(); if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } } });
+    const send = () => { const t = input.value.trim(); if (!t || busy) return; input.value = ''; sendStory(t, paths); };
+    box.append(
+      el('div', { class: 'ai-row' }, input, el('button', { class: 'btn primary ai-send', title: 'Enviar', 'aria-label': 'Enviar', onclick: send }, '➤')),
+      el('small', { class: 'muted ai-note' }, `Habla o actúa como ${G.player.name}: no hay opciones, la escena reacciona a lo que escribas.`));
+    window.AI.warm();
+    if (!U.touch) setTimeout(() => input.focus(), 0);
+  }
+
+  async function sendStory(text, paths) {
+    const ch = chapterById(G.progress.chapterId);
+    const node = ch.nodes[G.progress.node];
+    busy = true;
+    showChoices([]);
+    pushLog('yo', text);
+    $('#story-log')?.append(bubble('yo', text));
+    scrollLog();
+    Audio2.sfx.message();
+    const turn = G.progress.freeTurns || 0;
+    const cast = sceneCast(node);
+    const typing = typingIndicator(cast[0] || 'narrador') || null;
+    let r;
+    try {
+      r = await window.AI.direct(G, {
+        chapter: ch.title,
+        intro: ch.intro,
+        cast,
+        beat: (node.lines || []).filter(lineVisible).map((l) => `${l.s === 'yo' ? G.player.name : l.s === 'narrador' ? 'Narración' : charName(l.s)}: ${tpl(l.t, G.player)}`),
+        paths,
+        turn,
+        mustMove: turn >= MUST_MOVE,
+      }, text);
+    } catch (err) {
+      typing?.remove();
+      busy = false;
+      aiFailedNode = `${G.progress.chapterId}.${G.progress.node}`;
+      pushLog('sistema', `La IA no responde ahora mismo (${err.message}). Puedes seguir con las opciones escritas o volver a intentarlo en un momento.`);
+      $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
+      scrollLog();
+      await persist();
+      return showChoices(currentChoices());
+    }
+    typing?.remove();
+    for (const line of r.lines) {
+      if (S().cast.includes(line.s) && !G.met.includes(line.s)) G.met.push(line.s);
+      if (tab === 'historia' && line.s !== 'narrador' && window.App.settings.textSpeed !== 'instantaneo') {
+        const t = typingIndicator(line.s);
+        await sleep(300);
+        t?.remove();
+      }
+      pushLog(line.s, line.t);
+      if (tab === 'historia') {
+        setSpeaker(line.s);
+        $('#story-log')?.append(bubble(line.s, line.t));
+        scrollLog();
+        Audio2.sfx.message();
+        talk(line.s !== 'narrador');
+        await skipWait(delayFor(line.t));
+        talk(false);
+      }
+    }
+    // La afinidad cambia poco a poco, como en el comunicador.
+    for (const [id, v] of Object.entries(r.aff || {})) {
+      const c = (G.aiAff = G.aiAff || {})[id] || { pos: 0, neg: 0 };
+      if (v > 0 && ++c.pos >= 3) { c.pos = 0; applyFx({ aff: { [id]: 1 } }); }
+      if (v < 0 && ++c.neg >= 2) { c.neg = 0; applyFx({ aff: { [id]: -1 } }); }
+      G.aiAff[id] = c;
+    }
+    renderContacts();
+    busy = false;
+    let pick = r.path >= 0 ? paths[r.path] : null;
+    if (!pick && turn + 1 >= FORCE_MOVE && paths.length) pick = paths.find((c) => !c.req) || paths[0];
+    if (pick) {
+      G.progress.freeTurns = 0;
+      G.progress.adaptNext = true;
+      await persist();
+      return choose(pick, true);
+    }
+    G.progress.freeTurns = turn + 1;
+    await persist();
+    showChoices(currentChoices());
   }
 
   /** Aplica las consecuencias de una decisión al estado del juego. */
@@ -1170,14 +1307,17 @@
   }
 
   /** Procesa la decisión elegida y avanza la historia. */
-  async function choose(c) {
+  // silent: en la historia libre el jugador ya ha escrito su propia frase.
+  async function choose(c, silent = false) {
     if (busy) return;
-    Audio2.sfx.choice();
+    if (!silent) Audio2.sfx.choice();
     if (c.__next) return nextChapter();
-    const text = tpl(c.t, G.player);
-    pushLog('yo', text);
-    $('#story-log')?.append(bubble('yo', text));
-    scrollLog();
+    if (!silent) {
+      const text = tpl(c.t, G.player);
+      pushLog('yo', text);
+      $('#story-log')?.append(bubble('yo', text));
+      scrollLog();
+    }
     applyFx(c.fx);
     renderContacts();
     if (c.game) {
@@ -1510,7 +1650,7 @@
 
   // Modo del comunicador: opciones escritas o chat libre con IA.
   function chatMode(id) {
-    return talkState().mode?.[id] || 'tree';
+    return talkState().mode?.[id] || (window.AI.ready() ? 'ai' : 'tree');
   }
   /** Cambia entre diálogo escrito y chat libre opcional. */
   function setChatMode(id, m) {
