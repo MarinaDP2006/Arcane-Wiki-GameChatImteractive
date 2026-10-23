@@ -10,11 +10,9 @@ La web estática se genera con `node scripts/build-web.js` y se publica desde `w
 ## Descargar
 Entra en **[Releases](https://github.com/MarinaDP2006/grietas-and-gears/releases)** y elige:
 
-- **Windows** · `Grietas-and-Gears-Setup-VERSION.exe` (instalador con acceso directo) o `Grietas-and-Gears-VERSION-portable.exe` (sin instalar).
-- **Mac** · `Grietas-and-Gears-VERSION-mac-arm64.dmg` (Apple Silicon, M1 en adelante) o `…-mac-x64.dmg` (Intel). No lleva firma de Apple: la primera vez ábrelo con clic derecho → **Abrir**.
-- **Android (móvil y tableta)** · `grietas-and-gears-VERSION-tablet.apk`.
-
-Si aún no hay una versión publicada, abre [Actions](https://github.com/MarinaDP2006/grietas-and-gears/actions) → **Compilar escritorio (Windows y Mac)** o **Compilar móvil (Android)** → ejecución correcta → artefacto `grietas-and-gears-windows`, `-mac` o `-android`. Extrae el ZIP antes de usar el archivo.
+- **Windows** 
+- **Mac** 
+- **Android (móvil y tableta)** 
 
 **Importante:** la primera instalación puede mostrar un aviso de Windows SmartScreen si la aplicación no tiene firma digital. Descarga únicamente desde este repositorio y verifica el origen.
 
