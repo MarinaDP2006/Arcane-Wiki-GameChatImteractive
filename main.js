@@ -6,7 +6,7 @@ const os = require('os');
 const { pathToFileURL } = require('url');
 
 // La app se llama «Grietas & Gears», pero las partidas, ajustes y arte siguen en la carpeta de siempre
-// (%APPDATA%\Arcane Piltover y Zaun), así no se pierde nada al actualizar.
+// (%APPDATA%\Rifts & Gears - Las ciudades del Umbral), así no se pierde nada al actualizar.
 // GRIETAS_DATOS permite probar el juego con otra carpeta sin tocar las partidas reales.
 app.setPath('userData', process.env.GRIETAS_DATOS || path.join(app.getPath('appData'), 'Rifts & Gears - Las ciudades del Umbral'));
 const Modelos = require('./modelos');
@@ -111,7 +111,7 @@ function listDir(dir) {
 // Carpeta «arte» junto al ejecutable (o al .exe portátil): también se lee, para quien guarda
 // ahí sus vídeos e imágenes. La carpeta de arte de AppData manda sobre ella.
 // También se busca una carpeta «arte» en Documentos (hasta dos niveles), p. ej.
-// Documentos\LOL-Game_Arcane\Arcane Piltover y Zaun\arte, donde mucha gente guarda sus vídeos.
+// Se buscan carpetas «arte» en Documentos para facilitar la importación de recursos propios.
 function documentsRoots() {
   const out = [];
   let docs;
