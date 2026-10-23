@@ -109,241 +109,25 @@ Cada vez que algo entra en `main`, el workflow **Sincronizar ramas de plataforma
 
 La web está en [`web/`](web/) y se genera con `npm run web` en `web-dist/`. La nueva versión incluye una galería para capturas reales del inicio, creación de personaje, comunicador, mapa y códice, sin conversaciones de personajes ni spoilers. Se han retirado las referencias promocionales a IA, pero las funciones del juego permanecen intactas. La publicación usa la rama `main`, el comando `node scripts/build-web.js`, la carpeta `web-dist` y actualizaciones automáticas por commit.
 
-## Hoja de ruta: web, panel de gestión, API y JavaFX
-> **Estado:** estas tecnologías son una propuesta de ampliación, no funcionalidades ya implementadas. El juego actual sigue utilizando Electron y Capacitor, y la web promocional actual se genera desde `web/` con el script existente. No sustituir ni borrar esos proyectos durante la transición.
+## Arquitectura y desarrollo futuro
 
-| Componente | Tecnología | Despliegue | Estado |
-|---|---|---|---|
-| Web promocional | HTML/CSS/JS + generador Node existente | Netlify (o Render actual) | Existente |
-| Panel web privado | Angular + TypeScript | Netlify | Planificado |
-| API REST | Node.js + Express | Render Web Service | Planificado |
-| Aplicación de gestión de escritorio | Java + JavaFX + FXML + Scene Builder | Instalador de escritorio | Planificado |
-| Autenticación | Firebase Authentication con proveedor Google | Firebase + verificación en API | Planificado |
-| Documentos restringidos | Almacenamiento privado + permisos en API | Por decidir | Planificado |
+**Grietas & Gears no usa Angular.** Su web promocional es HTML/CSS/JavaScript en web/ y se compila con npm run web a web-dist/. El juego utiliza Electron y Capacitor. Angular y la API Node.js del otro proyecto pertenecen exclusivamente a Umbrella Archives (repositorio archivos-umbrella).
 
-### Estructura futura sugerida
-```text
-grietas-and-gears/
-├── web/                    # Web promocional actual (conservar)
-├── web-dist/               # Salida generada, no editar a mano
-├── src/                    # Juego existente (conservar)
-├── android/                # Capacitor existente (conservar)
-├── scripts/
-├── admin-web/              # Futuro panel Angular
-├── api/                    # Futura API Express
-├── gestion-javafx/         # Futura app JavaFX + FXML
-│   └── src/main/resources/fxml/
-├── docs/                   # Guías y documentación
-├── netlify.toml
-└── README.md
-```
+La web pública de este fangame se centra en el juego, las capturas reales y las descargas. No es una wiki ni un catálogo de personajes.
 
-## Publicar la web actual en Netlify
+### Funciones del juego pendientes
 
-La web promocional se construye desde la raíz con `npm run web`, que ejecuta `node scripts/build-web.js` y genera `web-dist/`. El archivo `netlify.toml` configura este proceso.
+- Integración de LM Studio y modelos locales de lenguaje.
+- Modelos de personajes en 3D con animaciones.
+- Entornos tridimensionales de las ciudades y sus ubicaciones exteriores.
+- Optimización y pruebas de escritorio, móvil y tableta.
 
-1. Accede a https://app.netlify.com/start y conecta GitHub.
-2. Selecciona `MarinaDP2006/grietas-and-gears`.
-3. Configura rama `main`, comando `npm run web` y directorio publicado `web-dist`.
-4. Despliega y verifica que el dominio `*.netlify.app` muestra la web.
-5. Cada push posterior a `main` desencadena una nueva publicación si la integración Git está activa.
+Estas funciones no se deben anunciar como terminadas.
 
-**Nota:** el servicio promocional actual en Render puede mantenerse durante la migración. Netlify solo publica el contenido de `web-dist/`; no aloja por sí solo un proceso Express persistente ni ejecuta la aplicación JavaFX.
+### Web y Netlify
 
-Comandos de comprobación local:
+Desde la raíz: npm ci y npm run web. Publicar web-dist/ con Netlify desde main. Los enlaces de descarga utilizan GitHub Releases.
 
-```powershell
-node --version
-npm --version
-npm ci
-npm run web
-npm run check
-```
+### Aviso legal
 
-CLI opcional de Netlify:
-
-```powershell
-npm install -g netlify-cli
-netlify login
-netlify sites:list
-netlify link
-netlify build
-netlify deploy --build
-netlify deploy --build --prod
-```
-
-No publiques manualmente en producción hasta haber vinculado el sitio correcto.
-
-## Angular: guía de comandos (futuro panel web)
-
-Instala Node.js LTS y usa una versión de Angular compatible con esa versión de Node. Desde la raíz del repositorio, cuando se decida crear el panel:
-
-```powershell
-npm install -g @angular/cli
-ng version
-ng new admin-web --routing --style=scss
-cd admin-web
-npm install
-ng serve --open
-ng serve --port 4200
-ng build
-ng build --configuration production
-ng test
-ng generate component pages/login
-ng generate component pages/dashboard
-ng generate component pages/documentos
-ng generate service core/services/auth
-ng generate service core/services/api
-ng generate guard core/guards/auth
-ng generate interface core/models/documento
-ng generate environments
-ng update @angular/core @angular/cli
-```
-
-Comandos habituales:
-
-| Comando | Uso |
-|---|---|
-| `ng serve` | Servidor local |
-| `ng build` | Compilar |
-| `ng g c nombre` | Crear componente |
-| `ng g s nombre` | Crear servicio |
-| `ng g guard nombre` | Crear guardia de rutas |
-| `ng g interface nombre` | Crear interfaz |
-| `ng test` | Ejecutar pruebas |
-| `ng update` | Revisar actualizaciones |
-| `npm ci` | Instalar dependencias desde lockfile |
-
-Cuando exista `admin-web/`, se deberá crear **otro sitio Netlify** con su propia configuración de compilación, sin reemplazar la web promocional. Revisar el directorio real en `angular.json` (en versiones recientes puede ser `dist/admin-web/browser`). Para rutas SPA, configurar fallback a `index.html` solo en ese sitio; no aplicar un fallback indiscriminado a la web actual.
-
-## API Node.js + Express: comandos (planificada)
-
-```powershell
-mkdir api
-cd api
-npm init -y
-npm install express cors helmet dotenv firebase-admin
-npm install -D nodemon
-npm pkg set type=module
-npm pkg set scripts.start="node src/server.js"
-npm pkg set scripts.dev="nodemon src/server.js"
-npm run dev
-npm start
-```
-
-Estos comandos preparan dependencias, pero **no crean automáticamente el servidor**. Se deberá implementar `api/src/server.js`, rutas, middleware de errores, autenticación, validación, límites de peticiones y pruebas. Para Render: desplegar `api/` como Web Service Node, build `npm ci`, start `npm start`, escuchar en `process.env.PORT` y configurar CORS con los dominios exactos de Netlify. No guardar secretos en Git.
-
-Rutas previstas:
-
-```text
-GET    /api/health
-GET    /api/me
-GET    /api/documentos
-GET    /api/documentos/:id
-POST   /api/documentos
-DELETE /api/documentos/:id
-```
-
-Las rutas privadas deberán validar identidad y autorización en el servidor en cada petición.
-
-## Iniciar sesión gratis con Google (planificado)
-
-Una opción inicial es **Firebase Authentication** con el proveedor Google, sujeto a las cuotas y condiciones vigentes de Firebase.
-
-1. Crear un proyecto en https://console.firebase.google.com/.
-2. Abrir Authentication → Sign-in method → Google y habilitar el proveedor.
-3. Registrar la aplicación web y autorizar los dominios de desarrollo y producción que corresponda.
-4. Instalar en el frontend Angular: `npm install firebase`.
-5. Implementar `signInWithPopup` o redirección, cierre de sesión y estado de usuario.
-6. Enviar el **ID token** de Firebase por HTTPS como `Authorization: Bearer <token>` a la API.
-7. En Node, verificar ese token mediante Firebase Admin SDK y consultar los roles del usuario en un almacén de confianza.
-8. Permitir acceder a archivos privados solo tras verificar en la API los permisos de ese usuario.
-
-**Importante:** iniciar sesión con Google no significa tener permisos. Una cuenta Google válida no debe poder acceder automáticamente a documentos restringidos. Implementar lista de usuarios autorizados y roles como `admin`, `editor` y `lector`. Los guards de Angular sirven para la experiencia de usuario, no son una barrera de seguridad.
-
-Nunca guardar archivos privados en `web/`, `web-dist/`, `public/`, un repositorio público ni rutas estáticas accesibles por URL. Guardarlos en almacenamiento privado y servirlos desde la API tras autorización (o mediante URL firmada de corta duración). No subir claves de servicio, tokens ni archivos `.env` al repositorio. La configuración pública de Firebase no sustituye estas medidas.
-
-## JavaFX + Java + Scene Builder: guía de aprendizaje
-
-La aplicación de gestión JavaFX será **independiente del juego Electron existente**. Se recomienda JDK LTS, Maven, JavaFX y FXML. Scene Builder permite diseñar las vistas visualmente y conectarlas con controladores Java.
-
-Instalar:
-- JDK y comprobar `java -version` y `javac -version`.
-- Apache Maven y comprobar `mvn -version`.
-- Gluon Scene Builder, configurándolo como editor de archivos `.fxml` en el IDE.
-- IDE compatible con Java, como IntelliJ IDEA, Eclipse o VS Code con extensiones Java.
-
-Estructura sugerida:
-
-```text
-gestion-javafx/
-├── pom.xml
-└── src/main/
-    ├── java/com/grietas/gears/
-    │   ├── MainApp.java
-    │   ├── controllers/
-    │   ├── models/
-    │   └── services/
-    └── resources/
-        ├── fxml/
-        │   ├── login.fxml
-        │   └── dashboard.fxml
-        └── css/
-```
-
-Comandos Maven, **cuando exista un `pom.xml` configurado con JavaFX y `javafx-maven-plugin`**:
-
-```powershell
-mvn --version
-mvn clean
-mvn compile
-mvn javafx:run
-mvn test
-mvn package
-mvn dependency:tree
-mvn clean verify
-```
-
-En Scene Builder: crear vista → guardar `.fxml` → asignar `fx:controller` → enlazar `fx:id` y eventos `onAction` → cargar el FXML desde Java con `FXMLLoader`. Mantener las llamadas HTTP a la API fuera del hilo de interfaz JavaFX usando `Task`, `Service` o ejecución asíncrona. No introducir secretos de Firebase Admin dentro de la aplicación distribuida.
-
-Para instaladores, estudiar `jpackage` y `jlink` después de configurar correctamente módulos y dependencias.
-
-## Git y mantenimiento
-
-```powershell
-git clone https://github.com/MarinaDP2006/grietas-and-gears.git
-cd grietas-and-gears
-git status
-git pull origin main
-git switch -c feature/panel-angular
-git add .
-git commit -m "feat: iniciar panel Angular"
-git push -u origin feature/panel-angular
-git switch main
-git pull origin main
-```
-
-No fusionar ramas con cambios de juego sin revisar compatibilidad. Mantener los workflows y las ramas de plataforma actuales mientras sigan utilizándose.
-
-## Seguridad y comprobaciones antes de publicar
-
-- [ ] `npm run check` pasa.
-- [ ] `npm run web` genera `web-dist/` y se ve correctamente en móvil.
-- [ ] Netlify publica únicamente la web, sin archivos privados.
-- [ ] No hay credenciales ni claves de servicio en Git.
-- [ ] La API valida tokens y roles en el servidor.
-- [ ] Los archivos privados no son accesibles por URL pública.
-- [ ] Los dominios de CORS y autenticación coinciden con los reales.
-- [ ] Se prueban errores 401 (sin sesión) y 403 (sin permiso).
-- [ ] Las aplicaciones nuevas no rompen Electron ni Capacitor.
-
-### Documentación de referencia
-
-- Netlify: https://docs.netlify.com/
-- Angular CLI: https://angular.dev/tools/cli
-- Node.js: https://nodejs.org/
-- Express: https://expressjs.com/
-- JavaFX: https://openjfx.io/
-- Scene Builder: https://gluonhq.com/products/scene-builder/
-- Firebase Authentication: https://firebase.google.com/docs/auth
-- Firebase Admin: https://firebase.google.com/docs/auth/admin/verify-id-tokens
+Proyecto gratuito, no oficial y no afiliado a Riot Games. La gratuidad no equivale a una licencia para usar recursos protegidos de terceros. Consulta https://www.riotgames.com/es/legal antes de distribuir contenido basado en su propiedad intelectual.
