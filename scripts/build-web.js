@@ -59,34 +59,26 @@ function buildCapturas() {
   return tarjetas.join('') || '<p class="galeria-vacia">Las capturas oficiales estarán disponibles próximamente.</p>';
 }
 
-// Datos de la demo web: el creador y los capítulos 1 y 2 reales de cada ciudad.
-const DEMO_CAPITULOS = { zaun: ['z1', 'z2'], piltover: ['p1', 'p2'] };
-
-function loadDemoExtras() {
-  const ctx = { window: {} };
-  vm.createContext(ctx);
-  for (const f of ['wiki.js', 'creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'guia.js', 'world.js', 'atlas.js', 'arte.js', 'arcane-lore.js', 'ai-voices.js', 'original-world.js']) {
-    vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
-  }
-  return ctx.window;
+// Datos de la demo web: textos de web/demo-base.json + reparto y ciudades reales de src/data.
+function demoData(w) {
+  const base = JSON.parse(fs.readFileSync(path.join(root, 'web', 'demo-base.json'), 'utf8'));
+  const o = w.CREATION.origins;
+  const datos = {
+    ...base,
+    ciudades: Object.fromEntries(Object.entries(o).map(([id, c]) => [id, { label: c.label, tagline: c.tagline, distritos: c.districts, oficios: c.jobs.map((j) => j.label) }])),
+    reparto: w.WIKI.personajes.map((p) => ({ id: p.id, name: p.name, alias: p.alias, origin: p.origin, role: p.role, summary: p.summary, details: p.details, quote: p.quote })),
+  };
+  return '// Generado por scripts/build-web.js a partir de src/data y web/demo-base.json. No editar a mano.\nwindow.DEMO = ' + JSON.stringify(datos) + ';\n';
 }
 
-function demoData(w, personajes) {
-  const ids = Object.values(DEMO_CAPITULOS).flat();
-  const datos = {
-    creation: { genders: w.CREATION.genders, origins: w.CREATION.origins, hobbies: w.CREATION.hobbies },
-    familyLinks: w.RELATIONS.familyLinks,
-    stats: w.STORY.stats,
-    rutas: DEMO_CAPITULOS,
-    capitulos: w.STORY.chapters.filter((c) => ids.includes(c.id)),
-    guia: w.GUIA,
-    nombres: Object.fromEntries(personajes.map((p) => [p.id, p.name])),
-  };
-  return '// Generado por scripts/build-web.js a partir de src/data. No editar a mano.\nwindow.DEMO = ' + JSON.stringify(datos) + ';\n';
+// Tarjetas del reparto para la portada.
+function repartoHtml(personajes, ciudades) {
+  return personajes.map((p, i) => `<article class="ficha ficha-${esc(p.origin)}"><span class="ficha-num">${String(i + 1).padStart(2, '0')}</span><p class="ficha-ciudad">${esc(ciudades[p.origin] || p.origin)}</p><h3>${esc(p.name)}</h3><p class="ficha-alias">${esc(p.alias)}</p><p>${esc(p.summary)}</p><blockquote>«${esc(p.quote)}»</blockquote></article>`).join('');
 }
 
 function build() {
-  const { WIKI, STORY, CHAT, ATLAS } = loadData();
+  const extra = loadData();
+  const { WIKI, STORY, CHAT, ATLAS } = extra;
   const pkg = require(path.join(root, 'package.json'));
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
@@ -106,6 +98,7 @@ function build() {
     TEMAS: dialogos,
     CAPTURAS: buildCapturas(),
     LISTA_LUGARES: lugares,
+    REPARTO: repartoHtml(personajes, Object.fromEntries(Object.entries(extra.CREATION.origins).map(([k, c]) => [k, c.label]))),
     ANIO: new Date().getFullYear(),
   };
   for (const f of fs.readdirSync(path.join(root, 'web'))) {
@@ -114,6 +107,7 @@ function build() {
       if (f === 'arte-propio') for (const a of fs.readdirSync(src)) copy(path.join(src, a), path.join(out, f, a));
       continue;
     }
+    if (f === 'demo-base.json' || f === 'README.md') continue;
     if (/\.(html|css|js)$/.test(f)) {
       const txt = fs.readFileSync(src, 'utf8').replace(/\{\{(\w+)\}\}/g, (m, k) => (k in datos ? datos[k] : m));
       fs.writeFileSync(path.join(out, f), txt);
@@ -133,7 +127,7 @@ function build() {
       copy(path.join(notas, file), path.join(out, 'notas-desarrollo', file));
     }
   }
-  fs.writeFileSync(path.join(out, 'demo-datos.js'), demoData(loadDemoExtras(), personajes));
+  fs.writeFileSync(path.join(out, 'demo-datos.js'), demoData(extra));
   fs.writeFileSync(path.join(out, '.nojekyll'), '');
   console.log(`✓ Web lista en web-dist/ (v${pkg.version}, ${personajes.length} personajes, ${ATLAS.places.length} lugares)`);
 }

@@ -1,0 +1,43 @@
+{
+  "id": "umbral",
+  "pregunta": "¿Ya conoces el mundo de Las ciudades del Umbral?",
+  "introTitulo": "Dos ciudades sobre una misma herida",
+  "intro": [
+    "Hace casi tres siglos la meseta de Umbral se hundió. Quienes se quedaron en el borde fundaron Aurelia, una ciudad de observatorios y ascensores. Quienes cayeron con la roca construyeron Nácar en las galerías, entre canales de vapor y talleres.",
+    "Las dos viven de la Resonancia: cristales que escuchan la vibración de la piedra y la convierten en trabajo. Un viejo acuerdo, el Pacto de los Contrapesos, reparte quién la usa y quién la mantiene. Nadie lo ha leído entero.",
+    "Esta noche un ascensor se detiene entre dos niveles y un medidor registra una frecuencia que no debería existir. Tú estás allí."
+  ],
+  "canon": "Eres el motor narrativo de «Las ciudades del Umbral», un universo ORIGINAL de fantasía industrial. Interpretas al narrador y a los personajes presentes. REGLAS DEL MUNDO: Aurelia es la ciudad elevada (piedra caliza, latón, gremios, Consejo, Archivo de Frecuencias). Nácar es la ciudad subterránea (hierro, cobre, canales geotérmicos, clínicas, cooperativas, red vecinal de mensajeros); es un lugar habitado y digno, no una ruina. La Resonancia transforma vibraciones geológicas en energía mediante cristales, válvulas y amortiguadores; extraer más de lo que el estrato repone desestabiliza los canales. No hay magia, armas de fuego modernas, electricidad de red ni internet: hay vapor, contrapesos, telégrafos de frecuencia y placas de registro. Historia: el Hundimiento partió la meseta hace casi 300 años; el Pacto de los Contrapesos (año 190) obliga a Aurelia a financiar los ascensores públicos a cambio de extraer de los estratos profundos, con cláusulas censuradas; en el año 251 hubo un derrumbe silenciado llamado el Silencio de Cobre. Estamos en el año 298, la noche del Registro 00:03: una frecuencia de tres pulsos y una pausa larga. Los personajes tienen matices, ninguno es puro villano ni puro héroe. Nunca menciones otras franquicias, videojuegos o series.",
+  "escenas": {
+    "zaun": {
+      "titulo": "El ascensor suspendido",
+      "lugar": "Canal de Cobre",
+      "presentes": ["darel-ossan", "nyra-quell", "joren-ash"],
+      "contexto": "Turno de madrugada. Una plataforma de carga con dos trabajadores dentro cuelga sobre un canal de vapor. Hay una grieta nueva en el soporte y un pulso verdoso detrás de la roca. Darel quiere evitar que alguien toque la válvula; Nyra trae un mensaje de Aurelia que nadie esperaba; Joren teme que el vapor esté contaminado.",
+      "apertura": "El Canal de Cobre huele a metal caliente. Sobre el vapor cuelga una plataforma de carga con dos personas dentro, inmóvil entre dos niveles. Tú, {nombre}, {oficio}, eres de los primeros en llegar. Darel Ossan sujeta la palanca del freno con las dos manos. Detrás de la roca late un brillo verdoso, tres veces, y luego nada.\nDarel Ossan: No toques la válvula. Si el reloj está bien, esta vibración no debería existir.\nNyra Quell: Traigo una carta sellada de Aurelia. Pone tu nombre. ¿La abro aquí o esperamos a que se caiga el ascensor?",
+      "giros": [
+        "La plataforma cruje y baja un palmo. Los dos trabajadores de dentro gritan algo que el vapor se traga.",
+        "El brillo detrás de la roca vuelve: tres pulsos y una pausa larga. Un medidor de latón se queda clavado en el máximo.",
+        "Alguien del barrio ha traído una lámpara y un rollo de cuerda. La gente empieza a mirarte a ti esperando una decisión.",
+        "Un silbido lejano llega por las tuberías: es la señal de Aurelia pidiendo un informe inmediato.",
+        "Joren huele el vapor y frunce el ceño. Hay un regusto dulce que no debería estar ahí.",
+        "En el soporte agrietado aparece una marca de herramienta reciente. Alguien estuvo aquí antes que vosotros."
+      ]
+    },
+    "piltover": {
+      "titulo": "La plataforma detenida",
+      "lugar": "Estación de Ascensores",
+      "presentes": ["toren-vale", "iria-venn", "saia-merel"],
+      "contexto": "Aurelia, primera hora de la mañana. Un transporte público se ha detenido antes de una inspección y el Consejo exige una explicación en menos de una hora. Toren quiere reabrir el servicio; Iria ha visto que el registro del freno contradice el informe oficial; Saia trae una copia del Archivo con un hueco sospechoso.",
+      "apertura": "La Estación de Ascensores está llena de gente que llega tarde a todas partes. La plataforma principal se ha quedado quieta a medio camino y los relojes de latón marcan una vibración que no cuadra con el desgaste. Tú, {nombre}, {oficio}, tienes acceso a la cabina de control.\nToren Vale: El Consejo quiere el servicio abierto en una hora. Dime que es un fallo de mantenimiento y firmamos.\nIria Venn: No es un fallo. Mira el registro: tres pulsos y una pausa. Eso no lo hace un freno gastado.",
+      "giros": [
+        "Un mensajero del Consejo entra sin llamar y deja un sobre con el sello de Maelis Thorn encima de la consola.",
+        "La placa de registro se calienta en la mano de quien la sostiene. El patrón se repite, cada vez más débil.",
+        "Saia encuentra en su copia del Archivo tres páginas numeradas que no deberían faltar.",
+        "Desde abajo llega, por el hueco del ascensor, el eco de una sirena de Nácar.",
+        "La multitud empieza a impacientarse. Alguien grita que los de abajo han saboteado la red.",
+        "Una pieza del freno brilla con una aleación que ningún gremio de Aurelia tiene registrada."
+      ]
+    }
+  }
+}
