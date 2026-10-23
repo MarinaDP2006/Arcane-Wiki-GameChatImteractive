@@ -35,7 +35,8 @@
       "preload.js",
       "src/**/*",
       "build/icon.png",
-      "package.json"
+      "package.json",
+      "assets/music/**/*"
     ],
     "directories": {
       "output": "dist",
