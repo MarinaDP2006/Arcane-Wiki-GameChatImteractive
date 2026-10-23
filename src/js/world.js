@@ -126,16 +126,10 @@
   // Personajes: su avatar de chat (retrato propio o avatar procedural).
   function charImg(id) { return loadImg(`c:${id}`, Portrait.customChar(id, false) || Portrait.charURL(id, 96)); }
 
-  // Imagen de cada lugar: la de su temporada (lugares/s1|s2), la de la carpeta de arte o la del Atlas.
-  const ATLAS_IMG = {
-    academia: 'piltover-academy', 'taller-jayce': 'hextech-lab', consejo: 'council-chamber', ejecutores: 'stillwater-hold',
-    'mansion-kiramman': 'kiramman-estate', plaza: 'piltover', artesanos: 'airship-docks', hexpuertas: 'the-hexgates',
-    'muelle-stillwater': 'stillwater-hold', puente: 'bridge-of-progress', 'puente-zaun': 'bridge-of-progress',
-    fabrica: 'shimmer-factory', foso: 'undercity', tejados: 'zaun', 'ultima-gota': 'the-last-drop', callejones: 'the-lanes',
-    'tienda-benzo': 'benzos-pawn-shop', mercado: 'undercity', sumidero: 'zaun', 'escondite-jinx': 'the-lanes', arbol: 'firelight-sanctuary',
-    invernadero: 'viktors-commune',
-  };
-  /** URL de la imagen de un lugar para la temporada que se juega. */
+  // Imagen de cada lugar: arte personal o ilustración original de Aurelia/Nácar.
+  // El universo original dibuja sus lugares con las escenas propias de Scenes2D.
+  const ATLAS_IMG = {};
+  /** URL de la imagen de un lugar del universo original. */
   // Imágenes de la carpeta lugares/ que son escudos y no escenarios (no sirven de medallón).
   const EMBLEMS = new Set(['mansion-kiramman', 'noxus']);
   function placeURL(id) {
@@ -152,7 +146,8 @@
   }
   /** Panorámica de la ciudad para el fondo del mapa. */
   function cityArt(id) {
-    const url = window.CustomArt?.image('lugares', id) || `img/arte/lugares/${id}.webp`;
+    const artId = id === 'piltover' ? 'aurelia' : id === 'zaun' ? 'nacar' : id;
+    const url = window.CustomArt?.image('lugares', artId) || `img/arte/lugares/${artId}.svg`;
     return loadImg(`city:${url}`, url);
   }
 
@@ -191,7 +186,7 @@
   const sync3d = () => r3d?.place(camState());
   const toScreen = (x, y, h = 0) => (r3d ? r3d.project(x, y, h) : { x: (x - G.world.x) * zoom + cw / 2, y: (y - G.world.y) * zoom + ch / 2 });
   const toWorld = (sx, sy) => (r3d && r3d.pick(sx, sy)) || { x: (sx - cw / 2) / zoom + G.world.x, y: (sy - ch / 2) / zoom + G.world.y };
-  // En la caverna de Zaun la cámara no puede subir más que la bóveda.
+  // En Nácar la cámara respeta el límite de altura de las galerías.
   const zMin = () => {
     if (r3d && mapId === 'zaun') return Math.max(fit * 0.92, (ch / 2) / (Math.tan((45 * Math.PI) / 360) * (1150 / Math.cos(pitch))));
     return fit * 0.92;
