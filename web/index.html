@@ -59,7 +59,17 @@
     </section>
 
 
-    <section id="fichas" class="seccion demo" aria-labelledby="fichas-titulo"><p class="antetitulo">Archivo de personajes · Ejemplo original</p><h2 id="fichas-titulo">Ficha de personaje</h2><p class="intro">Conoce a dos personajes originales de demostración, creados para explorar cómo podrían verse las fichas en la web.</p><div class="ficha-panel"><div class="ficha-retrato" aria-hidden="true"><span id="ficha-sigilo">K</span></div><div class="ficha-detalles"><div class="ficha-selector" role="group" aria-label="Seleccionar personaje"><button type="button" class="activo" data-personaje="kael" aria-pressed="true">Kael</button><button type="button" data-personaje="lyra" aria-pressed="false">Lyra</button></div><h3 id="ficha-nombre">Kael</h3><p id="ficha-rol" class="ficha-rol">Ingeniero · Piltover</p><p id="ficha-frase">«Hasta el engranaje más pequeño puede cambiar una ciudad».</p><div class="ficha-stats"><label>Ingenio <meter id="ficha-ingenio" min="0" max="10" value="9"></meter></label><label>Audacia <meter id="ficha-audacia" min="0" max="10" value="6"></meter></label><label>Empatía <meter id="ficha-empatia" min="0" max="10" value="7"></meter></label></div></div><div class="ficha-historia"><div class="ficha-pestanas" role="group" aria-label="Apartado de la ficha"><button type="button" class="activo" data-ficha-tab="historia" aria-pressed="true">Historia</button><button type="button" data-ficha-tab="habilidad" aria-pressed="false">Habilidad</button></div><p id="ficha-texto">Kael diseña pequeños mecanismos para resolver problemas imposibles, pero la curiosidad lo empuja más allá de las puertas de su taller.</p></div></div></section>
+    <section id="fichas" class="seccion demo" aria-labelledby="fichas-titulo"><p class="antetitulo">Archivo de personajes · Ejemplo original</p><h2 id="fichas-titulo">Ficha de personaje</h2><p class="intro">Así es la ficha dentro del juego. Kael y Lyra son personajes originales de ejemplo, creados con el mismo creador y el mismo retrato pintado que usa el juego.</p>
+      <div class="ficha-selector" role="group" aria-label="Seleccionar personaje"><button type="button" class="activo" data-personaje="kael" aria-pressed="true">Kael · Piltover</button><button type="button" data-personaje="lyra" aria-pressed="false">Lyra · Zaun</button></div>
+      <article class="fj" id="ficha-juego" aria-live="polite">
+        <span class="fj-esquina fj-si" aria-hidden="true"></span><span class="fj-esquina fj-sd" aria-hidden="true"></span><span class="fj-esquina fj-ii" aria-hidden="true"></span><span class="fj-esquina fj-id" aria-hidden="true"></span>
+        <header class="fj-cabeza"><img id="fj-retrato" class="fj-retrato" src="arte-propio/ficha-kael.jpg" alt="Retrato pintado de Kael" width="160" height="160"><div><small>Ficha de personaje</small><h3 id="fj-nombre">Kael</h3><span id="fj-ciudad" class="fj-chip fj-chip-piltover">Piltover</span></div></header>
+        <dl class="fj-lista" id="fj-lista"></dl>
+        <h4>Estadísticas</h4><div class="fj-barras" id="fj-stats"></div>
+        <h4>Reputación</h4><div class="fj-barras" id="fj-rep"></div>
+        <h4>Relaciones</h4><div class="fj-rels" id="fj-rels"></div>
+        <h4>Progreso</h4><p id="fj-progreso"></p>
+      </article></section>
     <section id="desarrollando" class="seccion viaje" aria-labelledby="titulo-viaje">
       <div class="viaje-cabecera">
         <div><p class="antetitulo">Diario de creación</p><h2 id="titulo-viaje">Desarrollando R&amp;G</h2></div>
