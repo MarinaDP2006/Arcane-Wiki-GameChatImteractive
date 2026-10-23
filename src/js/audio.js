@@ -22,6 +22,20 @@
 
   const MUSIC_LEVEL = 0.32;
   const AMB_LEVEL = 0.55;
+  // Temas locales. Si todavía no se ha copiado un MP3, se usa el sintetizador existente.
+  const TRACK_FILES = {
+    wiki: 'menu-theme.mp3',
+    piltover: 'piltover-theme.mp3',
+    zaun: 'zaun-theme.mp3',
+  };
+  const audioFileUrl = (filename) => {
+    // En escritorio, index.html vive dentro de src/. En Android/otros despliegues,
+    // build-mobile.js coloca la música junto a index.html bajo assets/music/.
+    const inSrcFolder = /\/src\/index\.html$/i.test(window.location.pathname || '');
+    return (inSrcFolder ? '../assets/music/' : 'assets/music/') + filename;
+  };
+  const fileMusicVolume = () => Math.max(0, Math.min(1,
+    (A.settings.volume ?? 0.6) * (A.settings.musicVolume ?? 1) * 0.62));
 
   function ensureCtx() {
     if (!A.ctx) {
@@ -79,6 +93,7 @@
       A.ambGain.gain.value = AMB_LEVEL * (A.settings.ambienceVolume ?? 1);
     }
     if (!A.settings.music) stopMusic();
+    else if (A.session?.type === 'file' && A.session.audio) A.session.audio.volume = fileMusicVolume();
     else if (A.mood && (!A.session || A.session.mood !== A.mood)) startMusic(A.mood);
     if (A.settings.ambience === false) stopAmbience();
     else if (A.mood && A.ctx && (!A.amb || A.amb.city !== cityOf(A.mood))) startAmbience(cityOf(A.mood));
@@ -351,6 +366,41 @@
     const ctx = ensureCtx();
     const theme = THEMES[mood];
     if (!ctx || !theme) return;
+    const filename = TRACK_FILES[mood];
+    if (filename && typeof window.Audio === 'function') {
+      startFileMusic(mood, filename);
+      return;
+    }
+    startSynthMusic(mood);
+  }
+
+  function startFileMusic(mood, filename) {
+    fadeOut(A.session);
+    const audio = new window.Audio();
+    const s = { mood, type: 'file', audio, timer: null };
+    audio.preload = 'auto';
+    audio.loop = true;
+    audio.volume = fileMusicVolume();
+    audio.src = audioFileUrl(filename);
+    A.session = s;
+    const fallback = () => {
+      // Evita que un error tardío de una ciudad anterior cambie el tema actual.
+      if (A.session !== s || A.mood !== mood || !A.settings.music) return;
+      A.session = null;
+      try { audio.pause(); audio.removeAttribute('src'); audio.load(); } catch { /* navegador */ }
+      startSynthMusic(mood);
+    };
+    audio.addEventListener('error', fallback, { once: true });
+    try {
+      const playing = audio.play();
+      if (playing && typeof playing.catch === 'function') playing.catch(fallback);
+    } catch { fallback(); }
+  }
+
+  function startSynthMusic(mood) {
+    const ctx = ensureCtx();
+    const theme = THEMES[mood];
+    if (!ctx || !theme) return;
     fadeOut(A.session);
     const bus = ctx.createGain();
     bus.gain.setValueAtTime(0.0001, ctx.currentTime);
@@ -375,6 +425,23 @@
   function fadeOut(s, secs = 1.4) {
     if (!s) return;
     clearInterval(s.timer);
+    if (s.type === 'file' && s.audio) {
+      const audio = s.audio;
+      const initial = audio.volume;
+      const started = Date.now();
+      const step = Math.max(25, Math.min(80, secs * 1000 / 12));
+      const fadeTimer = setInterval(() => {
+        const p = Math.min(1, (Date.now() - started) / (secs * 1000));
+        try { audio.volume = Math.max(0, initial * (1 - p)); } catch { /* audio liberado */ }
+        if (p >= 1) {
+          clearInterval(fadeTimer);
+          try { audio.pause(); audio.removeAttribute('src'); audio.load(); } catch { /* navegador */ }
+        }
+      }, step);
+      if (A.session === s) A.session = null;
+      return;
+    }
+    if (!A.ctx || !s.bus) return;
     const t = A.ctx.currentTime;
     s.bus.gain.cancelScheduledValues(t);
     s.bus.gain.setValueAtTime(Math.max(0.0001, s.bus.gain.value), t);
