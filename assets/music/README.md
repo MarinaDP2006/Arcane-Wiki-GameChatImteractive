@@ -1,8 +1,18 @@
 # Música de Rifts & Gears
 
-## Qué existe ahora
+## Estado actual
 
-La música actual se genera en tiempo real mediante Web Audio en `src/js/audio.js`. No necesita archivos MP3/OGG externos para reproducir estos temas:
+El reproductor comprueba primero si están presentes estos archivos:
+
+| Uso | Ruta esperada |
+|---|---|
+| Menú / inicio | `assets/music/menu-theme.mp3` |
+| Zaun | `assets/music/zaun-theme.mp3` |
+| Piltover | `assets/music/piltover-theme.mp3` |
+
+Los archivos MP3 finales aún deben copiarse a esta carpeta; mientras falte alguno, el juego conserva el sintetizador procedural como respaldo. No declarar la sustitución terminada hasta que los binarios estén versionados y probados en cada plataforma.
+
+La música procedural de respaldo está en `src/js/audio.js`. Sus identificadores son:
 
 | Uso | Identificador en el código |
 |---|---|
