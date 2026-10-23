@@ -18,11 +18,12 @@ Aventura narrativa original de fantasía industrial. Creas un personaje de **Aur
 
 ## 2. Jugar
 
-1. **Nueva partida** abre el creador. Tu ciudad decide la ruta y los primeros personajes que conoces.
-2. En el mapa, la flecha y el rótulo «Objetivo» llevan al siguiente lugar. Al tocar un lugar se abre su menú: historia, con quién hablar, minijuego, explorar y viajar.
-3. Teclas: **H** historia, **C** comunicador, **F** ficha, **K** Códice, **M** Atlas, **Esc** pausa.
-4. Los cristales de Resonancia del mapa desbloquean entradas del Códice.
-5. **Ajustes → Lectura → Colores** elige «Según la ciudad» (cambia al viajar), «Azul neutro», «Aurelia» o «Nácar». El inicio y los ajustes siempre van en azul neutro.
+1. El menú de inicio tiene **Jugar**, **Ajustes**, **Créditos** y **Salir** (solo en escritorio). Si ya tienes partidas, **Jugar** ofrece Continuar, Nueva partida y Cargar partida; si no, abre directamente el creador.
+2. El creador va en tres columnas: los pasos a la izquierda, tu retrato en grande en el centro y las opciones a la derecha. En el móvil, los pasos van arriba en fila. Tu ciudad decide la ruta, los primeros personajes que conoces, los colores y la música. El retrato se elige de una galería de 24 avatares incluidos (12 de mujer y 12 de hombre, según el género elegido) o con «Subir mi foto».
+3. En el mapa, la flecha y el rótulo «Objetivo» llevan al siguiente lugar. Al tocar un lugar se abre su menú: historia, con quién hablar, minijuego, explorar y viajar.
+4. Arriba aparece el rótulo de la ciudad en la que estás. Teclas: **H** historia, **C** comunicador, **F** ficha, **K** Códice, **M** Atlas, **Esc** pausa.
+5. Los cristales de Resonancia del mapa desbloquean entradas del Códice.
+6. **Ajustes** tiene las pestañas en columna a la izquierda (en el móvil, arriba). **Ajustes → Lectura → Colores** elige «Según la ciudad» (cambia al viajar), «Azul neutro», «Aurelia» o «Nácar». El inicio y los ajustes siempre van en azul neutro.
 
 ## 3. Entorno de desarrollo
 
@@ -49,6 +50,7 @@ npm run serve:web  # sirve web-dist/ y la API de rol en http://localhost:10000
 | Escenas pintadas de cada lugar | `src/js/scenes.js` (`THEMES`) y `src/js/scenes2d.js` (`PLACES`) |
 | Minijuegos | `src/js/minigames.js` y `src/js/minigames-extra.js` |
 | Música | `assets/music/` y `src/js/audio.js` |
+| Avatares del creador | `src/img/arte/avatares/` (los genera `scripts/generar-avatares.js`; `node scripts/art-manifest.js` actualiza la lista) |
 | IA de los personajes | `src/js/ai.js` (`systemPrompt` y `storyTurn`) |
 | Modelos 3D de los personajes | `src/models/*.glb` y `src/models/index.json` |
 
@@ -72,7 +74,7 @@ En **Ajustes → IA** se elige el servicio. La opción recomendada es **Ollama C
 
 ## 8. Arte personal
 
-En escritorio, **Ajustes → Arte personal** abre la carpeta de arte. Ahí puedes poner tus propias imágenes de lugares, personajes y caras, y modelos `.glb` con el id del personaje (`iria-venn.glb`, `darel-ossan.glb`…). El archivo `GUIA-DE-ARTE.txt` de esa carpeta lista todos los nombres que reconoce el juego.
+En escritorio, **Ajustes → Arte personal** abre la carpeta de arte. Las imágenes que pongas en `avatares/` con `mujer-` u `hombre-` delante del nombre se suman a la galería del creador (y mandan sobre las incluidas si se llaman igual). También puedes poner tus propias imágenes de lugares, personajes y caras, y modelos `.glb` con el id del personaje (`iria-venn.glb`, `darel-ossan.glb`…). El archivo `GUIA-DE-ARTE.txt` de esa carpeta lista todos los nombres que reconoce el juego.
 
 ## 9. Web
 

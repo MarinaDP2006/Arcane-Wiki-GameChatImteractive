@@ -78,7 +78,7 @@ function repartoHtml(personajes, ciudades) {
 
 function build() {
   const extra = loadData();
-  const { WIKI, STORY, CHAT, ATLAS } = extra;
+  const { WIKI, STORY, CHAT } = extra;
   const pkg = require(path.join(root, 'package.json'));
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
@@ -86,7 +86,9 @@ function build() {
   // La web solo publica ilustraciones propias (web/arte-propio) y el icono.
   const personajes = WIKI.personajes;
   copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
-  const lugares = ATLAS.places.map((l) => `<li class="lugar-${esc(l.city)}">${esc(l.name)}</li>`).join('');
+  // Los diez lugares del mapa (los del Códice que tienen ciudad).
+  const sitios = WIKI.lugares.filter((l) => l.city);
+  const lugares = sitios.map((l) => `<li class="lugar-${esc(l.city)}">${esc(l.name)}</li>`).join('');
   const dialogos = Object.values(CHAT).reduce((n, c) => n + Object.keys(c.nodes || {}).length, 0);
 
   const datos = {
@@ -94,7 +96,7 @@ function build() {
     CAPITULOS: STORY.chapters.length,
     FINALES: STORY.endings.length + (STORY.endings2 || []).length,
     PERSONAJES: personajes.length,
-    LUGARES: ATLAS.places.length,
+    LUGARES: sitios.length,
     TEMAS: dialogos,
     CAPTURAS: buildCapturas(),
     LISTA_LUGARES: lugares,
@@ -129,7 +131,7 @@ function build() {
   }
   fs.writeFileSync(path.join(out, 'demo-datos.js'), demoData(extra));
   fs.writeFileSync(path.join(out, '.nojekyll'), '');
-  console.log(`✓ Web lista en web-dist/ (v${pkg.version}, ${personajes.length} personajes, ${ATLAS.places.length} lugares)`);
+  console.log(`✓ Web lista en web-dist/ (v${pkg.version}, ${personajes.length} personajes, ${sitios.length} lugares)`);
 }
 
 build();

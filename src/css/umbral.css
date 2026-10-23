@@ -162,3 +162,79 @@ body[data-city='nacar'] { --accent-glow: rgba(85, 231, 170, 0.45); }
 /* Pestañas activas en el color de la paleta */
 .tab.active { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .settings-tabs .tab.active { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, transparent), color-mix(in srgb, var(--gold2) 18%, transparent)); border-color: var(--gold2); color: var(--text); }
+
+/* ======================================================================
+   Pantallas según las imágenes de referencia de Nina:
+   menú a la izquierda con rombos, ajustes con pestañas en columna,
+   creador en tres columnas (pasos · retrato grande · opciones) y
+   rótulo de ciudad en el mapa. Cada ciudad usa su paleta (--accent).
+   ====================================================================== */
+
+/* ---------- Inicio ---------- */
+.home-motto { margin: 1.4rem 0 0; color: var(--muted); font-size: .85rem; letter-spacing: .08em; }
+.home-menu .home-btn { min-width: 15rem; }
+.home-menu .home-btn.primary { background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 34%, transparent), transparent 85%); border-left: 2px solid var(--accent); }
+.home-credits {
+  position: absolute; z-index: 20; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(30rem, calc(100% - 2rem)); padding: 1.6rem 1.8rem; text-align: left;
+  border: 1px solid var(--line); box-shadow: 0 24px 70px rgba(0, 0, 0, .7);
+}
+.home-credits h2 { font-family: var(--display); color: var(--gold); letter-spacing: .1em; text-transform: uppercase; margin-top: 0; }
+
+/* ---------- Ajustes: pestañas en columna ---------- */
+.settings-layout { display: grid; grid-template-columns: 13rem 1fr; gap: 1.4rem; align-items: start; }
+.settings-layout .settings-tabs { display: flex; flex-direction: column; gap: .2rem; border: 0; padding: .4rem 0; border-right: 1px solid var(--line); }
+.settings-layout .settings-tabs .tab {
+  display: flex; align-items: center; justify-content: flex-start; width: 100%;
+  text-align: left; border-radius: 0; border: 0; border-left: 2px solid transparent; padding: .55rem .9rem;
+  letter-spacing: .08em; text-transform: uppercase; font-size: .82rem; background: none;
+}
+.settings-layout .settings-tabs .tab::before { content: '◇'; margin-right: .55rem; color: var(--muted); }
+.settings-layout .settings-tabs .tab.active { border-left-color: var(--accent); background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 26%, transparent), transparent); }
+.settings-layout .settings-tabs .tab.active::before { content: '◆'; color: var(--accent); }
+#view-settings > .settings { max-width: 980px; }
+@media (max-width: 760px) {
+  .settings-layout { grid-template-columns: 1fr; gap: .8rem; }
+  .settings-layout .settings-tabs { flex-direction: row; flex-wrap: wrap; border-right: 0; border-bottom: 1px solid var(--line); }
+  .settings-layout .settings-tabs .tab { border-left: 0; border-bottom: 2px solid transparent; padding: .45rem .6rem; }
+  .settings-layout .settings-tabs .tab.active { border-bottom-color: var(--accent); }
+  .settings-layout .settings-tabs .tab::before { content: none; }
+}
+
+/* ---------- Creador de personaje ---------- */
+.creator-logo { display: none; }
+.creator-side .steps { margin-bottom: 1rem; }
+@media (min-width: 1100px) {
+  .creator { max-width: 1560px; display: grid; grid-template-columns: 13.5rem 1fr; gap: 1.4rem; padding: 1rem 1.6rem; }
+  .creator-logo { display: flex; align-items: baseline; gap: .3rem; font-family: var(--display); font-size: 1.9rem; color: var(--gold); text-transform: uppercase; letter-spacing: .04em; margin: .4rem 0 1.6rem; text-shadow: 0 0 18px var(--accent-glow); }
+  .creator-logo i { font-style: normal; font-size: 1.2rem; color: var(--text); }
+  .creator-side { position: sticky; top: 1rem; align-self: start; }
+  .creator-side .steps { flex-direction: column; flex-wrap: nowrap; gap: .1rem; }
+  .creator-side .steps li { padding: .55rem .7rem; border-left: 2px solid transparent; text-transform: uppercase; letter-spacing: .07em; font-size: .8rem; cursor: default; }
+  .creator-side .steps li.done { cursor: pointer; }
+  .creator-side .steps li + li::before { content: none; }
+  .creator-side .steps li.active { border-left-color: var(--accent); background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 28%, transparent), transparent); }
+  .creator-grid { grid-template-columns: minmax(300px, .8fr) minmax(500px, 1.2fr); gap: 1.6rem; }
+  .creator-grid > .creator-stage { order: -1; }
+  .creator-stage .splash { max-width: none; width: 100%; height: min(70vh, 640px); aspect-ratio: auto; }
+  .creator-body { max-height: calc(100vh - 2rem); }
+}
+.creator-bg { filter: blur(3px) brightness(.5) saturate(1.1); }
+.creator .hex-btn { letter-spacing: .1em; text-transform: uppercase; }
+.avatar-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: .55rem; }
+.avatar-card { aspect-ratio: 1; padding: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #000; cursor: pointer; }
+.avatar-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 18px var(--accent-glow); }
+
+/* ---------- Mapa: rótulo de la ciudad ---------- */
+.city-banner {
+  position: absolute; z-index: 6; top: 1rem; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: .7rem; padding: .45rem 1.3rem .45rem .7rem; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--panel) 18%, var(--panel) 82%, transparent);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.city-banner img { width: 34px; height: 34px; filter: drop-shadow(0 0 8px var(--accent-glow)); }
+.city-banner strong { display: block; font-family: var(--display); font-size: 1.25rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); line-height: 1.1; }
+.city-banner small { display: block; color: var(--muted); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
+/* En el móvil el barrio ya sale en la tarjeta de arriba: el rótulo estorbaría al mapa. */
+@media (max-width: 720px) { .city-banner { display: none; } }

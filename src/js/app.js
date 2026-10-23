@@ -90,6 +90,31 @@
     const city = (id, label) => el('button', { class: 'home-city', 'data-city': id, type: 'button' },
       el('img', { src: `img/umbral/simbolos/${id}.svg`, alt: '' }), el('span', {}, label));
     const s = App.settings;
+    // Menú principal (Jugar, Ajustes, Créditos, Salir). «Jugar» abre las opciones de partida.
+    const menu = el('nav', { class: 'home-menu' });
+    const mainMenu = () => menu.replaceChildren(...[
+      btn('Jugar', () => (hasSave ? playMenu() : Game.newGame()), 'primary'),
+      btn('Ajustes', () => App.go('settings')),
+      btn('Créditos', credits),
+      U.desktop ? btn('Salir', () => window.umbral.quit(), 'quiet') : null,
+    ].filter(Boolean));
+    const playMenu = () => menu.replaceChildren(
+      btn('Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary'),
+      btn('Nueva partida', () => Game.newGame()),
+      btn('Cargar partida', () => App.go('game')),
+      btn('Volver', mainMenu, 'quiet'));
+    const credits = () => {
+      const box = el('div', { class: 'home-credits panel', role: 'dialog', 'aria-label': 'Créditos' },
+        el('h2', {}, 'Créditos'),
+        el('p', {}, el('strong', {}, 'Rifts & Gears · Las ciudades del Umbral')),
+        el('p', { class: 'muted' }, 'Idea, mundo y dirección: MarinaDP2006.'),
+        el('p', { class: 'muted' }, 'Historia, personajes, ciudades, arte y música propios del proyecto. Programado con ayuda de Claude.'),
+        el('p', { class: 'muted' }, 'Tecnología: Three.js, Electron y Capacitor, cada una con su licencia.'),
+        el('button', { class: 'btn primary', onclick: () => box.remove() }, 'Cerrar'));
+      home.append(box);
+      box.querySelector('button').focus();
+    };
+    mainMenu();
     const home = el('div', { class: 'home' },
       aurelia, nacar,
       el('div', { class: 'home-rift', 'aria-hidden': 'true',
@@ -101,12 +126,8 @@
         el('div', { class: 'home-logo' },
           el('h1', { class: 'home-title', 'aria-label': 'Rifts & Gears' }, el('span', { class: 'home-word' }, ...letters('RIFTS', 0)), amp, el('span', { class: 'home-word' }, ...letters('GEARS', 6))),
           el('div', { class: 'home-cities' }, city('aurelia', 'Aurelia'), el('b', {}), city('nacar', 'Nácar'))),
-        el('nav', { class: 'home-menu' },
-          hasSave ? btn('Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,
-          btn('Nueva partida', () => Game.newGame(), hasSave ? '' : 'primary'),
-          btn('Cargar partida', () => App.go('game')),
-          btn('Ajustes', () => App.go('settings')),
-          U.desktop ? btn('Salir', () => window.umbral.quit(), 'quiet') : null)),
+        menu,
+        el('p', { class: 'home-motto' }, 'Dos ciudades. Un mismo pacto.')),
       el('div', { class: 'home-hint' }, U.touch ? 'Desliza el dedo para abrir la grieta entre Aurelia y Nácar' : 'Mueve el ratón para abrir la grieta entre Aurelia y Nácar'));
     root.append(home);
     Audio2.playMusic('wiki');
@@ -401,11 +422,13 @@
     root.append(el('div', { class: 'settings panel' },
       el('div', { class: 'row gap', style: 'justify-content:space-between' },
         el('h2', {}, 'Ajustes'), el('button', { class: 'btn ghost small', onclick: onBack }, '← Volver')),
-      el('div', { class: 'settings-tabs' }, TABS.map(([id, label]) => el('button', {
-        class: `tab${settingsTab === id ? ' active' : ''}`,
-        onclick: () => { settingsTab = id; redraw(); },
-      }, label))),
-      el('div', { class: 'settings-page' }, ...pages[settingsTab]())));
+      // Pestañas en columna a la izquierda y la página a la derecha (en móvil, una encima de otra).
+      el('div', { class: 'settings-layout' },
+        el('nav', { class: 'settings-tabs' }, TABS.map(([id, label]) => el('button', {
+          class: `tab${settingsTab === id ? ' active' : ''}`,
+          onclick: () => { settingsTab = id; redraw(); },
+        }, label))),
+        el('div', { class: 'settings-page' }, ...pages[settingsTab]()))));
   }
 
   // ---------- Arte personal ----------
