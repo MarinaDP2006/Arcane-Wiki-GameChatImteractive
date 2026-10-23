@@ -1,7 +1,7 @@
 // Profundidad para los minijuegos: arte original del mundo como fondo con paralaje y desenfoque,
 // niebla en capas, rayos de luz, suelo en perspectiva, bloques extruidos hacia un punto de fuga
 // y caras reales de los personajes. Todo en canvas 2D para que vaya igual en PC y en tableta.
-// Depth.backdrop(['tejados', 'callejones']) elige al azar uno de esos lugares (de T1 o T2).
+// Depth.backdrop(['galerias', 'mercado-nacar']) elige al azar una ubicación original.
 (function () {
   const TAU = Math.PI * 2;
   const opt = () => window.App?.settings || {};
@@ -27,23 +27,14 @@
   }
   const ready = (im) => Boolean(im && im.complete && im.naturalWidth);
 
-  const PORTRAITS = new Set(['arbol', 'ejecutores', 'fabrica', 'mansion-kiramman', 'noxus', 'tienda-benzo', 'comuna-viktor']);
-  // Todas las imágenes de un lugar: temporada 1, temporada 2 y la general. Durante la historia
-  // se respeta la temporada (nunca arte de T1 en T2); en la sala de juegos vale todo.
+  const PORTRAITS = new Set();
+  // Solo se cargan imágenes personalizadas para lugares originales. Si no hay una, el motor
+  // dibuja una escena procedural con los temas de Aurelia y Nácar.
   function placeUrls(id) {
     const F = window.CustomArt?.files || {};
     const B = window.ART_BUNDLED || {};
-    const story = Boolean(window.Game?.current?.()?.progress?.chapterId);
-    const season = window.CustomArt?.season?.() || 's1';
-    const dirs = !story ? ['lugares/s1', 'lugares/s2', 'lugares'] : season === 's2' ? ['lugares/s2'] : ['lugares/s1', 'lugares'];
-    const out = [];
-    for (const d of dirs) {
-      // De la carpeta general solo valen paisajes: algunas imágenes son primeros planos de personajes o emblemas.
-      if (d === 'lugares' && (out.length || PORTRAITS.has(id))) continue;
-      const u = F[d]?.[id] || B[d]?.[id];
-      if (u && !out.includes(u)) out.push(u);
-    }
-    return out;
+    const url = F.lugares?.[id] || B.lugares?.[id];
+    return url ? [url] : [];
   }
   function pool(ids) {
     const out = [];
@@ -51,7 +42,7 @@
     return out;
   }
 
-  // Cara real de un personaje (carpeta caras/, luego retrato de la temporada).
+  // Retrato opcional propio; si no existe, se usa el avatar procedural del personaje.
   function face(id) {
     const url = window.CustomArt?.image?.('caras', id) || window.ART_BUNDLED?.caras?.[id] || window.CustomArt?.image?.('personajes', id) || window.ART_BUNDLED?.personajes?.[id];
     return image(url);
