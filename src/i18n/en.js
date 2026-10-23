@@ -3935,5 +3935,14 @@ window.I18N_DATA.en = {
   "No se pudo exportar la partida": "Could not export the save",
   "Ese archivo no es una partida de Grietas & Gears": "That file is not a Grietas & Gears save",
   "Partida de {0} importada en la ranura {1}": "{0}'s save imported into slot {1}",
-  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "Slot {0} holds {1}'s save. Replace it with {2}'s?"
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "Slot {0} holds {1}'s save. Replace it with {2}'s?",
+  "¿Hombre o mujer?": "Man or woman?",
+  "Los diálogos se adaptan a tu género y en el paso «Retrato» solo verás los retratos de tu género.": "Dialogue adapts to your gender, and in the \"Portrait\" step you'll only see portraits of your gender.",
+  "{0} retratos": "{0} portraits",
+  "Todos los retratos: {0}. Con «Mujer» u «Hombre» solo verás los de ese género.": "All portraits: {0}. With \"Woman\" or \"Man\" you'll only see that gender's.",
+  "Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) con «mujer-» u «hombre-» delante del nombre y pulsa Recargar. También puedes subir tu foto.": "Open the \"avatares\" folder, copy your images (png, jpg or webp) with \"mujer-\" or \"hombre-\" before the name and press Reload. You can also upload your photo.",
+  "Otras imágenes de tu carpeta": "Other images in your folder",
+  "No llevan «mujer-» ni «hombre-» en el nombre. Renómbralas así (o ponlas en avatares/mujer o avatares/hombre) para que salgan solo con su género.": "Their names don't start with \"mujer-\" or \"hombre-\". Rename them that way (or put them in avatares/mujer or avatares/hombre) so they only show with their gender.",
+  "Retratos de mujer: {0}. Cambia de género arriba y la galería cambia con él.": "Women's portraits: {0}. Change gender above and the gallery changes with it.",
+  "Retratos de hombre: {0}. Cambia de género arriba y la galería cambia con él.": "Men's portraits: {0}. Change gender above and the gallery changes with it."
 };

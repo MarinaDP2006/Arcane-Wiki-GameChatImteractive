@@ -3928,5 +3928,14 @@ window.I18N_DATA.fr = {
   "No se pudo exportar la partida": "Impossible d'exporter la partie",
   "Ese archivo no es una partida de Grietas & Gears": "Ce fichier n'est pas une partie de Grietas & Gears",
   "Partida de {0} importada en la ranura {1}": "Partie de {0} importée dans l'emplacement {1}",
-  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?"
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?",
+  "¿Hombre o mujer?": "Homme ou femme ?",
+  "Los diálogos se adaptan a tu género y en el paso «Retrato» solo verás los retratos de tu género.": "Les dialogues s'adaptent à ton genre et, à l'étape « Portrait », tu ne verras que les portraits de ton genre.",
+  "{0} retratos": "{0} portraits",
+  "Todos los retratos: {0}. Con «Mujer» u «Hombre» solo verás los de ese género.": "Tous les portraits : {0}. Avec « Femme » ou « Homme », tu ne verras que ceux de ce genre.",
+  "Abre la carpeta «avatares», copia tus imágenes (png, jpg o webp) con «mujer-» u «hombre-» delante del nombre y pulsa Recargar. También puedes subir tu foto.": "Ouvre le dossier « avatares », copie tes images (png, jpg ou webp) avec « mujer- » ou « hombre- » devant le nom et appuie sur Recharger. Tu peux aussi importer ta photo.",
+  "Otras imágenes de tu carpeta": "Autres images de ton dossier",
+  "No llevan «mujer-» ni «hombre-» en el nombre. Renómbralas así (o ponlas en avatares/mujer o avatares/hombre) para que salgan solo con su género.": "Leur nom ne commence pas par « mujer- » ni « hombre- ». Renomme-les ainsi (ou mets-les dans avatares/mujer ou avatares/hombre) pour qu'elles n'apparaissent qu'avec leur genre.",
+  "Retratos de mujer: {0}. Cambia de género arriba y la galería cambia con él.": "Portraits de femme : {0}. Change de genre ci-dessus et la galerie change avec lui.",
+  "Retratos de hombre: {0}. Cambia de género arriba y la galería cambia con él.": "Portraits d'homme : {0}. Change de genre ci-dessus et la galerie change avec lui."
 };
