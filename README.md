@@ -2,14 +2,14 @@
 
 Fangame gratuito y no oficial de rol libre ambientado en **Arcane** (temporadas 1 y 2). Creas tu personaje en Piltover o en Zaun y entras en la historia. No hay respuestas prefabricadas: escribes lo que tu personaje dice o hace, y los personajes de la serie te contestan, te preguntan y reaccionan como lo harían ellos, sin salirse del lore.
 
-> **Esta rama (`claude/project-thread-9huivc-arcane`) es la única rama de Arcane.** Todo lo del fangame vive aquí. La rama `main` es el mundo nuevo y original, *Las ciudades del Umbral*.
+> **Repositorio independiente:** este proyecto se publica en [MarinaDP2006/Arcane-fangame](https://github.com/MarinaDP2006/Arcane-fangame). Su fuente de desarrollo está en la rama `claude/project-thread-9huivc-arcane` de `RIFTS-GEARS`; `RIFTS-GEARS/main` pertenece al universo original *Las ciudades del Umbral* y no se incluye en este repositorio.
 
 ## Cómo funciona
 
 1. **¿Conoces Arcane?** Antes de crear el personaje el juego lo pregunta. Si dices que no, te da una introducción breve. Si dices que sí, pasas directo a la creación.
 2. **Creación de personaje:** nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus palabras.
 3. **Rol libre:** escribes y te contestan. Los personajes solo saben lo que han vivido hasta tu momento de la historia y respetan el canon de las temporadas 1 y 2.
-4. **IA en el servidor:** el diálogo lo lleva Gemma 4 31B alojado en Ollama Cloud. No tienes que instalar nada.
+4. **IA en el servidor:** el diálogo usa el proveedor configurado (Ollama Cloud, LM Studio o una API compatible con OpenAI). No se exponen claves al navegador.
 
 ## Web y demo
 
@@ -40,7 +40,7 @@ npm run web        # genera la web en web-dist/
 - **Hecho:** historia, personajes de Piltover, Zaun y Noxus, rol libre con bloqueo de canon, web y demo nuevas.
 - **Prototipo:** modelos 3D de fan-art en `src/models/` (sin rig ni animaciones finales).
 - **Pendiente de configurar:** el servidor publicado con la clave de Ollama Cloud.
-- **Release automatizada preparada:** Windows, macOS y Android se compilan con la etiqueta `arcane-v*`; la publicación inicial copia esta rama al repositorio independiente y dispara los builds.
+- **Releases automatizadas:** Windows, macOS y Android se compilan con etiquetas `arcane-v*`. La primera etiqueta la publica el workflow de sincronización del repositorio `RIFTS-GEARS`.
 
 ## Guías
 
