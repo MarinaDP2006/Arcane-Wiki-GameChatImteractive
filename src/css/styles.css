@@ -1222,3 +1222,21 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
   .place-hero { min-height: 160px; }
   .place-acts { max-height: calc(100vh - 260px); }
 }
+
+/* Controles reales para móvil y tableta: exploración 2D */
+.scene2d-touch-controls { display: none; }
+@media (pointer: coarse) {
+  .scene2d-touch-controls { position: absolute; z-index: 8; left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); display: flex; gap: 8px; justify-content: center; align-items: center; pointer-events: auto; }
+  .scene2d-touch-btn { min-width: 48px; min-height: 52px; flex: 0 1 72px; border: 1px solid rgba(230,195,122,.8); border-radius: 12px; background: rgba(12,14,24,.92); color: #ffe6ad; font: 700 23px system-ui,sans-serif; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .scene2d-touch-btn.pressed, .scene2d-touch-btn:active { background: #624b27; color: white; }
+  .scene2d-hud { padding-top: max(10px, env(safe-area-inset-top)); }
+  .scene2d-card { bottom: 90px; max-width: 94vw; }
+  .mg-pad-btn { touch-action: none; user-select: none; -webkit-user-select: none; min-width: 48px; min-height: 48px; }
+  .map-ctrl { touch-action: manipulation; }
+}
+@media (pointer: coarse) and (max-width: 420px) {
+  .scene2d-touch-controls { gap: 5px; }
+  .scene2d-touch-btn { min-width: 44px; min-height: 48px; font-size: 20px; }
+  .scene2d-hud h2 { font-size: 1rem; }
+  .scene2d-hud p { font-size: .75rem; }
+}
