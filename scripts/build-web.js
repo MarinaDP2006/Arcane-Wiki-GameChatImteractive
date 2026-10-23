@@ -104,6 +104,13 @@ function build() {
       fs.writeFileSync(path.join(out, f), txt);
     } else copy(src, path.join(out, f));
   }
+  // Publicar los mapas mentales originales del diario de desarrollo.
+  const notas = path.join(root, 'web', 'notas-desarrollo');
+  if (fs.existsSync(notas)) {
+    for (const file of fs.readdirSync(notas).filter(f => /^etapa-[1-7]\\.svg$/.test(f))) {
+      copy(path.join(notas, file), path.join(out, 'notas-desarrollo', file));
+    }
+  }
   fs.writeFileSync(path.join(out, '.nojekyll'), '');
   console.log(`✓ Web lista en web-dist/ (v${pkg.version}, ${personajes.length} personajes, ${ATLAS.places.length} lugares)`);
 }
