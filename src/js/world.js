@@ -1,6 +1,8 @@
-// Mapa interactivo de Piltover y Zaun, en 2D: una carta ilustrada de la ciudad (con el arte de
-// Arcane de la temporada de fondo, barrios, calles, canales y edificios) que se arrastra, se
-// amplía con la rueda o pellizcando y se toca. Los lugares son medallones con su imagen: al
+// Mapa interactivo de Piltover y Zaun. Con WebGL, la ciudad es una escena 3D (world3d.js:
+// Piltover bajo el cielo, Zaun en una caverna) que se puede inclinar y girar; sin WebGL, o con
+// la vista 2D elegida, es una carta ilustrada (arte de Arcane de la temporada de fondo, barrios,
+// calles, canales y edificios). En las dos se arrastra, se amplía con la rueda o pellizcando y se toca.
+// Encima, siempre en 2D, van los lugares, las caras y los rótulos. Los lugares son medallones con su imagen: al
 // pulsar uno NO se entra, se abre su menú (historia, conversar, minijuego, explorar, viajar).
 // Las caras de los personajes salen junto a su lugar y los cristales hextec se recogen tocándolos.
 (function () {
@@ -27,6 +29,10 @@
   let fly = null; // vuelo de cámara en curso { x, y, z }
   let vel = { x: 0, y: 0 }; // inercia al soltar un arrastre
   let hover = null; // lugar, personaje o cristal bajo el ratón
+  let r3d = null; // escena 3D (null = carta 2D)
+  let yaw = 0; // giro de la cámara 3D
+  let pitch = 0.9; // inclinación (0 = cenital)
+  let drawn = { pins: [], frags: [] }; // dónde se pintó cada cosa en el último fotograma (para tocarla)
   let particles = [];
   let fade = 0;
   const keys = new Set();
@@ -181,9 +187,15 @@
   }
 
   // ---------- Cámara ----------
-  const toScreen = (x, y) => ({ x: (x - G.world.x) * zoom + cw / 2, y: (y - G.world.y) * zoom + ch / 2 });
-  const toWorld = (sx, sy) => ({ x: (sx - cw / 2) / zoom + G.world.x, y: (sy - ch / 2) / zoom + G.world.y });
-  const zMin = () => fit * 0.92;
+  const camState = () => ({ x: G.world.x, y: G.world.y, zoom, yaw, pitch });
+  const sync3d = () => r3d?.place(camState());
+  const toScreen = (x, y, h = 0) => (r3d ? r3d.project(x, y, h) : { x: (x - G.world.x) * zoom + cw / 2, y: (y - G.world.y) * zoom + ch / 2 });
+  const toWorld = (sx, sy) => (r3d && r3d.pick(sx, sy)) || { x: (sx - cw / 2) / zoom + G.world.x, y: (sy - ch / 2) / zoom + G.world.y };
+  // En la caverna de Zaun la cámara no puede subir más que la bóveda.
+  const zMin = () => {
+    if (r3d && mapId === 'zaun') return Math.max(fit * 0.92, (ch / 2) / (Math.tan((45 * Math.PI) / 360) * (1150 / Math.cos(pitch))));
+    return fit * 0.92;
+  };
   const PAD_TOP = 26; // px de pantalla libres arriba y abajo (la barra de botones tapa el borde inferior)
   const PAD_BOTTOM = 76;
   const zMax = () => Math.max(fit * 4, 0.9);
@@ -191,6 +203,15 @@
   /** Mantiene la ciudad dentro de la vista (centrada si cabe entera). */
   function clampView() {
     zoom = Math.max(zMin(), Math.min(zMax(), zoom));
+    pitch = Math.max(0.3, Math.min(1.22, pitch));
+    if (r3d) {
+      // Sin acercarse tanto al borde que el acantilado tape la ciudad.
+      const m = 260;
+      G.world.x = Math.max(m, Math.min(map.w - m, G.world.x));
+      G.world.y = Math.max(m, Math.min(map.h - m, G.world.y));
+      sync3d();
+      return;
+    }
     const hw = cw / 2 / zoom;
     const hh = ch / 2 / zoom;
     const top = -PAD_TOP / zoom;
@@ -201,8 +222,10 @@
 
   /** Amplía o reduce manteniendo fijo el punto de pantalla (sx, sy). */
   function zoomAt(f, sx = cw / 2, sy = ch / 2) {
+    sync3d();
     const before = toWorld(sx, sy);
     zoom = Math.max(zMin(), Math.min(zMax(), zoom * f));
+    sync3d();
     const after = toWorld(sx, sy);
     G.world.x += before.x - after.x;
     G.world.y += before.y - after.y;
@@ -216,7 +239,7 @@
   }
 
   // ---------- Fondo pintado (se dibuja una vez por ciudad) ----------
-  function paintBackground() {
+  function paintBackground(forGround = false) {
     const zaun = mapId === 'zaun';
     const P = map.def.palette;
     const c = document.createElement('canvas');
@@ -230,7 +253,19 @@
     g.fillRect(0, 0, map.w, map.h);
     // Arte de Arcane de la ciudad, muy oscurecido y difuminado, como lavado de acuarela.
     const art = cityArt(mapId);
-    if (ready(art)) {
+    if (forGround) {
+      g.fillStyle = zaun ? '#1a2420' : '#8f7c5a';
+      g.fillRect(0, 0, map.w, map.h);
+      // Suelo de la escena 3D: adoquín (Piltover) o roca húmeda (Zaun), sin imagen encima.
+      for (let i = 0; i < 9000; i++) {
+        g.globalAlpha = 0.05 + r() * 0.1;
+        g.fillStyle = zaun ? ['#2a3a30', '#141c18', '#3a3a2a', '#1f2e2a'][i % 4] : ['#a8916a', '#7d6a4a', '#c4ad82', '#8a7656'][i % 4];
+        g.beginPath();
+        g.ellipse(r() * map.w, r() * map.h, 10 + r() * 50, 4 + r() * 12, r() * 3, 0, Math.PI * 2);
+        g.fill();
+      }
+      g.globalAlpha = 1;
+    } else if (ready(art)) {
       const s = Math.max(map.w / art.naturalWidth, map.h / art.naturalHeight);
       g.save();
       g.globalAlpha = 0.85;
@@ -240,8 +275,10 @@
       map.bgArt = art.src;
     }
     const wash = g.createLinearGradient(0, 0, 0, map.h);
+    if (forGround) { wash.addColorStop(0, 'rgba(0,0,0,0)'); wash.addColorStop(1, 'rgba(0,0,0,0)'); } else {
     wash.addColorStop(0, zaun ? 'rgba(14,22,20,0.35)' : 'rgba(42,36,24,0.35)');
     wash.addColorStop(1, zaun ? 'rgba(6,14,10,0.62)' : 'rgba(24,20,12,0.62)');
+    }
     g.fillStyle = wash;
     g.fillRect(0, 0, map.w, map.h);
 
@@ -301,8 +338,8 @@
       g.restore();
     }
 
-    // Edificios: manzanas pintadas con tinta, para dar densidad de ciudad.
-    for (const b of map.buildings) {
+    // Edificios: manzanas pintadas con tinta, para dar densidad de ciudad (en 3D ya son volúmenes).
+    for (const b of forGround ? [] : map.buildings) {
       // Tejados en tinta suave: dan textura de ciudad sin tapar el arte de fondo.
       g.globalAlpha = 0.22;
       g.fillStyle = 'rgba(0,0,0,0.7)';
@@ -360,6 +397,17 @@
       g.fillText(d.name.toUpperCase(), x + w / 2, y + h - 70);
     }
 
+    if (forGround) {
+      // Plazas empedradas alrededor de cada lugar
+      for (const l of map.def.locations) {
+        const gr = g.createRadialGradient(l.x, l.y, 10, l.x, l.y, 130);
+        gr.addColorStop(0, zaun ? 'rgba(63,191,159,0.35)' : 'rgba(255,230,170,0.45)');
+        gr.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = gr;
+        g.beginPath(); g.arc(l.x, l.y, 130, 0, Math.PI * 2); g.fill();
+      }
+      return c;
+    }
     // Rosa de los vientos
     g.save();
     g.translate(map.w - 200, map.h - 220);
@@ -410,6 +458,7 @@
     g.fillStyle = frame;
     g.fillText(map.def.label.toUpperCase(), map.w / 2, 112);
     map.bg = c;
+    return c;
   }
 
   // ---------- Dibujo ----------
@@ -418,12 +467,26 @@
   /** Escala de los medallones según el zoom: legibles de lejos, sin tapar la ciudad de cerca. */
   const pinR = () => Math.max(26, Math.min(48, 34 * Math.sqrt(zoom / Math.max(0.2, fit))));
 
-  function draw(t) {
+  function draw(t, dt) {
     const zaun = mapId === 'zaun';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!map.bg || (!map.bgArt && ready(cityArt(mapId)))) paintBackground();
+    if (r3d) {
+      try {
+        ctx.clearRect(0, 0, cw, ch);
+        r3d.render(camState(), t / 1000, dt);
+        drawOverlay(t, zaun);
+        return;
+      } catch (err) {
+        // Si el 3D falla en este equipo, se sigue con la carta 2D en vez de dejar la pantalla negra.
+        console.error('Mapa 3D desactivado:', err);
+        G.world.view = '2d';
+        use3d(false);
+        resize();
+      }
+    }
     ctx.fillStyle = '#05040a';
     ctx.fillRect(0, 0, cw, ch);
-    if (!map.bg || (!map.bgArt && ready(cityArt(mapId)))) paintBackground();
     // Cache the costly blurred panorama: only rebuild it when the art or viewport changes.
     const art = cityArt(mapId);
     if (ready(art)) {
@@ -444,6 +507,12 @@
     const o = toScreen(0, 0);
     ctx.imageSmoothingQuality = 'medium';
     ctx.drawImage(map.bg, o.x, o.y, map.w * zoom, map.h * zoom);
+    drawOverlay(t, zaun);
+  }
+
+  /** Lo que va encima del mapa (2D o 3D): ruta, ambiente, cristales, lugares, caras y rótulos. */
+  function drawOverlay(t, zaun) {
+    const PIN_H = r3d ? 95 : 0; // altura a la que flotan los medallones en 3D
 
     // Ruta animada hasta el objetivo por las calles.
     const obj = objectiveLoc();
@@ -454,12 +523,19 @@
       ctx.strokeStyle = 'rgba(255,224,138,0.85)';
       ctx.shadowColor = '#ffe08a';
       ctx.shadowBlur = 10;
-      ctx.lineWidth = Math.max(2.5, 6 * zoom);
-      ctx.setLineDash([Math.max(6, 22 * zoom), Math.max(6, 18 * zoom)]);
+      ctx.lineWidth = Math.max(3, 6 * zoom);
+      ctx.setLineDash([Math.max(8, 22 * zoom), Math.max(7, 18 * zoom)]);
       ctx.lineDashOffset = -t / 30;
       for (const rd of route) {
-        const a = toScreen(rd.ax, rd.ay); const m = toScreen(rd.mx, rd.my); const b = toScreen(rd.bx, rd.by);
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(m.x, m.y, b.x, b.y); ctx.stroke();
+        ctx.beginPath();
+        for (let i = 0; i <= 16; i++) {
+          const u = i / 16;
+          const x = (1 - u) ** 2 * rd.ax + 2 * (1 - u) * u * rd.mx + u * u * rd.bx;
+          const y = (1 - u) ** 2 * rd.ay + 2 * (1 - u) * u * rd.my + u * u * rd.by;
+          const p = toScreen(x, y, 4);
+          ctx[i ? 'lineTo' : 'moveTo'](p.x, p.y);
+        }
+        ctx.stroke();
       }
       ctx.restore();
     }
@@ -480,38 +556,55 @@
     }
 
     // Cristales hextec (fragmentos del Códice)
-    const k = Math.max(0.55, Math.min(1.1, zoom / fit * 0.6));
+    drawn = { pins: [], frags: [] };
     for (const f of map.def.fragments) {
       if (G.codex.includes(f.codex)) continue;
-      const s = toScreen(f.x, f.y);
-      if (s.x < -40 || s.y < -40 || s.x > cw + 40 || s.y > ch + 40) continue;
+      const s = toScreen(f.x, f.y, r3d ? 45 : 0);
+      if (s.behind || s.x < -40 || s.y < -40 || s.x > cw + 40 || s.y > ch + 40) continue;
+      const k = Math.max(0.5, Math.min(1.1, (r3d ? r3d.scaleAt(f.x, f.y) : zoom) / fit * 0.6));
       hexCrystal(s.x, s.y + Math.sin(t / 300 + f.x) * 3, t, hover?.kind === 'frag' && hover.codex === f.codex ? k * 1.3 : k);
+      drawn.frags.push({ f, x: s.x, y: s.y, r: 24 * k + 8 });
     }
 
     // Lugares: medallón con su imagen, nombre y avisos de lo que hay que hacer.
     const people = npcs();
-    const R = pinR();
     const visited = new Set(G.visited || []);
     const labels = [];
-    for (const l of map.def.locations) {
-      const s = toScreen(l.x, l.y);
+    // En 3D se pintan de lejos a cerca, con un poste de luz hasta el suelo.
+    const order = map.def.locations.map((l) => ({ l, s: toScreen(l.x, l.y, PIN_H) })).filter((o) => !o.s.behind).sort((a, b) => (b.s.depth || 0) - (a.s.depth || 0));
+    for (const { l, s } of order) {
+      const R = r3d ? Math.max(20, Math.min(54, 34 * Math.sqrt(r3d.scaleAt(l.x, l.y) / Math.max(0.05, fit)))) : pinR();
       if (s.x < -R * 3 || s.y < -R * 3 || s.x > cw + R * 3 || s.y > ch + R * 3) continue;
       const isObj = obj && obj.id === l.id;
       const hov = hover?.kind === 'loc' && hover.id === l.id;
       const rr = R * (hov ? 1.14 : 1);
+      if (r3d) {
+        const g0 = toScreen(l.x, l.y, 0);
+        const beam = ctx.createLinearGradient(g0.x, g0.y, s.x, s.y);
+        const col = isObj ? '255,224,138' : zaun ? '63,191,159' : '227,196,90';
+        beam.addColorStop(0, `rgba(${col},0.9)`);
+        beam.addColorStop(1, `rgba(${col},0.15)`);
+        ctx.strokeStyle = beam;
+        ctx.lineWidth = isObj ? 4 : 2.5;
+        ctx.beginPath(); ctx.moveTo(g0.x, g0.y); ctx.lineTo(s.x, s.y + rr); ctx.stroke();
+        ctx.fillStyle = `rgba(${col},0.35)`;
+        ctx.beginPath(); ctx.ellipse(g0.x, g0.y, rr * 0.7, rr * 0.25, 0, 0, Math.PI * 2); ctx.fill();
+      }
       medallion(l, s.x, s.y, rr, isObj, hov, t, !visited.has(l.id));
       // Caras de quien está aquí
       const here = people.filter((n) => n.loc === l.id);
-      here.forEach((n, i) => {
+      const faces = here.map((n, i) => {
         const p = facePos(s.x, s.y, rr, i, here.length);
         drawFace(charImg(n.id), p.x, p.y, p.r, zaun ? '#3fbf9f' : '#e3c45a', hover?.kind === 'char' && hover.id === n.id);
+        return { n, p };
       });
-      labels.push({ l, x: s.x, y: s.y + rr + 18, isObj, hov });
+      drawn.pins.push({ l, x: s.x, y: s.y, R: rr, faces });
+      labels.push({ l, x: s.x, y: s.y + rr + 18, isObj, hov, R: rr });
     }
     // Rótulos encima de todo
-    for (const { l, x, y, isObj, hov } of labels) {
+    for (const { l, x, y, isObj, hov, R } of labels) {
       if (isObj) ribbon('OBJETIVO', x, y - R * 2 - 60, '#ffe08a');
-      if (zoom > fit * 0.95 || isObj || hov) plate(l.name, x, y, isObj ? '#ffe08a' : hov ? '#fff' : (zaun ? '#bff5e6' : '#fbe9b8'), hov);
+      if (r3d || zoom > fit * 0.95 || isObj || hov) plate(l.name, x, y, isObj ? '#ffe08a' : hov ? '#fff' : (zaun ? '#bff5e6' : '#fbe9b8'), hov);
       if (hov) {
         const acts = cb.locationActions?.(l) || [];
         const summary = acts.length ? acts.slice(0, 3).join(' · ') + (acts.length > 3 ? ' …' : '') : 'Toca para ver el lugar';
@@ -522,14 +615,14 @@
       const p = hover.screen;
       plate(`Hablar con ${hover.name}`, p.x, p.y - p.r - 16, '#fff', true, 13);
     } else if (hover?.kind === 'frag') {
-      const s = toScreen(hover.x, hover.y);
+      const s = toScreen(hover.x, hover.y, r3d ? 45 : 0);
       plate('Cristal hextec · tócalo para recogerlo', s.x, s.y - 36, '#bfe6ff', true, 13);
     }
 
     // Viñeta
     const v = ctx.createRadialGradient(cw / 2, ch / 2, Math.min(cw, ch) * 0.35, cw / 2, ch / 2, Math.max(cw, ch) * 0.75);
     v.addColorStop(0, 'transparent');
-    v.addColorStop(1, zaun ? 'rgba(0,16,8,0.6)' : 'rgba(20,12,0,0.45)');
+    v.addColorStop(1, zaun ? 'rgba(0,16,8,0.6)' : r3d ? 'rgba(40,24,0,0.25)' : 'rgba(20,12,0,0.45)');
     ctx.fillStyle = v;
     ctx.fillRect(0, 0, cw, ch);
 
@@ -811,10 +904,10 @@
       x = bridge.x; y = bridge.y; text = `${obj.name} (${W().maps[obj.map].label})`;
     }
     const s = toScreen(x, y);
-    if (s.x > 40 && s.y > 40 && s.x < cw - 40 && s.y < ch - 40) return;
+    if (!s.behind && s.x > 40 && s.y > 40 && s.x < cw - 40 && s.y < ch - 40) return;
     const cx = cw / 2;
     const cy = ch / 2;
-    const a = Math.atan2(s.y - cy, s.x - cx);
+    const a = s.behind ? Math.atan2(cy - s.y, cx - s.x) : Math.atan2(s.y - cy, s.x - cx);
     const ex = cx + Math.cos(a) * (Math.min(cx, cy) - 60);
     const ey = cy + Math.sin(a) * (Math.min(cx, cy) - 60);
     ctx.save();
@@ -842,10 +935,21 @@
     }
     mctx.fillStyle = '#7fd0ff';
     for (const f of map.def.fragments) if (!G.codex.includes(f.codex)) mctx.fillRect(f.x * s - 1.5, f.y * s - 1.5, 3, 3);
-    const a = toWorld(0, 0);
-    const b = toWorld(cw, ch);
     mctx.strokeStyle = '#ff5a8a';
     mctx.lineWidth = 2;
+    if (r3d) {
+      // Lo que ve la cámara: el trapecio del suelo que cae en pantalla.
+      const pts = [[0, ch * 0.25], [cw, ch * 0.25], [cw, ch], [0, ch]].map(([x, y]) => r3d.pick(x, y)).filter(Boolean);
+      mctx.beginPath();
+      pts.forEach((p, i) => mctx[i ? 'lineTo' : 'moveTo'](p.x * s, p.y * s));
+      mctx.closePath();
+      mctx.stroke();
+      mctx.fillStyle = '#ff5a8a';
+      mctx.beginPath(); mctx.arc(G.world.x * s, G.world.y * s, 3, 0, Math.PI * 2); mctx.fill();
+      return;
+    }
+    const a = toWorld(0, 0);
+    const b = toWorld(cw, ch);
     mctx.strokeRect(Math.max(1, a.x * s), Math.max(1, a.y * s), Math.min(mini.width - 2, (b.x - a.x) * s), Math.min(mini.height - 2, (b.y - a.y) * s));
   }
 
@@ -856,9 +960,19 @@
     const dy = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
     if (dx || dy) {
       const sp = (650 * (opt().camSpeed || 1)) / zoom;
-      G.world.x += dx * sp * dt;
-      G.world.y += dy * sp * dt;
+      // En 3D, «arriba» es hacia donde mira la cámara.
+      const c = Math.cos(yaw); const sn = Math.sin(yaw);
+      const mx = r3d ? dx * c + dy * sn : dx;
+      const my = r3d ? -dx * sn + dy * c : dy;
+      G.world.x += mx * sp * dt;
+      G.world.y += my * sp * dt;
       fly = null;
+    }
+    if (r3d) {
+      if (keys.has('q')) yaw += 1.4 * dt;
+      if (keys.has('r')) yaw -= 1.4 * dt;
+      if (keys.has('pageup')) pitch -= 0.8 * dt;
+      if (keys.has('pagedown')) pitch += 0.8 * dt;
     }
     if (fly) {
       const f = Math.min(1, dt * 5);
@@ -867,8 +981,7 @@
       zoom += (fly.z - zoom) * f;
       if (Math.hypot(fly.x - G.world.x, fly.y - G.world.y) < 1 && Math.abs(fly.z - zoom) < 0.002) fly = null;
     } else if (!gesture && (Math.abs(vel.x) > 1 || Math.abs(vel.y) > 1)) {
-      G.world.x -= (vel.x / zoom) * dt;
-      G.world.y -= (vel.y / zoom) * dt;
+      panBy(vel.x * dt, vel.y * dt);
       vel.x *= Math.pow(0.04, dt);
       vel.y *= Math.pow(0.04, dt);
     }
@@ -929,6 +1042,20 @@
     }
   }
 
+  /** Desplaza la vista como si se arrastrara el suelo (dx, dy en px de pantalla). */
+  function panBy(dx, dy) {
+    if (r3d) {
+      sync3d();
+      const a = r3d.pick(cw / 2, ch / 2);
+      const b = r3d.pick(cw / 2 + dx, ch / 2 + dy);
+      if (a && b) { G.world.x -= b.x - a.x; G.world.y -= b.y - a.y; }
+    } else {
+      G.world.x -= dx / zoom;
+      G.world.y -= dy / zoom;
+    }
+    clampView();
+  }
+
   /** Abre el lugar resaltado o, si no hay ninguno, el más cercano al centro de la vista. */
   function interact() {
     if (hover) return open(hover);
@@ -936,32 +1063,19 @@
     open({ kind: 'loc', ...l });
   }
 
-  /** Personaje, cristal o lugar que hay bajo un punto de la pantalla. */
+  /** Personaje, cristal o lugar que hay bajo un punto de la pantalla (según el último fotograma). */
   function thingAt(sx, sy) {
-    const R = pinR();
-    const people = npcs();
-    for (const l of map.def.locations) {
-      const s = toScreen(l.x, l.y);
-      const here = people.filter((n) => n.loc === l.id);
-      for (let i = here.length - 1; i >= 0; i--) {
-        const p = facePos(s.x, s.y, R, i, here.length);
-        if (Math.hypot(p.x - sx, p.y - sy) <= p.r + 3) return { ...here[i], screen: p };
-      }
+    for (let k = drawn.pins.length - 1; k >= 0; k--) {
+      for (const { n, p } of drawn.pins[k].faces) if (Math.hypot(p.x - sx, p.y - sy) <= p.r + 3) return { ...n, screen: p };
     }
     let best = null;
     let bestD = Infinity;
-    for (const l of map.def.locations) {
-      const s = toScreen(l.x, l.y);
-      const d = Math.hypot(s.x - sx, s.y - sy);
-      if (d < R + 10 && d < bestD) { best = { kind: 'loc', ...l }; bestD = d; }
+    for (const pin of drawn.pins) {
+      const d = Math.hypot(pin.x - sx, pin.y - sy);
+      if (d < pin.R + 10 && d < bestD) { best = { kind: 'loc', ...pin.l }; bestD = d; }
     }
     if (best) return best;
-    const kf = Math.max(0.55, Math.min(1.1, zoom / fit * 0.6));
-    for (const f of map.def.fragments) {
-      if (G.codex.includes(f.codex)) continue;
-      const s = toScreen(f.x, f.y);
-      if (Math.hypot(s.x - sx, s.y - sy) < 24 * kf + 8) return { kind: 'frag', ...f };
-    }
+    for (const fr of drawn.frags) if (Math.hypot(fr.x - sx, fr.y - sy) < fr.r) return { kind: 'frag', ...fr.f };
     return null;
   }
 
@@ -976,10 +1090,11 @@
     fly = null;
     if (pointers.size === 1) {
       const p = local(e);
-      gesture = { kind: 'pan', sx: p.x, sy: p.y, x: p.x, y: p.y, moved: false, t: performance.now() };
+      const rot = r3d && (e.button === 2 || e.button === 1 || e.shiftKey);
+      gesture = { kind: rot ? 'rotate' : 'pan', sx: p.x, sy: p.y, x: p.x, y: p.y, moved: rot, t: performance.now() };
     } else if (pointers.size === 2) {
       const [a, b] = [...pointers.values()];
-      gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, moved: true };
+      gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), ang: Math.atan2(b.y - a.y, b.x - a.x), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2, moved: true };
     }
   }
 
@@ -996,13 +1111,20 @@
     }
     pointers.set(e.pointerId, p);
     if (!gesture) return;
+    if (gesture.kind === 'rotate' && pointers.size === 1) {
+      yaw -= (p.x - gesture.x) * 0.006;
+      pitch += (p.y - gesture.y) * 0.004;
+      gesture.x = p.x; gesture.y = p.y;
+      canvas.style.cursor = 'move';
+      clampView();
+      return;
+    }
     if (gesture.kind === 'pan' && pointers.size === 1) {
       const dx = p.x - gesture.x;
       const dy = p.y - gesture.y;
       if (!gesture.moved && Math.hypot(p.x - gesture.sx, p.y - gesture.sy) > TAP) gesture.moved = true;
       if (gesture.moved) {
-        G.world.x -= dx / zoom;
-        G.world.y -= dy / zoom;
+        panBy(dx, dy);
         const now = performance.now();
         const dtm = Math.max(1, now - gesture.t) / 1000;
         vel = { x: dx / dtm * 0.6 + vel.x * 0.4, y: dy / dtm * 0.6 + vel.y * 0.4 };
@@ -1018,11 +1140,19 @@
       const d = Math.hypot(a.x - b.x, a.y - b.y);
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
-      if (gesture.kind !== 'pinch') gesture = { kind: 'pinch', d, mx, my, moved: true };
-      G.world.x -= (mx - gesture.mx) / zoom;
-      G.world.y -= (my - gesture.my) / zoom;
+      const ang = Math.atan2(b.y - a.y, b.x - a.x);
+      if (gesture.kind !== 'pinch') gesture = { kind: 'pinch', d, ang, mx, my, moved: true };
+      panBy(mx - gesture.mx, my - gesture.my);
       zoomAt(d / Math.max(1, gesture.d), mx, my);
-      gesture.d = d; gesture.mx = mx; gesture.my = my;
+      // Girar con dos dedos en 3D
+      if (r3d) {
+        let da = ang - gesture.ang;
+        if (da > Math.PI) da -= Math.PI * 2;
+        if (da < -Math.PI) da += Math.PI * 2;
+        yaw += da;
+        clampView();
+      }
+      gesture.d = d; gesture.ang = ang; gesture.mx = mx; gesture.my = my;
     }
   }
 
@@ -1097,6 +1227,11 @@
       mk('+', 'Acercar', () => zoomAt(1.35)),
       mk('−', 'Alejar', () => zoomAt(0.74)),
       mk('◎', 'Ver toda la ciudad', () => flyTo(map.w / 2, map.h / 2, fit)),
+      ...(window.World3D ? [
+        mk('⟲', 'Girar a la izquierda', () => { yaw += Math.PI / 8; clampView(); }, 'only3d'),
+        mk('⟳', 'Girar a la derecha', () => { yaw -= Math.PI / 8; clampView(); }, 'only3d'),
+        mk(r3d ? '2D' : '3D', r3d ? 'Ver el mapa en 2D' : 'Ver la ciudad en 3D', () => { G.world.view = r3d ? '2d' : '3d'; setMap(mapId); }, 'mapview'),
+      ] : []),
       mk('★', 'Ir al objetivo', () => {
         const o = objectiveLoc();
         if (!o) return;
@@ -1135,7 +1270,7 @@
     try {
       if (!paused) update(dt);
       else if (fly) update(dt);
-      draw(t);
+      draw(t, dt);
       fpsMeter(t);
     } catch (err) {
       console.error(err);
@@ -1154,7 +1289,9 @@
     canvas.width = Math.round(cw * dpr);
     canvas.height = Math.round(ch * dpr);
     fit = Math.min(cw / map.w, (ch - PAD_TOP - PAD_BOTTOM) / map.h);
+    if (r3d) fit *= 1.35; // en perspectiva la ciudad entera cabe más cerca
     zoom = fit * (rel || 1);
+    r3d?.resize(cw, ch, dpr);
     clampView();
   }
 
@@ -1170,6 +1307,7 @@
     backdrop = null;
     map = buildMap(id);
     G.world.map = id;
+    use3d(G.world.view !== '2d');
     resize();
     const loc = atLocId && map.def.locations.find((l) => l.id === atLocId);
     if (loc) {
@@ -1182,6 +1320,10 @@
     }
     fly = null;
     vel = { x: 0, y: 0 };
+    // La cámara se pone del lado del centro de la ciudad, mirando hacia fuera desde los bordes
+    // (al llegar por el puente se ve el cielo y el mar, no la pared del acantilado).
+    yaw = loc ? Math.atan2(map.w / 2 - loc.x, map.h / 2 - loc.y) : 0;
+    pitch = id === 'zaun' ? 1.05 : 1.02;
     clampView();
     hover = null;
     particles = [];
@@ -1189,6 +1331,30 @@
     fade = 1;
     if (canvas.parentElement) buildControls();
     Audio2.playMusic(cb.music?.() || id);
+  }
+
+  /** Activa la escena 3D (si hay WebGL) o vuelve a la carta 2D. */
+  function use3d(on) {
+    if (on && window.World3D) {
+      try {
+        if (!r3d) r3d = window.World3D.create(canvas.parentElement);
+        if (r3d) {
+          const b = canvas.parentElement.getBoundingClientRect();
+          r3d.resize(Math.max(320, b.width), Math.max(240, b.height), Math.min(2, window.devicePixelRatio || 1));
+          r3d.setMap(map, paintBackground(true));
+          if (!map.bg) paintBackground();
+        }
+      } catch (err) {
+        console.error('Mapa 3D desactivado:', err);
+        r3d?.dispose();
+        r3d = null;
+      }
+    } else if (r3d) {
+      r3d.dispose();
+      r3d = null;
+    }
+    canvas.classList.toggle('over-3d', Boolean(r3d));
+    canvas.parentElement?.classList.toggle('map-is-3d', Boolean(r3d));
   }
 
   window.World = {
@@ -1219,11 +1385,11 @@
       const id = ++loopId;
       requestAnimationFrame((t) => { last = t; frame(t, id); });
     },
-    stop() { running = false; keys.clear(); pointers.clear(); gesture = null; ctrls?.remove(); },
+    stop() { running = false; keys.clear(); pointers.clear(); gesture = null; ctrls?.remove(); r3d?.dispose(); r3d = null; },
     pause(v) { paused = v; keys.clear(); pointers.clear(); gesture = null; if (v) { hover = null; updatePrompt(); } },
     interact,
     canInteract: () => !paused,
-    rotate() {},
+    rotate(d) { yaw += d; clampView(); },
     zoom(f) { zoomAt(f); },
     /** Centra el mapa en un lugar (cambia de ciudad si hace falta). */
     focus(id) {
@@ -1236,7 +1402,8 @@
     locById,
     placeURL,
     /** Posición en pantalla de un lugar (para pruebas y tutoriales). */
-    screenOf(id) { const l = map?.def.locations.find((x) => x.id === id); return l ? toScreen(l.x, l.y) : null; },
+    screenOf(id) { const p = drawn.pins.find((x) => x.l.id === id); return p ? { x: p.x, y: p.y } : null; },
+    is3d: () => Boolean(r3d),
     resize,
   };
 })();

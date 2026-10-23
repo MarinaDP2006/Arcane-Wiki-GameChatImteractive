@@ -1320,3 +1320,6 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
   .scene2d-hud h2 { font-size: 1rem; }
   .scene2d-hud p { font-size: .75rem; }
 }
+.world:not(.map-is-3d) .map-ctrl.only3d { display: none; }
+.map-ctrl.mapview { font: bold 0.85rem var(--display); color: var(--gold); }
+@media (max-height: 620px) { .map-ctrls { gap: 5px; } .map-ctrl { min-width: 40px; height: 40px; } }
