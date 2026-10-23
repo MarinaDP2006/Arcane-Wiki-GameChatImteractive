@@ -360,7 +360,7 @@
       // Eventos de puntero: valen igual para ratón y para dedo (móvil).
       canvas.addEventListener('pointermove', pos);
       canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); pos(e); mouse.down = true; mouse.clicks.push({ x: mouse.x, y: mouse.y }); });
-      const up = () => { mouse.down = false; };
+      const up = () => { mouse.down = false; keys.clear(); };
       window.addEventListener('pointerup', up);
       window.addEventListener('pointercancel', up);
 
@@ -374,6 +374,7 @@
           b.innerHTML = `<span>${label}</span>`;
           b.addEventListener('pointerdown', (e) => {
             e.preventDefault();
+            b.setPointerCapture?.(e.pointerId);
             if (!keys.has(k)) pressed.push(k);
             keys.add(k);
             b.classList.remove('ripple');
@@ -384,7 +385,7 @@
           const off = () => { keys.delete(k); b.classList.remove('on'); };
           b.addEventListener('pointerup', off);
           b.addEventListener('pointercancel', off);
-          b.addEventListener('pointerleave', off);
+          b.addEventListener('lostpointercapture', off);
           pad.append(b);
         }
         stage.append(pad);
