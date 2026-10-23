@@ -275,7 +275,7 @@
 
   /**
    * Menú de un lugar del mapa. Al tocar un lugar no se entra directamente: se muestra su imagen de
-   * Arcane (de la temporada que se juega) y lo que se puede hacer allí, por secciones: la historia,
+   * la campaña original y sus partes y lo que se puede hacer allí, por secciones: la historia,
    * con quién hablar, el minijuego o la actividad, explorar el escenario 2D y viajar.
    */
   function onLocation(loc) {
@@ -1268,7 +1268,7 @@
     return Math.min(4, g);
   }
 
-  // Todos los finales de ambas temporadas.
+  // Todos los desenlaces de la campaña original.
   function allEndings() {
     return [...S().endings, ...(S().endings2 || [])];
   }
@@ -1321,7 +1321,7 @@
 
   // Temporada 2: continúa la partida con las consecuencias de la primera.
   async function startSeason2() {
-    if (!window.App.settings.spoilers && !confirm('La Parte II · Las consecuencias contiene acontecimientos importantes de Arcane. ¿Quieres continuar?')) return;
+    if (!window.App.settings.spoilers && !confirm('La Parte II · Las consecuencias contiene revelaciones importantes de la campaña original. ¿Quieres continuar?')) return;
     const route = S().routes.t2;
     G.flags[`s1_${G.endings[G.endings.length - 1] || 'humo'}`] = true;
     G.progress = { route: 't2', season: 2, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false };
@@ -1332,9 +1332,9 @@
     closeOverlay();
     await Cinematic.play([
       { scene: 'puente-zaun', dur: 6, kicker: 'Rifts & Gears', title: 'Parte II · Las consecuencias', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
-      { scene: 'consejo', dur: 6, lines: ['Piltover entierra a sus muertos y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
-      { scene: 'noxus', dur: 6, lines: ['Al otro lado del mar, Noxus afila sus espadas.'], zoom: [1.1, 1.0] },
-      { scene: 'fabrica', dur: 6, lines: ['Y en lo más hondo de Zaun, alguien promete un mundo sin dolor.'], zoom: [1.0, 1.2] },
+      { scene: 'aurelia-council', dur: 6, lines: ['Aurelia intenta decidir quién debe responder por el accidente del ascensor.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
+      { scene: 'aurelia-archive', dur: 6, lines: ['En el Archivo de Frecuencias aparece un anexo que no figura en las copias públicas.'], zoom: [1.1, 1.0] },
+      { scene: 'nacar-central', dur: 6, lines: ['En lo más hondo de Nácar, la Resonancia vuelve a pulsar sin control.'], zoom: [1.0, 1.2] },
     ]);
     Audio2.playMusic('final');
     toast(`Parte II · Las consecuencias: ve a ${objectiveName()}`, 'good');
@@ -1739,7 +1739,7 @@
         el('div', {},
           el('small', { class: 'muted' }, 'Ficha de personaje'),
           el('h2', {}, p.name),
-          el('span', { class: `tag origin-${p.origin}` }, p.origin === 'zaun' ? 'Zaun' : 'Piltover'),
+          el('span', { class: `tag origin-${p.origin}` }, p.origin === 'zaun' ? 'Nácar' : 'Aurelia'),
           el('div', { class: 'row gap no-print' },
             el('button', { class: 'btn small', onclick: () => photoInput.click() }, 'Cambiar foto'),
             el('button', { class: 'btn small', onclick: exportSheet }, 'Exportar ficha'),
@@ -1752,7 +1752,7 @@
           el('div', { class: 'bar' }, el('i', { style: `width:${Math.min(100, G.stats[k] * 20)}%` })), el('b', {}, G.stats[k])))),
       el('h3', {}, 'Reputación'),
       el('div', { class: 'stat-bars' },
-        repBar('Zaun', G.rep.zaun, 'zaun'), repBar('Piltover', G.rep.piltover, 'piltover')),
+        repBar('Nácar', G.rep.zaun, 'zaun'), repBar('Aurelia', G.rep.piltover, 'piltover')),
       el('h3', {}, 'Relaciones'),
       G.unlocked.length ? el('div', { class: 'rel-grid' }, G.unlocked.map((id) =>
         el('button', { class: 'rel', onclick: () => setTab('chats', id) },
