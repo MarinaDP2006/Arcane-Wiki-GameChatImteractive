@@ -1,12 +1,12 @@
 # LM Studio para el chat libre (PC, tablet y móvil)
 
-Con LM Studio, la IA del chat libre funciona en tu propio ordenador, con tu tarjeta gráfica. No usa internet ni claves y nadie más lee lo que escribes. Si activas la red local, la tablet y el móvil de casa también usan la IA del PC, y responden igual de rápido.
+LM Studio puede ejecutar un modelo de lenguaje en tu ordenador y ofrecerlo al chat del juego. El uso local puede evitar enviar mensajes a un proveedor externo, pero la privacidad depende de la configuración del equipo, del modelo y de la red. Si activas el acceso desde la red local, otros dispositivos autorizados de esa red podrían conectarse al servidor. No abras el puerto a Internet ni envíes información sensible a modelos o servicios en los que no confíes. La velocidad depende del modelo, la memoria disponible y el hardware.
 
 ## 1. Instalar y descargar un modelo
 
 1. Descarga LM Studio desde [lmstudio.ai](https://lmstudio.ai) e instálalo.
 2. En la lupa (**Discover**), busca uno de los modelos de la tabla de abajo y descárgalo. Si puedes elegir el archivo, coge el que termina en **Q4_K_M**, que es el más equilibrado.
-3. En la parte de arriba, carga el modelo y sube **GPU Offload** al máximo. Así todo el modelo corre en la tarjeta gráfica, y por eso responde rápido.
+3. En la parte de arriba, carga el modelo. Ajusta **GPU Offload** al nivel más alto que tu equipo pueda mantener sin quedarse sin memoria. Si aparecen errores o el equipo se ralentiza, baja el ajuste o prueba un modelo más pequeño.
 
 ### Qué modelo elegir según la memoria de tu tarjeta (VRAM)
 
@@ -64,6 +64,6 @@ New-NetFirewallRule -DisplayName "LM Studio (Grietas & Gears)" -Direction Inboun
 | La IP del PC cambia cada pocos días | En el router, reserva una IP fija para el PC (se llama «reserva DHCP»). |
 | Responde lento | Usa un modelo más pequeño, o comprueba que **GPU Offload** está al máximo. |
 
-**Seguridad:** el servidor solo se abre a tu red de casa. No abras el puerto 1234 en el router ni lo actives en una wifi pública.
+**Seguridad:** activa el acceso por red local solo cuando lo necesites y en una red de confianza. No abras el puerto 1234 en el router ni lo uses desde una wifi pública. Una dirección IP local no es un mecanismo de autenticación: cualquier dispositivo con acceso de red y permitido por el firewall podría intentar conectarse.
 
 En Android, el juego permite conexiones `http://` normales para poder hablar con el PC de casa. Los servicios de internet (Gemini, Groq, OpenRouter) siguen yendo por `https://`.
