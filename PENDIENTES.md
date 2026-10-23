@@ -31,5 +31,5 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 
 ## Técnico
 
-- [ ] Compilar y publicar una release (`git tag v1.28.0` lanza el workflow de Windows y macOS).
+- [x] Primera release del mundo nuevo: v1.28.0 (Windows, Mac y Android).
 - [ ] Revisar el rendimiento del mapa 3D en móviles modestos.

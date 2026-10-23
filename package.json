@@ -1,7 +1,7 @@
 {
   "name": "rifts-gears-umbral",
   "productName": "Las ciudades del Umbral",
-  "version": "1.27.0",
+  "version": "1.28.0",
   "description": "Aventura narrativa original de fantasía industrial, Resonancia y dos ciudades conectadas por una red de ascensores.",
   "main": "main.js",
   "author": "MarinaDP2006",
@@ -65,7 +65,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "shortcutName": "Las ciudades del Umbral",
-      "artifactName": "Rifts-and-Gears-Setup-${version}.${ext}"
+      "artifactName": "Ciudades-del-Umbral-Setup-${version}.${ext}"
     },
     "portable": {
       "artifactName": "Ciudades-del-Umbral-${version}-portable.${ext}"
@@ -93,7 +93,7 @@
       "artifactName": "Ciudades-del-Umbral-${version}-mac-${arch}.${ext}"
     },
     "dmg": {
-      "title": "Rifts & Gears ${version}"
+      "title": "Las ciudades del Umbral ${version}"
     },
     "artifactName": "Ciudades-del-Umbral-Setup-${version}.${ext}"
   }

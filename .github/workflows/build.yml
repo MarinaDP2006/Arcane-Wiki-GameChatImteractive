@@ -50,7 +50,7 @@ jobs:
           $files | ForEach-Object { Write-Host $_.Name $_.Length }
       - uses: actions/upload-artifact@v4
         with:
-          name: grietas-and-gears-windows
+          name: ciudades-del-umbral-windows
           path: dist/*.exe
           if-no-files-found: error
   build-mac:
@@ -77,7 +77,7 @@ jobs:
           test "$(ls dist/*.dmg | wc -l)" -ge 2
       - uses: actions/upload-artifact@v4
         with:
-          name: grietas-and-gears-mac
+          name: ciudades-del-umbral-mac
           path: |
             dist/*.dmg
             dist/*.zip
@@ -89,11 +89,17 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: grietas-and-gears-*
+          pattern: ciudades-del-umbral-*
           path: dist
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
+          name: Las ciudades del Umbral ${{ github.ref_name }}
+          body: |
+            Instaladores de Las ciudades del Umbral (Rifts & Gears).
+            - Windows: `Ciudades-del-Umbral-Setup-*.exe` (instalador) o `*-portable.exe` (sin instalar).
+            - Mac: `*-mac-arm64.dmg` (Apple Silicon) o `*-mac-x64.dmg` (Intel). Sin firmar: la primera vez, clic derecho → Abrir.
+            - Android: `ciudades-del-umbral-*-tablet.apk`.
           files: |
             dist/*.exe
             dist/*.dmg
