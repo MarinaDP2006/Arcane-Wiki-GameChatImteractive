@@ -164,3 +164,6 @@ details p { color: var(--muted); margin: 0.6rem 0 0; }
 /* Cronología solo textual, sin imágenes ni fechas */
 .linea-tiempo .hito{grid-template-columns:minmax(0,1fr);max-width:850px}
 .linea-tiempo .hito-contenido{padding:clamp(1.4rem,3vw,2.2rem)}
+
+/* Original development mind maps */
+.linea-tiempo .hito{grid-template-columns:minmax(220px,.9fr) minmax(0,1.1fr)}.hito-imagen img{object-fit:contain;background:#111626;filter:none}.hito-imagen:after{display:none}@media(max-width:700px){.linea-tiempo .hito{grid-template-columns:1fr}}
