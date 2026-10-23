@@ -244,7 +244,7 @@
       document.body.append(box);
       // Fondo de la sala: el lugar desde el que se juega (si se pasa opts.place) o el del juego.
       const sceneCtl = Scenes.mount(bg, opts.place && Scenes.has(opts.place) ? opts.place : def.scene);
-      // Fondo del juego: arte real de Arcane con profundidad. Desde el mapa se usa el lugar.
+      // Fondo de juego original con profundidad. Desde el mapa se reutiliza la escena de la ciudad.
       const placeArt = opts.place && window.Depth && Depth.pool([opts.place]).length ? [opts.place] : null;
       const bd = def.backdrops && window.Depth ? Depth.backdrop(placeArt || def.backdrops, { grade: def.grade, scene: def.scene }) : null;
       const ctx = canvas.getContext('2d');
@@ -543,7 +543,7 @@
     ctx.restore();
   }
 
-  // Monopatín pintado al estilo de Jinx (sin piloto): tabla con colas levantadas, grafitis de neón,
+  // Plataforma ligera de mantenimiento (sin piloto): tabla con colas levantadas, marcas de Resonancia,
   // ruedas que giran y una voltereta (kickflip) cuando se hace el doble salto.
   function drawSkate(ctx, x, y, t, o = {}) {
     ctx.save();
@@ -571,7 +571,7 @@
     ctx.save();
     ctx.clip(deck);
     if (flip > 0) {
-      // Grafiti de Jinx: zigzag rosa, nube azul y ojos de chomper
+      // Marcas de Resonancia: zigzag rosa, nube azul y símbolos geométricos
       ctx.strokeStyle = '#ff4aa0'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(-26, 0); for (let i = 0; i < 9; i++) ctx.lineTo(-24 + i * 6, i % 2 ? -4 : 1); ctx.stroke();
       ctx.fillStyle = '#3fd0ff';
@@ -618,7 +618,7 @@
     return imgs.get(key);
   }
 
-  // Siluetas de edificios (fondo con paralaje para los juegos de Zaun).
+  // Siluetas de edificios (fondo con paralaje para los juegos de Nácar).
   function skyline(seed, n, minH, maxH) {
     let a = seed;
     const r = () => { a = (a * 9301 + 49297) % 233280; return a / 233280; };
@@ -672,7 +672,7 @@
     create(w, h, o) {
       const map = { w: 'arrowup', s: 'arrowdown', a: 'arrowleft', d: 'arrowright' };
       const rival = paintedImg(o.rivalLook || { skin: '#c9a080', face: 'angular', eyes: 'rasgados', hair: '#5a4a5a', style: 'undercut', outfit: 'top', outfitColor: '#2a2a2a', accents: ['arm', 'scar'], browAngle: 3 }, '#e0457b', ['#5a1a1a', '#0a0202']);
-      // Rival con cara real de Arcane (Sevika o Vi, o la que mande la historia).
+      // Rival con retrato del personaje original que indique la historia.
       const rivalFace = window.Depth ? Depth.face(o.rival || pick(['sevika', 'vi'])) : null;
       const b = o.bonus || 0;
       const crowd = Array.from({ length: Math.ceil(w / 26) + 2 }, (_, i) => ({ x: i * 26 - 13, s: 0.8 + Math.random() * 0.5, ph: Math.random() * TAU, row: i % 2 }));
@@ -805,7 +805,7 @@
       title: fly ? 'Vuelo en aerotabla' : 'Carrera por los tejados', icon: '', scene: fly ? 'arbol' : 'tejados', grade: 'zaun',
       backdrops: fly ? ['sumidero', 'arbol', 'zaun', 'fabrica', 'puente-zaun', 'invernadero'] : ['tejados', 'callejones', 'zaun', 'puente-zaun', 'fabrica', 'mercado'],
       desc: fly
-        ? 'Surca las profundidades de Zaun en una aerotabla de las Luciérnagas, esquivando tuberías y chimeneas.'
+        ? 'Surca los canales de Nácar en una plataforma ligera, esquivando tuberías y chimeneas.'
         : 'Huye por los tejados de las Chimeneas. Salta los huecos y las chimeneas sin que te atrapen.',
       controls: fly ? 'Mantén Espacio, ↑ o el ratón para subir.' : 'Espacio, ↑ o clic para saltar (doble salto permitido).',
       touchControls: fly ? 'Mantén el dedo en la pantalla para subir.' : 'Toca la pantalla para saltar (doble salto permitido).',
@@ -1081,7 +1081,7 @@
             ctx.fillStyle = '#2a2a30';
             ctx.fillRect(-3 * tg.z, tg.r * 0.8, 6 * tg.z, tg.r * 0.8);
             if (tg.civ) {
-              // Farol de gas de Piltover (no se dispara): cristal con llama, casquete de latón
+              // Farol de latón de Aurelia (no se dispara): cristal con llama, casquete metálico
               const r = tg.r;
               ctx.save();
               ctx.globalCompositeOperation = 'lighter';
