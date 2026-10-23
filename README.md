@@ -13,7 +13,7 @@ Fangame gratuito y no oficial de rol libre ambientado en **Arcane** (temporadas 
 
 ## Web y demo
 
-La carpeta `web/` tiene la web pública del fangame, **sin sección de descargas**:
+La carpeta `web/` tiene la web pública del fangame, con una sección de descargas que enlaza al repositorio independiente:
 
 - `index.html`: portada, introducción para quien no conoce Arcane, ciudades, personajes, cómo se juega y demo.
 - `demo.html` + `demo-juego.js`: demo de rol libre. Escena en La Última Gota (Zaun) o en el taller de hextec de la Academia (Piltover), en la temporada 1, acto 2.
@@ -40,7 +40,7 @@ npm run web        # genera la web en web-dist/
 - **Hecho:** historia, personajes de Piltover, Zaun y Noxus, rol libre con bloqueo de canon, web y demo nuevas.
 - **Prototipo:** modelos 3D de fan-art en `src/models/` (sin rig ni animaciones finales).
 - **Pendiente de configurar:** el servidor publicado con la clave de Ollama Cloud.
-- **Sin descargas públicas** por ahora.
+- **Release automatizada preparada:** Windows, macOS y Android se compilan con la etiqueta `arcane-v*`; la publicación inicial copia esta rama al repositorio independiente y dispara los builds.
 
 ## Guías
 
