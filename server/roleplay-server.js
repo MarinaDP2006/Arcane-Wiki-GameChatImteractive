@@ -125,6 +125,7 @@ function staticFile(req, res, pathname) {
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Cache-Control': 'public, max-age=300'
     });
+    if (req.method === 'HEAD') return res.end();
     fs.createReadStream(file).pipe(res);
   });
 }
@@ -137,7 +138,6 @@ const server = http.createServer((req, res) => {
     return roleplay(req, res);
   }
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.setHeader('Allow', 'GET, HEAD, POST'); return send(res, 405, { error: 'Método no permitido.' }); }
-  if (req.method === 'HEAD') { req.method = 'GET'; const originalEnd = res.end.bind(res); res.end = (...args) => originalEnd(...args); }
   return staticFile(req, res, url.pathname);
 });
 server.listen(PORT, HOST, () => console.log('Rifts & Gears web server listening on ' + HOST + ':' + PORT));
