@@ -48,10 +48,10 @@ function buildCapturas() {
   // Formato recomendado: 01-inicio.webp, 02-menu.png, etc.
   const historia = path.join(root, 'capturasjuego');
   if (fs.existsSync(historia)) {
-    const files = fs.readdirSync(historia).filter(name => /^(?!\\.)(?!README\\.md$)[a-zA-Z0-9][a-zA-Z0-9._-]*\\.(webp|png|jpe?g)$/i.test(name)).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
+    const files = fs.readdirSync(historia).filter(name => /^(?!\.)(?!README\.md$)[a-zA-Z0-9][a-zA-Z0-9._-]*\.(webp|png|jpe?g)$/i.test(name)).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
     for (const file of files) {
       copy(path.join(historia, file), path.join(out, 'capturasjuego', file));
-      const label = file.replace(/\\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+      const label = file.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
       tarjetas.push('<figure class="captura"><a href="capturasjuego/' + encodeURIComponent(file) + '" target="_blank" rel="noopener noreferrer"><img src="capturasjuego/' + encodeURIComponent(file) + '" alt="Captura histórica: ' + esc(label) + '" loading="lazy"></a><figcaption>' + esc(label) + '</figcaption></figure>');
     }
   }
