@@ -33,3 +33,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add standalone "https://x-access-token:${ARCANE_REPO_TOKEN}@github.com/MarinaDP2006/Arcane-fangame.git"
           git push standalone HEAD:refs/heads/main --force
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="arcane-v$VERSION"
+          git tag -f "$TAG" HEAD
+          git push standalone "refs/tags/$TAG" --force
+          echo "::notice::Publicado Arcane-fangame/main y lanzadas las compilaciones de Release $TAG."
