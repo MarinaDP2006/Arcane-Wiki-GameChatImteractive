@@ -150,13 +150,13 @@ select.input option { background: var(--bg2); }
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
   background: radial-gradient(circle, rgba(13, 11, 20, 0.6) 0%, transparent 70%);
 }
-.title-arcane {
+.title-rifts-gears {
   font-family: var(--display); letter-spacing: 0.35em; font-size: 4.2rem; margin: 0;
   background: linear-gradient(180deg, #fff6d0, var(--gold) 50%, var(--gold2));
   -webkit-background-clip: text; background-clip: text; color: transparent;
   text-shadow: 0 0 40px rgba(227, 196, 90, 0.35);
 }
-.menu .title-arcane { font-size: 2.6rem; }
+.menu .title-rifts-gears { font-size: 2.6rem; }
 .subtitle { color: #f4efe0; letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.9rem; }
 .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
 .home-grid h3 { margin-top: 0; color: var(--gold); }
@@ -378,7 +378,7 @@ kbd {
   background: radial-gradient(circle, rgba(13, 11, 20, 0.85), rgba(13, 11, 20, 0.55));
   border: 1px solid var(--line); box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
 }
-.title-content .title-arcane { font-size: 5rem; }
+.title-content .title-rifts-gears { font-size: 5rem; }
 .title-menu { display: flex; flex-direction: column; gap: 0.6rem; margin: 1.6rem auto 1rem; width: 300px; }
 .title-btn {
   padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06);
@@ -454,7 +454,7 @@ kbd {
   100% { transform: translateY(-110vh) rotate(260deg) scale(1.1); opacity: 0; }
 }
 .title-content { animation: rise 1.2s cubic-bezier(.2,.8,.2,1) both; backdrop-filter: blur(4px); }
-.title-content .title-arcane {
+.title-content .title-rifts-gears {
   background: linear-gradient(100deg, #b8862a 20%, #fff6d0 40%, #e3c45a 50%, #b8862a 70%);
   background-size: 250% 100%; -webkit-background-clip: text; background-clip: text;
   animation: shimmer 6s ease-in-out infinite;
@@ -802,7 +802,7 @@ body[data-city='piltover'], body:not([data-city]) { --accent: var(--gold); --acc
 h1, h2, h3, .overlay-head h2 { font-family: var(--display); letter-spacing: 0.06em; }
 h2 { color: #f4e6b8; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
 h2::after { content: ''; display: block; height: 2px; margin-top: 0.35rem; width: 3.2rem; background: linear-gradient(90deg, var(--accent, var(--gold)), transparent); }
-.overlay-head h2::after, .atlas-cityhead h2::after, .title-arcane::after { display: none; }
+.overlay-head h2::after, .atlas-cityhead h2::after, .title-rifts-gears::after { display: none; }
 
 /* Botones de bordes biselados */
 .btn { border-radius: 2px; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); border-color: color-mix(in srgb, var(--accent, var(--gold)) 40%, transparent); text-transform: none; letter-spacing: 0.03em; }
