@@ -2,7 +2,7 @@
 
 Juego narrativo de fans ambientado en Piltover y Zaun e inspirado en la estética de *Arcane*. Crea tu personaje, explora sus distritos, habla con el reparto y toma decisiones que cambian tus relaciones y los finales. Proyecto no oficial.
 
-Web del juego: **https://marinadp2006.github.io/grietas-and-gears/** (ver [Página web](#página-web)).
+**Web promocional:** migración a Render preparada en el [PR #42](https://github.com/MarinaDP2006/grietas-and-gears/pull/42); pendiente de integración y despliegue.
 
 ## Descargar
 
@@ -105,14 +105,19 @@ Cada vez que algo entra en `main`, el workflow **Sincronizar ramas de plataforma
 - Al crear una etiqueta `v*` (por ejemplo `v1.26.0`) se compilan las tres plataformas y se adjuntan a la versión publicada.
 - **Límite de GitHub:** el token automático no puede subir cambios de `.github/workflows`. Si un cambio de `main` toca workflows, la sincronización falla con un aviso. Para que lo haga sola, crea un token personal (*fine-grained*, solo este repositorio, permisos **Contents** y **Workflows** de lectura y escritura) y guárdalo en *Settings → Secrets and variables → Actions* como `SYNC_TOKEN`. Sin token, basta con fusionar `main` en la rama a mano esa vez.
 
-## Página web
+## Página web promocional
 
-La web vive en la carpeta [`web/`](web/) y se publica sola en GitHub Pages con el workflow **Publicar web** cuando cambia `web/` o los datos del juego. La versión, los capítulos, los finales, los 16 personajes (con sus caras y resúmenes) y los lugares del mapa se leen de `src/data` al montarla, así que la web nunca se queda atrás respecto al juego.
+La web está en [`web/`](web/) y se genera con `npm run web` en `web-dist/`. Se ha preparado su migración desde GitHub Pages a **Render Static Site** en el [PR #42](https://github.com/MarinaDP2006/grietas-and-gears/pull/42). **Hasta que se integre y despliegue ese PR, la migración no está activa.**
 
-- Probarla en local: `npm run web` y abre `web-dist/index.html` en el navegador.
-- Primera vez: *Settings → Pages → Build and deployment → Source:* **GitHub Actions**.
-- Los botones de descarga detectan tu sistema y enlazan el archivo exacto de la última versión publicada.
+La nueva versión incluye una galería para capturas reales del inicio, creación de personaje, comunicador, mapa y códice, sin conversaciones de personajes ni spoilers. Se han retirado las referencias promocionales a IA, pero las funciones del juego permanecen intactas. Las instrucciones de publicación están incluidas en el PR.
 
-Historial de la web:
+## Ramas de Claude pendientes de revisión
 
-- **23/10/2026** · Primera versión: portada Piltover/Zaun, cifras del juego, características, personajes, mapa, descargas para Windows, Mac y Android, preguntas frecuentes y aviso legal de juego de fans.
+| Rama | Comparación con `main` (23/10/2026) |
+|---|---|
+| `claude/project-thread-l6k2hb` | 0 commits exclusivos; 4 por detrás |
+| `claude/project-thread-pgzumn` | 0 commits exclusivos; 20 por detrás |
+| `claude/project-thread-ync0fe` | 1 commit exclusivo; 21 por detrás |
+
+La rama `claude/project-thread-ync0fe` requiere auditoría antes de integrar: modifica `src/js/game.js`, `src/js/world.js` y `src/css/styles.css`. No fusionarla automáticamente sin revisar conflictos y compatibilidad.
+
