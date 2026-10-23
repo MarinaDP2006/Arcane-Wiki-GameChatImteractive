@@ -4,7 +4,7 @@ Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas
 
 Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
 
-> **Rama `main` = mundo original.** Todo lo de Las ciudades del Umbral vive aquí. La rama de trabajo del fangame de Arcane se conserva separada en `claude/project-thread-9huivc-arcane` y se publicará en el repositorio independiente [Arcane-fangame](https://github.com/MarinaDP2006/Arcane-fangame). No mezclar sus modelos, datos, guardados ni recursos web.
+> Este repositorio es solo del mundo nuevo: historia, personajes, lugares, arte, colores y música propios.
 
 ## La historia en cinco fechas
 
@@ -20,8 +20,6 @@ La campaña tiene tres partes: *La ciudad bajo la piedra*, *El precio de la Reso
 
 ## Web y demo
 
-![Concepto visual de Aurelia y Nácar](web/arte-propio/ciudades-umbral.svg)
-
 La carpeta `web/` contiene la web pública:
 
 - `index.html`: portada con la crónica, las ciudades, la Resonancia, la campaña, el reparto y cómo se juega.
@@ -31,35 +29,14 @@ La carpeta `web/` contiene la web pública:
 
 `npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, versión). La web no ofrece descargas.
 
-## IA de rol: LM Studio local o servidor remoto
+## IA en el servidor, sin instalar nada
 
-La demo y el juego llaman a `/api/roleplay`; la clave del proveedor se queda en el servidor, nunca en el navegador. Si la IA no responde, la demo mantiene un narrador local básico.
+El diálogo libre usa un modelo de Ollama alojado en el servidor (`server/index.js`, endpoint `/api/roleplay`), así que nadie tiene que instalar Ollama en su equipo. Si el servidor no está disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
 
-### Modelo pequeño para LM Studio
+Variables del servidor (ver `.env.example`); se configuran como secretos en el alojamiento, nunca en el repositorio:
 
-Recomendado para empezar: **Qwen3 0.6B GGUF, cuantización Q4_K_M** (aprox. 0,4–0,5 GB de archivo). Es compacto y multilingüe, pero sus respuestas de rol serán más simples que las de un modelo grande. En LM Studio, busca `Qwen3-0.6B-GGUF`, descarga `Q4_K_M`, cárgalo y activa **Developer → Start server**.
-
-Para ejecutar el juego y la web demo en el mismo ordenador, configura las variables de entorno antes de arrancar el servidor:
-
-```env
-AI_PROVIDER=lm-studio
-AI_BASE_URL=http://127.0.0.1:1234/v1
-AI_MODEL=<nombre-exacto-del-modelo-que-muestra-LM-Studio>
-AI_API_KEY=
-```
-
-El nombre de modelo debe coincidir con el identificador que exponga tu versión de LM Studio. Comprueba el servidor con `http://127.0.0.1:1234/v1/models`. No pongas la dirección local `127.0.0.1` en Render: allí apuntaría al servidor de Render, no a tu PC.
-
-### Demo pública alojada
-
-Para que la demo pública use un modelo local, el equipo que ejecuta LM Studio debe exponer una API accesible desde el servidor web mediante una conexión privada o túnel seguro con autenticación. No expongas LM Studio directamente a Internet sin protección. Alternativamente, usa un proveedor de IA alojado.
-
-Variables (ver `.env.example`); configúralas en el entorno local o como secretos del alojamiento, nunca en el repositorio:
-
-- `AI_BASE_URL`: base compatible con OpenAI, incluyendo `/v1`. Si se omite, se usa Ollama Cloud.
-- `AI_MODEL`: identificador exacto del modelo.
-- `AI_API_KEY`: clave para un proveedor remoto; puede quedar vacía para LM Studio local sin autenticación.
-- `OLLAMA_API_KEY` y `OLLAMA_MODEL`: compatibilidad con la configuración previa.
+- `OLLAMA_API_KEY`: clave de Ollama Cloud.
+- `OLLAMA_MODEL`: modelo de chat (por defecto `gemma4:31b`).
 - `ROLEPLAY_MAX_PER_HOUR`: límite de mensajes por hora y visitante.
 
 `render.yaml` despliega la web y la API juntas: `npm ci && npm run web` y después `node server/index.js`.
@@ -74,19 +51,26 @@ npm run web        # genera la web en web-dist/
 npm run serve:web  # sirve web-dist/ y la API en http://localhost:10000
 ```
 
+## Estilo y música
+
+- **Aurelia:** oro envejecido y beige. **Nácar:** negro y verde de vapor. **Inicio y ajustes:** azul neutro. Los colores están en `src/css/umbral.css`.
+- Cada lugar tiene su ilustración propia en `src/img/umbral/lugares/`, además del mapa y los símbolos de las dos ciudades.
+- Tres pistas propias en `assets/music/`: `menu-theme.mp3` (inicio), `aurelia-theme.mp3` y `nacar-theme.mp3`.
+
 ## Estado
 
-- **Hecho:** universo, ciudades, Resonancia, tres partes y diez personajes. Web y demo nuevas.
+- **Hecho:** universo, dos ciudades, Resonancia, tres partes por ruta y un final, diez personajes con relaciones, creador, mapa 3D y 2D, minijuegos, colores por ciudad y música.
 - **Prototipo:** modelos 3D low-poly en `src/models/` (sin rig ni animaciones finales).
-- **Pendiente de configurar:** la clave de Ollama Cloud en el servidor publicado.
+- Lo que falta está en [PENDIENTES.md](PENDIENTES.md).
 
 ## Guías
 
+- [Guía del juego y del código](GUIA.md)
+- [Pendientes](PENDIENTES.md)
 - [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
 - [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
-- [Guía completa del código](GUIA.md) y [guía de juego](GUIAJUEGO.md)
-- [Partidas guardadas](partidas-guardadas-guia.md)
+- [LM Studio](GUIA-LM-STUDIO.md) · [Web en Render](GUIA-WEB-RENDER.md) · [Privacidad](PRIVACIDAD.md)
 
 ## Licencia
 
-Código bajo licencia MIT. El universo, sus nombres, su historia y su arte son originales de MarinaDP2006.
+Código bajo licencia MIT. El universo, sus nombres, su historia, su arte y su música son originales de MarinaDP2006.

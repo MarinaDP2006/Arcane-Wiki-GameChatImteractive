@@ -13,7 +13,7 @@ const out = path.join(root, 'web-dist');
 function loadData() {
   const ctx = { window: {} };
   vm.createContext(ctx);
-  for (const f of ['wiki.js', 'creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'world.js', 'atlas.js', 'arte.js', 'original-world.js']) {
+  for (const f of ['creation.js', 'relations.js', 'world.js', 'arte.js', 'original-world.js']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
   }
   return ctx.window;
@@ -47,7 +47,7 @@ function buildCapturas() {
   // Capturas históricas aportadas por la autora, ordenadas por nombre de archivo.
   // Formato recomendado: 01-inicio.webp, 02-menu.png, etc.
   const historia = path.join(root, 'capturasjuego');
-  // La rama original no copia capturas antiguas de Piltover/Zaun: no son parte de su universo.
+  // La rama original no copia capturas antiguas de Aurelia/Nácar: no son parte de su universo.
   if (!fs.existsSync(path.join(root, 'src', 'data', 'original-world.js')) && fs.existsSync(historia)) {
     const files = fs.readdirSync(historia).filter(name => /^(?!\.)(?!README\.md$)[a-zA-Z0-9][a-zA-Z0-9._-]*\.(webp|png|jpe?g)$/i.test(name)).sort((a,b)=>a.localeCompare(b,'es',{numeric:true}));
     for (const file of files) {
@@ -83,7 +83,7 @@ function build() {
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
 
-  // La web no publica arte de Arcane: solo ilustraciones propias (web/arte-propio) y el icono.
+  // La web solo publica ilustraciones propias (web/arte-propio) y el icono.
   const personajes = WIKI.personajes;
   copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
   const lugares = ATLAS.places.map((l) => `<li class="lugar-${esc(l.city)}">${esc(l.name)}</li>`).join('');

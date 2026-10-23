@@ -87,38 +87,38 @@
     camSpeed: 1, invertCam: false, vibration: true, shake: 1,
     reduceMotion: false, highContrast: false, readableFont: false, uiTheme: 'ciudad',
   };
-  const desktop = window.arcane?.isDesktop;
+  const desktop = window.umbral?.isDesktop;
   // Pantalla táctil (móvil o tableta, o la app de Android).
   const touch = Boolean(window.matchMedia?.('(pointer: coarse)').matches);
   const store = {
     async listSlots() {
-      if (desktop) return window.arcane.saves.list();
+      if (desktop) return window.umbral.saves.list();
       return ['1', '2', '3'].map((slot) => {
-        const d = LS.get(`rifts-gears-slot-${slot}`, null);
+        const d = LS.get(`umbral-slot-${slot}`, null);
         return { slot, empty: !d, name: d?.player?.name, origin: d?.player?.origin, chapter: d?.progress?.chapterTitle, savedAt: d?.savedAt, playTimeSeconds: d?.playTimeSeconds || 0 };
       });
     },
     async load(slot) {
-      return desktop ? window.arcane.saves.load(slot) : LS.get(`rifts-gears-slot-${slot}`, null);
+      return desktop ? window.umbral.saves.load(slot) : LS.get(`umbral-slot-${slot}`, null);
     },
     async save(slot, data) {
-      if (desktop) return window.arcane.saves.write(slot, data);
-      LS.set(`rifts-gears-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
+      if (desktop) return window.umbral.saves.write(slot, data);
+      LS.set(`umbral-slot-${slot}`, { ...data, savedAt: new Date().toISOString() });
       return true;
     },
     async remove(slot) {
-      if (desktop) return window.arcane.saves.remove(slot);
-      LS.del(`rifts-gears-slot-${slot}`);
+      if (desktop) return window.umbral.saves.remove(slot);
+      LS.del(`umbral-slot-${slot}`);
       return true;
     },
     async getSettings() {
       const base = { ...SETTINGS_DEFAULTS };
-      if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
-      return { ...base, ...LS.get('rifts-gears-settings', {}) };
+      if (desktop) return { ...base, ...(await window.umbral.settings.get()) };
+      return { ...base, ...LS.get('umbral-settings', {}) };
     },
     async setSettings(patch) {
-      if (desktop) return window.arcane.settings.set(patch);
-      LS.set('rifts-gears-settings', { ...LS.get('rifts-gears-settings', {}), ...patch });
+      if (desktop) return window.umbral.settings.set(patch);
+      LS.set('umbral-settings', { ...LS.get('umbral-settings', {}), ...patch });
       return true;
     },
   };
@@ -142,21 +142,19 @@
 
   // Nombres alternativos (también en inglés) con los que se reconoce cada lugar.
   const PLACE_ALIASES = {
-    aurelia: ['ciudad-aurelia', 'upper-city', 'ciudad-elevada'],
-    nacar: ['ciudad-nacar', 'undercity', 'ciudad-subterranea'],
-    archivo: ['archivo-frecuencias', 'frequency-archive'],
-    observatorio: ['terrazas-observatorio', 'observatory'],
-    gremios: ['patio-gremios', 'guild-courtyard'],
-    'ascensor-central': ['central-lift', 'estacion-ascensores', 'contrapesos'],
-    cristal: ['bulevar-cristal', 'crystal-boulevard'],
-    'mercado-nacar': ['mercado-tuberias', 'pipe-market'],
-    galerias: ['galerias-geotermicas', 'geothermal-galleries'],
-    'jardin-musgo': ['jardin-de-musgo', 'moss-garden'],
-    clinica: ['clinica-tres-arcos', 'three-arches-clinic'],
-    'canal-cobre': ['canal-de-cobre', 'copper-canal'],
+    archivo: ['archivo-de-frecuencias', 'archivo-frecuencias'],
+    observatorio: ['terrazas-del-observatorio', 'terrazas'],
+    gremios: ['patio-de-gremios', 'patio-gremios'],
+    'ascensor-central': ['estacion-de-ascensores', 'ascensor', 'ascensores'],
+    cristal: ['bulevar-de-cristal', 'bulevar'],
+    'mercado-nacar': ['mercado-de-las-tuberias', 'mercado'],
+    galerias: ['galerias-geotermicas'],
+    'jardin-musgo': ['jardin-de-musgo', 'jardin'],
+    clinica: ['clinica-de-los-tres-arcos'],
+    'canal-cobre': ['canal-de-cobre', 'canal'],
   };
-  // Si falta un lugar, usa la imagen de su gemelo antes que el fondo pintado.
-  const PLACE_FALLBACK = { archivo: 'observatorio', cristal: 'archivo', 'jardin-musgo': 'galerias', 'canal-cobre': 'mercado-nacar' };
+  // Si falta un lugar, usa la imagen de su ciudad antes que el fondo pintado.
+  const PLACE_FALLBACK = {};
 
   // Asigna los archivos de lugares/ a los ids del juego aunque el nombre no sea exacto.
   function matchPlaces(raw) {
@@ -168,7 +166,7 @@
     for (const id of ids) {
       for (const k of new Set([id, slug(id), names[id] && slug(names[id]), ...(PLACE_ALIASES[id] || [])].filter(Boolean))) keys.push([k, id]);
     }
-    keys.sort((a, b) => b[0].length - a[0].length); // «puente-zaun» antes que «puente»
+    keys.sort((a, b) => b[0].length - a[0].length); // «mercado-nacar» antes que «mercado»
     const out = {};
     const unknown = [];
     const files = Object.entries(raw).map(([f, url]) => [slug(f), f, url]);
@@ -194,8 +192,8 @@
     files: { avatares: {}, personajes: {}, caras: {}, lugares: {}, codice: {} },
     report: { found: [], missing: [], borrowed: [], unknown: [] },
     async load() {
-      if (window.arcane?.art) {
-        try { this.files = await window.arcane.art.list(); } catch { /* sin carpeta */ }
+      if (window.umbral?.art) {
+        try { this.files = await window.umbral.art.list(); } catch { /* sin carpeta */ }
       } else {
         // Navegador y Android: recursos empaquetados, incluidas las carpetas por temporada.
         for (const dir of new Set([...Object.keys(this.files), ...Object.keys(window.ART_BUNDLED || {})])) this.files[dir] = { ...(window.ART_BUNDLED?.[dir] || {}) };

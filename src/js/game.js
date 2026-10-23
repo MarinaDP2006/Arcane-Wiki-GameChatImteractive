@@ -17,7 +17,7 @@
   const chapterById = (id) => S().chapters.find((c) => c.id === id);
   const charName = (id) => window.WIKI.personajes.find((p) => p.id === id)?.name || id;
   const affOf = (id) => G.aff[id] ?? 0;
-  // Personajes ausentes según los sucesos registrados de esta partida: ya no chatean.
+  // Personajes que han muerto en la historia: ya no chatean.
   const isFallen = (id) => (G.fallen || []).includes(id);
   const talkable = () => G.unlocked.filter((id) => !isFallen(id));
   // Familia del jugador elegida en la creación (se conocen desde siempre).
@@ -28,7 +28,7 @@
     const route = S().routes[player.origin];
     const st = {
       version: 1, player, stats, playTimeSeconds: 0,
-      aff: {}, rep: { zaun: player.origin === 'zaun' ? 1 : 0, piltover: player.origin === 'piltover' ? 1 : 0 },
+      aff: {}, rep: { nacar: player.origin === 'nacar' ? 1 : 0, aurelia: player.origin === 'aurelia' ? 1 : 0 },
       flags: {}, unlocked: [], chats: {}, log: [], endings: [], met: [], fallen: [],
       world: { map: null, x: 0, y: 0 }, codex: [], visited: [], acts: {},
       progress: { route: player.origin, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false },
@@ -58,13 +58,13 @@
     root.innerHTML = '';
     setTimeout(() => window.App.backdrop3d?.(root, 'menu'), 0);
     root.append(el('div', { class: 'menu' },
-      el('h1', { class: 'title-rifts-gears' }, 'Partidas'),
+      el('h1', { class: 'title-umbral' }, 'Partidas'),
       el('p', { class: 'muted' }, 'Elige una ranura. Cada partida guarda tu personaje, tu posición en el mapa, tus decisiones y tus conversaciones.'),
       el('button', { class: 'btn ghost', onclick: () => window.App.go('home') }, '← Menú principal'),
       el('div', { class: 'slots' }, slots.map((s) => el('div', { class: `slot panel${s.empty ? ' empty' : ''}` },
         el('h3', {}, `Ranura ${s.slot}`),
         s.empty ? el('p', { class: 'muted' }, 'Vacía') : el('div', {},
-          el('strong', {}, s.name), el('span', { class: `tag origin-${s.origin}` }, s.origin === 'zaun' ? 'Nácar' : 'Aurelia'),
+          el('strong', {}, s.name), el('span', { class: `tag origin-${s.origin}` }, s.origin === 'nacar' ? 'Nácar' : 'Aurelia'),
           el('p', { class: 'muted' }, s.chapter || ''),
           s.savedAt ? el('small', { class: 'muted' }, new Date(s.savedAt).toLocaleString(window.I18N?.lang || 'es')) : null),
         el('div', { class: 'row gap' },
@@ -92,8 +92,8 @@
   async function exportSlot(s) {
     const file = saveFileName(s);
     try {
-      if (window.arcane?.saves?.exportFile) {
-        if (await window.arcane.saves.exportFile(s.slot, file)) toast('Partida exportada', 'good');
+      if (window.umbral?.saves?.exportFile) {
+        if (await window.umbral.saves.exportFile(s.slot, file)) toast('Partida exportada', 'good');
         return;
       }
       const data = await store.load(s.slot);
@@ -180,10 +180,6 @@
     // Partidas anteriores a los primeros encuentros y a las muertes del canon.
     G.met = [...new Set([...(G.met || []), ...G.unlocked, ...kinOf(G)])];
     syncFallen();
-    // Las partidas antiguas guardaban el avatar con la ruta de
-    // aquella instalación; se apunta al mismo avatar dentro del juego actual.
-    const oldPhoto = /^file:.*\/src\/img\/arte\/(.+)$/.exec(G.player?.photo || '');
-    if (oldPhoto) G.player.photo = `img/arte/${decodeURIComponent(oldPhoto[1])}`;
     if (G.progress.started === undefined) G.progress.started = Boolean(G.progress.node);
     Relations.applyFamily(G);
     tab = 'historia';
@@ -194,18 +190,18 @@
   // Cinemática de inicio según la ciudad elegida.
   async function playIntro(p) {
     const me = { look: p.look, photo: p.photo, ...Portrait.playerOpts(p) };
-    const shots = p.origin === 'zaun'
+    const shots = p.origin === 'nacar'
       ? [
-        { scene: 'piltover', dur: 6, kicker: 'Las ciudades del Umbral', title: 'Aurelia', lines: ['Arriba, la piedra clara y el latón reflejan la luz de los observatorios.'], zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
-        { scene: 'puente', dur: 6, lines: ['Un puente une dos mundos que no se miran a los ojos.'], zoom: [1.0, 1.18], pan: [[0.5, -0.3], [-0.2, 0.4]] },
-        { scene: 'zaun', dur: 7, title: 'Nácar', lines: ['Bajo la piedra, talleres y canales sostienen a una comunidad que no puede detenerse.'], zoom: [1.15, 1.0], pan: [[0, 0.6], [0, -0.2]] },
-        { scene: 'callejones', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
+        { scene: 'aurelia', dur: 6, kicker: 'Las ciudades del Umbral', title: 'Aurelia', lines: ['Arriba, Aurelia brilla de oro, cristal y observatorios.'], zoom: [1.2, 1.05], pan: [[-0.6, -0.4], [0.4, 0.2]] },
+        { scene: 'ascensor-central', dur: 6, lines: ['Un ascensor de contrapesos une dos ciudades que se necesitan y no se miran a los ojos.'], zoom: [1.0, 1.18], pan: [[0.5, -0.3], [-0.2, 0.4]] },
+        { scene: 'nacar', dur: 7, title: 'Nácar', lines: ['Abajo, entre vapor verde y canales de cobre, las redes vecinales sostienen la ciudad.'], zoom: [1.15, 1.0], pan: [[0, 0.6], [0, -0.2]] },
+        { scene: 'mercado-nacar', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ]
       : [
-        { scene: 'zaun', dur: 6, kicker: 'Las ciudades del Umbral', title: 'Nácar', lines: ['Bajo tus pies, la Resonancia recorre galerías y canales geotérmicos.'], zoom: [1.2, 1.05], pan: [[0.5, 0.5], [-0.3, 0]] },
-        { scene: 'puente', dur: 6, lines: ['El Puente del Progreso separa a quien tiene de quien no.'], zoom: [1.0, 1.18], pan: [[-0.5, 0.3], [0.3, -0.3]] },
-        { scene: 'piltover', dur: 7, title: 'Aurelia', lines: ['Arriba, los gremios y los observatorios controlan los ascensores de contrapesos.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
-        { scene: 'academia', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
+        { scene: 'nacar', dur: 6, kicker: 'Las ciudades del Umbral', title: 'Nácar', lines: ['Bajo tus pies, una ciudad respira vapor y resiste.'], zoom: [1.2, 1.05], pan: [[0.5, 0.5], [-0.3, 0]] },
+        { scene: 'ascensor-central', dur: 6, lines: ['El Ascensor Central decide quién sube y quién se queda abajo.'], zoom: [1.0, 1.18], pan: [[-0.5, 0.3], [0.3, -0.3]] },
+        { scene: 'aurelia', dur: 7, title: 'Aurelia', lines: ['Arriba, Aurelia vive su edad dorada gracias a la Resonancia.'], zoom: [1.15, 1.0], pan: [[0, -0.6], [0, 0.2]] },
+        { scene: 'archivo', dur: 7, lines: [`Aquí empieza tu historia, ${p.name}.`, 'Lo que decidas cambiará las dos ciudades.'], portrait: me, zoom: [1.05, 1.15] },
       ];
     await Cinematic.play(shots);
   }
@@ -275,7 +271,7 @@
 
   /**
    * Menú de un lugar del mapa. Al tocar un lugar no se entra directamente: se muestra su imagen de
-   * la campaña original y sus partes y lo que se puede hacer allí, por secciones: la historia,
+   * la ilustración propia del lugar y lo que se puede hacer allí, por secciones: la historia,
    * con quién hablar, el minijuego o la actividad, explorar el escenario 2D y viajar.
    */
   function onLocation(loc) {
@@ -284,7 +280,7 @@
     const box = $('#overlay');
     box.innerHTML = '';
     box.className = 'overlay show';
-    const zaun = (loc.map || G.world.map) === 'zaun';
+    const nacar = (loc.map || G.world.map) === 'nacar';
     const place = window.Scenes2D?.PLACES?.[loc.id];
     const img = World.placeURL?.(loc.id);
     const district = window.WORLD.maps[loc.map || G.world.map]?.districts.find(({ rect: [x, y, w, h] }) => loc.x >= x && loc.x < x + w && loc.y >= y && loc.y < y + h);
@@ -335,7 +331,7 @@
     // Viajar
     if (loc.travel) rows.push(act('Viajar', loc.travel.label, `Ir a ${window.WORLD.maps[loc.travel.to].label}`, () => travel(loc.travel)));
 
-    box.append(el('div', { class: `panel action-menu place-menu ${zaun ? 'place-zaun' : 'place-piltover'}` },
+    box.append(el('div', { class: `panel action-menu place-menu ${nacar ? 'place-nacar' : 'place-aurelia'}` },
       el('div', { class: 'place-hero', style: img ? `background-image:url("${img.replace(/"/g, '%22')}")` : '' },
         el('div', { class: 'place-hero-txt' },
           el('small', {}, `${window.WORLD.maps[loc.map || G.world.map].label}${district ? ` · ${district.name}` : ''}`),
@@ -406,7 +402,7 @@
       el('button', { class: 'btn primary', onclick: closeOverlay }, 'Continuar')));
   }
 
-  /** Guía rápida de personajes originales (src/data/guia.js). */
+  /** Guía rápida de personajes (src/data/guia.js) al empezar cada parte. */
   function showGuide(kind, after) {
     const g = window.GUIA;
     if (!g?.orden?.[kind]) { after?.(); return; }
@@ -418,7 +414,7 @@
     const cards = g.orden[kind].map((id) => {
       const f = g.fichas[id] || {};
       return el('article', { class: 'guia-ficha' },
-        el('img', { src: `img/arte/caras/${id}.webp`, alt: '', loading: 'lazy' }),
+        el('img', { src: Portrait.charURL(id, 160), alt: '', loading: 'lazy' }),
         el('div', {},
           el('h3', {}, nameOf(id)),
           el('p', { class: 'guia-titulo' }, f.titulo || ''),
@@ -494,7 +490,7 @@
       const tab = (id, label) => el('button', { class: `tab${sub === id ? ' active' : ''}`, onclick: () => openOverlay('codice', null, id) }, label);
       const panel = el('div', { class: 'panel overlay-panel codex' },
         el('header', { class: 'overlay-head' },
-          el('h2', {}, `Códice de las Ciudades · ${codexCount()}/${codexTotal()}`),
+          el('h2', {}, `Códice del Umbral · ${codexCount()}/${codexTotal()}`),
           el('div', { class: 'codex-tabs' }, tab('entradas', 'Entradas'), tab('atlas', 'Atlas')),
           closeBtn()),
         el('div', { class: 'codex-body', id: 'codex-body' }));
@@ -518,7 +514,7 @@
         el('button', { class: 'btn', onclick: () => { closeOverlay(); showHelp(); } }, 'Controles'),
         el('button', { class: 'btn', onclick: () => showGuide(guideKind()) }, 'Guía de personajes'),
         el('button', { class: 'btn ghost', onclick: async () => { if (window.App.settings.confirmExit !== false && !confirm('¿Salir al menú principal? La partida se guarda.')) return; await persist(); exitToTitle(); } }, '↩ Salir al menú principal'),
-        U.desktop ? el('button', { class: 'btn ghost', onclick: async () => { await persist(); window.arcane.quit(); } }, '✕ Salir del juego') : null));
+        U.desktop ? el('button', { class: 'btn ghost', onclick: async () => { await persist(); window.umbral.quit(); } }, '✕ Salir del juego') : null));
       return;
     }
     tab = kind;
@@ -552,15 +548,15 @@
       el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
   }
 
-  // ---------- Atlas de las Dos Ciudades (Códice) ----------
-  // Mapa ilustrado de Aurelia y Nácar: al pulsar un lugar se abre su ficha, con
+  // ---------- Atlas del Umbral (Códice) ----------
+  // Mapa ilustrado con los lugares del Umbral: al pulsar uno se abre su ficha, con
   // puntos de interés, quién vive allí y un diario de los lugares explorados.
   function renderAtlas(body, placeId) {
     G.atlas = G.atlas || [];
     const A = window.ATLAS;
     const spoilers = window.App.settings.spoilers;
     const detail = el('div', { class: 'atlas-detail hidden' });
-    const CITY = { piltover: 'Aurelia', zaun: 'Nácar' };
+    const CITY = { aurelia: 'Aurelia', nacar: 'Nácar' };
     let focus = null;
     const pins = A.places.map((p) => el('button', {
       class: `atlas-pin pin-${p.city || 'both'}${G.atlas.includes(p.id) ? ' explored' : ''}`,
@@ -569,17 +565,17 @@
       onclick: () => showPlace(p),
     }, el('span', {}, p.name)));
     const map = el('div', { class: 'atlas-map' },
-      el('img', { class: 'atlas-bg', src: 'img/arte/codice/ciudades-umbral.svg', alt: 'Mapa conceptual de Aurelia y Nácar', draggable: 'false' }),
+      el('img', { class: 'atlas-bg', src: 'img/umbral/mapa.svg', alt: 'Mapa de Aurelia y Nácar', draggable: 'false' }),
       pins);
     const emblem = (city) => el('button', { class: `atlas-emblem emblem-${city}`, title: `Lugares de ${CITY[city]}`, onclick: () => showCity(city) },
-      el('img', { src: `img/arte/simbolos/${city}.png`, alt: CITY[city], draggable: 'false' }), el('span', {}, CITY[city]));
-    const emblems = { piltover: emblem('piltover'), zaun: emblem('zaun') };
+      el('img', { src: `img/umbral/simbolos/${city}.svg`, alt: CITY[city], draggable: 'false' }), el('span', {}, CITY[city]));
+    const emblems = { aurelia: emblem('aurelia'), nacar: emblem('nacar') };
     const journalBtn = el('button', { class: 'btn small', onclick: showJournal }, `Diario de viaje · ${G.atlas.length}/${A.places.length}`);
     body.append(el('div', { class: 'atlas' },
       el('div', { class: 'atlas-bar' },
         el('span', { class: 'muted small' }, 'Pulsa un lugar del mapa, o el símbolo de una ciudad para ver todos sus lugares.'),
         journalBtn),
-      el('div', { class: 'atlas-stage' }, emblems.piltover, map, emblems.zaun, detail),
+      el('div', { class: 'atlas-stage' }, emblems.aurelia, map, emblems.nacar, detail),
       el('small', { class: 'muted atlas-credit' }, A.credit)));
 
     /** Actualiza el elemento de interfaz que recibe el foco. */
@@ -599,8 +595,8 @@
       detail.append(
         el('button', { class: 'btn ghost small atlas-back', onclick: () => { detail.classList.add('hidden'); setFocus(null); } }, '← Volver al mapa'),
         el('div', { class: 'atlas-copy' },
-          el('div', { class: 'atlas-cityhead' }, el('img', { src: `img/arte/simbolos/${city}.png`, alt: '' }), el('h2', {}, CITY[city])),
-          el('p', {}, city === 'piltover' ? A.places.find((p) => p.id === 'piltover').intro : A.places.find((p) => p.id === 'zaun').intro),
+          el('div', { class: 'atlas-cityhead' }, el('img', { src: `img/umbral/simbolos/${city}.svg`, alt: '' }), el('h2', {}, CITY[city])),
+          el('p', {}, city === 'aurelia' ? A.places.find((p) => p.id === 'aurelia').intro : A.places.find((p) => p.id === 'nacar').intro),
           el('div', { class: 'atlas-journal' }, list.map((p) => el('button', { class: 'atlas-jitem', onclick: () => showPlace(p) },
             el('img', { class: 'atlas-thumb', src: placeArt(p), alt: '' }), el('span', {}, p.name))))));
       detail.classList.remove('hidden');
@@ -608,7 +604,7 @@
 
     // Foto de la carpeta lugares (la propia, o la que viaja con el juego) o, si falta, la ilustración del atlas.
     function placeArt(p) {
-      return (p.scene && window.CustomArt.image('lugares', p.scene)) || `img/atlas/${p.id}.webp`;
+      return (p.scene && window.CustomArt.image('lugares', p.scene)) || `img/umbral/lugares/${p.id}.svg`;
     }
 
     /** Abre la ficha del lugar visitado. */
@@ -716,7 +712,7 @@
       'Haz clic en un lugar (o E) para ver qué puedes hacer allí: seguir la historia, hablar con quien esté, jugar su minijuego, explorarlo o viajar. Clic en una cara para hablar con ese personaje.',
       'La línea dorada discontinua marca el camino hasta el objetivo. Los números 1-9 eligen una opción del menú del lugar.',
       'En 3D: botón derecho (o Mayús) arrastrando gira e inclina la cámara; Q y R giran, Re Pág y Av Pág inclinan. El botón 2D/3D cambia de vista.',
-      'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',
+      'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas del Umbral · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
   }
@@ -838,7 +834,7 @@
       for (const id of gone) {
         list.append(el('div', { class: 'contact fallen', title: 'Ya no está' },
           el('span', { class: 'avatar sm', html: Portrait.forCharacter(id) }),
-          el('span', { class: 'c-body' }, el('strong', {}, charName(id)), el('small', { class: 'muted' }, id === 'jinx' ? 'Desaparecida' : 'Ya no está'))));
+          el('span', { class: 'c-body' }, el('strong', {}, charName(id)), el('small', { class: 'muted' }, 'Ya no está'))));
       }
     }
   }
@@ -873,7 +869,7 @@
     }
     main.append(
       el('header', { class: 'scene-head', id: 'scene-head' },
-        el('div', {}, el('small', { class: 'muted' }, window.GAME_UNIVERSE ? `${ch.part === 1 ? 'Parte I' : ch.part === 2 ? 'Parte II' : 'Parte III'} · ${G.progress.route === 'zaun' ? 'Nácar' : 'Aurelia'}` : (G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'zaun' ? 'Parte I · El inicio (Nácar)' : 'Parte I · El inicio (Aurelia)')), el('h2', {}, ch.title)),
+        el('div', {}, el('small', { class: 'muted' }, window.GAME_UNIVERSE ? `${ch.part === 1 ? 'Parte I' : ch.part === 2 ? 'Parte II' : 'Parte III'} · ${G.progress.route === 'nacar' ? 'Nácar' : 'Aurelia'}` : (G.progress.season === 2 ? 'Parte II · Las consecuencias' : G.progress.route === 'nacar' ? 'Parte I · El inicio (Nácar)' : 'Parte I · El inicio (Aurelia)')), el('h2', {}, ch.title)),
         el('div', { class: 'row gap' },
           el('button', { class: 'btn ghost small', title: 'Saltar animación', onclick: () => { skipping = true; } }, 'Saltar'))),
       el('canvas', { id: 'scene-bg', class: 'scene-bg' }),
@@ -966,7 +962,7 @@
 
   // Condiciones de una línea o de una opción (todas deben cumplirse):
   // flag/notFlag, met/notMet (ya conoces a ese personaje), kin/notKin (es de tu familia),
-  // origin (zaun | piltover, de dónde viene tu personaje).
+  // origin (nacar | aurelia, de dónde viene tu personaje).
   function condMet(c) {
     if (!c) return true;
     if (c.flag && !G.flags[c.flag]) return false;
@@ -1228,6 +1224,7 @@
       closeOverlay();
       renderMain();
       showChoices([]);
+      await playEnding();
       toast('Has llegado al final de esta ruta. Puedes rejugarla o seguir conversando.', 'good');
       return;
     }
@@ -1268,7 +1265,7 @@
     return Math.min(4, g);
   }
 
-  // Todos los desenlaces de la campaña original.
+  // Todos los finales de ambas temporadas.
   function allEndings() {
     return [...S().endings, ...(S().endings2 || [])];
   }
@@ -1300,7 +1297,7 @@
     G.progress.finished = true;
     talk(false);
     await Cinematic.play([
-      { scene: ending.scene || 'ascensor-central', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Aurelia y Nácar continúa en las decisiones que tomaste.' : 'Tu historia queda escrita en las dos ciudades; el pacto todavía puede cambiar.'], zoom: [1.0, 1.2], align: 'center' },
+      { scene: ending.scene || 'ascensor-central', dur: 7, kicker: 'Fin de la campaña', title: ending.title.replace('Final · ', ''), lines: ['Gracias por jugar. Tu historia queda escrita en Aurelia y Nácar… pero la Resonancia aún guarda secretos.'], zoom: [1.0, 1.2], align: 'center' },
     ]);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
@@ -1311,7 +1308,7 @@
       pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${alive.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     }
-    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Parte II · Las consecuencias te espera.'}`);
+    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 || window.GAME_UNIVERSE ? ' ¡Gracias por jugar!' : ' La Parte II · Las consecuencias te espera.'}`);
     $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     scrollLog();
     renderContacts();
@@ -1321,7 +1318,7 @@
 
   // Temporada 2: continúa la partida con las consecuencias de la primera.
   async function startSeason2() {
-    if (!window.App.settings.spoilers && !confirm('La Parte II · Las consecuencias contiene revelaciones importantes de la campaña original. ¿Quieres continuar?')) return;
+    if (!window.App.settings.spoilers && !confirm('La Parte II · Las consecuencias contiene acontecimientos importantes de la historia. ¿Quieres continuar?')) return;
     const route = S().routes.t2;
     G.flags[`s1_${G.endings[G.endings.length - 1] || 'humo'}`] = true;
     G.progress = { route: 't2', season: 2, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: chapterById(route[0]).title, finished: false, started: false };
@@ -1331,10 +1328,10 @@
     await persist();
     closeOverlay();
     await Cinematic.play([
-      { scene: 'puente-zaun', dur: 6, kicker: 'Rifts & Gears', title: 'Parte II · Las consecuencias', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
-      { scene: 'aurelia-council', dur: 6, lines: ['Aurelia intenta decidir quién debe responder por el accidente del ascensor.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
-      { scene: 'aurelia-archive', dur: 6, lines: ['En el Archivo de Frecuencias aparece un anexo que no figura en las copias públicas.'], zoom: [1.1, 1.0] },
-      { scene: 'nacar-central', dur: 6, lines: ['En lo más hondo de Nácar, la Resonancia vuelve a pulsar sin control.'], zoom: [1.0, 1.2] },
+      { scene: 'canal-cobre', dur: 6, kicker: 'Rifts & Gears', title: 'Parte II · Las consecuencias', lines: ['Después del ataque, nada es igual.'], zoom: [1.2, 1.0], align: 'center' },
+      { scene: 'gremios', dur: 6, lines: ['Aurelia cuenta los daños y busca culpables.'], zoom: [1.0, 1.15], pan: [[-0.4, 0], [0.4, 0]] },
+      { scene: 'observatorio', dur: 6, lines: ['En el Observatorio, los cristales registran un pulso que nadie esperaba.'], zoom: [1.1, 1.0] },
+      { scene: 'galerias', dur: 6, lines: ['Y en lo más hondo de Nácar, alguien promete energía sin límite.'], zoom: [1.0, 1.2] },
     ]);
     Audio2.playMusic('final');
     toast(`Parte II · Las consecuencias: ve a ${objectiveName()}`, 'good');
@@ -1347,7 +1344,7 @@
     if (!confirm('¿Rejugar la ruta? Conservas tu ficha, tus finales y tus contactos, pero se reinician las decisiones.')) return;
     const route = S().routes[G.progress.route];
     G.flags = G.player.family !== 'ninguna' ? { familia_famosa: true } : {};
-    G.rep = { zaun: G.player.origin === 'zaun' ? 1 : 0, piltover: G.player.origin === 'piltover' ? 1 : 0 };
+    G.rep = { nacar: G.player.origin === 'nacar' ? 1 : 0, aurelia: G.player.origin === 'aurelia' ? 1 : 0 };
     G.progress = { route: G.progress.route, season: G.progress.season, chapterIdx: 0, chapterId: route[0], node: null, chapterTitle: '', finished: false, started: false };
     // Al rejugar, los que murieron en esta ruta vuelven a estar vivos hasta su capítulo.
     syncFallen();
@@ -1457,7 +1454,7 @@
     const art = Portrait.customChar(id, true) || Portrait.charURL(id, 384, true);
     // Comunicador: retrato grande con marco a la izquierda y la conversación a la derecha.
     main.append(
-      el('div', { class: `chat-stage origin-${info?.origin === 'zaun' ? 'zaun' : 'piltover'}` },
+      el('div', { class: `chat-stage origin-${info?.origin === 'nacar' ? 'nacar' : 'aurelia'}` },
         el('aside', { class: 'chat-portrait' },
           el('div', { class: 'cp-frame' },
             el('img', { src: art, alt: '', draggable: 'false' }),
@@ -1739,7 +1736,7 @@
         el('div', {},
           el('small', { class: 'muted' }, 'Ficha de personaje'),
           el('h2', {}, p.name),
-          el('span', { class: `tag origin-${p.origin}` }, p.origin === 'zaun' ? 'Nácar' : 'Aurelia'),
+          el('span', { class: `tag origin-${p.origin}` }, p.origin === 'nacar' ? 'Nácar' : 'Aurelia'),
           el('div', { class: 'row gap no-print' },
             el('button', { class: 'btn small', onclick: () => photoInput.click() }, 'Cambiar foto'),
             el('button', { class: 'btn small', onclick: exportSheet }, 'Exportar ficha'),
@@ -1752,7 +1749,7 @@
           el('div', { class: 'bar' }, el('i', { style: `width:${Math.min(100, G.stats[k] * 20)}%` })), el('b', {}, G.stats[k])))),
       el('h3', {}, 'Reputación'),
       el('div', { class: 'stat-bars' },
-        repBar('Nácar', G.rep.zaun, 'zaun'), repBar('Aurelia', G.rep.piltover, 'piltover')),
+        repBar('Nácar', G.rep.nacar, 'nacar'), repBar('Aurelia', G.rep.aurelia, 'aurelia')),
       el('h3', {}, 'Relaciones'),
       G.unlocked.length ? el('div', { class: 'rel-grid' }, G.unlocked.map((id) =>
         el('button', { class: 'rel', onclick: () => setTab('chats', id) },
@@ -1794,8 +1791,8 @@
   /** Prepara una copia de los datos de la ficha. */
   async function exportSheet() {
     const data = { ...G.player, stats: G.stats, reputacion: G.rep, afinidad: G.aff, desbloqueados: G.unlocked, finales: G.endings };
-    if (window.arcane?.exportSheet) {
-      if (await window.arcane.exportSheet(data)) toast('Ficha exportada', 'good');
+    if (window.umbral?.exportSheet) {
+      if (await window.umbral.exportSheet(data)) toast('Ficha exportada', 'good');
       return;
     }
     const a = document.createElement('a');

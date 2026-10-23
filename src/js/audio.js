@@ -1,5 +1,5 @@
-// Audio del juego, todo generado en tiempo real con Web Audio (sin archivos ni
-// música original procedural para Las ciudades del Umbral).
+// Audio del juego: las tres pistas de assets/music (menú, Aurelia y Nácar) y, si faltan,
+// una banda sonora generada en tiempo real con Web Audio.
 // - Aurelia: orquesta de cámara, cuerdas, metales, arpa, celesta y relojería.
 // - Nácar: ritmo industrial, bajo sucio, sintes de neón, golpes de metal y eco.
 // - Ambiente de cada ciudad (viento y campanas / goteos, vapor y zumbido de neón),
@@ -25,8 +25,8 @@
   // Temas locales. Si todavía no se ha copiado un MP3, se usa el sintetizador existente.
   const TRACK_FILES = {
     wiki: 'menu-theme.mp3',
-    piltover: 'piltover-theme.mp3',
-    zaun: 'zaun-theme.mp3',
+    aurelia: 'aurelia-theme.mp3',
+    nacar: 'nacar-theme.mp3',
   };
   const audioFileUrl = (filename) => {
     // En escritorio, index.html vive dentro de src/. En Android/otros despliegues,
@@ -260,7 +260,7 @@
   const THEMES = {
     // gain iguala el volumen percibido de los temas entre sí.
     // Aurelia: Re mayor, 80 ppm, corcheas. Elegante, luminoso y con relojería.
-    piltover: {
+    aurelia: {
       bpm: 80, div: 2, bars: 16, gain: 2, beats: 4,
       chords: [
         [50, 57, 62, 66, 69], [47, 54, 59, 62, 66], [43, 50, 55, 59, 66], [45, 52, 57, 62, 64],
@@ -293,7 +293,7 @@
       },
     },
     // Nácar: Mi menor, 92 ppm, semicorcheas. Industrial, sucio y con neón.
-    zaun: {
+    nacar: {
       bpm: 92, div: 4, bars: 8, gain: 1.3, beats: 4,
       chords: [[40, 52, 55, 59], [36, 52, 55, 59], [45, 52, 57, 60], [47, 51, 54, 60]],
       riff: [64, 67, 69, 71, 74, 71, 69, 67],
@@ -356,8 +356,8 @@
   };
 
   function cityOf(mood) {
-    if (mood === 'piltover' || mood === 'zaun') return mood;
-    if (mood === 'final') return 'zaun';
+    if (mood === 'aurelia' || mood === 'nacar') return mood;
+    if (mood === 'final') return 'nacar';
     return null;
   }
 
@@ -502,14 +502,14 @@
       const o = osc('sine', rate, t, t + far, gainTo(target, depth));
       a.nodes.push(o);
     };
-    if (city === 'piltover') {
+    if (city === 'aurelia') {
       // Viento suave entre torres.
       const wg = gainTo(bus, 0.05);
       const wf = filt('bandpass', 500, 0.6, wg);
       a.nodes.push(noiseSrc(t, t + far, wf));
       lfo(0.07, 0.035, wg.gain);
       lfo(0.05, 260, wf.frequency);
-      // Zumbido hextech, muy limpio y lejano.
+      // Zumbido de Resonancia, muy limpio y lejano.
       const hg = gainTo(bus, 0.006);
       a.nodes.push(osc('sine', hz(74), t, t + far, hg), osc('sine', hz(81), t, t + far, hg, 3));
       lfo(0.11, 0.005, hg.gain);
@@ -528,7 +528,7 @@
     const events = () => {
       if (A.amb !== a || !A.ctx) return;
       const now = A.ctx.currentTime + 0.05;
-      if (city === 'piltover') {
+      if (city === 'aurelia') {
         const r = Math.random();
         if (r < 0.35) chirp(bus, now);
         else if (r < 0.55) [0, 0.9, 1.8].forEach((d, i) => bell(bus, [62, 57, 50][i], now + d, 0.03, 3.5, 2.4, 0.9));
@@ -587,7 +587,7 @@
   }
 
   const FX = {
-    piltover: {
+    aurelia: {
       click: (t) => tick(A.sfxGain, t, 0.35, 4200),
       message: (t) => bell(A.sfxGain, 86, t, 0.08, 0.7, 3.5, 0.3),
       choice: (t) => { pluck(A.sfxGain, 74, t, 0.14, 0.5); bell(A.sfxGain, 81, t + 0.07, 0.07, 0.9, 3.5, 0.3); },
@@ -598,7 +598,7 @@
       },
       locked: (t) => { brass(A.sfxGain, [43, 49], t, 0.35, 0.07); tick(A.sfxGain, t, 0.2, 1600); },
     },
-    zaun: {
+    nacar: {
       click: (t) => clank(A.sfxGain, t, 0.14, 640),
       message: (t) => { neon(A.sfxGain, 83, t, 0.06, 0.06); neon(A.sfxGain, 83, t + 0.12, 0.05, 0.025); },
       choice: (t) => {
@@ -647,7 +647,7 @@
     const t = ctx.currentTime + 0.01;
     lastStep = t;
     const vol = (run ? 1.3 : 1) * (0.8 + Math.random() * 0.4);
-    if (city === 'zaun') {
+    if (city === 'nacar') {
       const v = voice(A.sfxGain, 0.05 * vol, t, 0.001, 0.005, 0.07, 0.2);
       noiseSrc(t, v.end, filt('bandpass', 1800 + Math.random() * 900, 2, v.g));
       const r = voice(A.sfxGain, 0.012 * vol, t, 0.001, 0, 0.15, 0.2);

@@ -1,7 +1,7 @@
-// Profundidad para los minijuegos: arte original del mundo como fondo con paralaje y desenfoque,
+// Profundidad para los minijuegos: arte del lugar como fondo con paralaje y desenfoque,
 // niebla en capas, rayos de luz, suelo en perspectiva, bloques extruidos hacia un punto de fuga
 // y caras reales de los personajes. Todo en canvas 2D para que vaya igual en PC y en tableta.
-// Depth.backdrop(['galerias', 'mercado-nacar']) elige al azar una ubicación original.
+// Depth.backdrop(['galerias', 'canal-cobre']) elige al azar uno de esos lugares (de T1 o T2).
 (function () {
   const TAU = Math.PI * 2;
   const opt = () => window.App?.settings || {};
@@ -11,8 +11,8 @@
 
   // Tonos de color por ambiente: [luz alta, sombra, niebla].
   const GRADES = {
-    piltover: ['#ffd89a', '#3a2418', '255,226,170'],
-    zaun: ['#7affd0', '#06140f', '120,230,190'],
+    aurelia: ['#ffd89a', '#3a2418', '255,226,170'],
+    nacar: ['#7affd0', '#06140f', '120,230,190'],
     foso: ['#ff7a5a', '#1a0406', '255,120,90'],
     hex: ['#8fd4ff', '#08142a', '140,200,255'],
     noche: ['#b0a0ff', '#0a0814', '170,160,230'],
@@ -27,14 +27,23 @@
   }
   const ready = (im) => Boolean(im && im.complete && im.naturalWidth);
 
-  const PORTRAITS = new Set();
-  // Solo se cargan imágenes personalizadas para lugares originales. Si no hay una, el motor
-  // dibuja una escena procedural con los temas de Aurelia y Nácar.
+  const PORTRAITS = new Set([]);
+  // Todas las imágenes de un lugar: temporada 1, temporada 2 y la general. Durante la historia
+  // se respeta la temporada (nunca arte de T1 en T2); en la sala de juegos vale todo.
   function placeUrls(id) {
     const F = window.CustomArt?.files || {};
     const B = window.ART_BUNDLED || {};
-    const url = F.lugares?.[id] || B.lugares?.[id];
-    return url ? [url] : [];
+    const story = Boolean(window.Game?.current?.()?.progress?.chapterId);
+    const season = window.CustomArt?.season?.() || 's1';
+    const dirs = !story ? ['lugares/s1', 'lugares/s2', 'lugares'] : season === 's2' ? ['lugares/s2'] : ['lugares/s1', 'lugares'];
+    const out = [];
+    for (const d of dirs) {
+      // De la carpeta general solo valen paisajes: algunas imágenes son primeros planos de personajes o emblemas.
+      if (d === 'lugares' && (out.length || PORTRAITS.has(id))) continue;
+      const u = F[d]?.[id] || B[d]?.[id];
+      if (u && !out.includes(u)) out.push(u);
+    }
+    return out;
   }
   function pool(ids) {
     const out = [];
@@ -42,7 +51,7 @@
     return out;
   }
 
-  // Retrato opcional propio; si no existe, se usa el avatar procedural del personaje.
+  // Cara real de un personaje (carpeta caras/, luego retrato de la temporada).
   function face(id) {
     const url = window.CustomArt?.image?.('caras', id) || window.ART_BUNDLED?.caras?.[id] || window.CustomArt?.image?.('personajes', id) || window.ART_BUNDLED?.personajes?.[id];
     return image(url);
@@ -54,7 +63,7 @@
     const choices = pool(ids);
     const chosen = o.url ? { id: ids[0], url: o.url } : choices.length ? pick(choices) : null;
     const im = chosen && image(chosen.url);
-    const grade = GRADES[o.grade] || GRADES.zaun;
+    const grade = GRADES[o.grade] || GRADES.nacar;
     const blur = o.blur ?? 1.6;
     let cache = null;
     function prepare(w, h) {

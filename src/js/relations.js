@@ -33,7 +33,7 @@
 
   function familyLabel(id) {
     const role = info(id)?.family;
-    return { padre: 'Figura paterna', madre: 'Figura materna', abuelo: 'Abuelo elegido', mentor: 'Mentora' }[role] || 'Familia elegida';
+    return { padre: 'Figura paterna', madre: 'Figura materna', abuelo: 'Abuelo elegido', mentor: 'Mentor' }[role] || 'Familia elegida';
   }
 
   // Lazos que vienen de la familia elegida en la creación.
@@ -55,8 +55,7 @@
   }
 
   // ¿Os podéis atraer el uno al otro?
-  // En los dos primeros capítulos de la Parte I el reparto joven (Powder, Ekko, Vi…) son
-  // niños: el romance solo se abre tras el salto de «Siete años después» (z3 / p3) o en la Parte II.
+  // El romance se abre desde el capítulo que marca STORY.romanceFrom de cada ruta (o en la Parte II).
   function adultTimeline(G) {
     const p = G.progress || {};
     if (p.season === 2 || p.route === 't2') return true;

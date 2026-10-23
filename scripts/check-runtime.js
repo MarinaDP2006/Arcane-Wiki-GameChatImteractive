@@ -25,12 +25,9 @@ vm.runInNewContext(fs.readFileSync(path.join(src, 'js', 'scenes2d.js'), 'utf8'),
 const scenes = ctx.window.Scenes2D;
 ensure(!!scenes, 'Scenes2D no se exporta');
 const world = { window: {} };
-vm.createContext(world);
-for (const file of ['creation.js', 'relations.js', 'world.js', 'atlas.js', 'arte.js', 'original-world.js']) {
-  vm.runInContext(fs.readFileSync(path.join(src, 'data', file), 'utf8'), world, { filename: file });
-}
+for (const f of ['creation.js', 'relations.js', 'world.js', 'original-world.js']) vm.runInNewContext(fs.readFileSync(path.join(src, 'data', f), 'utf8'), world);
 let total = 0;
-for (const mapId of ['zaun', 'piltover']) {
+for (const mapId of ['nacar', 'aurelia']) {
   for (const loc of world.window.WORLD.maps[mapId].locations) {
     total++;
     const p = scenes?.PLACES[loc.id];

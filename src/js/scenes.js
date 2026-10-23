@@ -1,6 +1,6 @@
 // Escenarios pintados y animados para la historia, el menú, las cinemáticas y el Códice.
 // Cada escena tiene una capa estática pintada (en caché) y efectos animados encima:
-// niebla, partículas, rayos de luz, neones que parpadean y brillos de Resonancia.
+// niebla, partículas, rayos de luz, neones que parpadean y destellos de Resonancia.
 // Si la jugadora pone una imagen propia en la carpeta de arte, se usa como capa base.
 (function () {
   function rng(seed) {
@@ -15,29 +15,19 @@
 
   // Temas de escena. type: ciudad dorada, ciudad química, interiores, naturaleza…
   const THEMES = {
-    aurelia: { type:'gold', sky:['#d9e6e7','#f4d5a3','#8f6b4a'], sun:[0.72,0.25,'#fff0c0'], fx:'dust', seed:11 },
-    nacar: { type:'chem', sky:['#1d4b46','#102824','#070e10'], neon:['#55d6b3','#e8a45f','#65b8a7'], fx:'smoke', seed:2 },
-    'aurelia-lift': { type:'workshop', tint:'#b78b45', fx:'rays', seed:13 },
-    'nacar-lift': { type:'workshop', tint:'#55d6b3', fx:'spores', seed:17 },
-    'nacar-archive': { type:'hall', tint:'#3f9b87', glass:['#55d6b3','#e8a45f','#c5d5c9'], fx:'rays', seed:19 },
-    'aurelia-archive': { type:'library', tint:'#c4a36a', fx:'rays', seed:23 },
-    'nacar-central': { type:'chem', sky:['#244c45','#152b27','#080f10'], neon:['#55d6b3','#e8a45f'], fx:'smoke', seed:29 },
-    'aurelia-council': { type:'hall', tint:'#c5a36a', glass:['#e8dfc9','#b78b45','#4e6a73'], fx:'rays', seed:31 },
-    archivo: { type:'library', tint:'#c4a36a', fx:'dustwarm', seed:37 },
-    observatorio: { type:'gold', sky:['#9db8c6','#f4d5a3','#b78b52'], sun:[0.55,0.2,'#fff0c0'], fx:'dust', seed:41 },
-    gremios: { type:'hall', tint:'#b78b45', glass:['#d8c9a6','#8eaa9f','#b78b45'], fx:'rays', seed:43 },
-    'ascensor-central': { type:'gate', sky:['#a9c5d0','#f4d5a3','#6b5b49'], fx:'hex', seed:47 },
-    cristal: { type:'gold', sky:['#c6d9dc','#f4d5a3','#8b6a4c'], sun:[0.32,0.28,'#fff0c0'], fx:'dust', seed:53 },
-    'mercado-nacar': { type:'chem', sky:['#2d5149','#162d29','#080f10'], neon:['#e8a45f','#55d6b3'], fx:'smoke', seed:59 },
-    galerias: { type:'sump', fx:'spores', seed:61 },
-    'jardin-musgo': { type:'tree', fx:'fireflies', seed:67 },
-    clinica: { type:'hall', tint:'#5a9a82', glass:['#d8e7dc','#55d6b3','#e8a45f'], fx:'rays', seed:71 },
-    'canal-cobre': { type:'chem', sky:['#244b43','#122a26','#080f10'], neon:['#b78b45','#55d6b3'], fx:'smoke', seed:73 },
-    'archivo-de-frecuencias': { type:'library', tint:'#c4a36a', fx:'rays', seed:79 },
-    'polillas-de-cristal': { type:'tree', fx:'fireflies', seed:83 },
-    resonancia: { type:'gate', sky:['#b9d2d5','#e8c88e','#30494b'], fx:'hex', seed:89 },
-    contrapesos: { type:'workshop', tint:'#8eaa9f', fx:'rays', seed:97 },
-    'red-vecinal': { type:'tavern', tint:'#55a38a', fx:'dustwarm', seed:101 },
+    aurelia: { type: 'gold', sky: ['#f4dca0', '#d9a85a', '#6a4a2a'], sun: [0.7, 0.32, '#fff4d8'], fx: 'dust', seed: 11 },
+    archivo: { type: 'library', tint: '#d9b46a', fx: 'rays', seed: 8 },
+    observatorio: { type: 'hall', tint: '#e3c47a', glass: ['#f0dca0', '#c99a3b', '#8aa0b8'], fx: 'rays', seed: 5 },
+    gremios: { type: 'workshop', tint: '#c99a3b', fx: 'dustwarm', seed: 9 },
+    'ascensor-central': { type: 'gate', sky: ['#f0e0b8', '#c9a060', '#4a3a2a'], fx: 'dust', seed: 13 },
+    cristal: { type: 'gold', sky: ['#f6e6c0', '#e0b070', '#5a3a2a'], sun: [0.3, 0.3, '#fff8e0'], fx: 'dust', seed: 17 },
+    nacar: { type: 'chem', sky: ['#12302a', '#0a1a16', '#040908'], neon: ['#3fbf7f', '#8fdf6a', '#2f9f8f', '#c9e08a'], fx: 'smoke', seed: 2 },
+    'mercado-nacar': { type: 'chem', sky: ['#1e3026', '#0e1812', '#050806'], neon: ['#8fdf6a', '#3fbf7f', '#e0b050'], fx: 'smoke', seed: 21 },
+    galerias: { type: 'chem', sky: ['#2a3a1a', '#121a0a', '#050805'], neon: ['#8fbf3a', '#3fbf7f'], fx: 'embers', seed: 33 },
+    'jardin-musgo': { type: 'tree', fx: 'fireflies', seed: 14 },
+    clinica: { type: 'workshop', tint: '#6abf8a', fx: 'dustwarm', seed: 43 },
+    'canal-cobre': { type: 'bridge', sky: ['#4a6a50', '#1a2a22', '#060c0a'], fx: 'smoke', seed: 4 },
+    resonancia: { type: 'sump', fx: 'spores', seed: 12 },
   };
 
   const has = (id) => Boolean(THEMES[id]);
@@ -122,7 +112,7 @@
   }
 
   function paintStatic(id, w, h) {
-    const T = THEMES[id] || THEMES.zaun;
+    const T = THEMES[id] || THEMES.nacar;
     const c = document.createElement('canvas');
     c.width = w;
     c.height = h;
@@ -349,7 +339,7 @@
   function drawFx(ctx, st, t, w, h, P) {
     const { dyn, theme } = st;
     const s = h / 600;
-    // Brillos (lámparas, gemas hextec, charcos químicos)
+    // Brillos (lámparas, cristales de Resonancia, charcos químicos)
     for (const g of dyn.glows) {
       const pulse = g.lamp ? 0.85 + Math.sin(t * 9 + g.x) * 0.05 + (Math.random() < 0.02 ? -0.3 : 0) : 0.7 + Math.sin(t * 2 + g.x) * 0.3;
       const rg = ctx.createRadialGradient(g.x, g.y, 2, g.x, g.y, g.r * (1 + pulse * 0.2));
@@ -374,7 +364,7 @@
       ctx.fillRect(n.x, n.y, n.w, n.h);
       ctx.restore();
     }
-    // Portal hextec
+    // Portal de Resonancia
     if (dyn.gate) {
       const { x, y, r } = dyn.gate;
       ctx.save();

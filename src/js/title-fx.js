@@ -1,4 +1,4 @@
-// Pantalla de inicio viva: Piltover arriba (cielo dorado) y Zaun abajo (cueva de neón),
+// Pantalla de inicio viva: Aurelia arriba (cielo dorado) y Nácar abajo (cueva de neón),
 // separadas por una grieta de luz que sigue al ratón o al dedo. Encima, polvo dorado y
 // esporas que se apartan del cursor, destellos al hacer clic y un engranaje que gira
 // cuando te mueves. Todo se dibuja en el navegador, sin vídeos ni descargas.
@@ -24,8 +24,8 @@
    * opts: { reduce, particles, low } (ajustes del jugador). Devuelve una función para pararlo todo.
    */
   function mount(home, opts = {}) {
-    const zaun = home.querySelector('.home-art.zaun');
-    const pilt = home.querySelector('.home-art.pilt');
+    const nacar = home.querySelector('.home-art.nacar');
+    const aur = home.querySelector('.home-art.aurelia');
     const rift = home.querySelector('.home-rift');
     const canvas = home.querySelector('.home-fx');
     const gear = home.querySelector('.home-gear');
@@ -98,31 +98,31 @@
       const r = home.getBoundingClientRect();
       const x = clientX - r.left, y = clientY - r.top;
       const pts = riftPoints(st.t);
-      const isZaun = x / st.w > xAt(pts, y / st.h);
-      st.rings.push({ x, y, r: 4, a: 1, zaun: isZaun });
+      const isNácar = x / st.w > xAt(pts, y / st.h);
+      st.rings.push({ x, y, r: 4, a: 1, nacar: isNácar });
       for (let i = 0; i < 26; i++) {
         const a = Math.random() * Math.PI * 2, s = 1.5 + Math.random() * 4.5;
-        st.sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, life: 1, zaun: isZaun, r: 1 + Math.random() * 2 });
+        st.sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, life: 1, nacar: isNácar, r: 1 + Math.random() * 2 });
       }
       st.gearV += 0.8;
     }
 
-    // Colores de cada ciudad: chispas hextech azules y polvo dorado / quimtech verde y brillo violeta.
+    // Colores de cada ciudad: polvo dorado y destellos claros / vapor verde y esporas.
     const COL = {
-      pilt: ['255,214,140', '140,215,255'],
-      zaun: ['150,255,170', '214,120,255'],
+      aurelia: ['255,214,140', '240,226,190'],
+      nacar: ['150,255,170', '90,220,170'],
     };
 
     function draw(now) {
       st.t = now;
       const pts = riftPoints(now);
-      // Recorte de Zaun: de la grieta hacia la derecha.
+      // Recorte de Nácar: de la grieta hacia la derecha.
       const poly = pts.map(([x, y]) => `${(x * 100).toFixed(2)}% ${(y * 100).toFixed(2)}%`).join(',');
-      zaun.style.clipPath = `polygon(${poly},100% 100%,100% 0%)`;
+      nacar.style.clipPath = `polygon(${poly},100% 100%,100% 0%)`;
       if (!reduce) {
         const dx = (st.px - 0.5), dy = (st.py - 0.5);
-        pilt.firstElementChild.style.transform = `translate3d(${(-dx * 22).toFixed(1)}px,${(-dy * 14).toFixed(1)}px,0) scale(1.06)`;
-        zaun.firstElementChild.style.transform = `translate3d(${(-dx * 34).toFixed(1)}px,${(-dy * 20).toFixed(1)}px,0) scale(1.08)`;
+        aur.firstElementChild.style.transform = `translate3d(${(-dx * 22).toFixed(1)}px,${(-dy * 14).toFixed(1)}px,0) scale(1.06)`;
+        nacar.firstElementChild.style.transform = `translate3d(${(-dx * 34).toFixed(1)}px,${(-dy * 20).toFixed(1)}px,0) scale(1.08)`;
       }
       // Grieta: trazo principal y ramas.
       const line = pts.map(([x, y]) => `${(x * 1000).toFixed(1)},${(y * 1000).toFixed(1)}`).join(' ');
@@ -135,7 +135,7 @@
       rift.style.setProperty('--flick', (0.75 + Math.sin(now * 0.013) * 0.12 + Math.sin(now * 0.047) * 0.08).toFixed(3));
 
       // Rótulos: se ilumina la ciudad en la que está el cursor.
-      const side = st.mx < xAt(pts, st.my) ? 'piltover' : 'zaun';
+      const side = st.mx < xAt(pts, st.my) ? 'aurelia' : 'nacar';
       if (side !== st.side) {
         st.side = side;
         home.dataset.side = side;
@@ -152,7 +152,7 @@
       ctx.clearRect(0, 0, st.w, st.h);
       const rx = (y) => xAt(pts, y / st.h) * st.w;
 
-      // Luz de Piltover: rayos de sol que bajan desde el cielo, solo a su lado de la grieta.
+      // Luz de Aurelia: rayos de sol que bajan desde el cielo, solo a su lado de la grieta.
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(0, 0);
@@ -171,7 +171,7 @@
       }
       ctx.restore();
 
-      // Niebla de Zaun: bancos verdes que se arrastran por el fondo de la cueva.
+      // Niebla de Nácar: bancos verdes que se arrastran por el fondo de la cueva.
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(st.w, 0);
@@ -198,7 +198,7 @@
         p.x += p.vx; p.y += p.vy;
         if (p.y < -12 || p.x < -20 || p.x > st.w + 20) Object.assign(p, spawn(false));
         const isZ = p.x > rx(p.y);
-        const c = COL[isZ ? 'zaun' : 'pilt'][p.kind > (isZ ? 0.82 : 0.75) ? 1 : 0];
+        const c = COL[isZ ? 'nacar' : 'aurelia'][p.kind > (isZ ? 0.82 : 0.75) ? 1 : 0];
         const tw = 0.45 + 0.4 * Math.sin(now * 0.003 + p.ph);
         const size = isZ ? p.r * 1.5 : p.r;
         const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 4);
@@ -210,14 +210,14 @@
       st.rings = st.rings.filter((r) => r.a > 0.02);
       for (const r of st.rings) {
         r.r += 6; r.a *= 0.92;
-        ctx.strokeStyle = `rgba(${COL[r.zaun ? 'zaun' : 'pilt'][1]},${r.a.toFixed(3)})`;
+        ctx.strokeStyle = `rgba(${COL[r.nacar ? 'nacar' : 'aurelia'][1]},${r.a.toFixed(3)})`;
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
       }
       st.sparks = st.sparks.filter((s) => s.life > 0.02);
       for (const s of st.sparks) {
-        s.x += s.vx; s.y += s.vy; s.vx *= 0.95; s.vy = s.vy * 0.95 + (s.zaun ? -0.04 : 0.08); s.life *= 0.95;
-        ctx.fillStyle = `rgba(${COL[s.zaun ? 'zaun' : 'pilt'][s.r > 2 ? 0 : 1]},${s.life.toFixed(3)})`;
+        s.x += s.vx; s.y += s.vy; s.vx *= 0.95; s.vy = s.vy * 0.95 + (s.nacar ? -0.04 : 0.08); s.life *= 0.95;
+        ctx.fillStyle = `rgba(${COL[s.nacar ? 'nacar' : 'aurelia'][s.r > 2 ? 0 : 1]},${s.life.toFixed(3)})`;
         ctx.beginPath(); ctx.arc(s.x, s.y, s.r * s.life + 0.4, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalCompositeOperation = 'source-over';
@@ -258,7 +258,7 @@
     home.addEventListener('pointerleave', onLeave);
     if (!reduce && window.U?.touch) window.addEventListener('deviceorientation', onTilt);
     cities.forEach((c) => c.addEventListener('click', () => {
-      st.target = c.dataset.city === 'piltover' ? 0.94 : 0.1;
+      st.target = c.dataset.city === 'aurelia' ? 0.94 : 0.1;
       st.lastInput = performance.now();
       st.mx = st.target; st.my = 0.5;
       st.gearV += 1.2;

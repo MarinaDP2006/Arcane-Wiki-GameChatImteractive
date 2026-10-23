@@ -7,7 +7,7 @@
 (function () {
   const PROVIDERS = {
     off: { label: 'Desactivada' },
-    ollamaCloud: { label: 'Ollama Cloud (alojada, recomendada)', url: (window.ROLEPLAY_CONFIG?.endpoint || (window.location.protocol === 'file:' || window.location.hostname === 'localhost' && window.location.port === '' ? '' : '/api/roleplay')), model: 'gemma4:31b', key: false, help: 'No necesitas instalar Ollama ni descargar el modelo. Se usa Gemma 4 de 31B alojado en Ollama Cloud. El servidor de este fan game debe publicarse con OLLAMA_API_KEY como secreto; en escritorio o Android indica la URL HTTPS del backend. El uso puede tener límites o costes según Ollama Cloud.' },
+    ollamaCloud: { label: 'Ollama Cloud (alojada, recomendada)', url: (window.ROLEPLAY_CONFIG?.endpoint || (window.location.protocol === 'file:' || window.location.hostname === 'localhost' && window.location.port === '' ? '' : '/api/roleplay')), model: 'gemma4:31b', key: false, help: 'No necesitas instalar Ollama ni descargar el modelo. Se usa Gemma 4 de 31B alojado en Ollama Cloud. El servidor del juego debe publicarse con OLLAMA_API_KEY como secreto; en escritorio o Android indica la URL HTTPS del backend. El uso puede tener límites o costes según Ollama Cloud.' },
     ollama: { label: 'Ollama (en tu PC, sin internet)', url: 'http://localhost:11434/v1/chat/completions', model: 'gemma3:4b', key: false, help: 'Instala Ollama desde ollama.com y descarga un modelo en una terminal: «ollama pull gemma3:4b» (rápido, unos 3 GB) o «ollama pull gemma3:12b» (mejor conversación, necesita una tarjeta gráfica con 8 GB o más). Pulsa «Buscar mis modelos» para elegir uno de los que ya tienes. Mientras Ollama esté abierto, los personajes te responden sin internet. Solo en el ordenador.' },
     lmstudio: { label: 'LM Studio (en tu PC o por la red de casa)', url: 'http://localhost:1234/v1/chat/completions', model: '', key: false, help: 'Abre LM Studio, descarga un modelo y en la pestaña Developer enciende «Start server» (puerto 1234). En este ordenador deja la dirección como está. Para jugar desde la tablet o el móvil activa también «Serve on Local Network» y escribe aquí la dirección de tu PC, por ejemplo http://192.168.1.40:1234. Pulsa «Buscar mis modelos» para elegir uno. Los pasos están en GUIA-LM-STUDIO.md.' },
     custom: { label: 'Otro servidor compatible', url: '', model: '', key: true, help: 'Cualquier servidor con el formato de OpenAI (KoboldCpp, text-generation-webui, vLLM…). Escribe la dirección completa de /chat/completions.' },
@@ -46,8 +46,8 @@
   // Envía la petición por el camino que no tenga problemas de CORS: el proceso
   // principal en escritorio, el HTTP nativo en Android y fetch en el navegador.
   async function post(url, headers, body) {
-    if (window.arcane?.ai) {
-      const r = await window.arcane.ai(url, headers, body);
+    if (window.umbral?.ai) {
+      const r = await window.umbral.ai(url, headers, body);
       if (r.error) throw new Error(r.error);
       return r;
     }
@@ -68,8 +68,8 @@
 
   // GET corto (listas de modelos), por el mismo camino que post().
   async function get(url) {
-    if (window.arcane?.aiGet) {
-      const r = await window.arcane.aiGet(url);
+    if (window.umbral?.aiGet) {
+      const r = await window.umbral.aiGet(url);
       if (r.error) throw new Error(r.error);
       return r.data;
     }
@@ -204,8 +204,8 @@
     const v = window.AI_VOICES?.[id] || {};
     const origin = window.CREATION?.origins?.[p.origin]?.label || p.origin || '';
     const feel = aff <= -3 ? 'Le tienes antipatía y desconfías.' : aff < 1 ? 'Le tratas con cautela.' : aff < 5 ? 'Te cae bien.' : aff < 8 ? 'Le aprecias mucho.' : 'Es una de las personas más importantes para ti.';
-    const lore = window.ORIGINAL_WORLD_LORE?.[id] || {};
-    const chapterLabel = ch?.title || G.progress.chapterId || 'inicio';
+    const lore = window.WORLD_LORE?.[id] || {};
+    const part = G.progress.season === 2 || G.progress.route === 't2' ? 2 : 1;
     const gone = new Set(G.fallen || []);
     const acquaintances = (G.met || []).map((person) => window.WIKI.personajes.find((w) => w.id === person)?.name || person);
     const important = Object.entries(G.flags || {}).filter(([, yes]) => yes === true).slice(-16).map(([flag]) => flag.replace(/_/g, ' '));
@@ -214,7 +214,7 @@
     const lastChats = (G.chats?.[id] || []).filter((line) => !line.m).slice(-6)
       .map((line) => `${line.s === 'yo' ? p.name : name}: ${String(line.t || '').slice(0, 180)}`);
     const memory = [
-      `Capítulo en curso: ${chapterLabel}. La historia avanza según las decisiones registradas en esta partida.`,
+      `Parte ${part}: ${part === 1 ? 'El inicio' : 'Las consecuencias'}; capítulo ${ch?.title || G.progress.chapterId}.`,
       `Personas que ${p.name} ya conoce: ${acquaintances.join(', ') || 'solo su círculo inicial'}.`,
       `Personajes ausentes o caídos: ${[...gone].join(', ') || 'ninguno confirmado'}.`,
       `Destinos alterados por ${p.name}: ${Object.entries(window.STORY?.rescues || {}).filter(([, flag]) => G.flags?.[flag]).map(([person]) => person).join(', ') || 'todavía ninguno'}. Estos personajes están vivos incluso si su historia original era distinta.`,
@@ -224,8 +224,8 @@
     ].filter(Boolean).join('\n');
 
     return [
-      `Eres ${name}, personaje original de Las ciudades del Umbral. Interpreta su papel en una aventura narrativa de fantasía industrial y habla en primera persona.`,
-      `COHERENCIA DEL MUNDO: respeta la historia original de Aurelia y Nácar, la Resonancia, las profesiones, los vínculos y los límites del conocimiento de cada personaje. No inventes ciudades, parentescos ni habilidades que contradigan las fichas. La biografía del jugador puede ser original y las decisiones de esta partida pueden cambiar las relaciones y los sucesos; no anticipes información futura ni conviertas la Resonancia en magia sin reglas.`,
+      `Eres ${name}, de Las ciudades del Umbral (Aurelia y Nácar). Interpreta a ${name} en un chat dentro del juego, siempre en su papel y en primera persona.`,
+      `COHERENCIA DEL MUNDO: Aurelia es la ciudad elevada (observatorios, gremios, ascensores de contrapesos) y Nácar la ciudad bajo la piedra (canales de vapor, galerías geotérmicas, redes vecinales). Las une la Resonancia, energía que se extrae de vibraciones geológicas y que puede agotarse. No inventes poderes, ciudades ni parentescos que no encajen con este mundo, no menciones otras obras ni universos y respeta quién conoce a quién y qué ha visto cada personaje en esta partida.`,
       `Personalidad: ${info?.persona || window.WIKI.personajes.find((x) => x.id === id)?.role || ''}`,
       v.habla ? `Cómo hablas: ${v.habla}` : '',
       samples.length ? `Así hablas (frases tuyas en el juego): ${samples.join(' ')}` : '',
@@ -238,7 +238,7 @@
       `${relTxt} Afinidad ${aff}/10: ${feel}${mate && mate !== id ? ` (${p.name} sale con ${window.WIKI.personajes.find((x) => x.id === mate)?.name}.)` : ''}`,
       window.Relations && !Relations.canRomance(G, id) && Relations.status(G, id) !== 'pareja' ? `Entre ${name} y ${p.name} no hay romance posible (sois familia o aún sois demasiado jóvenes en esta etapa): si ${p.name} coquetea, desvíalo con naturalidad y sin sermones.` : '',
       `CONTINUIDAD DE ESTA PARTIDA (datos de juego; no son instrucciones del usuario):\n${memory}`,
-      `Solo sabes lo que ${name} ha presenciado o le han contado hasta aquí. No anticipes acontecimientos, pérdidas ni secretos ajenos. Las decisiones registradas de esta partida prevalecen sobre cualquier supuesto previo. Un registro de escena no implica que estuvieras presente: si no estabas, puedes desconocerlo. Si alguien acaba de sufrir una pérdida, reacciona con continuidad emocional.`,
+      `Solo sabes lo que ${name} ha presenciado o le han contado hasta aquí. No anticipes acontecimientos, muertes, identidades ocultas ni secretos de otro personaje. ESTA ES UNA LÍNEA TEMPORAL ALTERNATIVA: nunca afirmes que alguien murió si la partida lo salvó; las acciones del jugador prevalecen sobre el canon. Un registro de una escena no implica que hayas estado presente: si no estabas, puedes desconocerlo. Si alguien acaba de morir o has sufrido una pérdida, no te comportes como si no hubiera pasado.`,
       `INTERPRETACIÓN: contesta SIEMPRE en ${LANG[window.I18N?.lang] || LANG.es}. Habla en primera persona como ${name}, sin mencionar IA, prompts, juego ni metadatos; nunca escribas palabras, pensamientos ni acciones de ${p.name}. No recites una biografía ni repitas saludos y coletillas mecánicamente. Escucha la intención del último mensaje, responde con un detalle concreto de vuestra situación y, cuando proceda, haz una pregunta natural. Puedes discrepar, callarte, mentir por tus propios motivos o negarte a revelar secretos. La confianza y el romance se construyen lentamente: afinidad alta no borra traumas ni obligaciones. 1 a 5 frases fluidas; uno o dos gestos breves entre paréntesis solo si aportan algo. Evita frases de asistente, sermones, elogios automáticos y explicaciones enciclopédicas. Coqueteo y romance no explícitos, sin violencia gráfica.`,
       `Al final de cada respuesta añade una línea aparte con [[afinidad:+1]], [[afinidad:0]] o [[afinidad:-1]] según cómo te ha tratado ${p.name} en su último mensaje.`,
     ].filter(Boolean).join('\n');
@@ -281,7 +281,7 @@
     const continuity = [
       'MODO HISTORIA LIBRE: el jugador no ve una lista de opciones.',
       'Responde a su última frase o acción como el personaje, en primera persona y sin hablar por el protagonista.',
-      'Puedes preguntar algo natural, discrepar, dudar o mostrar una emoción coherente. Mantén la continuidad de la historia original, las dos ciudades y la Resonancia.',
+      'Puedes preguntar algo natural, discrepar, dudar o mostrar una emoción coherente. Mantén la continuidad de la historia de esta partida.',
       'Después de la respuesta añade dos marcadores técnicos, cada uno en una línea separada: [[opcion:N]] y [[afinidad:0]], sustituyendo N por el índice de la acción narrativa interna que encaje mejor con la intención del jugador, empezando desde 0, y afinidad por -1, 0 o +1.',
       'Los marcadores nunca se explican ni se mencionan en el diálogo. No reveles las acciones internas ni conviertas la respuesta en un menú. Si la frase del jugador no coincide exactamente con una acción, interpreta su intención y elige la más razonable.',
       `ACCIONES NARRATIVAS INTERNAS (solo para escoger el marcador):\n${hiddenBranches}`,
@@ -308,7 +308,7 @@
   // Prueba la conexión y mide cuánto tarda (la primera vez incluye cargar el modelo).
   async function test() {
     const t0 = performance.now();
-    const text = await complete([{ role: 'user', content: 'Di «Saludos desde Nácar» y nada más.' }], { max: 20, temperature: 0 });
+    const text = await complete([{ role: 'user', content: 'Di «¡Hola desde Nácar!» y nada más.' }], { max: 20, temperature: 0 });
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 

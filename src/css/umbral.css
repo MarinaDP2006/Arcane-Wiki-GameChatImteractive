@@ -1,0 +1,164 @@
+/* Identidad visual de Las ciudades del Umbral (se carga después de styles.css).
+   Tres paletas:
+   - Inicio, menú y Ajustes: azul neutro, equilibrio entre las dos ciudades.
+   - Aurelia: oro envejecido, beige y piedra clara.
+   - Nácar: negro y verde de vapor.
+   Ajustes → Lectura → Colores elige «Según la ciudad» (cambia al viajar) o una fija. */
+
+/* ---------- Paleta base: azul neutro ---------- */
+:root, html[data-tema="clasico"] {
+  --bg: #070b14;
+  --bg2: #0e1524;
+  --panel: rgba(12, 19, 34, 0.9);
+  --line: rgba(150, 178, 220, 0.26);
+  --text: #e6ecf6;
+  --muted: #9eabc2;
+  --gold: #c9d6ea;
+  --gold2: #6f8db8;
+  --nacar: #55d6a2;
+  --nacar2: #2e8d72;
+  --pink: #c27665;
+  --blue: #7fa6d8;
+  --violet: #8a86c8;
+  --danger: #d0605a;
+  --accent: #9fb8de;
+  --accent-glow: rgba(127, 166, 216, 0.4);
+  --radius: 10px;
+}
+html, body { background-color: var(--bg); }
+body {
+  background:
+    radial-gradient(1100px 720px at 0% 0%, rgba(183, 139, 69, 0.10), transparent 60%),
+    radial-gradient(900px 640px at 100% 100%, rgba(85, 214, 162, 0.10), transparent 62%),
+    linear-gradient(135deg, var(--bg) 0%, var(--bg2) 55%, var(--bg) 100%);
+  color: var(--text);
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+a { color: var(--accent); }
+.panel, .card, .modal, .dialogue-panel, .creator-panel { border-color: var(--line); background-color: var(--panel); }
+.badge, .tag, .chip { border-color: var(--line); }
+
+/* ---------- Aurelia: oro y beige ---------- */
+html[data-tema="aurelia"] {
+  --bg: #120f0a;
+  --bg2: #241c12;
+  --panel: rgba(32, 26, 18, 0.92);
+  --line: rgba(226, 196, 138, 0.34);
+  --text: #f3ead6;
+  --muted: #c9b99a;
+  --gold: #e4c27e;
+  --gold2: #a97932;
+  --nacar: #9bc3df;
+  --accent: #e4c27e;
+  --accent-glow: rgba(228, 194, 126, 0.42);
+}
+/* ---------- Nácar: negro y verde ---------- */
+html[data-tema="nacar"] {
+  --bg: #020806;
+  --bg2: #07130f;
+  --panel: rgba(3, 14, 11, 0.93);
+  --line: rgba(85, 231, 170, 0.3);
+  --text: #e1f8ec;
+  --muted: #9dbeb0;
+  --gold: #63e3a8;
+  --gold2: #23966c;
+  --nacar: #b8f06a;
+  --accent: #63e3a8;
+  --accent-glow: rgba(85, 231, 170, 0.42);
+}
+html[data-tema] body { transition: background-color 0.6s; }
+html[data-tema] .panel, html[data-tema] .hud-card, html[data-tema] .hud-btn { border-color: var(--line); }
+html[data-tema] .hud-card, html[data-tema] .hud-btn { background-color: var(--panel); }
+
+/* Botones principales y elementos activos de cada paleta */
+.btn.primary, .chip.active, .seg button.active {
+  background: linear-gradient(135deg, #dfe8f6, #7f9ccc 70%, #4a6694);
+  color: #0a1222;
+}
+html[data-tema="aurelia"] .btn.primary,
+html[data-tema="aurelia"] .chip.active,
+html[data-tema="aurelia"] .seg button.active {
+  background: linear-gradient(135deg, #f4e4c0, #d2a65a 68%, #9a6c2a);
+  color: #241806;
+}
+html[data-tema="nacar"] .btn.primary,
+html[data-tema="nacar"] .chip.active,
+html[data-tema="nacar"] .seg button.active {
+  background: linear-gradient(135deg, #a8f7d4, #2da983 68%, #136048);
+  color: #03140f;
+}
+
+/* Paneles: azul de noche (base), pergamino tostado con filo dorado (Aurelia), roca negra con filo verde (Nácar) */
+.panel { background: linear-gradient(160deg, rgba(16, 25, 44, 0.92), rgba(6, 10, 20, 0.92)); }
+html[data-tema="aurelia"] .panel { background: linear-gradient(160deg, rgba(52, 41, 26, 0.93), rgba(22, 18, 12, 0.93)); }
+html[data-tema="nacar"] .panel { background: linear-gradient(160deg, rgba(6, 22, 17, 0.94), rgba(1, 8, 6, 0.94)); }
+html[data-tema="aurelia"] .creator-body { background: linear-gradient(145deg, rgba(48, 38, 24, .94), rgba(20, 17, 12, .92)); border-color: rgba(228, 194, 126, .55); }
+html[data-tema="nacar"] .creator-body { background: linear-gradient(145deg, rgba(2, 16, 12, .96), rgba(4, 18, 14, .93)); border-color: rgba(85, 231, 170, .55); }
+html[data-tema="aurelia"] .origin-card.active { box-shadow: 0 0 0 2px #f3dca9, 0 0 36px rgba(228, 194, 126, .35); }
+html[data-tema="nacar"] .origin-card.active { box-shadow: 0 0 0 2px #6af2bd, 0 0 36px rgba(85, 231, 170, .32); }
+
+/* ---------- Inicio y Ajustes: siempre azul neutro ---------- */
+#view-home, #view-settings {
+  --gold: #c9d6ea;
+  --gold2: #6f8db8;
+  --line: rgba(150, 178, 220, 0.3);
+  --panel: rgba(10, 17, 31, 0.9);
+  --text: #e6ecf6;
+  --muted: #a3b0c6;
+  --accent: #9fb8de;
+  --accent-glow: rgba(127, 166, 216, 0.42);
+}
+#view-home .btn.primary, #view-settings .btn.primary,
+#view-home .chip.active, #view-settings .chip.active,
+#view-home .seg button.active, #view-settings .seg button.active {
+  background: linear-gradient(135deg, #dfe8f6, #7f9ccc 70%, #4a6694);
+  color: #0a1222;
+}
+#view-home .panel, #view-settings .panel { background: linear-gradient(160deg, rgba(16, 25, 44, 0.92), rgba(6, 10, 20, 0.92)); }
+
+/* Fondo de Ajustes: las dos ciudades a los lados y un velo azul en el centro para leer. */
+#view-settings {
+  position: relative;
+  isolation: isolate;
+  background-color: #050a14 !important;
+  background-image:
+    linear-gradient(90deg, rgba(2, 9, 7, .72), rgba(6, 12, 26, .62) 48%, rgba(18, 14, 8, .6)),
+    url("../img/umbral/lugares/nacar.svg"),
+    url("../img/umbral/lugares/aurelia.svg") !important;
+  background-size: 100% 100%, 50% 100%, 50% 100% !important;
+  background-position: center, left center, right center !important;
+  background-repeat: no-repeat !important;
+}
+#view-settings::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(4, 8, 18, .2), rgba(4, 8, 18, .74)) !important;
+}
+#view-settings::after { content: none !important; background-image: none !important; }
+#view-settings > .settings {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(145deg, rgba(10, 17, 32, .92), rgba(6, 10, 20, .9)) !important;
+  border: 1px solid rgba(150, 178, 220, .42);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, .5);
+  backdrop-filter: blur(8px);
+}
+#view-settings .settings h2 { color: #dbe5f4; }
+#view-settings input[type="range"], #view-settings .switch-row input { accent-color: #9fb8de; }
+@media (max-width: 720px) {
+  #view-settings { background-size: 100% 100%, 100% 50%, 100% 50% !important; background-position: center, top center, bottom center !important; }
+}
+
+/* Fondo pintado de la ciudad detrás de todo */
+body[data-city='nacar'] { --accent-glow: rgba(85, 231, 170, 0.45); }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-tema] body, .origin-card, .creator-body { transition: none !important; animation: none !important; }
+}
+
+/* Pestañas activas en el color de la paleta */
+.tab.active { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.settings-tabs .tab.active { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, transparent), color-mix(in srgb, var(--gold2) 18%, transparent)); border-color: var(--gold2); color: var(--text); }

@@ -5,8 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const { pathToFileURL } = require('url');
 
-// La app se llama «Grietas & Gears», pero las partidas, ajustes y arte siguen en la carpeta de siempre
-// (%APPDATA%\Rifts & Gears - Las ciudades del Umbral), así no se pierde nada al actualizar.
+// Partidas, ajustes y arte se guardan en %APPDATA%\Rifts & Gears - Las ciudades del Umbral.
 // GRIETAS_DATOS permite probar el juego con otra carpeta sin tocar las partidas reales.
 app.setPath('userData', process.env.GRIETAS_DATOS || path.join(app.getPath('appData'), 'Rifts & Gears - Las ciudades del Umbral'));
 const Modelos = require('./modelos');
@@ -81,8 +80,8 @@ function createWindow() {
 // en lugar del arte pintado que genera. No se distribuye nada con el juego.
 // «escenas» es el nombre antiguo de «lugares» y se sigue leyendo.
 const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice'];
-// El universo original no usa carpetas de temporada ni arte de Arcane.
-const SEASON_DIRS = [];
+// Imágenes por parte de la historia: lugares/s1, lugares/s2, personajes/s1... (mandan sobre las generales).
+const SEASON_DIRS = ['lugares', 'personajes', 'caras'].flatMap((d) => [`${d}/s1`, `${d}/s2`]);
 const ART_EXT = /\.(png|jpe?g|webp|gif)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
@@ -93,7 +92,8 @@ function ensureArtDir() {
 }
 
 // Otros nombres con los que la jugadora guarda las caras de los personajes.
-const ART_ALIASES = { iria: 'iria-venn', darel: 'darel-ossan', saia: 'saia-merel', toren: 'toren-vale', nyra: 'nyra-quell', bastian: 'bastian-rook', oren: 'oren-caldus', maelis: 'maelis-thorn', joren: 'joren-ash', edda: 'edda-lume' };
+const ART_ALIASES = { iria: 'iria-venn', darel: 'darel-ossan', saia: 'saia-merel', toren: 'toren-vale', nyra: 'nyra-quell',
+  bastian: 'bastian-rook', oren: 'oren-caldus', maelis: 'maelis-thorn', joren: 'joren-ash', edda: 'edda-lume' };
 
 /** Enumera el contenido de una carpeta autorizada. */
 function listDir(dir) {
@@ -110,7 +110,7 @@ function listDir(dir) {
 // Carpeta «arte» junto al ejecutable (o al .exe portátil): también se lee, para quien guarda
 // ahí sus vídeos e imágenes. La carpeta de arte de AppData manda sobre ella.
 // También se busca una carpeta «arte» en Documentos (hasta dos niveles), p. ej.
-// Se buscan carpetas «arte» en Documentos para facilitar la importación de recursos propios.
+// Documentos\Umbral\arte, donde mucha gente guarda sus vídeos.
 function documentsRoots() {
   const out = [];
   let docs;
@@ -160,7 +160,12 @@ ipcMain.handle('art:guide', (_e, text) => {
 });
 
 // ---------- Modelos 3D (.glb, .fbx o .zip) ----------
-// Modelos 3D del universo original; los IDs coinciden con src/data/original-world.js.
+// Personajes en 3D para el mundo abierto (por ejemplo, de Mixamo o Sketchfab): modelos/<id>.glb,
+// .fbx o .zip (con el .fbx y sus texturas dentro), modelos/jugador.*, modelos/generico.* y
+// modelos/animaciones/{reposo,andar,correr}.*. El nombre vale aunque lleve más palabras
+// («Iria_Venn.zip» es iria-venn). También se miran las carpetas de personajes con «3d» en el nombre
+// (personajes/3d models). Se leen de src/models (incluidos con el juego), de las carpetas «arte»
+// de siempre y de la carpeta de arte de AppData, que manda sobre las demás.
 const MODEL_IDS = ['iria-venn', 'darel-ossan', 'saia-merel', 'toren-vale', 'nyra-quell', 'bastian-rook', 'oren-caldus', 'maelis-thorn', 'joren-ash', 'edda-lume', 'jugador', 'generico'];
 const MODEL_ALIASES = { ...ART_ALIASES, player: 'jugador', generic: 'generico' };
 const MODEL_EXT = /\.(glb|fbx|obj|zip)$/i;
@@ -172,14 +177,16 @@ function modelName(base) {
   const n = base.replace(MODEL_EXT, '').toLowerCase();
   if (MODEL_IDS.includes(n)) return n;
   if (MODEL_ALIASES[n]) return MODEL_ALIASES[n];
-  for (const w of n.split(/[^a-z0-9]+/)) {
+  const words = n.split(/[^a-z0-9]+/);
+  for (let i = 0; i < words.length - 1; i++) if (MODEL_IDS.includes(`${words[i]}-${words[i + 1]}`)) return `${words[i]}-${words[i + 1]}`;
+  for (const w of words) {
     if (MODEL_IDS.includes(w)) return w;
     if (MODEL_ALIASES[w]) return MODEL_ALIASES[w];
   }
   return n;
 }
 
-// Primer modelo dentro de una carpeta de recursos personales descomprimidos.
+// Primer modelo dentro de una carpeta (un .zip descomprimido: «iria_venn/source/Iria.fbx»).
 function findModel(dir, depth = 0) {
   let list;
   try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return null; }
@@ -261,9 +268,9 @@ ipcMain.handle('model:read', async (_e, name) => {
 
 // ---------- Imágenes del mapa 3D ----------
 // Fondos panorámicos del mundo abierto: vienen dentro del juego (src/img/arte/mapa) y
-// también puedes poner los tuyos en las carpetas mapa/piltover y mapa/zaun de tu carpeta de arte.
-const REGIONS = ['piltover', 'zaun'];
-const MAP_FALLBACK = { piltover: ['aurelia', 'archivo', 'observatorio', 'ascensor-central'], zaun: ['nacar', 'mercado-nacar', 'clinica', 'canal-cobre'] };
+// también puedes poner los tuyos en las carpetas mapa/aurelia y mapa/nacar de tu carpeta de arte.
+const REGIONS = ['aurelia', 'nacar'];
+const MAP_FALLBACK = { aurelia: ['aurelia', 'academia', 'consejo', 'taller-jayce', 'stillwater', 'hexpuertas'], nacar: ['nacar', 'ultima-gota', 'comuna-viktor'] };
 const mapDir = (region) => path.join(artRoot(), 'mapa', region);
 
 // Las imágenes viajan como data: URL para que WebGL pueda usarlas como textura.
@@ -369,7 +376,7 @@ function writeSave(slot, data) {
       'Fecha': saved.savedAt || '',
       'Tiempo de juego': saved.playTimeSeconds || 0,
       'Nivel en historia': saved.progress?.chapterTitle || saved.progress?.chapterId || '',
-      'Ciudad': saved.player?.origin === 'zaun' ? 'Nácar' : saved.player?.origin === 'piltover' ? 'Aurelia' : '',
+      'Ciudad': saved.player?.origin === 'nacar' ? 'Nácar' : saved.player?.origin === 'aurelia' ? 'Aurelia' : '',
     });
   } finally {
     if (fs.existsSync(tmp)) fs.rmSync(tmp, { force: true });

@@ -1,4 +1,4 @@
-// Idiomas del juego: español (original), inglés y francés.
+// Idiomas del juego. Por ahora solo español; otros idiomas se añaden con src/i18n/<idioma>.js.
 //
 // El juego está escrito en español. Los diccionarios de src/i18n/<idioma>.js guardan
 // «texto original en español» → traducción. Así no hay que tocar cada pantalla:
@@ -9,8 +9,6 @@
 (function () {
   const LANGS = [
     { id: 'es', label: 'Español' },
-    { id: 'en', label: 'English' },
-    { id: 'fr', label: 'Français' },
   ];
   const DATA = (window.I18N_DATA = window.I18N_DATA || {});
   let lang = 'es';

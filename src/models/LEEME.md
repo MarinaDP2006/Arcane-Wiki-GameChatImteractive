@@ -1,12 +1,10 @@
-# Modelos 3D del universo original
+# Modelos 3D incluidos con el juego
 
-Esta carpeta contiene modelos propios de **Las ciudades del Umbral**. No añadas aquí modelos ni nombres de personajes de Arcane; el fangame vive en el repositorio independiente `Arcane-fangame`.
+Pon aquí archivos `.glb` para que vayan dentro del instalador y de la app de Android.
+Los mismos nombres que en la carpeta `modelos` de tu carpeta de arte:
 
-Usa un archivo `.glb` por personaje con el identificador de `src/data/original-world.js` (por ejemplo, `iria-venn.glb`, `darel-ossan.glb`, `saia-merel.glb`). Los modelos que aún no existan se representan con avatares procedurales basados en sus fichas originales.
+- `iria-venn.glb`, `darel-ossan.glb`, `saia-merel.glb`… (un archivo por personaje, con su id)
+- `jugador.glb` (tu personaje) y `generico.glb` (quien no tenga modelo propio)
+- `animaciones/reposo.glb`, `animaciones/andar.glb`, `animaciones/correr.glb`
 
-Modelos comunes opcionales:
-- `jugador.glb`: cuerpo base para el personaje creado por el usuario.
-- `generico.glb`: cuerpo base de personajes secundarios.
-- `animaciones/reposo.glb`, `animaciones/andar.glb`, `animaciones/correr.glb`: animaciones compatibles con el rig utilizado por el juego.
-
-La lista de modelos empaquetados está en `index.json`. Los modelos actuales son prototipos GLB de bajo peso, no personajes finales con rig facial y animaciones de producción. Para los modelos finales, parte del concepto visual de Aurelia y Nácar, pero usa siluetas, peinados, paletas y ropa originales; no copies los diseños de la referencia literalmente.
+Si no hay ninguno, el juego usa sus muñecos pintados. Más detalles en GUIA.md.

@@ -1,5 +1,5 @@
-// Minijuegos nuevos con profundidad: persecución en aerodeslizador por Zaun (carretera en
-// pseudo 3D), la mira telescópica de Caitlyn y los chompers de Jinx (lanzamiento con física).
+// Minijuegos nuevos con profundidad: persecución en aerodeslizador por Nácar (carretera en
+// pseudo 3D), la mira del Observatorio y las cápsulas de vapor (lanzamiento con física).
 // Usan el marco común de minigames.js (Minigames.play) y el arte de Depth para los fondos.
 (function () {
   const { GAMES, kit } = window.Minigames;
@@ -16,13 +16,13 @@
 
   // ---------- 1. Persecución por el Carril (carretera en pseudo 3D) ----------
   GAMES.persecucion = {
-    title: 'Persecución por el Carril', icon: '', scene: 'callejones', grade: 'zaun',
-    backdrops: ['zaun', 'callejones', 'puente-zaun', 'sumidero', 'fabrica', 'tejados'],
+    title: 'Persecución por el Carril', icon: '', scene: 'canal-cobre', grade: 'nacar',
+    backdrops: ['nacar', 'canal-cobre', 'galerias', 'mercado-nacar'],
     touchKeys: [['arrowleft', '◀'], ['arrowright', '▶']], touchLayout: 'sides',
-    desc: 'Los ejecutores te pisan los talones. Pilota un aerodeslizador robado por los túneles de Zaun, esquiva barriles y barricadas y recoge núcleos hextec para acelerar.',
+    desc: 'Una fuga de vapor persigue tu vagoneta por los túneles de Nácar. Esquiva barriles y barricadas y recoge cristales de Resonancia para acelerar.',
     controls: 'Flechas ← → (o A D) para girar.', touchControls: 'Mantén pulsados los botones de los lados para girar.',
     goal: 'Recorre 3 km antes de que te alcancen.',
-    winText: 'Te pierdes entre el humo de los túneles. Los ejecutores se quedan mirando la nada.', loseText: 'Las sirenas te rodean. Te han cazado. Otra vez, más rápido.',
+    winText: 'Sales del túnel justo cuando la válvula se cierra. El vapor se queda atrás.', loseText: 'El vapor te alcanza y la vagoneta se cala. Otra vez, más rápido.',
     create(w, h, o = {}) {
       const b = o.bonus || 0;
       const SEG = 200;
@@ -99,7 +99,7 @@
               }
             }
           }
-          // Los ejecutores se acercan si vas lento y se alejan si vas rápido.
+          // La fuga se acerca si vas lento y se alejan si vas rápido.
           g.chase += (k > 0.92 ? 3.5 : k > 0.7 ? 0 : -9) * dt;
           g.chase = Math.min(100, g.chase);
           if (g.dist >= goal) { g.result = true; FX.burst(w / 2, h / 2, 80, { color: ['#7affd0', '#ffffff', '#3fbf9f'], speed: 600, life: 0.9 }); }
@@ -138,7 +138,7 @@
             if (s.ob && !s.ob.done) drawSprite(ctx, s.ob, p1, clip, fog, t);
           }
           drawBike(ctx, t);
-          // Luces de las sirenas cuando los ejecutores están cerca
+          // Luces de las sirenas cuando la fuga está cerca
           if (g.chase < 35) {
             const a = (1 - g.chase / 35) * 0.35 * (0.5 + 0.5 * Math.sin(t * 14));
             const sg = ctx.createLinearGradient(0, 0, w, 0);
@@ -248,7 +248,7 @@
           window.Depth.box(ctx, sx - s2 / 2, p.y - s2, s2, s2, 0.08, w / 2, h * 0.5, { front: '#7a5a34', frontDark: '#3a2814', top: '#a07a48', side: '#2a1a0c',
             tex: (c, bx, by, bw, bh) => { c.strokeStyle = '#2a1a0c'; c.lineWidth = Math.max(1, 10 * sc); c.strokeRect(bx, by, bw, bh); c.beginPath(); c.moveTo(bx, by); c.lineTo(bx + bw, by + bh); c.stroke(); } });
         } else if (sp.kind === 'barricade') {
-          // Barricada de los ejecutores con luces azules y rojas
+          // Barricada de mantenimiento con luces azules y rojas
           const bw = p.w * 0.38;
           const bh = 260 * sc;
           ctx.fillStyle = '#1a2440';
@@ -293,7 +293,7 @@
         ctx.strokeStyle = '#d8aa50'; ctx.lineWidth = 3 * s; ctx.stroke();
         // Toberas
         for (const ex of [-52, 52]) { ctx.fillStyle = '#1a1418'; ctx.beginPath(); ctx.ellipse(ex * s, 22 * s, 18 * s, 10 * s, 0, 0, TAU); ctx.fill(); ctx.fillStyle = g.boost ? '#bfeaff' : '#7affd0'; ctx.beginPath(); ctx.ellipse(ex * s, 22 * s, 11 * s, 5 * s, 0, 0, TAU); ctx.fill(); }
-        // Cúpula de cristal y núcleo hextec en el centro (sin piloto)
+        // Cúpula de cristal y núcleo de Resonancia en el centro (sin piloto)
         const cg = ctx.createLinearGradient(0, -78 * s, 0, -20 * s);
         cg.addColorStop(0, 'rgba(160,230,255,0.55)'); cg.addColorStop(1, 'rgba(20,60,70,0.85)');
         ctx.fillStyle = cg;
@@ -322,15 +322,15 @@
     },
   };
 
-  // ---------- 2. La mira de Caitlyn (francotiradora) ----------
+  // ---------- 2. La mira del Observatorio (francotiradora) ----------
   GAMES.francotiradora = {
-    title: 'La mira de Caitlyn', icon: '', scene: 'piltover', grade: 'piltover',
-    backdrops: ['piltover', 'plaza', 'artesanos', 'puente', 'hexpuertas', 'tejados', 'puente-zaun'],
+    title: 'La mira del Observatorio', icon: '', scene: 'observatorio', grade: 'aurelia',
+    backdrops: ['aurelia', 'observatorio', 'cristal', 'ascensor-central'],
     touchKeys: [['shift', 'Respirar'], [' ', 'Disparar']], touchLayout: 'sides',
-    desc: 'Desde un tejado, con el rifle hextec de Caitlyn. Silco ha escondido botes de brillo por la ciudad: búscalos con la mira, contén la respiración para que no tiemble y reviéntalos. No rompas los faroles hextec.',
+    desc: 'Desde las terrazas del Observatorio, con un rifle de marcado. Alguien ha dejado cápsulas de Resonancia inestable por los tejados: búscalas con la mira, contén la respiración para que no tiemble y neutralízalas. No rompas los faroles de gas.',
     controls: 'Ratón para apuntar, clic para disparar. Mantén Mayús o Espacio para contener la respiración.', touchControls: 'Arrastra el dedo para apuntar. Botones: Respirar y Disparar.',
-    goal: 'Revienta 6 botes de brillo en 50 segundos sin romper 2 faroles.',
-    winText: 'Caitlyn baja el rifle y asiente. «Nada mal. Nada mal en absoluto.»', loseText: 'Los botes desaparecen de los tejados. Respira hondo y otra vez.',
+    goal: 'Neutraliza 6 cápsulas en 50 segundos sin romper 2 faroles.',
+    winText: 'Toren Vale baja el catalejo y asiente. «Informe limpio. Así da gusto.»', loseText: 'Las cápsulas desaparecen de los tejados. Respira hondo y otra vez.',
     create(w, h, o = {}) {
       const b = o.bonus || 0;
       const need = Math.max(4, 6 - b);
@@ -412,10 +412,10 @@
           for (const s of g.shots) { s.life -= 0.03; }
           g.shots = g.shots.filter((s) => s.life > 0);
         },
-        hud() { return bar('Botes', g.hits, need, '#c04aff') + `<span class="mg-num">${g.hits}/${need} · ${Math.max(0, limit - g.t).toFixed(0)} s</span>` + bar('Aliento', g.breath, 1, '#7fd0ff') + (g.civ ? `<span class="mg-chip">Faroles: ${g.civ}/2</span>` : ''); },
+        hud() { return bar('Cápsulas', g.hits, need, '#c04aff') + `<span class="mg-num">${g.hits}/${need} · ${Math.max(0, limit - g.t).toFixed(0)} s</span>` + bar('Aliento', g.breath, 1, '#7fd0ff') + (g.civ ? `<span class="mg-chip">Faroles: ${g.civ}/2</span>` : ''); },
       };
-      // Objetivos a escala del mundo: botes de brillo (morado, se revientan) y faroles hextec de
-      // Piltover (azules, no se tocan). Se ven pequeños a simple vista y nítidos en la mira.
+      // Objetivos a escala del mundo: cápsulas (moradas, se revientan) y faroles de gas de
+      // Aurelia (azules, no se tocan). Se ven pequeños a simple vista y nítidos en la mira.
       function drawPeople(ctx, t) {
         for (const tg of g.targets) {
           const appear = Math.min(1, tg.life * 3, (tg.max - tg.life) * 3);
@@ -426,7 +426,7 @@
           const sway = Math.sin(t * 2 + tg.ph) * 0.04;
           ctx.rotate(sway);
           if (tg.thug) {
-            // Bote de brillo: cristal con líquido morado que burbujea, tapas de latón y caja de madera
+            // Cápsula: cristal con líquido morado que burbujea, tapas de latón y caja de madera
             ctx.fillStyle = '#4a3420'; ctx.fillRect(-s * 0.6, -s * 0.25, s * 1.2, s * 0.25);
             const lv = 0.55 + Math.sin(t * 3 + tg.ph) * 0.05;
             ctx.fillStyle = 'rgba(40,20,60,0.85)';
@@ -443,7 +443,7 @@
             ctx.fillStyle = '#c8a050';
             ctx.fillRect(-s * 0.38, -s * 1.7, s * 0.76, s * 0.16); ctx.fillRect(-s * 0.38, -s * 0.32, s * 0.76, s * 0.1);
           } else {
-            // Farol hextec de Piltover: poste de latón y gema azul encerrada
+            // Farol de gas de Aurelia: poste de latón y gema azul encerrada
             ctx.fillStyle = '#5a4a2a'; ctx.fillRect(-s * 0.07, -s * 1.2, s * 0.14, s * 1.2);
             ctx.globalCompositeOperation = 'lighter';
             ctx.drawImage(glowSprite('#7fd0ff'), -s, -s * 2.2, s * 2, s * 2);
@@ -482,15 +482,15 @@
     },
   };
 
-  // ---------- 3. Los chompers de Jinx (lanzamiento con física) ----------
+  // ---------- 3. Las cápsulas de vapor (lanzamiento con física) ----------
   GAMES.chompers = {
-    title: 'Los chompers de Jinx', icon: '', scene: 'escondite-jinx', grade: 'foso',
-    backdrops: ['escondite-jinx', 'fabrica', 'puente-zaun', 'callejones', 'mercado', 'sumidero'],
+    title: 'Las cápsulas de vapor', icon: '', scene: 'galerias', grade: 'foso',
+    backdrops: ['galerias', 'canal-cobre', 'mercado-nacar', 'nacar'],
     touchKeys: [['arrowup', '▲'], ['arrowdown', '▼'], [' ', 'Lanzar']], touchLayout: 'sides',
-    desc: 'Jinx te presta sus chompers: granadas con dientes que rebotan y explotan a los dos segundos. Revienta las torretas hextec de los ejecutores. Cuidado con el viento de los túneles.',
+    desc: 'Oren Caldus te presta sus cápsulas de vapor: rebotan y estallan a los dos segundos. Revienta las válvulas atascadas de las galerías antes de que la presión suba. Cuidado con el viento de los túneles.',
     controls: 'Arrastra hacia atrás desde el lanzador y suelta (como un tirachinas). O ↑ ↓ para el ángulo, ← → para la fuerza y Espacio para lanzar.', touchControls: 'Arrastra hacia atrás y suelta para lanzar.',
-    goal: 'Destruye las 3 torretas con 8 chompers.',
-    winText: '¡BUM! Jinx aplaude dando saltitos. «¡Otra vez, otra vez!»', loseText: 'Sin chompers y las torretas siguen en pie. Jinx hace un puchero.',
+    goal: 'Revienta las 3 válvulas con 8 cápsulas.',
+    winText: '¡PUM! La presión baja y Oren apunta la lectura. «Perfecto. Otra vez y nos vamos a cenar.»', loseText: 'Sin cápsulas y las válvulas siguen atascadas. Oren suspira y recarga.',
     create(w, h, o = {}) {
       const b = o.bonus || 0;
       const ground = h * 0.84;
@@ -576,9 +576,9 @@
             ctx.restore();
             Depth.orb(ctx, tr.x, tr.y + th * 0.3, cs * 0.28, tr.hp > 1 ? '#3fa9f5' : '#ff7a5a', { glow: true, dark: '#0a1020' });
           }
-          // Jinx en el lanzador: retrato real en un medallón
-          const face = Depth.face('jinx');
-          Depth.medallion(ctx, face, L.x - w * 0.04, L.y - h * 0.2, Math.min(w, h) * 0.07, { rim: '#e0457b', glow: 24 });
+          // Oren en el lanzador: retrato en un medallón
+          const face = Depth.face('oren-caldus');
+          Depth.medallion(ctx, face, L.x - w * 0.04, L.y - h * 0.2, Math.min(w, h) * 0.07, { rim: '#55d6a2', glow: 24 });
           // Trayectoria prevista
           if (!g.ball && g.ammo > 0) {
             const v = 300 + g.power * 700;
@@ -621,7 +621,7 @@
           const wl = g.wind / 4;
           ctx.beginPath(); ctx.moveTo(wx - wl, 42); ctx.lineTo(wx + wl, 42); ctx.lineTo(wx + wl - Math.sign(wl) * 8, 36); ctx.moveTo(wx + wl, 42); ctx.lineTo(wx + wl - Math.sign(wl) * 8, 48); ctx.stroke();
         },
-        hud() { return bar('Torretas', turrets.filter((tr) => tr.hp <= 0).length, turrets.length, '#e0457b') + `<span class="mg-num">Chompers: ${g.ammo}</span>` + bar('Fuerza', g.power, 1, '#e3c45a'); },
+        hud() { return bar('Válvulas', turrets.filter((tr) => tr.hp <= 0).length, turrets.length, '#e0457b') + `<span class="mg-num">Cápsulas: ${g.ammo}</span>` + bar('Fuerza', g.power, 1, '#e3c45a'); },
       };
       function throwIt() {
         if (g.ball || g.ammo <= 0) return;
@@ -647,21 +647,19 @@
         for (const it of [...crates, ...turrets]) {
           if (it.hp <= 0) continue;
           const d = Math.hypot(it.x - x, it.y + cs / 2 - y);
-          if (d < R) { damage(it, d < R * 0.5 ? 2 : 1, it.x, it.y); if (turrets.includes(it) && it.hp <= 0) FX.text(it.x, it.y - 30, '¡Torreta fuera!', '#ffe08a', 28); }
+          if (d < R) { damage(it, d < R * 0.5 ? 2 : 1, it.x, it.y); if (turrets.includes(it) && it.hp <= 0) FX.text(it.x, it.y - 30, '¡Válvula liberada!', '#ffe08a', 28); }
         }
         g.wind = (Math.random() - 0.5) * 240;
       }
-      // Chomper: bola morada con dientes y ojitos, mecha que chisporrotea.
+      // Cápsula de vapor: bola de latón con remaches, mecha que chisporrotea.
       function chomper(ctx, x, y, r, rot, t, fuse = 3) {
         ctx.save();
         ctx.translate(x, y); ctx.rotate(rot);
-        Depth.orb(ctx, 0, 0, r, fuse < 0.7 && Math.sin(t * 40) > 0 ? '#ff5a8a' : '#8a4aaa', { dark: '#1a0a24', hi: '#f0c0ff' });
-        ctx.fillStyle = '#fff6e0';
-        ctx.beginPath(); ctx.moveTo(-r * 0.7, r * 0.1);
-        for (let i = 0; i <= 6; i++) ctx.lineTo(-r * 0.7 + (i * r * 1.4) / 6, r * (i % 2 ? 0.45 : 0.1));
-        ctx.closePath(); ctx.fill();
-        ctx.fillStyle = '#ff4a8a';
-        ctx.beginPath(); ctx.arc(-r * 0.3, -r * 0.35, r * 0.13, 0, TAU); ctx.arc(r * 0.3, -r * 0.35, r * 0.13, 0, TAU); ctx.fill();
+        Depth.orb(ctx, 0, 0, r, fuse < 0.7 && Math.sin(t * 40) > 0 ? '#ffb05a' : '#b78b45', { dark: '#2a1a0a', hi: '#fff0c0' });
+        ctx.strokeStyle = '#3a2a14'; ctx.lineWidth = Math.max(1, r * 0.12);
+        ctx.beginPath(); ctx.moveTo(-r, 0); ctx.lineTo(r, 0); ctx.stroke();
+        ctx.fillStyle = '#55d6a2';
+        for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(-r * 0.6 + (i * r * 1.2) / 3, 0, r * 0.1, 0, TAU); ctx.fill(); }
         ctx.restore();
       }
       g.wind = (Math.random() - 0.5) * 160;

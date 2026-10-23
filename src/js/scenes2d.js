@@ -1,15 +1,16 @@
-// Escenarios 2D originales para Aurelia y Nácar. El lugar se explora desplazando la vista
-// por ilustraciones propias; encima van niebla, luz y polvo animados para dar profundidad.
+// Escenarios 2D de Aurelia y Nácar con el arte propio de cada lugar como fondo.
+// El lugar se explora desplazando la vista (arrastrar, A/D, flechas o rueda) por la imagen
+// ampliada; encima van niebla, luz y polvo animados para que la escena respire.
 // La pista y el objetivo son puntos de luz sobre la imagen: se pulsan (o E cuando están a la vista).
 (function () {
   let active = null;
   const reduce = () => Boolean(window.App?.settings?.reduceMotion);
 
-  /** Partículas (polvo dorado en Aurelia, esporas y vapor en Nácar) sobre un lienzo. */
+  /** Partículas (polvo dorado en Aurelia, esporas y humo en Nácar) sobre un lienzo. */
   function particles(canvas, city) {
     const g = canvas.getContext('2d');
-    const zaun = city === 'zaun';
-    const n = reduce() ? 0 : zaun ? 70 : 55;
+    const nacar = city === 'nacar';
+    const n = reduce() ? 0 : nacar ? 70 : 55;
     const dots = Array.from({ length: n }, () => ({ x: Math.random(), y: Math.random(), r: 0.6 + Math.random() * 2.2, v: 0.004 + Math.random() * 0.012, p: Math.random() * 6 }));
     const fog = Array.from({ length: reduce() ? 0 : 6 }, (_, i) => ({ x: Math.random(), y: 0.55 + Math.random() * 0.45, r: 0.25 + Math.random() * 0.3, v: (i % 2 ? 1 : -1) * (0.004 + Math.random() * 0.006) }));
     return (t, dt) => {
@@ -23,7 +24,7 @@
       for (const f of fog) {
         f.x = (f.x + f.v * dt + 1.6) % 1.6 - 0.3;
         const grd = g.createRadialGradient(f.x * w, f.y * h, 0, f.x * w, f.y * h, f.r * w);
-        grd.addColorStop(0, zaun ? 'rgba(90,140,110,0.16)' : 'rgba(255,236,200,0.10)');
+        grd.addColorStop(0, nacar ? 'rgba(90,140,110,0.16)' : 'rgba(255,236,200,0.10)');
         grd.addColorStop(1, 'rgba(0,0,0,0)');
         g.fillStyle = grd; g.fillRect(0, 0, w, h);
       }
@@ -32,7 +33,7 @@
         d.y -= d.v * dt; if (d.y < -0.05) { d.y = 1.05; d.x = Math.random(); }
         const x = (d.x + Math.sin(t * 0.4 + d.p) * 0.01) * w, y = d.y * h;
         const a = 0.35 + 0.35 * Math.sin(t * 1.3 + d.p);
-        g.fillStyle = zaun ? `rgba(150,240,140,${a})` : `rgba(255,220,150,${a})`;
+        g.fillStyle = nacar ? `rgba(150,240,140,${a})` : `rgba(255,220,150,${a})`;
         g.beginPath(); g.arc(x, y, d.r * dpr, 0, 7); g.fill();
       }
       g.globalCompositeOperation = 'source-over';
@@ -54,7 +55,7 @@
 
   /**
    * Abre un escenario 2D.
-   * cfg: { city:'zaun'|'piltover', title, desc, image, clue:{x,y,text}, goal:{x,y}, focus?, skipClue? }
+   * cfg: { city:'nacar'|'aurelia', title, desc, image, clue:{x,y,text}, goal:{x,y}, focus?, skipClue? }
    * Las coordenadas x, y van de 0 a 1 sobre la imagen. Devuelve false si falta la imagen.
    */
   function open(cfg, onGoal, onExit) {
@@ -83,7 +84,7 @@
     const title = document.createElement('h2'); title.textContent = cfg.title;
     const hint = document.createElement('p'); hint.textContent = (cfg.desc ? cfg.desc + ' · ' : '') + (matchMedia('(pointer: coarse)').matches ? 'Desliza o usa las flechas para mirar · pulsa ✦ o toca las luces' : 'Arrastra, A/D o flechas para mirar · pulsa las luces o E · Esc para salir');
     const status = document.createElement('p'); status.className = `${city}-interior-objective`;
-    const exit = document.createElement('button'); exit.className = 'btn'; exit.textContent = city === 'zaun' ? 'Salir al mapa' : 'Volver al mapa'; exit.onclick = close;
+    const exit = document.createElement('button'); exit.className = 'btn'; exit.textContent = city === 'nacar' ? 'Salir al mapa' : 'Volver al mapa'; exit.onclick = close;
     hud.append(title, hint, status, exit);
     const card = document.createElement('div'); card.className = 'scene2d-card'; card.hidden = true;
     const arrowL = document.createElement('div'); arrowL.className = 'scene2d-arrow scene2d-arrow-l'; arrowL.textContent = '‹';
@@ -214,27 +215,36 @@
     return true;
   }
 
-  // Cada lugar original con su ilustración vectorial, la posición de la pista y
-  // del objetivo (0..1 sobre la imagen) y lo que se descubre al investigar.
-  const A = 'img/arte/';
+  // Cada lugar del mapa con su ilustración propia (src/img/umbral, generada por
+  // scripts/generar-arte-umbral.py), la posición de la pista y del objetivo (0..1 sobre la
+  // imagen) y lo que se descubre al investigar.
+  const A = 'img/umbral/lugares/';
   const PLACES = {
-    archivo: ['piltover', A + 'lugares/aurelia.svg', [0.28, 0.62], [0.78, 0.42], 'El Archivo de Frecuencias conserva los registros públicos y los huecos que alguien dejó en ellos.', 'Un patrón de tres pulsos aparece en una copia que no figura en el catálogo.'],
-    observatorio: ['piltover', A + 'lugares/aurelia.svg', [0.62, 0.28], [0.42, 0.68], 'Las terrazas del observatorio permiten medir la vibración de la meseta.', 'Un medidor auxiliar registra un desfase imposible en la roca.'],
-    gremios: ['piltover', A + 'lugares/aurelia.svg', [0.35, 0.73], [0.82, 0.56], 'El patio de gremios reúne a quienes mantienen los ascensores y los viaductos.', 'Una orden de mantenimiento fue modificada después de recibir la firma.'],
-    'ascensor-central': ['piltover', A + 'lugares/aurelia.svg', [0.7, 0.76], [0.48, 0.38], 'El ascensor central conecta los niveles de Aurelia y Nácar mediante contrapesos.', 'El registro del freno repite el patrón de la noche del accidente.'],
-    cristal: ['piltover', A + 'lugares/aurelia.svg', [0.18, 0.54], [0.65, 0.46], 'El bulevar de cristal transporta materiales y datos entre los talleres de Aurelia.', 'Una veta de Resonancia pulsa a un ritmo distinto del registrado.'],
-    'mercado-nacar': ['zaun', A + 'lugares/nacar.svg', [0.25, 0.68], [0.76, 0.44], 'El Mercado de las Tuberías vende repuestos, noticias y acuerdos comunitarios.', 'Una válvula lleva una marca de fabricación borrada del registro.'],
-    galerias: ['zaun', A + 'lugares/nacar.svg', [0.62, 0.3], [0.38, 0.72], 'Las galerías geotérmicas convierten pulsos minerales en energía para la ciudad.', 'La frecuencia sube antes de que el medidor principal lo detecte.'],
-    'jardin-musgo': ['zaun', A + 'lugares/nacar.svg', [0.18, 0.72], [0.82, 0.64], 'El jardín de musgo mantiene humedad y aire limpio en un barrio rodeado de maquinaria.', 'Una tubería secundaria desvía agua hacia viviendas que no aparecen en el plano.'],
-    clinica: ['zaun', A + 'lugares/nacar.svg', [0.7, 0.66], [0.45, 0.42], 'La Clínica de los Tres Arcos no puede cerrar mientras las galerías sigan habitadas.', 'La lista de suministros revela quién asumió el coste del último corte.'],
-    'canal-cobre': ['zaun', A + 'lugares/nacar.svg', [0.45, 0.8], [0.78, 0.35], 'El Canal de Cobre recoge el agua de condensación y conecta varios talleres.', 'Una compuerta fue cerrada desde un terminal que debía estar fuera de servicio.'],
-    'aurelia-council': ['piltover', A + 'lugares/aurelia.svg', [0.55, 0.32], [0.82, 0.58], 'La sala del Consejo debate quién puede controlar la red de Resonancia.', 'Un anexo del pacto antiguo no aparece en las copias oficiales.'],
-    'nacar-central': ['zaun', A + 'lugares/nacar.svg', [0.32, 0.68], [0.78, 0.42], 'La estación central de Nácar conecta los talleres con las galerías geotérmicas.', 'La señal coincide con el registro desaparecido del Archivo.'],
+    // Nácar
+    'mercado-nacar': ['nacar', A + 'mercado-nacar.svg', [0.3, 0.78], [0.8, 0.62], 'Puestos colgados de las tuberías, farolillos de cobre y regateo a voces.', 'Un puesto vende válvulas con el sello de un taller de Aurelia que no debería comerciar aquí.'],
+    galerias: ['nacar', A + 'galerias.svg', [0.5, 0.75], [0.2, 0.55], 'Respiraderos geotérmicos, vapor tibio y cristales que laten en verde.', 'Un medidor de latón marca tres pulsos y una pausa larga, el mismo patrón del Registro 00:03.'],
+    'jardin-musgo': ['nacar', A + 'jardin-musgo.svg', [0.2, 0.8], [0.7, 0.6], 'Musgo luminoso, arcos de hierro y el único sitio de Nácar que huele a lluvia.', 'Entre las raíces hay una caja de mensajes de la red de Nyra, sin abrir.'],
+    clinica: ['nacar', A + 'clinica.svg', [0.38, 0.82], [0.62, 0.6], 'Tres arcos iluminados y una sala de espera que nunca se vacía.', 'El registro de pacientes muestra quemaduras de vapor dulce el mismo día de la avería.'],
+    'canal-cobre': ['nacar', A + 'canal-cobre.svg', [0.25, 0.8], [0.5, 0.42], 'Agua caliente, vapor y una plataforma colgada sobre el canal.', 'En el soporte agrietado hay una marca de herramienta reciente. Alguien estuvo aquí antes.'],
+    // Aurelia
+    archivo: ['aurelia', A + 'archivo.svg', [0.3, 0.8], [0.5, 0.45], 'Arcos de piedra clara, estanterías de placas de registro y silencio de biblioteca.', 'Faltan tres páginas numeradas en la copia del Pacto de los Contrapesos.'],
+    observatorio: ['aurelia', A + 'observatorio.svg', [0.7, 0.78], [0.5, 0.4], 'La cúpula dorada y el telescopio que vigila la meseta.', 'El cuaderno del observatorio anota temblores que el Consejo nunca publicó.'],
+    gremios: ['aurelia', A + 'gremios.svg', [0.2, 0.82], [0.6, 0.55], 'Estandartes de los gremios, una fuente y discusiones sobre turnos y presupuestos.', 'Un acta de los gremios cambia de letra justo en la cláusula del mantenimiento.'],
+    'ascensor-central': ['aurelia', A + 'ascensor-central.svg', [0.62, 0.82], [0.5, 0.5], 'El gran pozo de contrapesos que une Aurelia con Nácar.', 'Una pieza del freno es de una aleación que ningún gremio tiene registrada.'],
+    cristal: ['aurelia', A + 'cristal.svg', [0.25, 0.8], [0.5, 0.55], 'Farolas de cristal de Resonancia a lo largo de un bulevar impecable.', 'Una farola parpadea con el mismo ritmo que el medidor de abajo.'],
   };
-  /** Imagen propia del lugar; se permite sustituirla con arte personal sin depender de temporadas. */
+  /**
+   * Imagen del lugar para la temporada que se está jugando (lugares/s1 o lugares/s2 de la carpeta
+   * de arte personal) o el SVG propio del lugar. En T2 nunca se usa una imagen de T1: si falta,
+   * se entra directamente a las acciones del lugar.
+   */
   function imageFor(id, fallback) {
-    const custom = window.CustomArt?.files?.lugares?.[id] || window.ART_BUNDLED?.lugares?.[id];
-    return custom || fallback;
+    const A = window.CustomArt;
+    if (!A) return fallback;
+    const season = A.season();
+    const own = A.files[`lugares/${season}`]?.[id] || window.ART_BUNDLED?.[`lugares/${season}`]?.[id];
+    if (own) return own;
+    return season === 's2' ? null : fallback;
   }
   /** ¿Tiene este lugar escenario 2D? */
   function has(id) { return Boolean(PLACES[id]); }
