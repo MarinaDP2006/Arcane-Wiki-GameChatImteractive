@@ -26,6 +26,8 @@ Si solo quieres jugar, mira **[Releases](https://github.com/MarinaDP2006/RIFTS-G
 
 | Quiero… | Guía |
 |---|---|
+| Funcionamiento completo, arquitectura, código, compilación y exportación | [Guía completa](GUIA.md) |
+| Aprender a jugar sin conocer Arcane y probar el juego | [Guía de usuario y testing](GUIAJUEGO.md) |
 | Entender el proyecto y cómo desplegar la web | [Web en Render](GUIA-WEB-RENDER.md) |
 | Configurar el chat con LM Studio en el PC o en la red doméstica | [Guía de LM Studio](GUIA-LM-STUDIO.md) |
 | Cambiar diálogos, personalidad de la IA y contenido de campaña | [IA y campaña](GUIA-IA-Y-CAMPANA.md) |
