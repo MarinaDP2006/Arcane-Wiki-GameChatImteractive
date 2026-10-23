@@ -494,11 +494,12 @@
     let prev = null;
     let fadeT = 1;
     let alive = true;
+    let raf = 0;
     const t0 = performance.now();
     function fit() {
       const r = canvas.parentElement?.getBoundingClientRect();
       if (!r) return;
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const dpr = Math.min(1.25, window.devicePixelRatio || 1);
       const w = Math.max(200, Math.floor(r.width * dpr));
       const h = Math.max(120, Math.floor(r.height * dpr));
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
@@ -506,6 +507,11 @@
     function frame(now) {
       if (!alive || !canvas.isConnected) return;
       fit();
+      // Avoid painting covered or hidden scenes; resume on the next visible frame.
+      if (document.hidden || canvas.getClientRects().length === 0) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       const t = (now - t0) / 1000;
       const w = canvas.width;
       const h = canvas.height;
@@ -516,12 +522,12 @@
         ctx.globalAlpha = 1;
         fadeT = Math.min(1, fadeT + 0.03);
       } else drawFrame(ctx, cur, t, w, h, opts.cam);
-      requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    raf = requestAnimationFrame(frame);
     return {
       set(nid) { if (!nid || nid === cur || !THEMES[nid]) return; prev = cur; cur = nid; fadeT = 0; },
-      stop() { alive = false; },
+      stop() { alive = false; cancelAnimationFrame(raf); },
       get id() { return cur; },
     };
   }

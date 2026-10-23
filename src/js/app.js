@@ -80,7 +80,7 @@
     const zaun = layer('zaun');
     // Título letra a letra; el «&» lleva detrás un engranaje que gira al mover el cursor.
     const letters = (word, from) => [...word].map((ch, i) => el('span', { class: 'home-letter', style: `--i:${from + i}` }, ch));
-    const amp = el('span', { class: 'home-amp', style: '--i:7' }, el('span', { class: 'home-gear', html: window.TitleFX.GEAR_SVG }), el('b', {}, '&'));
+    const amp = el('span', { class: 'home-amp', style: '--i:5' }, el('span', { class: 'home-gear', html: window.TitleFX.GEAR_SVG }), el('b', {}, '&'));
     const city = (id, label) => el('button', { class: 'home-city', 'data-city': id, type: 'button' },
       el('img', { src: `img/arte/simbolos/${id}.png`, alt: '' }), el('span', {}, label));
     const s = App.settings;
@@ -93,7 +93,7 @@
       el('div', { class: 'home-shade' }),
       el('div', { class: 'home-panel' },
         el('div', { class: 'home-logo' },
-          el('h1', { class: 'home-title', 'aria-label': 'Grietas & Gears' }, el('span', { class: 'home-word' }, ...letters('GRIETAS', 0)), amp, el('span', { class: 'home-word' }, ...letters('GEARS', 8))),
+          el('h1', { class: 'home-title', 'aria-label': 'Rifts & Gears' }, el('span', { class: 'home-word' }, ...letters('RIFTS', 0)), amp, el('span', { class: 'home-word' }, ...letters('GEARS', 6))),
           el('div', { class: 'home-cities' }, city('piltover', 'Piltover'), el('b', {}), city('zaun', 'Zaun'))),
         el('nav', { class: 'home-menu' },
           hasSave ? btn('Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,

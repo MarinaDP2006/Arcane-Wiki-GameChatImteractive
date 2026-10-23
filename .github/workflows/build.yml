@@ -1,12 +1,10 @@
 # Versión de escritorio: instalador y portable de Windows + DMG/ZIP de Mac.
-# Se compila en la rama «escritorio» (que se sincroniza sola desde main, ver sync-ramas.yml),
-# en las etiquetas v* y en cada pull request (en los PR solo Windows, para no gastar Mac).
+# Se compila desde main, en versiones v* y manualmente; sin ramas duplicadas.
 name: Compilar escritorio (Windows y Mac)
 on:
   push:
-    branches: [escritorio]
+    branches: [main]
     tags: ['v*']
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: write
@@ -43,6 +41,7 @@ jobs:
           node --check src/data/story-expansion.js
           node --check src/data/alternate-fates.js
           node --check src/data/chat-expansion.js
+          node --check src/data/chat-deep.js
           node --check src/data/arcane-lore.js
       - name: Compilar instalador y portable de Windows
         run: npm run dist:win -- --publish never
@@ -60,7 +59,6 @@ jobs:
           path: dist/*.exe
           if-no-files-found: error
   build-mac:
-    if: github.event_name != 'pull_request'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4

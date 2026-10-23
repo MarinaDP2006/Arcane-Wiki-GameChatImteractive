@@ -1,0 +1,1696 @@
+[
+ {
+  "wiki": "lolwiki",
+  "title": "File:Piltover Arcane 02.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/piltover.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_02.jpg?d7915",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_02.jpg",
+  "uploader": "Tesla Effect",
+  "uploaded": "2022-02-03T16:55:52Z",
+  "orig": [
+   3840,
+   1609
+  ],
+  "size": [
+   1600,
+   670
+  ],
+  "bytes": 71062
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Piltover Arcane Bridge.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/puente.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_Bridge.jpg?d1b81",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_Bridge.jpg",
+  "uploader": "Tesla Effect",
+  "uploaded": "2022-02-03T16:56:32Z",
+  "orig": [
+   1700,
+   915
+  ],
+  "size": [
+   1600,
+   861
+  ],
+  "bytes": 127038
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E01 Concept 06.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/puente-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E01_Concept_06.jpg?3b8c8",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E01_Concept_06.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-09T00:38:34Z",
+  "orig": [
+   2560,
+   1251
+  ],
+  "size": [
+   1600,
+   696
+  ],
+  "bytes": 93616
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E08 Concept 04.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/puente-zaun.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E08_Concept_04.jpg?0979e",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E08_Concept_04.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T18:20:44Z",
+  "orig": [
+   1920,
+   1080
+  ],
+  "size": [
+   1600,
+   801
+  ],
+  "bytes": 70528
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E07 Concept 12.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/puente-zaun-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E07_Concept_12.jpg?7b29a",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E07_Concept_12.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T18:08:00Z",
+  "orig": [
+   1920,
+   1080
+  ],
+  "size": [
+   1600,
+   801
+  ],
+  "bytes": 49984
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Piltover Arcane Hexgates.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/hexpuertas.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_Hexgates.jpg?a909c",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_Hexgates.jpg",
+  "uploader": "Tesla Effect",
+  "uploaded": "2022-02-03T16:56:55Z",
+  "orig": [
+   1920,
+   809
+  ],
+  "size": [
+   1600,
+   674
+  ],
+  "bytes": 49586
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Piltover Arcane Stillwater Hold.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/stillwater.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Piltover_Arcane_Stillwater_Hold.jpg?e9036",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Piltover_Arcane_Stillwater_Hold.jpg",
+  "uploader": "Tesla Effect",
+  "uploaded": "2022-02-03T17:05:50Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1600,
+   678
+  ],
+  "bytes": 15432
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E08 Concept 08.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/muelle-stillwater.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E08_Concept_08.jpg?8ded2",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E08_Concept_08.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T19:09:27Z",
+  "orig": [
+   1920,
+   897
+  ],
+  "size": [
+   1600,
+   665
+  ],
+  "bytes": 32868
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E01 Concept 12.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/taller-jayce.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E01_Concept_12.jpg?cc30c",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E01_Concept_12.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T15:03:13Z",
+  "orig": [
+   1920,
+   904
+  ],
+  "size": [
+   1600,
+   670
+  ],
+  "bytes": 60218
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E04 Concept 08.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/plaza.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_08.jpg?31556",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_08.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-13T16:22:11Z",
+  "orig": [
+   1920,
+   987
+  ],
+  "size": [
+   1600,
+   732
+  ],
+  "bytes": 127862
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E04 Concept 09.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/plaza-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_09.jpg?53077",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_09.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-13T16:22:43Z",
+  "orig": [
+   1920,
+   849
+  ],
+  "size": [
+   1600,
+   629
+  ],
+  "bytes": 85226
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E04 Concept 01.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s1/artesanos.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_01.jpg?fa95d",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_01.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-07T17:46:39Z",
+  "orig": [
+   1920,
+   942
+  ],
+  "size": [
+   1600,
+   698
+  ],
+  "bytes": 97756
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E04 Concept 07.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/mercado.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_07.jpg?f4954",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_07.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-07T18:22:03Z",
+  "orig": [
+   3840,
+   1948
+  ],
+  "size": [
+   1600,
+   722
+  ],
+  "bytes": 113022
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Zaun Arcane 02.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/zaun.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Zaun_Arcane_02.jpg?87575",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Zaun_Arcane_02.jpg",
+  "uploader": "Tesla Effect",
+  "uploaded": "2022-02-03T17:46:28Z",
+  "orig": [
+   1920,
+   870
+  ],
+  "size": [
+   1600,
+   725
+  ],
+  "bytes": 32584
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E01 Concept 10.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/callejones.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E01_Concept_10.jpg?a00c5",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E01_Concept_10.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T15:02:22Z",
+  "orig": [
+   1920,
+   904
+  ],
+  "size": [
+   1600,
+   670
+  ],
+  "bytes": 32530
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E05 Concept 06.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/zaun-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E05_Concept_06.jpg?8c762",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E05_Concept_06.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-07T18:14:47Z",
+  "orig": [
+   2500,
+   1538
+  ],
+  "size": [
+   1600,
+   876
+  ],
+  "bytes": 67580
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E05 Concept 05.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/tejados.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E05_Concept_05.jpg?3e7b2",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E05_Concept_05.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-07T18:14:15Z",
+  "orig": [
+   2500,
+   1790
+  ],
+  "size": [
+   1600,
+   1020
+  ],
+  "bytes": 50926
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E09 Concept 08.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/tejados-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E09_Concept_08.jpg?101e2",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E09_Concept_08.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T18:49:50Z",
+  "orig": [
+   1920,
+   920
+  ],
+  "size": [
+   1600,
+   682
+  ],
+  "bytes": 32054
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E05 Concept 10.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/fabrica.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E05_Concept_10.jpg?3dc17",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E05_Concept_10.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T14:45:58Z",
+  "orig": [
+   1920,
+   904
+  ],
+  "size": [
+   1600,
+   670
+  ],
+  "bytes": 60142
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Zaun Arcane Firelight Tree 02.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/arbol.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Zaun_Arcane_Firelight_Tree_02.jpg?cd589",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Zaun_Arcane_Firelight_Tree_02.jpg",
+  "uploader": "Poke6668",
+  "uploaded": "2022-01-14T04:20:07Z",
+  "orig": [
+   1914,
+   782
+  ],
+  "size": [
+   1600,
+   654
+  ],
+  "bytes": 58168
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E07 Concept 08.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/arbol-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E07_Concept_08.jpg?0d417",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E07_Concept_08.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-07T18:43:01Z",
+  "orig": [
+   2560,
+   1251
+  ],
+  "size": [
+   1600,
+   696
+  ],
+  "bytes": 61362
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E09 Concept 10.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/ultima-gota.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E09_Concept_10.jpg?3fbd3",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E09_Concept_10.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-02-16T20:13:39Z",
+  "orig": [
+   1920,
+   733
+  ],
+  "size": [
+   1600,
+   543
+  ],
+  "bytes": 39182
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E04 Concept 21.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/ultima-gota-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E04_Concept_21.jpg?6f9c3",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E04_Concept_21.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-05-12T18:02:35Z",
+  "orig": [
+   3840,
+   2001
+  ],
+  "size": [
+   1600,
+   742
+  ],
+  "bytes": 66356
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S01E07 Concept 15.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s1/sumidero.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S01E07_Concept_15.jpg?88f0c",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S01E07_Concept_15.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2022-01-14T19:04:51Z",
+  "orig": [
+   1920,
+   1197
+  ],
+  "size": [
+   1600,
+   888
+  ],
+  "bytes": 35070
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E01 Concept 01.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/plaza.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E01_Concept_01.jpg?68d01",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E01_Concept_01.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2025-03-03T18:16:50Z",
+  "orig": [
+   3840,
+   1731
+  ],
+  "size": [
+   1600,
+   642
+  ],
+  "bytes": 78734
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E01 Concept 16.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/artesanos.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E01_Concept_16.jpg?22397",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E01_Concept_16.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T10:45:08Z",
+  "orig": [
+   1920,
+   820
+  ],
+  "size": [
+   1600,
+   608
+  ],
+  "bytes": 109020
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E09 Concept 26.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/artesanos-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E09_Concept_26.jpg?71811",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E09_Concept_26.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2026-05-17T23:51:46Z",
+  "orig": [
+   1920,
+   974
+  ],
+  "size": [
+   1600,
+   722
+  ],
+  "bytes": 104812
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E01 Concept 09.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/mansion-kiramman.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E01_Concept_09.jpg?fafbd",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E01_Concept_09.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-15T23:40:38Z",
+  "orig": [
+   1920,
+   779
+  ],
+  "size": [
+   1600,
+   578
+  ],
+  "bytes": 61940
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E03 Concept 19.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/consejo.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_19.jpg?3b43b",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_19.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T10:55:35Z",
+  "orig": [
+   1920,
+   917
+  ],
+  "size": [
+   1600,
+   680
+  ],
+  "bytes": 86328
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E03 Concept 20.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/consejo-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_20.jpg?adf9b",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_20.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T10:56:10Z",
+  "orig": [
+   1920,
+   933
+  ],
+  "size": [
+   1600,
+   692
+  ],
+  "bytes": 83096
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E01 Concept 05.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/consejo-c.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E01_Concept_05.jpg?2eab4",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E01_Concept_05.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2025-03-10T15:59:54Z",
+  "orig": [
+   3000,
+   1522
+  ],
+  "size": [
+   1600,
+   722
+  ],
+  "bytes": 37356
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E03 Concept 01.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/piltover.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_01.jpg?26cc8",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_01.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2025-03-03T18:29:23Z",
+  "orig": [
+   3840,
+   1898
+  ],
+  "size": [
+   1600,
+   704
+  ],
+  "bytes": 104308
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E03 Concept 22.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/tejados.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_22.jpg?6d9d3",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_22.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-04-12T07:51:28Z",
+  "orig": [
+   1920,
+   816
+  ],
+  "size": [
+   1600,
+   605
+  ],
+  "bytes": 111934
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E03 Concept 07.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/taller-jayce.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E03_Concept_07.jpg?60dd1",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E03_Concept_07.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T05:16:55Z",
+  "orig": [
+   1920,
+   873
+  ],
+  "size": [
+   1600,
+   647
+  ],
+  "bytes": 141426
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E04 Concept 02.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/muelle-stillwater.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_02.jpg?51511",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_02.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2025-03-05T02:02:37Z",
+  "orig": [
+   2048,
+   871
+  ],
+  "size": [
+   1600,
+   605
+  ],
+  "bytes": 33404
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E04 Concept 19.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/stillwater.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_19.jpg?bb97b",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_19.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-04-12T05:32:56Z",
+  "orig": [
+   1920,
+   879
+  ],
+  "size": [
+   1600,
+   652
+  ],
+  "bytes": 24374
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E02 Concept 11.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/callejones.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E02_Concept_11.jpg?cbf9a",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E02_Concept_11.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2026-06-02T20:24:27Z",
+  "orig": [
+   2048,
+   1195
+  ],
+  "size": [
+   1600,
+   830
+  ],
+  "bytes": 44600
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E04 Concept 34.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/callejones-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_34.jpg?3c244",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_34.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2026-06-02T20:24:22Z",
+  "orig": [
+   2048,
+   1024
+  ],
+  "size": [
+   1600,
+   712
+  ],
+  "bytes": 53756
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E04 Concept 11.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/puente-zaun.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_11.jpg?83fe8",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_11.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T09:33:53Z",
+  "orig": [
+   1920,
+   916
+  ],
+  "size": [
+   1600,
+   679
+  ],
+  "bytes": 67128
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E04 Concept 13.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/mercado.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E04_Concept_13.jpg?e02cf",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E04_Concept_13.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-04-11T00:15:14Z",
+  "orig": [
+   1920,
+   832
+  ],
+  "size": [
+   1600,
+   617
+  ],
+  "bytes": 62990
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E05 Concept 10.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/escondite-jinx.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E05_Concept_10.jpg?63683",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E05_Concept_10.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T10:36:15Z",
+  "orig": [
+   3000,
+   1381
+  ],
+  "size": [
+   1600,
+   655
+  ],
+  "bytes": 41840
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E06 Concept 25.jpg",
+  "dest": "arcaneData/arte/mapa/zaun/s2/invernadero.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E06_Concept_25.jpg?c374b",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E06_Concept_25.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T09:06:46Z",
+  "orig": [
+   1920,
+   815
+  ],
+  "size": [
+   1600,
+   604
+  ],
+  "bytes": 139116
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E08 Concept 10.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/hexpuertas.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E08_Concept_10.jpg?d6312",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E08_Concept_10.jpg",
+  "uploader": "TheGreatMustard",
+  "uploaded": "2025-03-16T09:09:27Z",
+  "orig": [
+   1920,
+   826
+  ],
+  "size": [
+   1600,
+   613
+  ],
+  "bytes": 70134
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E09 Concept 29.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/hexpuertas-b.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E09_Concept_29.jpg?336cb",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E09_Concept_29.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2026-05-17T23:54:32Z",
+  "orig": [
+   1920,
+   941
+  ],
+  "size": [
+   1600,
+   698
+  ],
+  "bytes": 45632
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Arcane S02E09 Concept 01.jpg",
+  "dest": "arcaneData/arte/mapa/piltover/s2/academia.webp",
+  "max": 1600,
+  "crop": [
+   0,
+   0,
+   1,
+   0.89
+  ],
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Arcane_S02E09_Concept_01.jpg?ed63e",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Arcane_S02E09_Concept_01.jpg",
+  "uploader": "Martin ormazabal",
+  "uploaded": "2025-03-05T02:13:08Z",
+  "orig": [
+   2500,
+   1528
+  ],
+  "size": [
+   1600,
+   870
+  ],
+  "bytes": 154588
+ },
+ {
+  "wiki": "lolwiki",
+  "title": "File:Ekko Arcane 6 Render.png",
+  "dest": "arcaneData/arte/personajes/referencias/s2/ekko.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://wiki.leagueoflegends.com/en-us/images/Ekko_Arcane_6_Render.png?50fc0",
+  "page": "https://wiki.leagueoflegends.com/en-us/File:Ekko_Arcane_6_Render.png",
+  "uploader": "Poke140054",
+  "uploaded": "2024-12-23T14:19:58Z",
+  "orig": [
+   550,
+   615
+  ],
+  "size": [
+   550,
+   615
+  ],
+  "bytes": 14552
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Piltover Season 1 Episode 4 001.png",
+  "dest": "arcaneData/arte/mapa/piltover/s1/piltover-b.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/7/7a/Piltover_Season_1_Episode_4_001.png/revision/latest?cb=20211206231717",
+  "page": "https://arcane.fandom.com/wiki/File:Piltover_Season_1_Episode_4_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-12-06T23:17:17Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1600,
+   678
+  ],
+  "bytes": 62196
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Piltover Bridge Season 1 Episode 7 001.png",
+  "dest": "arcaneData/arte/mapa/zaun/s1/puente-zaun-c.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/3/33/Piltover_Bridge_Season_1_Episode_7_001.png/revision/latest?cb=20211207165737",
+  "page": "https://arcane.fandom.com/wiki/File:Piltover_Bridge_Season_1_Episode_7_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-12-07T16:57:37Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1600,
+   678
+  ],
+  "bytes": 13636
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Stillwater Hold Season 1 Episode 5 001.png",
+  "dest": "arcaneData/arte/mapa/piltover/s1/stillwater-b.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/2/25/Stillwater_Hold_Season_1_Episode_5_001.png/revision/latest?cb=20211208222258",
+  "page": "https://arcane.fandom.com/wiki/File:Stillwater_Hold_Season_1_Episode_5_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-12-08T22:22:58Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1600,
+   678
+  ],
+  "bytes": 15062
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Firelights home Season 1 Episode 9 001.png",
+  "dest": "arcaneData/arte/mapa/zaun/s1/arbol-c.webp",
+  "max": 1600,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/f/f3/Firelights_home_Season_1_Episode_9_001.png/revision/latest?cb=20211207172508",
+  "page": "https://arcane.fandom.com/wiki/File:Firelights_home_Season_1_Episode_9_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-12-07T17:25:08Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1600,
+   678
+  ],
+  "bytes": 64144
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Jinx Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/jinx.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/b/b5/Jinx_Icon.jpg/revision/latest?cb=20241213001757",
+  "page": "https://arcane.fandom.com/wiki/File:Jinx_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:17:57Z",
+  "orig": [
+   1208,
+   1208
+  ],
+  "size": [
+   1208,
+   1208
+  ],
+  "bytes": 76688
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Vi Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/vi.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/5/51/Vi_Icon.jpg/revision/latest?cb=20241213001812",
+  "page": "https://arcane.fandom.com/wiki/File:Vi_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:18:12Z",
+  "orig": [
+   1208,
+   1208
+  ],
+  "size": [
+   1208,
+   1208
+  ],
+  "bytes": 114356
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Caitlyn Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/caitlyn.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/c/c9/Caitlyn_Icon.jpg/revision/latest?cb=20241213001822",
+  "page": "https://arcane.fandom.com/wiki/File:Caitlyn_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:18:22Z",
+  "orig": [
+   1208,
+   1208
+  ],
+  "size": [
+   1208,
+   1208
+  ],
+  "bytes": 89400
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Jayce Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/jayce.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/3/3d/Jayce_Icon.jpg/revision/latest?cb=20241213001951",
+  "page": "https://arcane.fandom.com/wiki/File:Jayce_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:19:51Z",
+  "orig": [
+   1071,
+   1066
+  ],
+  "size": [
+   1071,
+   1066
+  ],
+  "bytes": 60056
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Viktor Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/viktor.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/0/09/Viktor_Icon.jpg/revision/latest?cb=20241213001907",
+  "page": "https://arcane.fandom.com/wiki/File:Viktor_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:19:07Z",
+  "orig": [
+   1073,
+   1074
+  ],
+  "size": [
+   1073,
+   1074
+  ],
+  "bytes": 60392
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Mel Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/mel.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/8/83/Mel_Icon.jpg/revision/latest?cb=20241213001959",
+  "page": "https://arcane.fandom.com/wiki/File:Mel_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:19:59Z",
+  "orig": [
+   1077,
+   1073
+  ],
+  "size": [
+   1077,
+   1073
+  ],
+  "bytes": 59840
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Ekko Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/ekko.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/7/72/Ekko_Icon.jpg/revision/latest?cb=20241213001836",
+  "page": "https://arcane.fandom.com/wiki/File:Ekko_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:18:36Z",
+  "orig": [
+   1208,
+   1208
+  ],
+  "size": [
+   1208,
+   1208
+  ],
+  "bytes": 81164
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Heimerdinger Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/heimerdinger.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/e/e3/Heimerdinger_Icon.jpg/revision/latest?cb=20241213001747",
+  "page": "https://arcane.fandom.com/wiki/File:Heimerdinger_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:17:47Z",
+  "orig": [
+   1208,
+   1208
+  ],
+  "size": [
+   1208,
+   1208
+  ],
+  "bytes": 87364
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Sevika Icon.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s1/sevika.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/6/67/Sevika_Icon.jpg/revision/latest?cb=20241213002007",
+  "page": "https://arcane.fandom.com/wiki/File:Sevika_Icon.jpg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-13T00:20:07Z",
+  "orig": [
+   1066,
+   1060
+  ],
+  "size": [
+   1066,
+   1060
+  ],
+  "bytes": 67710
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Silco Season 1 Episode 7 001.png",
+  "dest": "arcaneData/arte/personajes/referencias/s1/silco.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/7/78/Silco_Season_1_Episode_7_001.png/revision/latest?cb=20211206020114",
+  "page": "https://arcane.fandom.com/wiki/File:Silco_Season_1_Episode_7_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-12-06T02:01:14Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1400,
+   594
+  ],
+  "bytes": 21636
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Vander Season 1 Episode 1 001.png",
+  "dest": "arcaneData/arte/personajes/referencias/s1/vander.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/7/7a/Vander_Season_1_Episode_1_001.png/revision/latest?cb=20211124232123",
+  "page": "https://arcane.fandom.com/wiki/File:Vander_Season_1_Episode_1_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-11-24T23:21:23Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1400,
+   594
+  ],
+  "bytes": 29972
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Cassandra Season 1 Episode 8 001.png",
+  "dest": "arcaneData/arte/personajes/referencias/s1/cassandra.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/6/69/Cassandra_Season_1_Episode_8_001.png/revision/latest?cb=20211124024634",
+  "page": "https://arcane.fandom.com/wiki/File:Cassandra_Season_1_Episode_8_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-11-24T02:46:34Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1400,
+   594
+  ],
+  "bytes": 20128
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Ambessa Season 1 Episode 8 001.png",
+  "dest": "arcaneData/arte/personajes/referencias/s1/ambessa.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/2/2a/Ambessa_Season_1_Episode_8_001.png/revision/latest?cb=20211209202324",
+  "page": "https://arcane.fandom.com/wiki/File:Ambessa_Season_1_Episode_8_001.png",
+  "uploader": "Rwtia64",
+  "uploaded": "2021-12-09T20:23:24Z",
+  "orig": [
+   1920,
+   814
+  ],
+  "size": [
+   1400,
+   594
+  ],
+  "bytes": 25970
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:JinxEP9.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/jinx.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/a/a4/JinxEP9.jpg/revision/latest?cb=20241217052835",
+  "page": "https://arcane.fandom.com/wiki/File:JinxEP9.jpg",
+  "uploader": "Vaderxl",
+  "uploaded": "2024-12-17T05:28:35Z",
+  "orig": [
+   1534,
+   1534
+  ],
+  "size": [
+   1400,
+   1400
+  ],
+  "bytes": 39488
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:ViFinaleArmor.png",
+  "dest": "arcaneData/arte/personajes/referencias/s2/vi.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/3/38/ViFinaleArmor.png/revision/latest?cb=20250315071631",
+  "page": "https://arcane.fandom.com/wiki/File:ViFinaleArmor.png",
+  "uploader": "Vaderxl",
+  "uploaded": "2025-03-15T07:16:31Z",
+  "orig": [
+   1275,
+   1602
+  ],
+  "size": [
+   1114,
+   1400
+  ],
+  "bytes": 52972
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:CaitlynS2EP5.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/caitlyn.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/3/36/CaitlynS2EP5.jpg/revision/latest?cb=20250315073803",
+  "page": "https://arcane.fandom.com/wiki/File:CaitlynS2EP5.jpg",
+  "uploader": "Vaderxl",
+  "uploaded": "2025-03-15T07:38:03Z",
+  "orig": [
+   1515,
+   1518
+  ],
+  "size": [
+   1397,
+   1400
+  ],
+  "bytes": 39756
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Jayce Promo2.jpeg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/jayce.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/b/bf/Jayce_Promo2.jpeg/revision/latest?cb=20241129110320",
+  "page": "https://arcane.fandom.com/wiki/File:Jayce_Promo2.jpeg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-11-29T11:03:20Z",
+  "orig": [
+   1024,
+   1280
+  ],
+  "size": [
+   1024,
+   1280
+  ],
+  "bytes": 39666
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Viktor Season 2 Act 2 2.webp",
+  "dest": "arcaneData/arte/personajes/referencias/s2/viktor.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/b/be/Viktor_Season_2_Act_2_2.webp/revision/latest?cb=20250212185824",
+  "page": "https://arcane.fandom.com/wiki/File:Viktor_Season_2_Act_2_2.webp",
+  "uploader": "Highwaytohellx",
+  "uploaded": "2025-02-12T18:58:24Z",
+  "orig": [
+   1562,
+   661
+  ],
+  "size": [
+   1400,
+   592
+  ],
+  "bytes": 27574
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Mel Promo2.jpeg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/mel.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/5/50/Mel_Promo2.jpeg/revision/latest?cb=20241129205729",
+  "page": "https://arcane.fandom.com/wiki/File:Mel_Promo2.jpeg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-11-29T20:57:29Z",
+  "orig": [
+   1638,
+   2048
+  ],
+  "size": [
+   1120,
+   1400
+  ],
+  "bytes": 71808
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Heimer Promo2.jpeg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/heimerdinger.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/4/46/Heimer_Promo2.jpeg/revision/latest?cb=20241129205446",
+  "page": "https://arcane.fandom.com/wiki/File:Heimer_Promo2.jpeg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-11-29T20:54:46Z",
+  "orig": [
+   1638,
+   2048
+  ],
+  "size": [
+   1120,
+   1400
+  ],
+  "bytes": 109972
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Isha Current.jpeg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/isha.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/b/b4/Isha_Current.jpeg/revision/latest?cb=20241201121429",
+  "page": "https://arcane.fandom.com/wiki/File:Isha_Current.jpeg",
+  "uploader": "Cactussandwing",
+  "uploaded": "2024-12-01T12:14:29Z",
+  "orig": [
+   1342,
+   1144
+  ],
+  "size": [
+   1342,
+   1144
+  ],
+  "bytes": 48100
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:AmbessaS2ACT1-3.jpg",
+  "dest": "arcaneData/arte/personajes/referencias/s2/ambessa.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/1/14/AmbessaS2ACT1-3.jpg/revision/latest?cb=20250315084814",
+  "page": "https://arcane.fandom.com/wiki/File:AmbessaS2ACT1-3.jpg",
+  "uploader": "Vaderxl",
+  "uploaded": "2025-03-15T08:48:14Z",
+  "orig": [
+   1552,
+   1552
+  ],
+  "size": [
+   1400,
+   1400
+  ],
+  "bytes": 110654
+ },
+ {
+  "wiki": "arcane",
+  "title": "File:Sevika Arcane 2 Render.webp",
+  "dest": "arcaneData/arte/personajes/referencias/s2/sevika.webp",
+  "max": 1400,
+  "ok": true,
+  "url": "https://static.wikia.nocookie.net/arcane/images/d/d9/Sevika_Arcane_2_Render.webp/revision/latest?cb=20240114053713",
+  "page": "https://arcane.fandom.com/wiki/File:Sevika_Arcane_2_Render.webp",
+  "uploader": "Re4wrwrfwtg",
+  "uploaded": "2024-01-14T05:37:13Z",
+  "orig": [
+   968,
+   805
+  ],
+  "size": [
+   968,
+   805
+  ],
+  "bytes": 15628
+ }
+]

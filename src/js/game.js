@@ -273,33 +273,105 @@
     return acts;
   }
 
-  /** Responde a la interacción del jugador con un lugar. */
-  function onLocation(loc, inside = false) {
-    // Primero se entra en el lugar: su fotograma de Arcane en 2D, con una pista que investigar
-    // la primera vez en cada capítulo. Al pulsar la luz del objetivo se abren sus acciones.
-    if (!inside && window.Scenes2D?.has(loc.id)) {
-      const seen = `visto:${G.progress.chapterId}:${loc.id}`;
-      World.pause(true);
-      const ok = window.Scenes2D.enterPlace(loc, Boolean(G.acts[seen]),
-        () => { G.acts[seen] = true; World.pause(false); onLocation(loc, true); },
-        () => World.pause(false));
-      if (ok) return;
-      World.pause(false);
-    }
-    // Los escenarios 3D están retirados: las acciones se abren directamente en el lugar.
-    if (loc.id === objectiveId()) G.acts[`interior:${G.progress.chapterId}`] = true;
-    const acts = locationActions(loc);
-    if (!acts.length) return toast(`${loc.name}: aquí no hay nada que hacer ahora mismo.`);
-    if (acts.length === 1) return acts[0].run();
-    // Menú de acciones del lugar.
+  /**
+   * Menú de un lugar del mapa. Al tocar un lugar no se entra directamente: se muestra su imagen de
+   * Arcane (de la temporada que se juega) y lo que se puede hacer allí, por secciones: la historia,
+   * con quién hablar, el minijuego o la actividad, explorar el escenario 2D y viajar.
+   */
+  function onLocation(loc) {
     World.pause(true);
+    overlayKind = 'lugar';
     const box = $('#overlay');
     box.innerHTML = '';
     box.className = 'overlay show';
-    box.append(el('div', { class: 'panel action-menu' },
-      el('h2', {}, loc.name),
-      ...acts.map((a, i) => el('button', { class: 'choice', onclick: () => { closeOverlay(); a.run(); } }, el('span', { class: 'num' }, i + 1), a.label)),
-      el('button', { class: 'btn ghost', onclick: closeOverlay }, 'Cerrar (Esc)')));
+    const zaun = (loc.map || G.world.map) === 'zaun';
+    const place = window.Scenes2D?.PLACES?.[loc.id];
+    const img = World.placeURL?.(loc.id);
+    const district = window.WORLD.maps[loc.map || G.world.map]?.districts.find(({ rect: [x, y, w, h] }) => loc.x >= x && loc.x < x + w && loc.y >= y && loc.y < y + h);
+    const isObj = !G.progress.finished && loc.id === objectiveId();
+    const close = () => closeOverlay();
+    // Botón de acción: título, explicación corta y etiqueta de sección.
+    const act = (tag, title, sub, run, opts = {}) => el('button', {
+      class: `choice place-act${opts.cls ? ` ${opts.cls}` : ''}`, disabled: opts.disabled || null,
+      onclick: () => { if (opts.keep) run(); else { close(); run(); } },
+    }, el('span', { class: 'place-tag' }, tag), el('span', { class: 'place-act-txt' }, el('strong', {}, title), sub ? el('small', {}, sub) : null));
+    const rows = [];
+
+    // Historia
+    if (isObj) {
+      rows.push(act('Historia', G.progress.started ? 'Continuar la historia' : `Comenzar «${chapterById(G.progress.chapterId).title}»`,
+        'El capítulo en curso sigue aquí.', () => { G.acts[`interior:${G.progress.chapterId}`] = true; openStory(); }, { cls: 'gold' }));
+    } else if (!G.progress.finished && objectiveId()) {
+      rows.push(act('Historia', `La historia sigue en ${objectiveName()}`, 'Te lo señalo en el mapa.', () => World.focus?.(objectiveId()), { cls: 'muted-act' }));
+    }
+
+    // Conversar con quien está aquí
+    const here = talkable().filter((id) => window.WORLD.homes[id] === loc.id && !(window.WORLD.absent[id] || []).includes(G.progress.chapterId));
+    here.forEach((id) => {
+      const b = act('Conversar', `Hablar con ${charName(id)}`, heartText(id), () => openOverlay('chats', id));
+      b.prepend(el('span', { class: 'place-face', html: `<img alt="" src="${esc(Portrait.customChar(id, false) || Portrait.charURL(id, 96))}">` }));
+      rows.push(b);
+    });
+
+    // Minijuego o actividad
+    if (loc.activity) {
+      const a = loc.activity;
+      const key = `${loc.id}:${G.progress.chapterIdx}`;
+      const done = G.acts[key];
+      const maxed = (G.stats[a.stat] || 0) >= window.WORLD.maxStat;
+      const stat = S().stats[a.stat].label;
+      const tag = a.game ? 'Minijuego' : 'Actividad';
+      if (!done && !maxed) rows.push(act(tag, a.label, `Recompensa: +1 ${stat}`, () => doActivity(loc, key)));
+      else if (a.game) rows.push(act(tag, `${a.label} (práctica)`, done ? 'Ya ganaste la recompensa en este capítulo.' : `${stat} ya está al máximo.`, () => practice(a.game)));
+      else rows.push(act(tag, a.label, done ? 'Ya lo hiciste en este capítulo.' : `${stat} ya está al máximo.`, () => {}, { disabled: true }));
+    }
+
+    // Explorar el escenario 2D (pista del capítulo)
+    if (window.Scenes2D?.has(loc.id) && window.Scenes2D.imageFor(loc.id, place[1])) {
+      const seen = `visto:${G.progress.chapterId}:${loc.id}`;
+      rows.push(act('Explorar', 'Explorar el lugar', G.acts[seen] ? 'Ya encontraste la pista de este capítulo.' : 'Hay una pista por descubrir.', () => explorePlace(loc, seen)));
+    }
+
+    // Viajar
+    if (loc.travel) rows.push(act('Viajar', loc.travel.label, `Ir a ${window.WORLD.maps[loc.travel.to].label}`, () => travel(loc.travel)));
+
+    box.append(el('div', { class: `panel action-menu place-menu ${zaun ? 'place-zaun' : 'place-piltover'}` },
+      el('div', { class: 'place-hero', style: img ? `background-image:url("${img.replace(/"/g, '%22')}")` : '' },
+        el('div', { class: 'place-hero-txt' },
+          el('small', {}, `${window.WORLD.maps[loc.map || G.world.map].label}${district ? ` · ${district.name}` : ''}`),
+          el('h2', {}, loc.name),
+          place?.[4] ? el('p', {}, place[4]) : null),
+        isObj ? el('span', { class: 'place-badge' }, 'Objetivo') : null),
+      el('div', { class: 'place-acts' }, rows.length ? rows : el('p', { class: 'muted' }, 'Aquí no hay nada que hacer ahora mismo. Vuelve en otro capítulo.')),
+      el('button', { class: 'btn ghost', onclick: close }, `Volver al mapa${keyHint('Esc')}`)));
+  }
+
+  /** Afinidad en texto corto para el menú de un lugar. */
+  function heartText(id) {
+    const a = affOf(id);
+    return a >= 6 ? 'Os lleváis muy bien' : a >= 3 ? 'Hay confianza' : a <= -3 ? 'No se fía de ti' : 'Os estáis conociendo';
+  }
+
+  /** Minijuego sin recompensa desde el menú de un lugar. */
+  async function practice(game) {
+    World.pause(true);
+    await Minigames.play(game, { bonus: mgBonus(game) });
+    World.pause(false);
+  }
+
+  /** Abre el escenario 2D del lugar; al encontrar la pista y el objetivo vuelve al menú o a la historia. */
+  function explorePlace(loc, seen) {
+    World.pause(true);
+    let reached = false;
+    const ok = window.Scenes2D.enterPlace(loc, Boolean(G.acts[seen]),
+      () => {
+        reached = true;
+        G.acts[seen] = true;
+        persist();
+        if (!G.progress.finished && loc.id === objectiveId()) { G.acts[`interior:${G.progress.chapterId}`] = true; openStory(); } else onLocation(loc);
+      },
+      () => Promise.resolve().then(() => { if (!reached) onLocation(loc); }));
+    if (!ok) onLocation(loc);
   }
 
   /** Inicia una actividad o minijuego del escenario. */
@@ -307,7 +379,7 @@
     const a = loc.activity;
     if (a.game) {
       World.pause(true);
-      const win = await Minigames.play(a.game, { bonus: mgBonus(a.game) });
+      const win = await Minigames.play(a.game, { bonus: mgBonus(a.game), place: loc.id });
       World.pause(false);
       if (!win) {
         toast('Esta vez no ha salido. Puedes volver a intentarlo cuando quieras.', 'warn');
@@ -350,6 +422,7 @@
       locationActions: (loc) => locationActions(loc).map((a) => a.label),
       onLocation,
       onTalk: (id) => openOverlay('chats', id),
+      onTravel: (to) => { toast(`Llegas a ${window.WORLD.maps[to].label}`); persist(); },
       onVisit: (loc) => {
         if (!G.visited.includes(loc.id)) {
           G.visited.push(loc.id);
@@ -600,18 +673,18 @@
   function showHelp() {
     if (U.touch) {
       showNotice('Controles', [
-        'Moverse: toca el mapa para mover la vista, o toca un personaje o un lugar para ir hasta él y abrirlo.',
-        'Hablar, entrar o usar: botón ✦ de abajo a la derecha, o toca el aviso que sale en pantalla.',
-        'Mapa 2D: pulsa sobre un lugar o personaje para acercarte e interactuar.',
+        'Mapa: arrastra con un dedo para moverte y pellizca para acercar o alejar. Los botones de la derecha acercan, alejan, enseñan la ciudad entera, te llevan al objetivo y cambian de ciudad.',
+        'Toca un lugar para ver qué puedes hacer allí: seguir la historia, hablar con quien esté, jugar su minijuego, explorarlo o viajar. Toca una cara para hablar con ese personaje.',
+        'La línea dorada discontinua marca el camino hasta el objetivo de la historia.',
         'Los botones de abajo abren la historia, el comunicador, la ficha, el Códice, el Atlas y la pausa. El botón «atrás» del móvil cierra ventanas y pausa.',
         'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
       ].join('\n'));
       return;
     }
     showNotice('Controles', [
-      'Moverse: haz clic en el mapa para mover la vista, o en un personaje o un lugar para ir hasta él y abrirlo.',
-      'Interactuar / hablar / entrar: E o Intro.',
-      'Mapa 2D: haz clic para desplazarte y explorar Piltover o Zaun.',
+      'Mapa: arrastra para moverte (o flechas / WASD), rueda o + y - para acercar y alejar, 0 para ver la ciudad entera. Doble clic acerca.',
+      'Haz clic en un lugar (o E) para ver qué puedes hacer allí: seguir la historia, hablar con quien esté, jugar su minijuego, explorarlo o viajar. Clic en una cara para hablar con ese personaje.',
+      'La línea dorada discontinua marca el camino hasta el objetivo. Los números 1-9 eligen una opción del menú del lugar.',
       'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
@@ -1287,7 +1360,11 @@
     const list = base.filter((o) => !dlgHidden(o.req, id) && !(o.once && seen[dlgKey(id, at, o)]))
       .map((o) => ({ ...o, __node: at }));
     if (at === 'hub') list.push({ t: 'Hasta luego.', tone: 'amable', go: 'bye', __node: at, __bye: true });
-    else if (at.startsWith('__') || !data.nodes[at].noBack) list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
+    else if (at.startsWith('__') || !data.nodes[at].noBack) {
+      // Desde cualquier rama puedes cambiar de tema o despedirte.
+      list.push({ t: 'Cambiar de tema.', go: 'hub', __node: at, __back: true });
+      list.push({ t: 'Hasta luego.', tone: 'amable', go: 'bye', __node: at, __bye: true });
+    }
     return list;
   }
 
@@ -1530,7 +1607,7 @@
     }
     await speak(id, said);
     talkState().at[id] = go;
-    if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, [].concat(data.nodes[go].say));
+    if (go !== 'hub' && go !== 'bye' && data.nodes[go]?.say) await speak(id, nodeLines(id, go, data.nodes[go]));
     talking = false;
     if (tab === 'chats' && contact) {
       refreshChatHead(contact);
@@ -1540,6 +1617,16 @@
     }
     renderContacts();
     persist();
+  }
+
+  // Lo que dice el personaje al llegar a una rama. Si ya habías pasado por ella y tiene `again`,
+  // usa esas frases por turnos para que las conversaciones largas no se repitan.
+  function nodeLines(id, nid, node) {
+    const visits = (talkState().visits = talkState().visits || {});
+    const k = `${id}:${nid}`;
+    visits[k] = (visits[k] || 0) + 1;
+    if (visits[k] > 1 && node.again?.length) return [node.again[(visits[k] - 2) % node.again.length]];
+    return [].concat(node.say);
   }
 
   /** Presenta un aviso de cambio de relación o afinidad. */
