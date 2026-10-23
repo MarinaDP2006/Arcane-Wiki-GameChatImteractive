@@ -13,7 +13,7 @@ const out = path.join(root, 'web-dist');
 function loadData() {
   const ctx = { window: {} };
   vm.createContext(ctx);
-  for (const f of ['wiki.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'atlas.js']) {
+  for (const f of ['wiki.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'atlas.js']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
   }
   return ctx.window;

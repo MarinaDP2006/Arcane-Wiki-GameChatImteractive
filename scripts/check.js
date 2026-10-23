@@ -6,7 +6,7 @@ const vm = require('vm');
 
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['wiki.js', 'creation.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'relations.js', 'world.js', 'atlas.js']) {
+for (const f of ['wiki.js', 'creation.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'relations.js', 'world.js', 'atlas.js']) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', f), 'utf8'), ctx, { filename: f });
 }
 const { WIKI, STORY, CHAT, CREATION, WORLD, ATLAS, RELATIONS } = ctx.window;
@@ -151,6 +151,7 @@ for (const [id, d] of Object.entries(CHAT)) {
   d.hub.forEach((o) => check(`chat ${id}.hub`, 'hub', o));
   for (const [nid, n] of Object.entries(d.nodes || {})) {
     if (!n.opts?.length) errors.push(`chat ${id}.${nid}: nodo sin opciones`);
+    if (n.again && (!Array.isArray(n.again) || n.again.some((l) => typeof l !== 'string'))) errors.push(`chat ${id}.${nid}: «again» debe ser una lista de frases`);
     (n.opts || []).forEach((o) => check(`chat ${id}.${nid}`, nid, o));
     const reached = [...d.hub, ...Object.values(d.nodes).flatMap((x) => x.opts)].some((o) => o.go === nid);
     if (!reached) errors.push(`chat ${id}.${nid}: ningún diálogo lleva a este nodo`);
