@@ -81,8 +81,8 @@ function createWindow() {
 // en lugar del arte pintado que genera. No se distribuye nada con el juego.
 // «escenas» es el nombre antiguo de «lugares» y se sigue leyendo.
 const ART_DIRS = ['avatares', 'personajes', 'caras', 'lugares', 'codice'];
-// Imágenes por temporada de Arcane: lugares/s1, lugares/s2, personajes/s1... (mandan sobre las generales).
-const SEASON_DIRS = ['lugares', 'personajes', 'caras'].flatMap((d) => [`${d}/s1`, `${d}/s2`]);
+// El universo original no usa carpetas de temporada ni arte de Arcane.
+const SEASON_DIRS = [];
 const ART_EXT = /\.(png|jpe?g|webp|gif)$/i;
 const artRoot = () => path.join(app.getPath('userData'), 'arte');
 
@@ -93,8 +93,7 @@ function ensureArtDir() {
 }
 
 // Otros nombres con los que la jugadora guarda las caras de los personajes.
-const ART_ALIASES = { ambressa: 'ambessa', kiraman: 'cassandra', kiramman: 'cassandra', 'cassandra-kiramman': 'cassandra', powder: 'jinx', violet: 'vi',
-  heirmendinger: 'heimerdinger', heimendinger: 'heimerdinger', heimer: 'heimerdinger' };
+const ART_ALIASES = { iria: 'iria-venn', darel: 'darel-ossan', saia: 'saia-merel', toren: 'toren-vale', nyra: 'nyra-quell', bastian: 'bastian-rook', oren: 'oren-caldus', maelis: 'maelis-thorn', joren: 'joren-ash', edda: 'edda-lume' };
 
 /** Enumera el contenido de una carpeta autorizada. */
 function listDir(dir) {
@@ -133,33 +132,8 @@ const listArt = (root, d) => listDir(path.join(root, d));
 // Arte incluido con el juego (src/img/arte); lo que pongas en tu carpeta de arte lo sustituye.
 const bundledRoot = () => path.join(__dirname, 'src', 'img', 'arte');
 
-// Las versiones anteriores podían bajar retratos de Riot (Data Dragon). Ahora todo sale de la
-// Arcane Wiki, así que esos archivos se apartan a «_riot-retirado» (no se borran). Se reconocen
-// por su tamaño: cuerpo 308×560 (loading), ilustración 1215×717 (splash) y cara 256×256 recortada.
-function retireRiotArt() {
-  const size = (f) => { try { return nativeImage.createFromPath(f).getSize(); } catch { return {}; } };
-  const is = (f, w, h) => { const s = size(f); return s.width === w && s.height === h; };
-  const move = (dir, file) => {
-    const to = path.join(artRoot(), '_riot-retirado', dir);
-    fs.mkdirSync(to, { recursive: true });
-    try { fs.renameSync(path.join(artRoot(), dir, file), path.join(to, file)); } catch { /* en uso */ }
-  };
-  const bodies = path.join(artRoot(), 'personajes');
-  if (!fs.existsSync(bodies)) return;
-  for (const f of fs.readdirSync(bodies)) {
-    if (!/\.jpg$/i.test(f) || !is(path.join(bodies, f), 308, 560)) continue;
-    const id = f.replace(/\.jpg$/i, '');
-    const when = fs.statSync(path.join(bodies, f)).mtimeMs;
-    move('personajes', f);
-    if (is(path.join(artRoot(), 'codice', `${id}.jpg`), 1215, 717)) move('codice', `${id}.jpg`);
-    const face = path.join(artRoot(), 'caras', `${id}.png`);
-    if (fs.existsSync(face) && is(face, 256, 256) && Math.abs(fs.statSync(face).mtimeMs - when) < 60000) move('caras', `${id}.png`);
-  }
-}
-
 ipcMain.handle('art:list', () => {
   ensureArtDir();
-  retireRiotArt();
   const out = {};
   const roots = besideRoots();
   for (const d of [...ART_DIRS, ...SEASON_DIRS]) {
@@ -186,14 +160,9 @@ ipcMain.handle('art:guide', (_e, text) => {
 });
 
 // ---------- Modelos 3D (.glb, .fbx o .zip) ----------
-// Personajes en 3D para el mundo abierto (por ejemplo, de Mixamo o Sketchfab): modelos/<id>.glb,
-// .fbx o .zip (con el .fbx y sus texturas dentro), modelos/jugador.*, modelos/generico.* y
-// modelos/animaciones/{reposo,andar,correr}.*. El nombre vale aunque lleve más palabras
-// («Vi_Arcane.zip» es Vi). También se miran las carpetas de personajes con «3d» en el nombre
-// (personajes/3d models). Se leen de src/models (incluidos con el juego), de las carpetas «arte»
-// de siempre y de la carpeta de arte de AppData, que manda sobre las demás.
-const MODEL_IDS = ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino', 'jugador', 'generico'];
-const MODEL_ALIASES = { ...ART_ALIASES, cait: 'caitlyn', heimer: 'heimerdinger', player: 'jugador', generic: 'generico' };
+// Modelos 3D del universo original; los IDs coinciden con src/data/original-world.js.
+const MODEL_IDS = ['iria-venn', 'darel-ossan', 'saia-merel', 'toren-vale', 'nyra-quell', 'bastian-rook', 'oren-caldus', 'maelis-thorn', 'joren-ash', 'edda-lume', 'jugador', 'generico'];
+const MODEL_ALIASES = { ...ART_ALIASES, player: 'jugador', generic: 'generico' };
 const MODEL_EXT = /\.(glb|fbx|obj|zip)$/i;
 // Carpeta persistente donde se guardan los modelos ya preparados (texturas reducidas).
 const modelCache = () => path.join(artRoot(), 'modelos', '_cache');
@@ -210,7 +179,7 @@ function modelName(base) {
   return n;
 }
 
-// Primer modelo dentro de una carpeta (un .zip descomprimido: «vi_arcane/source/Vi.fbx»).
+// Primer modelo dentro de una carpeta de recursos personales descomprimidos.
 function findModel(dir, depth = 0) {
   let list;
   try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return null; }
@@ -294,7 +263,7 @@ ipcMain.handle('model:read', async (_e, name) => {
 // Fondos panorámicos del mundo abierto: vienen dentro del juego (src/img/arte/mapa) y
 // también puedes poner los tuyos en las carpetas mapa/piltover y mapa/zaun de tu carpeta de arte.
 const REGIONS = ['piltover', 'zaun'];
-const MAP_FALLBACK = { piltover: ['piltover', 'academia', 'consejo', 'taller-jayce', 'stillwater', 'hexpuertas'], zaun: ['zaun', 'ultima-gota', 'comuna-viktor'] };
+const MAP_FALLBACK = { piltover: ['aurelia', 'archivo', 'observatorio', 'ascensor-central'], zaun: ['nacar', 'mercado-nacar', 'clinica', 'canal-cobre'] };
 const mapDir = (region) => path.join(artRoot(), 'mapa', region);
 
 // Las imágenes viajan como data: URL para que WebGL pueda usarlas como textura.
@@ -400,7 +369,7 @@ function writeSave(slot, data) {
       'Fecha': saved.savedAt || '',
       'Tiempo de juego': saved.playTimeSeconds || 0,
       'Nivel en historia': saved.progress?.chapterTitle || saved.progress?.chapterId || '',
-      'Ciudad': saved.player?.origin === 'zaun' ? 'Zaun' : saved.player?.origin === 'piltover' ? 'Piltover' : '',
+      'Ciudad': saved.player?.origin === 'zaun' ? 'Nácar' : saved.player?.origin === 'piltover' ? 'Aurelia' : '',
     });
   } finally {
     if (fs.existsSync(tmp)) fs.rmSync(tmp, { force: true });
