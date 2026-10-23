@@ -14,8 +14,12 @@
     const dots = Array.from({ length: n }, () => ({ x: Math.random(), y: Math.random(), r: 0.6 + Math.random() * 2.2, v: 0.004 + Math.random() * 0.012, p: Math.random() * 6 }));
     const fog = Array.from({ length: reduce() ? 0 : 6 }, (_, i) => ({ x: Math.random(), y: 0.55 + Math.random() * 0.45, r: 0.25 + Math.random() * 0.3, v: (i % 2 ? 1 : -1) * (0.004 + Math.random() * 0.006) }));
     return (t, dt) => {
-      const w = canvas.width = canvas.clientWidth * (window.devicePixelRatio || 1);
-      const h = canvas.height = canvas.clientHeight * (window.devicePixelRatio || 1);
+      // A resize invalidates Canvas state and its backing buffer: only do it when needed.
+      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const w = Math.max(1, Math.round(canvas.clientWidth * dpr));
+      const h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      if (canvas.width !== w) canvas.width = w;
+      if (canvas.height !== h) canvas.height = h;
       g.clearRect(0, 0, w, h);
       for (const f of fog) {
         f.x = (f.x + f.v * dt + 1.6) % 1.6 - 0.3;
@@ -30,7 +34,7 @@
         const x = (d.x + Math.sin(t * 0.4 + d.p) * 0.01) * w, y = d.y * h;
         const a = 0.35 + 0.35 * Math.sin(t * 1.3 + d.p);
         g.fillStyle = zaun ? `rgba(150,240,140,${a})` : `rgba(255,220,150,${a})`;
-        g.beginPath(); g.arc(x, y, d.r * (window.devicePixelRatio || 1), 0, 7); g.fill();
+        g.beginPath(); g.arc(x, y, d.r * dpr, 0, 7); g.fill();
       }
       g.globalCompositeOperation = 'source-over';
     };
@@ -41,6 +45,7 @@
     if (!active) return;
     const s = active; active = null;
     cancelAnimationFrame(s.raf);
+    window.removeEventListener('resize', s.layout);
     window.removeEventListener('keydown', s.keydown);
     window.removeEventListener('keyup', s.keyup);
     s.root.remove();
@@ -156,11 +161,13 @@
     window.addEventListener('resize', layout);
 
     const drawFx = particles(fx, city);
-    const session = { root, keydown, keyup, onExit, raf: 0 };
+    const session = { root, keydown, keyup, layout, onExit, raf: 0 };
     active = session;
     let last = 0;
     function frame(now) {
-      if (active !== session) { window.removeEventListener('resize', layout); return; }
+      if (active !== session) return;
+      // Avoid expensive drawing and DOM work while the application is in the background.
+      if (document.hidden) { last = now; session.raf = requestAnimationFrame(frame); return; }
       const t = now / 1000, dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
       const dx = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
       const dy = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
@@ -171,9 +178,10 @@
       if (!reduce()) img.style.transform = `scale(${1 + Math.sin(t * 0.15) * 0.008}) translate(${Math.sin(t * 0.11) * 3}px, ${Math.cos(t * 0.13) * 2}px)`;
       drawFx(t, dt);
       const target = inspected ? 'goal' : 'clue';
-      status.textContent = visible(target)
+      const nextStatus = visible(target)
         ? (inspected ? 'Pulsa la luz del objetivo (o E) para continuar la historia.' : 'Ahí hay algo: pulsa la pista azul (o E) para investigar.')
         : (inspected ? 'Pista encontrada. Busca la luz del objetivo por el lugar.' : 'Explora el lugar y busca la pista azul.');
+      if (status.textContent !== nextStatus) status.textContent = nextStatus;
       session.raf = requestAnimationFrame(frame);
     }
     session.raf = requestAnimationFrame(frame);
