@@ -1,6 +1,6 @@
 // Escenarios pintados y animados para la historia, el menú, las cinemáticas y el Códice.
 // Cada escena tiene una capa estática pintada (en caché) y efectos animados encima:
-// niebla, partículas, rayos de luz, neones que parpadean y brillos hextec.
+// niebla, partículas, rayos de luz, neones que parpadean y brillos de Resonancia.
 // Si la jugadora pone una imagen propia en la carpeta de arte, se usa como capa base.
 (function () {
   function rng(seed) {
@@ -15,31 +15,29 @@
 
   // Temas de escena. type: ciudad dorada, ciudad química, interiores, naturaleza…
   const THEMES = {
-    piltover: { type: 'gold', sky: ['#f6c879', '#e0874a', '#5a2a3a'], sun: [0.7, 0.32, '#fff0c0'], fx: 'dust', seed: 11 },
-    plaza: { type: 'gold', sky: ['#f3d48a', '#d98a4a', '#4a2a2a'], sun: [0.3, 0.3, '#fff3d0'], fx: 'dust', seed: 17 },
-    artesanos: { type: 'gold', sky: ['#e9b86a', '#b0603a', '#3a1a1a'], sun: [0.5, 0.26, '#ffe0a0'], fx: 'dust', seed: 23 },
-    consejo: { type: 'hall', tint: '#d4a73f', glass: ['#3fa9f5', '#e3c45a', '#c0453a'], fx: 'rays', seed: 5 },
-    academia: { type: 'library', tint: '#e3c45a', fx: 'rays', seed: 8 },
-    'taller-jayce': { type: 'workshop', tint: '#3fa9f5', fx: 'hex', seed: 9 },
-    'mansion-kiramman': { type: 'hall', tint: '#5a7ac4', glass: ['#5a7ac4', '#e3c45a', '#a0c0e0'], fx: 'rays', seed: 31 },
-    ejecutores: { type: 'hall', tint: '#4a6aa0', glass: ['#2f4a8a', '#d0d8e0', '#2f4a8a'], fx: 'rays', seed: 41 },
-    hexpuertas: { type: 'gate', sky: ['#9ad0f0', '#e0a070', '#3a2a40'], fx: 'hex', seed: 13 },
-    puente: { type: 'bridge', sky: ['#f0b070', '#a05a5a', '#1a2a2a'], fx: 'dust', seed: 3 },
-    'puente-zaun': { type: 'bridge', sky: ['#c08060', '#3a4a4a', '#0a1414'], fx: 'smoke', seed: 4 },
-    stillwater: { type: 'prison', fx: 'rain', seed: 19 },
-    'muelle-stillwater': { type: 'prison', fx: 'rain', seed: 20 },
-    noxus: { type: 'fortress', fx: 'embers', seed: 29 },
-    zaun: { type: 'chem', sky: ['#1a3a34', '#0c1c1a', '#050a0a'], neon: ['#3fbf9f', '#e0457b', '#bf3abf', '#8fbf3a'], fx: 'smoke', seed: 2 },
-    callejones: { type: 'chem', sky: ['#2a2a4a', '#141428', '#06060c'], neon: ['#e0457b', '#7a5abf', '#3fbf9f', '#f0a040'], fx: 'smoke', seed: 6 },
-    mercado: { type: 'chem', sky: ['#3a2a3a', '#1a1018', '#08060a'], neon: ['#f0a040', '#e0457b', '#3fbf9f'], fx: 'smoke', seed: 21 },
-    tejados: { type: 'chem', sky: ['#4a4a5a', '#1a1a24', '#08080c'], neon: ['#bf3abf', '#3fbf9f'], fx: 'smoke', seed: 27 },
-    fabrica: { type: 'chem', sky: ['#2a3a1a', '#121a0a', '#050805'], neon: ['#8fbf3a', '#bf3abf'], fx: 'smoke', seed: 33 },
-    foso: { type: 'chem', sky: ['#3a1a1a', '#1a0a0a', '#050202'], neon: ['#e0457b', '#f0a040'], fx: 'embers', seed: 37 },
-    'ultima-gota': { type: 'tavern', tint: '#e0a050', fx: 'dustwarm', seed: 7 },
-    'tienda-benzo': { type: 'workshop', tint: '#f0a040', fx: 'dustwarm', seed: 43 },
-    sumidero: { type: 'sump', fx: 'spores', seed: 12 },
-    'escondite-jinx': { type: 'hideout', fx: 'sparks', seed: 15 },
-    arbol: { type: 'tree', fx: 'fireflies', seed: 14 },
+    aurelia: { type:'gold', sky:['#d9e6e7','#f4d5a3','#8f6b4a'], sun:[0.72,0.25,'#fff0c0'], fx:'dust', seed:11 },
+    nacar: { type:'chem', sky:['#1d4b46','#102824','#070e10'], neon:['#55d6b3','#e8a45f','#65b8a7'], fx:'smoke', seed:2 },
+    'aurelia-lift': { type:'workshop', tint:'#b78b45', fx:'rays', seed:13 },
+    'nacar-lift': { type:'workshop', tint:'#55d6b3', fx:'spores', seed:17 },
+    'nacar-archive': { type:'hall', tint:'#3f9b87', glass:['#55d6b3','#e8a45f','#c5d5c9'], fx:'rays', seed:19 },
+    'aurelia-archive': { type:'library', tint:'#c4a36a', fx:'rays', seed:23 },
+    'nacar-central': { type:'chem', sky:['#244c45','#152b27','#080f10'], neon:['#55d6b3','#e8a45f'], fx:'smoke', seed:29 },
+    'aurelia-council': { type:'hall', tint:'#c5a36a', glass:['#e8dfc9','#b78b45','#4e6a73'], fx:'rays', seed:31 },
+    archivo: { type:'library', tint:'#c4a36a', fx:'dustwarm', seed:37 },
+    observatorio: { type:'gold', sky:['#9db8c6','#f4d5a3','#b78b52'], sun:[0.55,0.2,'#fff0c0'], fx:'dust', seed:41 },
+    gremios: { type:'hall', tint:'#b78b45', glass:['#d8c9a6','#8eaa9f','#b78b45'], fx:'rays', seed:43 },
+    'ascensor-central': { type:'gate', sky:['#a9c5d0','#f4d5a3','#6b5b49'], fx:'hex', seed:47 },
+    cristal: { type:'gold', sky:['#c6d9dc','#f4d5a3','#8b6a4c'], sun:[0.32,0.28,'#fff0c0'], fx:'dust', seed:53 },
+    'mercado-nacar': { type:'chem', sky:['#2d5149','#162d29','#080f10'], neon:['#e8a45f','#55d6b3'], fx:'smoke', seed:59 },
+    galerias: { type:'sump', fx:'spores', seed:61 },
+    'jardin-musgo': { type:'tree', fx:'fireflies', seed:67 },
+    clinica: { type:'hall', tint:'#5a9a82', glass:['#d8e7dc','#55d6b3','#e8a45f'], fx:'rays', seed:71 },
+    'canal-cobre': { type:'chem', sky:['#244b43','#122a26','#080f10'], neon:['#b78b45','#55d6b3'], fx:'smoke', seed:73 },
+    'archivo-de-frecuencias': { type:'library', tint:'#c4a36a', fx:'rays', seed:79 },
+    'polillas-de-cristal': { type:'tree', fx:'fireflies', seed:83 },
+    resonancia: { type:'gate', sky:['#b9d2d5','#e8c88e','#30494b'], fx:'hex', seed:89 },
+    contrapesos: { type:'workshop', tint:'#8eaa9f', fx:'rays', seed:97 },
+    'red-vecinal': { type:'tavern', tint:'#55a38a', fx:'dustwarm', seed:101 },
   };
 
   const has = (id) => Boolean(THEMES[id]);
