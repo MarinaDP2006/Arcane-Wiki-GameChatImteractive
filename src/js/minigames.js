@@ -1,5 +1,5 @@
-// Minijuegos: pelea en el foso, carrera por los tejados, aerotabla, galería de tiro,
-// circuito hextec, runas de la Academia y regateo en el mercado.
+// Minijuegos: pruebas de fuerza, carrera por pasarelas, plataforma ligera, galería de tiro,
+// circuito de Resonancia, calibración de frecuencias y regateo en el mercado.
 // Minigames.play(id) abre el minijuego a pantalla completa y resuelve true si se gana.
 // Todos comparten un marco común: lienzo nítido en pantallas de alta densidad, cuenta atrás,
 // partículas (chispas, humo, brasas), sacudidas de cámara, destellos, viñeta y botones táctiles.
@@ -492,7 +492,7 @@
     ctx.closePath();
   }
 
-  // Aerotabla de las Luciérnagas (sin piloto): tabla curvada de chapa y madera, núcleo verde
+  // Plataforma de mantenimiento (sin piloto): tabla curvada de chapa y madera, núcleo verde
   // que late, aletas traseras y dos toberas cuyo chorro crece al acelerar.
   function drawHoverboard(ctx, x, y, t, o = {}) {
     const s = o.scale || 1;
@@ -527,7 +527,7 @@
     for (const vx of [-24, -12, 0, 12]) { ctx.beginPath(); ctx.moveTo(vx, -3); ctx.lineTo(vx + 3, 1); ctx.stroke(); }
     ctx.fillStyle = '#f0d080';
     for (const rx of [-30, -6, 18]) { ctx.beginPath(); ctx.arc(rx, 6, 1.2, 0, TAU); ctx.fill(); }
-    // Pintura de las Luciérnagas: franja y tres puntos
+    // Pintura de la brigada de mantenimiento: franja y tres puntos
     ctx.fillStyle = '#5affd0';
     ctx.fillRect(-20, 4, 26, 2);
     for (const px of [10, 14, 18]) { ctx.beginPath(); ctx.arc(px, 5, 1, 0, TAU); ctx.fill(); }
@@ -665,7 +665,7 @@
   const ARROW_ANG = { arrowup: -Math.PI / 2, arrowdown: Math.PI / 2, arrowleft: Math.PI, arrowright: 0 };
   GAMES.foso = {
     touchKeys: [['arrowup', '▲'], ['arrowleft', '◀'], ['arrowdown', '▼'], ['arrowright', '▶']], touchLayout: 'dpad',
-    title: 'Pelea en el foso', icon: '', scene: 'foso', grade: 'foso', backdrops: ['foso', 'ultima-gota', 'callejones', 'zaun', 'sumidero'],
+    title: 'Pelea en el foso', icon: '', scene: 'foso', grade: 'foso', backdrops: ['canal-cobre', 'mercado-nacar', 'galerias', 'nacar'],
     desc: 'La multitud ruge. Tu rival ataca rápido: responde con la flecha correcta antes de que el anillo se cierre para esquivar y contraatacar.',
     controls: 'Flechas del teclado (o W A S D).', touchControls: 'Pulsa la flecha que aparece con los botones de la derecha.', goal: 'Deja a tu rival sin energía antes de que te pase a ti.',
     winText: 'Tu rival besa la lona. El foso corea tu nombre.', loseText: 'Acabas en el suelo. Levántate e inténtalo otra vez.',
@@ -673,7 +673,7 @@
       const map = { w: 'arrowup', s: 'arrowdown', a: 'arrowleft', d: 'arrowright' };
       const rival = paintedImg(o.rivalLook || { skin: '#c9a080', face: 'angular', eyes: 'rasgados', hair: '#5a4a5a', style: 'undercut', outfit: 'top', outfitColor: '#2a2a2a', accents: ['arm', 'scar'], browAngle: 3 }, '#e0457b', ['#5a1a1a', '#0a0202']);
       // Rival con retrato del personaje original que indique la historia.
-      const rivalFace = window.Depth ? Depth.face(o.rival || pick(['sevika', 'vi'])) : null;
+      const rivalFace = window.Depth ? Depth.face(o.rival || pick(['darel-ossan', 'toren-vale'])) : null;
       const b = o.bonus || 0;
       const crowd = Array.from({ length: Math.ceil(w / 26) + 2 }, (_, i) => ({ x: i * 26 - 13, s: 0.8 + Math.random() * 0.5, ph: Math.random() * TAU, row: i % 2 }));
       const s = Math.min(w, h) * 0.46;
@@ -802,15 +802,15 @@
   function runner(mode) {
     const fly = mode === 'fly';
     return {
-      title: fly ? 'Vuelo en aerotabla' : 'Carrera por los tejados', icon: '', scene: fly ? 'arbol' : 'tejados', grade: 'zaun',
-      backdrops: fly ? ['sumidero', 'arbol', 'zaun', 'fabrica', 'puente-zaun', 'invernadero'] : ['tejados', 'callejones', 'zaun', 'puente-zaun', 'fabrica', 'mercado'],
+      title: fly ? 'Vuelo en plataforma' : 'Carrera por pasarelas', icon: '', scene: fly ? 'jardin-musgo' : 'galerias', grade: 'zaun',
+      backdrops: fly ? ['canal-cobre', 'jardin-musgo', 'nacar', 'galerias'] : ['galerias', 'mercado-nacar', 'nacar', 'canal-cobre'],
       desc: fly
         ? 'Surca los canales de Nácar en una plataforma ligera, esquivando tuberías y chimeneas.'
-        : 'Huye por los tejados de las Chimeneas. Salta los huecos y las chimeneas sin que te atrapen.',
+        : 'Cruza las pasarelas de mantenimiento. Salta los huecos y evita las válvulas de vapor.',
       controls: fly ? 'Mantén Espacio, ↑ o el ratón para subir.' : 'Espacio, ↑ o clic para saltar (doble salto permitido).',
       touchControls: fly ? 'Mantén el dedo en la pantalla para subir.' : 'Toca la pantalla para saltar (doble salto permitido).',
       goal: 'Aguanta 25 segundos sin chocar.',
-      winText: fly ? 'Aterrizas en el árbol entre aplausos de las Luciérnagas.' : 'Te pierdes entre las sombras. Nadie te ha visto.',
+      winText: fly ? 'Aterrizas en el árbol entre aplausos de la brigada de mantenimiento.' : 'Te pierdes entre las sombras. Nadie te ha visto.',
       loseText: '¡Crash! Te has dado un buen golpe. Otra vez.',
       create(w, h, o = {}) {
         const ground = h * 0.78;
@@ -995,8 +995,8 @@
 
   // ---------- 3. Galería de tiro ----------
   GAMES.tiro = {
-    title: 'Galería de tiro', icon: '', scene: 'ejecutores', grade: 'hex', backdrops: ['ejecutores', 'stillwater', 'muelle-stillwater', 'hexpuertas', 'plaza', 'consejo'],
-    desc: 'Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no rompas los faroles de gas.',
+    title: 'Galería de tiro', icon: '', scene: 'observatorio', grade: 'hex', backdrops: ['observatorio', 'ascensor-central', 'archivo', 'cristal', 'gremios'],
+    desc: 'Los blancos de Resonancia aparecen y desaparecen. Dispara a los blancos azules y no rompas los faroles.',
     controls: 'Ratón: apunta y haz clic para disparar.', touchControls: 'Toca los objetivos para disparar.', goal: 'Consigue 15 puntos en 30 segundos.',
     winText: 'Caitlyn estaría orgullosa. Puntería de francotirador.', loseText: 'Demasiadas balas perdidas. Respira, apunta, exhala.',
     create(w, h, o = {}) {
@@ -1149,7 +1149,7 @@
   // ---------- 4. Circuito hextec (puzle de conexiones) ----------
   // Cada pieza tiene conexiones [arriba, derecha, abajo, izquierda].
   GAMES.circuito = {
-    title: 'Circuito hextec', icon: '', scene: 'taller-jayce', grade: 'hex', backdrops: ['taller-jayce', 'academia', 'hexpuertas', 'artesanos', 'tienda-benzo'],
+    title: 'Circuito de Resonancia', icon: '', scene: 'ascensor-central', grade: 'hex', backdrops: ['ascensor-central', 'observatorio', 'archivo', 'gremios', 'mercado-nacar'],
     desc: 'La energía tiene que ir de la gema (izquierda) al receptor (derecha). Gira las piezas para que el circuito quede conectado.',
     controls: 'Clic en una pieza para girarla.', touchControls: 'Toca una pieza para girarla.', goal: 'Conecta el circuito en menos de 75 segundos.',
     winText: 'La gema se ilumina y el circuito zumba. ¡Funciona!', loseText: 'Saltan chispas. El circuito no aguantó.',
@@ -1305,7 +1305,7 @@
 
   // ---------- 5. Runas de la Academia (memoria) ----------
   GAMES.runas = {
-    title: 'Runas de la Academia', icon: '', scene: 'academia', grade: 'piltover', backdrops: ['academia', 'consejo', 'plaza', 'mansion-kiramman', 'piltover'],
+    title: 'Calibración del Archivo', icon: '', scene: 'archivo', grade: 'piltover', backdrops: ['archivo', 'observatorio', 'cristal', 'gremios', 'aurelia'],
     desc: 'Heimerdinger te pone a prueba: las runas se encienden en un orden. Repite la secuencia, que cada vez será más larga.',
     controls: 'Clic en las runas (o teclas 1 a 6).', touchControls: 'Toca las runas en orden.', goal: 'Completa una secuencia de 7 runas. Tienes un fallo de margen.',
     winText: '«¡Fascinante! Memoria de yordle», aplaude Heimerdinger.', loseText: '«Hmm, hmm. La paciencia también es una ciencia», suspira el profesor.',
@@ -1416,7 +1416,7 @@
 
   // ---------- 6. Regateo en el mercado ----------
   GAMES.regateo = {
-    title: 'Regateo en el mercado', icon: '', scene: 'mercado', grade: 'zaun', backdrops: ['mercado', 'callejones', 'tienda-benzo', 'ultima-gota', 'zaun'],
+    title: 'Regateo en el mercado', icon: '', scene: 'mercado-nacar', grade: 'zaun', backdrops: ['mercado-nacar', 'canal-cobre', 'galerias', 'nacar'],
     desc: 'La vendedora pide 100 monedas por un cachivache que vale mucho menos. Haz ofertas: si te pasas de lista se enfadará, si ofreces poco perderá la paciencia.',
     controls: 'Flechas ← → (o los botones − y +) para ajustar tu oferta, Espacio, Intro o «Ofrecer» para ofrecer.', touchControls: 'Botones − y + para ajustar tu oferta, «Ofrecer» para ofrecer.',
     touchKeys: [['arrowright', '+'], [' ', 'Ofrecer'], ['arrowleft', '−']], touchLayout: 'column', goal: 'Cierra el trato por 60 monedas o menos.',
@@ -1479,7 +1479,7 @@
           ctx.globalAlpha = 0.5 + Math.sin(t * 7) * 0.04;
           ctx.drawImage(glowSprite('#f0a040'), w / 2 - 260, -120, 520, 420);
           ctx.restore();
-          // Balanza de latón: tus monedas a la izquierda y el cachivache hextec a la derecha.
+          // Balanza de latón: tus monedas a la izquierda y el módulo de Resonancia a la derecha.
           // El brazo se inclina según la distancia entre lo que pide y lo que ofreces.
           const ps = Math.min(h * 0.34, 210);
           const px = w / 2;
@@ -1588,13 +1588,17 @@
   // Qué minijuegos se pueden jugar en cada lugar del mapa (el primero es el principal).
   // El menú de cada ubicación usa Minigames.forPlace(id) y Minigames.play(id, { place }).
   const PLACE_GAMES = {
-    academia: ['runas'], 'taller-jayce': ['circuito'], consejo: ['runas', 'francotiradora'], ejecutores: ['tiro', 'francotiradora'],
-    'mansion-kiramman': ['francotiradora', 'tiro'], plaza: ['regateo', 'francotiradora'], artesanos: ['circuito', 'regateo'],
-    hexpuertas: ['circuito', 'francotiradora'], 'muelle-stillwater': ['francotiradora', 'persecucion'], puente: ['persecucion', 'francotiradora'],
-    'puente-zaun': ['persecucion', 'chompers'], fabrica: ['chompers', 'persecucion'], foso: ['foso'], tejados: ['tejados', 'francotiradora'],
-    'ultima-gota': ['foso', 'regateo'], callejones: ['persecucion', 'tejados'], 'tienda-benzo': ['circuito', 'regateo'], mercado: ['regateo', 'chompers'],
-    sumidero: ['aerotabla', 'persecucion'], 'escondite-jinx': ['chompers', 'tiro'], invernadero: ['aerotabla', 'runas'], arbol: ['aerotabla', 'chompers'],
-  };
+    'ascensor-central': ['circuito', 'francotiradora', 'persecucion'],
+    archivo: ['circuito', 'runas'],
+    observatorio: ['runas', 'francotiradora'],
+    gremios: ['regateo', 'circuito'],
+    cristal: ['persecucion', 'francotiradora'],
+    'mercado-nacar': ['regateo', 'chompers'],
+    galerias: ['aerotabla', 'persecucion', 'foso'],
+    'jardin-musgo': ['aerotabla', 'chompers'],
+    clinica: ['regateo', 'runas'],
+    'canal-cobre': ['aerotabla', 'persecucion', 'foso'],
+  };;
   // Lista de minijuegos con lo necesario para pintar un botón o una tarjeta.
   function list(ids = Object.keys(GAMES)) {
     return ids.filter((id) => GAMES[id]).map((id) => ({ id, title: GAMES[id].title, goal: GAMES[id].goal, desc: GAMES[id].desc, emblem: emblem(id), place: GAMES[id].scene }));
