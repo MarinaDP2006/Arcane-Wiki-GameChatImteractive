@@ -81,7 +81,7 @@
       const ciudad = f.ciudad.value;
       st = { paso: 'juego', pj: { nombre: nombre.value.trim() || 'Sin nombre', pron: Number(pron.value), ciudad, oficio: oficio.value, yo: yo.value.trim() }, log: [], turno: 0 };
       const esc = D.escenas[ciudad];
-      st.log.push({ role: 'assistant', content: 'Narrador: ' + esc.apertura.replace('{nombre}', st.pj.nombre).replace('{oficio}', st.pj.oficio.toLowerCase()) });
+      st.log.push({ role: 'assistant', content: 'Narrador: ' + esc.apertura.replace('{nombre}', st.pj.nombre).replace('{oficio}', st.pj.oficio.charAt(0).toLowerCase() + st.pj.oficio.slice(1)) });
       go('juego');
     });
     app.append(f); fillOficios(); nombre.focus();

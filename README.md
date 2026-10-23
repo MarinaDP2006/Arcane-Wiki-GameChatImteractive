@@ -1,45 +1,28 @@
-# Las ciudades del Umbral · Rifts & Gears
+# Rifts & Gears · Fangame de Arcane
 
-Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Las dos dependen de la **Resonancia**, una energía que nace de la vibración de la piedra, y de un pacto antiguo que nadie ha leído entero.
+Fangame gratuito y no oficial de rol libre ambientado en **Arcane** (temporadas 1 y 2). Creas tu personaje en Piltover o en Zaun y entras en la historia. No hay respuestas prefabricadas: escribes lo que tu personaje dice o hace, y los personajes de la serie te contestan, te preguntan y reaccionan como lo harían ellos, sin salirse del lore.
 
-Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
+> **Repositorio independiente:** este proyecto se publica en [MarinaDP2006/Arcane-fangame](https://github.com/MarinaDP2006/Arcane-fangame). Su fuente de desarrollo está en la rama `claude/project-thread-9huivc-arcane` de `RIFTS-GEARS`; `RIFTS-GEARS/main` pertenece al universo original *Las ciudades del Umbral* y no se incluye en este repositorio.
 
-> **Rama `main` = mundo nuevo.** Todo lo de este universo original vive aquí. El fangame de Arcane está en su propia rama, `arcane/fangame-actualizado`, con su web y su README.
+## Cómo funciona
 
-## La historia en cinco fechas
-
-| Año | Suceso |
-|---|---|
-| 0 | **El Hundimiento.** La meseta de Umbral se parte. Arriba nace Aurelia; abajo, Nácar. |
-| 112 | **La piedra que canta.** Una minera de Nácar descubre los cristales de Resonancia. |
-| 190 | **El Pacto de los Contrapesos.** Aurelia paga los ascensores públicos a cambio de extraer de los estratos profundos. Tres cláusulas nunca se publican. |
-| 251 | **El Silencio de Cobre.** Un derrumbe en Nácar durante un pico de extracción. Los registros de esa noche desaparecen. |
-| 298 | **Registro 00:03.** Un ascensor se detiene y un medidor marca el mismo patrón borrado. Aquí empiezas tú. |
-
-La campaña tiene tres partes: *La ciudad bajo la piedra*, *El precio de la Resonancia* y *Un pacto que no se hereda*. Hay diez personajes principales, cinco de cada ciudad; sus fichas están en `src/data/original-world.js`.
+1. **¿Conoces Arcane?** Antes de crear el personaje el juego lo pregunta. Si dices que no, te da una introducción breve. Si dices que sí, pasas directo a la creación.
+2. **Creación de personaje:** nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus palabras.
+3. **Rol libre:** escribes y te contestan. Los personajes solo saben lo que han vivido hasta tu momento de la historia y respetan el canon de las temporadas 1 y 2.
+4. **IA en el servidor:** el diálogo usa el proveedor configurado (Ollama Cloud, LM Studio o una API compatible con OpenAI). No se exponen claves al navegador.
 
 ## Web y demo
 
-La carpeta `web/` contiene la web pública:
+La carpeta `web/` tiene la web pública del fangame, con una sección de descargas que enlaza al repositorio independiente:
 
-- `index.html`: portada con la crónica, las ciudades, la Resonancia, la campaña, el reparto y cómo se juega.
-- `demo.html` + `demo-juego.js`: demo de rol libre. Pregunta si conoces el mundo (si no, da una introducción breve), te deja crear el personaje y abre la primera escena en Aurelia o en Nácar con conversación libre.
-- `demo-base.json`: textos de la demo (introducción, reglas del mundo para la IA, escenas y giros).
-- `estilos.css`, `menu.js`, `privacidad.html` y el arte propio en `arte-propio/`.
+- `index.html`: portada, introducción para quien no conoce Arcane, ciudades, personajes, cómo se juega y demo.
+- `demo.html` + `demo-juego.js`: demo de rol libre. Escena en La Última Gota (Zaun) o en el taller de hextec de la Academia (Piltover), en la temporada 1, acto 2.
+- `demo-base.json`: introducción, bloqueo de canon y escenas. Los personajes y las ciudades salen de `src/data` al generar.
+- `estilos.css`, `menu.js` y `privacidad.html`.
 
-`npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, versión). La web no ofrece descargas.
+`npm run web` genera `web-dist/`. La web no publica arte oficial de la serie.
 
-## IA en el servidor, sin instalar nada
-
-El diálogo libre usa un modelo de Ollama alojado en el servidor (`server/index.js`, endpoint `/api/roleplay`), así que nadie tiene que instalar Ollama en su equipo. Si el servidor no está disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
-
-Variables del servidor (ver `.env.example`); se configuran como secretos en el alojamiento, nunca en el repositorio:
-
-- `OLLAMA_API_KEY`: clave de Ollama Cloud.
-- `OLLAMA_MODEL`: modelo de chat (por defecto `gemma4:31b`).
-- `ROLEPLAY_MAX_PER_HOUR`: límite de mensajes por hora y visitante.
-
-`render.yaml` despliega la web y la API juntas: `npm ci && npm run web` y después `node server/index.js`.
+La demo llama a `/api/roleplay` en el mismo servidor. Si la IA no está disponible, entra un narrador local sencillo para que la escena no se quede muda.
 
 ## Desarrollo
 
@@ -48,22 +31,44 @@ npm ci
 npm run check      # comprobaciones de datos y scripts
 npm start          # versión de escritorio (Electron)
 npm run web        # genera la web en web-dist/
-npm run serve:web  # sirve web-dist/ y la API en http://localhost:10000
 ```
+
+`render.yaml` despliega la web y la API de rol juntas en un servicio Node (`node scripts/build-web.js` y después `node server/roleplay-server.js`). La clave `OLLAMA_API_KEY` se configura como secreto en el alojamiento, nunca en el repositorio.
 
 ## Estado
 
-- **Hecho:** universo, ciudades, Resonancia, tres partes y diez personajes. Web y demo nuevas.
-- **Prototipo:** modelos 3D low-poly en `src/models/` (sin rig ni animaciones finales).
-- **Pendiente de configurar:** la clave de Ollama Cloud en el servidor publicado.
+- **Hecho:** historia, personajes de Piltover, Zaun y Noxus, rol libre con bloqueo de canon, web y demo nuevas.
+- **Prototipo:** modelos 3D de fan-art en `src/models/` (sin rig ni animaciones finales).
+- **Pendiente de configurar:** el servidor publicado con la clave de Ollama Cloud.
+- **Releases automatizadas:** Windows, macOS y Android se compilan con etiquetas `arcane-v*`. La primera etiqueta la publica el workflow de sincronización del repositorio `RIFTS-GEARS`.
 
 ## Guías
 
-- [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
-- [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
 - [Guía completa del código](GUIA.md) y [guía de juego](GUIAJUEGO.md)
+- [IA y campaña](GUIA-IA-Y-CAMPANA.md)
+- [Prompts 3D de fan-art](docs/PROMPTS-3D-ARCANE-FAN-GAME.md)
 - [Partidas guardadas](partidas-guardadas-guia.md)
 
-## Licencia
+## Aviso legal
 
-Código bajo licencia MIT. El universo, sus nombres, su historia y su arte son originales de MarinaDP2006.
+Proyecto de fans gratuito, sin ánimo de lucro y no respaldado por Riot Games. Arcane, League of Legends, Piltover, Zaun y sus personajes pertenecen a Riot Games. El código está bajo licencia MIT, que no da derechos sobre esas marcas ni personajes. Consulta las [condiciones legales de Riot Games](https://www.riotgames.com/es/legal).
+
+
+## IA para el juego y la web demo
+
+El servidor (`server/roleplay-server.js`) admite LM Studio y proveedores compatibles con la API de OpenAI. Para probar todo en el mismo PC, carga en LM Studio un GGUF pequeño, activa **Developer → Start server** y configura en el entorno del servidor:
+
+```env
+AI_BASE_URL=http://127.0.0.1:1234/v1
+AI_MODEL=<identificador-exacto-del-modelo>
+AI_API_KEY=
+```
+
+Modelo inicial recomendado: **Qwen3 0.6B GGUF Q4_K_M**, alrededor de 0,4–0,5 GB. Es pequeño y sirve para validar la integración; la calidad de roleplay es limitada frente a modelos mayores. La URL `127.0.0.1` solo sirve si el servidor Node y LM Studio se ejecutan en el mismo ordenador. Una web pública necesita un proveedor remoto o una conexión privada segura al equipo que ejecuta LM Studio; no expongas el puerto de LM Studio sin autenticación.
+
+Para un proveedor remoto compatible con OpenAI, usa `AI_BASE_URL`, `AI_MODEL` y `AI_API_KEY`. Para conservar Ollama Cloud, deja `AI_BASE_URL` sin definir y configura `OLLAMA_API_KEY` y `OLLAMA_MODEL`. Las claves se guardan en secretos del alojamiento, nunca en el navegador ni en Git.
+
+
+## Publicación independiente
+
+- [Copiar esta rama a Arcane-fangame y crear releases](docs/RELEASES-ARCANE.md)

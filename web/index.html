@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0e1113">
-  <meta name="description" content="Las ciudades del Umbral: aventura narrativa de fantasía industrial. Dos ciudades, una energía compartida y una historia que escribes tú, sin opciones fijas.">
-  <meta property="og:title" content="Las ciudades del Umbral · Rifts &amp; Gears">
-  <meta property="og:description" content="Aurelia vive en las alturas. Nácar, bajo la piedra. Una frecuencia imposible está a punto de unirlas.">
-  <meta property="og:image" content="arte-propio/ciudades-umbral.svg">
-  <title>Las ciudades del Umbral · Rifts &amp; Gears</title>
+  <meta name="theme-color" content="#0b0d14">
+  <meta name="description" content="Rifts &amp; Gears: fangame de rol libre ambientado en Arcane. Crea tu personaje en Piltover o Zaun y habla con sus personajes sin opciones fijas, fiel al canon de las temporadas 1 y 2.">
+  <meta property="og:title" content="Rifts &amp; Gears · Fangame de Arcane">
+  <meta property="og:description" content="Dos ciudades, un puente y tu propia historia entre Piltover y Zaun.">
+  <title>Rifts &amp; Gears · Fangame de Arcane</title>
   <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
@@ -16,154 +15,146 @@
   <a class="saltar" href="#contenido">Saltar al contenido</a>
 
   <header class="cabecera">
-    <a class="logo" href="#inicio" aria-label="Las ciudades del Umbral, inicio">
-      <span class="logo-sello" aria-hidden="true">U</span>
-      <span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span>
+    <a class="logo" href="#inicio" aria-label="Rifts and Gears, inicio">
+      <span class="logo-sello" aria-hidden="true">R&amp;G</span>
+      <span class="logo-texto"><strong>Rifts &amp; Gears</strong><small>Fangame de Arcane</small></span>
     </a>
     <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
     <nav id="menu" class="menu" aria-label="Navegación principal">
-      <a href="#cronica">Crónica</a>
+      <a href="#nuevo">¿Nuevo en Arcane?</a>
       <a href="#ciudades">Ciudades</a>
-      <a href="#resonancia">Resonancia</a>
-      <a href="#reparto">Reparto</a>
+      <a href="#personajes">Personajes</a>
       <a href="#como-se-juega">Cómo se juega</a>
+      <a href="#descargas">Descargas</a>
       <a class="btn btn-primario btn-sm" href="demo.html">Jugar la demo</a>
     </nav>
   </header>
 
   <main id="contenido">
     <section class="portada" id="inicio">
+      <div class="portada-fondo" aria-hidden="true"><span class="lado-piltover"></span><span class="lado-zaun"></span></div>
       <div class="portada-texto">
-        <p class="kicker"><span class="latido" aria-hidden="true"></span> Registro 00:03 · vibración fuera de rango</p>
-        <h1>La ciudad de arriba no recuerda a la de abajo. <em>La piedra, sí.</em></h1>
-        <p class="entradilla">Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Cuando un ascensor se detiene entre las dos, una frecuencia imposible empieza a contar una historia que alguien borró.</p>
+        <p class="kicker">Fangame gratuito · rol libre · canon de las temporadas 1 y 2</p>
+        <h1>Arriba, el progreso. Abajo, la supervivencia. <em>En medio, tú.</em></h1>
+        <p class="entradilla">Crea tu personaje en Piltover o en Zaun y entra en la historia de Arcane. No hay respuestas prefabricadas: escribes lo que dices o haces, y Jinx, Silco, Jayce, Caitlyn y compañía te contestan como lo harían ellos.</p>
         <div class="acciones">
-          <a class="btn btn-primario" href="demo.html">Entrar en la historia</a>
-          <a class="btn btn-borde" href="#cronica">Leer la crónica</a>
+          <a class="btn btn-primario" href="demo.html">Probar la demo</a>
+          <a class="btn btn-borde" href="#nuevo">No conozco Arcane</a>
         </div>
         <dl class="cifras">
           <div><dt>Ciudades</dt><dd>2</dd></div>
           <div><dt>Personajes</dt><dd>{{PERSONAJES}}</dd></div>
-          <div><dt>Partes</dt><dd>3</dd></div>
+          <div><dt>Temporadas</dt><dd>1 y 2</dd></div>
           <div><dt>Opciones fijas</dt><dd>0</dd></div>
         </dl>
       </div>
       <figure class="portada-arte">
-        <img src="arte-propio/ciudades-umbral.svg" alt="Ilustración original: una ciudad elevada de piedra clara sobre galerías industriales iluminadas">
-        <figcaption>Aurelia y Nácar, unidas por la red de contrapesos.</figcaption>
+        <img src="capturasjuego/07-version-actual-mapa-3d-de-zaun.webp" alt="Captura del prototipo 3D del mapa de Zaun dentro del fangame" loading="eager" />
+        <figcaption>Captura real del prototipo jugable · los modelos y animaciones siguen en desarrollo.</figcaption>
       </figure>
     </section>
 
-    <section class="seccion" id="cronica" aria-labelledby="t-cronica">
+    <section class="seccion nuevo" id="nuevo" aria-labelledby="t-nuevo">
       <header class="seccion-cabeza">
-        <p class="kicker">01 · Crónica del Umbral</p>
-        <h2 id="t-cronica">Trescientos años de silencio en cinco fechas.</h2>
-        <p>Nadie en Aurelia enseña esta historia completa en la escuela. En Nácar se cuenta a trozos, de taller en taller.</p>
+        <p class="kicker">01 · Si nunca has visto Arcane</p>
+        <h2 id="t-nuevo">Lo justo para no perderte.</h2>
+        <p>El juego te pregunta al empezar si conoces la serie. Si dices que no, te da esta introducción. Si dices que sí, pasas directo a crear tu personaje.</p>
       </header>
-      <ol class="cronica">
-        <li><span class="fecha">Año 0</span><h3>El Hundimiento</h3><p>La meseta de Umbral cede en una sola noche. Los barrios del borde se quedan arriba y fundan Aurelia. Los que caen con la roca sobreviven en las galerías y levantan Nácar con lo que encuentran.</p></li>
-        <li><span class="fecha">Año 112</span><h3>La piedra que canta</h3><p>Una minera de Nácar descubre que ciertos cristales vibran al ritmo del subsuelo. Con válvulas y amortiguadores, esa vibración mueve máquinas. Nace la Resonancia.</p></li>
-        <li><span class="fecha">Año 190</span><h3>El Pacto de los Contrapesos</h3><p>Aurelia financia los ascensores públicos que unen las dos ciudades. A cambio, puede extraer energía de los estratos profundos. Tres cláusulas del pacto nunca se publicaron.</p></li>
-        <li><span class="fecha">Año 251</span><h3>El Silencio de Cobre</h3><p>Una galería de Nácar se derrumba durante un pico de extracción. El informe oficial habla de un fallo de mantenimiento. Los registros de frecuencia de esa noche desaparecen del Archivo.</p></li>
-        <li class="cronica-ahora"><span class="fecha">Año 298</span><h3>Registro 00:03</h3><p>Un ascensor se detiene entre los dos niveles. El medidor marca tres pulsos y una pausa larga, el mismo patrón que se borró hace casi cincuenta años. Y tú estás allí.</p></li>
-      </ol>
+      <div class="claves">
+        <article><span>La ciudad de arriba</span><h3>Piltover</h3><p>La Ciudad del Progreso. Inventores, academias y un Consejo de familias poderosas que decide por todos.</p></article>
+        <article><span>La ciudad de abajo</span><h3>Zaun</h3><p>Aire químico, neón y bandas. Quien manda aquí es Silco, gracias a una droga llamada brillo.</p></article>
+        <article><span>Lo que las separa</span><h3>Un robo que salió mal</h3><p>Hace siete años, dos hermanas de Zaun, Vi y Powder, se perdieron la una a la otra. Powder ahora se llama Jinx.</p></article>
+        <article><span>Lo que lo cambia todo</span><h3>El hextec</h3><p>Jayce y Viktor han unido magia y tecnología. Piltover lo llama progreso. Zaun se pregunta quién pagará el precio.</p></article>
+      </div>
     </section>
 
     <section class="seccion" id="ciudades" aria-labelledby="t-ciudades">
       <header class="seccion-cabeza">
-        <p class="kicker">02 · Las ciudades</p>
-        <h2 id="t-ciudades">Dos caras del mismo mapa.</h2>
-        <p>Una promete orden. La otra mantiene la maquinaria en marcha. Ninguna entiende la crisis mirando solo sus propias paredes.</p>
+        <p class="kicker">02 · Dónde empiezas</p>
+        <h2 id="t-ciudades">Elige de qué lado del puente naces.</h2>
       </header>
       <div class="ciudades">
-        <article class="ciudad ciudad-aurelia">
-          <img src="arte-propio/aurelia.svg" alt="Arte original de Aurelia, ciudad de piedra clara y observatorios" loading="lazy">
+        <article class="ciudad ciudad-piltover">
+          <div class="ciudad-arte" aria-hidden="true"></div>
           <div class="ciudad-texto">
-            <p class="etiqueta">Ciudad elevada</p>
-            <h3>Aurelia</h3>
-            <p>Observatorios, gremios técnicos, pasarelas de cristal y ascensores de contrapesos. Desde sus terrazas el progreso luce impecable, aunque su coste no siempre salga en los informes del Consejo.</p>
-            <ul><li>Plaza del Archivo</li><li>Terrazas del Observatorio</li><li>Patio de Gremios</li><li>Estación de Ascensores</li></ul>
+            <p class="etiqueta">Latón, oro y ambición</p>
+            <h3>Piltover</h3>
+            <p>Puedes ser estudiante de la Academia, agente novato, periodista de sociedad o inventor por tu cuenta. Las puertas se abren con apellido o con talento, y lo segundo cuesta más.</p>
+            <ul><li>La Academia</li><li>El Consejo</li><li>Los muelles</li><li>El puente</li></ul>
           </div>
         </article>
-        <article class="ciudad ciudad-nacar">
-          <img src="arte-propio/nacar.svg" alt="Arte original de Nácar, ciudad subterránea de talleres y canales de vapor" loading="lazy">
+        <article class="ciudad ciudad-zaun">
+          <div class="ciudad-arte" aria-hidden="true"></div>
           <div class="ciudad-texto">
-            <p class="etiqueta">Ciudad subterránea</p>
-            <h3>Nácar</h3>
-            <p>Galerías geotérmicas, mercados, clínicas vecinales y jardines de musgo. No es una ruina: es una ciudad que su gente sostiene a mano, válvula a válvula, cada día.</p>
-            <ul><li>Mercado de las Tuberías</li><li>Galerías Geotérmicas</li><li>Jardín de Musgo</li><li>Canal de Cobre</li></ul>
+            <p class="etiqueta">Química, neón y supervivencia</p>
+            <h3>Zaun</h3>
+            <p>Puedes ser mecánico de quimtec, contrabandista, luchador de foso o médico clandestino. Aquí nadie te regala nada, pero la gente cuida de los suyos.</p>
+            <ul><li>Los Callejones</li><li>El Sumidero</li><li>La Última Gota</li><li>El Mercado de las Tuberías</li></ul>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="banda" id="resonancia" aria-labelledby="t-resonancia">
-      <div class="seccion banda-dentro">
-        <img src="arte-propio/resonancia.svg" alt="Diagrama original de una red geológica de Resonancia" loading="lazy">
-        <div>
-          <p class="kicker">03 · La tecnología</p>
-          <h2 id="t-resonancia">Resonancia: energía que alguien tiene que escuchar.</h2>
-          <p>Los cristales registran las vibraciones de la roca. Un sistema de válvulas y amortiguadores convierte una parte en trabajo mecánico: mueve ascensores, bombea aire y calienta las clínicas.</p>
-          <p>El problema es el límite. Si se extrae más de lo que el estrato repone, los canales pierden presión y la piedra se queja. La pregunta del juego no es técnica: <strong>¿quién asume el riesgo cuando la red falla?</strong></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="seccion" id="partes" aria-labelledby="t-partes">
+    <section class="seccion" id="personajes" aria-labelledby="t-personajes">
       <header class="seccion-cabeza">
-        <p class="kicker">04 · La campaña</p>
-        <h2 id="t-partes">Tres partes, una pregunta.</h2>
-      </header>
-      <div class="partes">
-        <article><span>Parte I</span><h3>La ciudad bajo la piedra</h3><p>Una avería, una frecuencia borrada y gente con mucho que perder si alguien la escucha.</p></article>
-        <article><span>Parte II</span><h3>El precio de la Resonancia</h3><p>Archivos censurados, conductos que no salen en los mapas y un acuerdo que nadie votó.</p></article>
-        <article><span>Parte III</span><h3>Un pacto que no se hereda</h3><p>Decidir cómo compartir una energía sin fingir que las diferencias han desaparecido.</p></article>
-      </div>
-    </section>
-
-    <section class="seccion" id="reparto" aria-labelledby="t-reparto">
-      <header class="seccion-cabeza">
-        <p class="kicker">05 · Reparto</p>
-        <h2 id="t-reparto">Nadie es solo su ciudad.</h2>
-        <p>Diez personas con oficio, contradicciones y lealtades que cambian según lo que les digas.</p>
+        <p class="kicker">03 · Con quién hablas</p>
+        <h2 id="t-personajes">Personajes que te contestan como ellos.</h2>
+        <p>Cada personaje conoce solo lo que ha vivido hasta el momento de tu partida: sin poderes inventados y sin salirse del canon.</p>
       </header>
       <div class="fichas">{{REPARTO}}</div>
     </section>
 
-    <section class="seccion" id="como-se-juega" aria-labelledby="t-juego">
-      <header class="seccion-cabeza">
-        <p class="kicker">06 · Cómo se juega</p>
-        <h2 id="t-juego">Sin botones de respuesta. Hablas tú.</h2>
-      </header>
-      <div class="pasos">
-        <article><span class="paso-num">1</span><h3>Te preguntamos si conoces el mundo</h3><p>Si es tu primera vez, una introducción breve. Si ya lo conoces, pasas directo a la creación.</p></article>
-        <article><span class="paso-num">2</span><h3>Creas a tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus propias palabras.</p></article>
-        <article><span class="paso-num">3</span><h3>Escribes lo que dices o haces</h3><p>Los personajes te contestan, te preguntan, discuten entre ellos y recuerdan lo que hiciste. La historia la construyes tú, dentro de las reglas del Umbral.</p></article>
-        <article><span class="paso-num">4</span><h3>La IA vive en el servidor</h3><p>No tienes que instalar nada. El rol lo mueve un modelo de Ollama alojado en el servidor del juego, con las reglas del mundo cargadas.</p></article>
+    <section class="banda" id="como-se-juega" aria-labelledby="t-juego">
+      <div class="seccion">
+        <header class="seccion-cabeza">
+          <p class="kicker">04 · Cómo se juega</p>
+          <h2 id="t-juego">Sin menús de respuesta. Escribes y te contestan.</h2>
+        </header>
+        <div class="pasos">
+          <article><span class="paso-num">1</span><h3>¿Conoces Arcane?</h3><p>Si no, una intro breve. Si sí, directo a crear tu personaje.</p></article>
+          <article><span class="paso-num">2</span><h3>Creas tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus palabras.</p></article>
+          <article><span class="paso-num">3</span><h3>Haces tu historia</h3><p>Hablas, preguntas, mientes o ayudas. Los personajes responden, te preguntan y recuerdan, siempre dentro del lore de las temporadas 1 y 2.</p></article>
+          <article><span class="paso-num">4</span><h3>IA en el servidor</h3><p>No instalas nada. El servidor usa el modelo configurado (Ollama Cloud, LM Studio o una API compatible) y mantiene las claves fuera del navegador.</p></article>
+        </div>
       </div>
     </section>
 
     <section class="seccion demo-cta" aria-labelledby="t-demo">
       <div>
-        <p class="kicker">Prueba abierta · en el navegador</p>
-        <h2 id="t-demo">Empieza por la primera avería.</h2>
-        <p>La demo te deja crear un personaje y vivir la primera escena en Aurelia o en Nácar con conversación libre.</p>
+        <p class="kicker">Demo en el navegador</p>
+        <h2 id="t-demo">Una noche en La Última Gota, o una tarde en la Academia.</h2>
+        <p>La demo te deja crear tu personaje y vivir la primera escena en Zaun o en Piltover hablando con libertad.</p>
         <a class="btn btn-primario" href="demo.html">Abrir la demo</a>
       </div>
       <ul class="estado">
-        <li><span class="punto punto-listo"></span><strong>Universo y campaña base</strong> Ciudades, Resonancia, tres partes y diez personajes.</li>
-        <li><span class="punto punto-proto"></span><strong>Modelos 3D</strong> Prototipos low-poly, sin rig ni animaciones finales.</li>
-        <li><span class="punto punto-proto"></span><strong>IA en servidor</strong> Funciona cuando el servidor tiene configurada su clave de Ollama Cloud.</li>
-        <li><span class="punto punto-info"></span><strong>Versión</strong> {{VERSION}} · en desarrollo activo.</li>
+        <li><span class="punto punto-listo"></span><strong>Historia y personajes</strong> Piltover, Zaun y {{PERSONAJES}} fichas de personaje.</li>
+        <li><span class="punto punto-listo"></span><strong>Rol libre</strong> Sin opciones fijas, con bloqueo de canon de las temporadas 1 y 2.</li>
+        <li><span class="punto punto-proto"></span><strong>IA en servidor</strong> Modelo de IA configurado en el servidor. Funciona cuando el proveedor tiene sus credenciales.</li>
+        <li><span class="punto punto-proto"></span><strong>Modelos 3D</strong> Prototipos de fan-art, sin rig ni animaciones finales.</li>
+        <li><span class="punto punto-info"></span><strong>Versión</strong> {{VERSION}} · en desarrollo.</li>
       </ul>
+    </section>
+
+    <section class="seccion" id="descargas" aria-labelledby="t-descargas">
+      <header class="seccion-cabeza">
+        <p class="kicker">05 · Versiones</p>
+        <h2 id="t-descargas">Descargas de escritorio y Android.</h2>
+        <p>Los instaladores se publicarán en las Releases de GitHub cuando terminen las compilaciones de la versión. Consulta allí el estado de cada plataforma.</p>
+      </header>
+      <div class="pasos">
+        <article><span class="paso-num">PC</span><h3>Windows</h3><p>Instalador de escritorio para Windows de 64 bits.</p></article>
+        <article><span class="paso-num">Mac</span><h3>macOS</h3><p>Paquetes DMG y ZIP para Intel y Apple Silicon.</p></article>
+        <article><span class="paso-num">APK</span><h3>Android</h3><p>APK de prueba; una versión para tienda requiere firma de publicación.</p></article>
+      </div>
+      <p><a class="btn btn-primario" href="https://github.com/MarinaDP2006/Arcane-fangame/releases">Ver Releases de Arcane-fangame</a></p>
     </section>
   </main>
 
   <footer class="pie">
-    <div class="logo"><span class="logo-sello" aria-hidden="true">U</span><span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span></div>
-    <p>Universo original de fantasía industrial creado por MarinaDP2006. Nombres, historia y diseños propios, aún en desarrollo.</p>
-    <nav aria-label="Enlaces del pie"><a href="demo.html">Demo</a><a href="privacidad.html">Privacidad</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">Código</a></nav>
-    <small>© {{ANIO}} Rifts &amp; Gears</small>
+    <div class="logo"><span class="logo-sello" aria-hidden="true">R&amp;G</span><span class="logo-texto"><strong>Rifts &amp; Gears</strong><small>Fangame de Arcane</small></span></div>
+    <p>Proyecto de fans gratuito y no oficial creado por MarinaDP2006. No está respaldado por Riot Games. Arcane, League of Legends, Piltover, Zaun y sus personajes pertenecen a Riot Games.</p>
+    <nav aria-label="Enlaces del pie"><a href="demo.html">Demo</a><a href="privacidad.html">Privacidad y aviso legal</a><a href="https://github.com/MarinaDP2006/Arcane-fangame">Código</a><a href="https://github.com/MarinaDP2006/Arcane-fangame/releases">Releases</a></nav>
+    <small>© {{ANIO}} Rifts &amp; Gears · fan game</small>
   </footer>
   <script src="menu.js" defer></script>
 </body>

@@ -1,28 +1,29 @@
-/* Las ciudades del Umbral · estilos de la web y la demo.
-   Paleta: basalto (fondo), latón de Aurelia, cobre y verde Resonancia de Nácar, nácar (texto). */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+/* Rifts & Gears · fangame de Arcane · estilos de la web y la demo.
+   Paleta: noche (fondo), oro y azul hextec de Piltover, verde químico y rosa neón de Zaun. */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Oswald:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  --fondo: #0e1113;
-  --fondo-2: #151a1d;
-  --panel: #1a2024;
-  --panel-2: #222a2f;
-  --linea: rgba(233, 226, 212, .13);
-  --texto: #ece6d9;
-  --suave: #a9b0aa;
-  --laton: #d2a85c;
-  --laton-osc: #8f6d33;
-  --cobre: #c4794a;
-  --reso: #5fd3b8;
-  --aurelia: #d2a85c;
-  --nacar: #5fd3b8;
-  --peligro: #e58a6f;
-  --radio: 14px;
-  --radio-sm: 8px;
-  --sombra: 0 18px 50px rgba(0, 0, 0, .35);
-  --serif: "Fraunces", Georgia, serif;
-  --sans: "IBM Plex Sans", system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --fondo: #0b0d14;
+  --fondo-2: #11141e;
+  --panel: #161a26;
+  --panel-2: #1e2333;
+  --linea: rgba(214, 220, 255, .12);
+  --texto: #eef0f7;
+  --suave: #a6abc0;
+  --laton: #e3b65b;
+  --laton-osc: #9b7633;
+  --cobre: #ff4fa3;
+  --reso: #7cf0a1;
+  --hextec: #57c7ff;
+  --aurelia: #e3b65b;
+  --nacar: #7cf0a1;
+  --peligro: #ff6b6b;
+  --radio: 6px;
+  --radio-sm: 4px;
+  --sombra: 0 18px 50px rgba(0, 0, 0, .45);
+  --serif: "Oswald", "Arial Narrow", sans-serif;
+  --sans: "Nunito Sans", system-ui, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
   --ancho: 1160px;
   color-scheme: dark;
 }
@@ -32,12 +33,12 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; -webkit-text-size-adju
 body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.65 var(--sans); overflow-x: hidden; }
 img { display: block; max-width: 100%; height: auto; }
 a { color: inherit; }
-h1, h2, h3 { font-family: var(--serif); font-weight: 650; line-height: 1.12; letter-spacing: -.015em; margin: 0 0 .6em; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.08; letter-spacing: .005em; text-transform: uppercase; margin: 0 0 .6em; }
 h1 { font-size: clamp(2.2rem, 5.4vw, 4.4rem); }
 h2 { font-size: clamp(1.8rem, 3.6vw, 2.9rem); }
 h3 { font-size: 1.3rem; }
 p { margin: 0 0 1em; }
-em { color: var(--laton); font-style: italic; font-weight: 500; }
+em { color: var(--reso); font-style: normal; text-shadow: 0 0 22px rgba(124, 240, 161, .35); }
 :focus-visible { outline: 2px solid var(--reso); outline-offset: 3px; border-radius: 4px; }
 .saltar { position: absolute; left: -9999px; top: 0; }
 .saltar:focus { left: 1rem; top: 1rem; z-index: 100; background: var(--texto); color: var(--fondo); padding: .6rem 1rem; }
@@ -50,8 +51,8 @@ em { color: var(--laton); font-style: italic; font-weight: 500; }
 .btn { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 46px; padding: .7rem 1.25rem; border-radius: var(--radio-sm); border: 1px solid transparent; font: 600 .95rem/1 var(--sans); text-decoration: none; cursor: pointer; transition: transform .15s, background .15s, border-color .15s; }
 .btn:hover { transform: translateY(-1px); }
 .btn:disabled { opacity: .55; cursor: wait; transform: none; }
-.btn-primario { background: var(--laton); color: #1b1408; }
-.btn-primario:hover { background: #e0b96c; }
+.btn-primario { background: linear-gradient(90deg, var(--laton), #f3cf7f); color: #1a1205; text-transform: uppercase; letter-spacing: .06em; }
+.btn-primario:hover { box-shadow: 0 0 24px rgba(227, 182, 91, .35); }
 .btn-borde { border-color: var(--linea); background: transparent; color: var(--texto); }
 .btn-borde:hover { border-color: var(--laton); }
 .btn-texto { background: none; color: var(--suave); padding-inline: .4rem; }
@@ -84,6 +85,7 @@ em { color: var(--laton); font-style: italic; font-weight: 500; }
 .cifras dt { font: .68rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--suave); }
 .cifras dd { margin: 0; font: 650 1.7rem/1.2 var(--serif); color: var(--laton); }
 .portada-arte { margin: 0; border-radius: calc(var(--radio) * 1.4); overflow: hidden; border: 1px solid var(--linea); box-shadow: var(--sombra); background: var(--panel); }
+.portada-arte img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
 .portada-arte figcaption { padding: .8rem 1.1rem; font: .78rem var(--mono); color: var(--suave); border-top: 1px solid var(--linea); }
 
 /* Crónica */
@@ -128,6 +130,8 @@ em { color: var(--laton); font-style: italic; font-weight: 500; }
 .fichas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
 .ficha { position: relative; padding: 1.3rem 1.3rem 1.2rem; background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio); border-top: 3px solid var(--laton); }
 .ficha-zaun { border-top-color: var(--reso); }
+.ficha-noxus { border-top-color: var(--peligro); }
+.ficha-noxus .ficha-ciudad { color: var(--peligro); }
 .ficha-num { position: absolute; right: 1.1rem; top: 1rem; font: .75rem var(--mono); color: var(--suave); }
 .ficha-ciudad { font: 500 .7rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--laton); margin-bottom: .3rem; }
 .ficha-zaun .ficha-ciudad { color: var(--reso); }
@@ -233,6 +237,43 @@ em { color: var(--laton); font-style: italic; font-weight: 500; }
   .dj-entrada { grid-template-columns: 1fr; }
   .dj-entrada .btn { width: 100%; }
   .dj-yo { margin-left: 1rem; }
+}
+
+/* Arcane: portada partida Piltover / Zaun */
+.portada { position: relative; grid-template-columns: 1fr; min-height: min(86vh, 760px); isolation: isolate; }
+.portada-texto { max-width: 720px; }
+.portada-fondo { position: absolute; inset: 0 calc(50% - 50vw); z-index: -1; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+.portada-fondo span { position: relative; }
+.lado-piltover { background: radial-gradient(circle at 30% 20%, rgba(227, 182, 91, .35), transparent 55%), radial-gradient(circle at 70% 70%, rgba(87, 199, 255, .18), transparent 50%), linear-gradient(180deg, #1c2033, #0b0d14); }
+.lado-zaun { background: radial-gradient(circle at 60% 75%, rgba(124, 240, 161, .28), transparent 55%), radial-gradient(circle at 30% 30%, rgba(255, 79, 163, .2), transparent 50%), linear-gradient(180deg, #0e1a17, #0b0d14); }
+.portada-fondo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11, 13, 20, .92) 0%, rgba(11, 13, 20, .55) 55%, rgba(11, 13, 20, .2) 100%), repeating-linear-gradient(0deg, transparent 0 3px, rgba(255, 255, 255, .015) 3px 4px); }
+.portada-fondo .lado-zaun::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(var(--laton), var(--reso)); box-shadow: 0 0 18px var(--reso); }
+
+/* Claves para quien no conoce Arcane */
+.claves { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.claves article { padding: 1.4rem; background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio); border-left: 3px solid var(--hextec); }
+.claves span { font: 700 .7rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--hextec); }
+.claves h3 { margin: .5rem 0 .4rem; }
+.claves p { color: var(--suave); margin: 0; font-size: .95rem; }
+
+/* Ciudades sin arte oficial: atmósfera con degradados */
+.ciudad-arte { aspect-ratio: 16 / 7; }
+.ciudad-piltover .ciudad-arte { background: radial-gradient(circle at 75% 30%, rgba(227, 182, 91, .55), transparent 40%), radial-gradient(circle at 20% 80%, rgba(87, 199, 255, .35), transparent 45%), linear-gradient(160deg, #2a2f48, #121522); }
+.ciudad-zaun .ciudad-arte { background: radial-gradient(circle at 30% 70%, rgba(124, 240, 161, .5), transparent 42%), radial-gradient(circle at 80% 25%, rgba(255, 79, 163, .4), transparent 40%), linear-gradient(200deg, #12201c, #0b0d14); }
+.ciudad-piltover .etiqueta, .ciudad-piltover h3 { color: var(--laton); }
+.ciudad-zaun .etiqueta, .ciudad-zaun h3 { color: var(--reso); }
+.dj-ciudad-zaun:has(input:checked) { border-color: var(--reso); }
+.dj-escena-zaun { background: linear-gradient(120deg, rgba(124, 240, 161, .14), rgba(255, 79, 163, .06) 40%, var(--panel) 70%); }
+.dj-voz b { color: var(--hextec); }
+.cabecera { border-bottom-color: rgba(227, 182, 91, .25); }
+.logo-sello { width: auto; padding: 0 .55rem; font-size: .85rem; border-radius: 4px; box-shadow: inset 0 0 12px rgba(227, 182, 91, .2); }
+
+@media (max-width: 960px) { .claves { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) {
+  .claves { grid-template-columns: 1fr; }
+  .portada { min-height: 0; }
+  .portada-fondo { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .portada-fondo .lado-zaun::before { width: auto; height: 2px; right: 0; bottom: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
