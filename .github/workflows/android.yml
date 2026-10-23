@@ -1,15 +1,13 @@
 # Versión móvil: APK de Android para móvil y tablet.
-# Se compila en la rama «movil» (que se sincroniza sola desde main, ver sync-ramas.yml),
-# en las etiquetas v* y en cada pull request.
+# Se compila desde main, en versiones v* y manualmente; sin ramas duplicadas.
 # Sin llave de firma sale un APK de prueba (debug) que se instala directamente en la tablet.
 # Con los secretos ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS y
 # ANDROID_KEY_PASSWORD también se genera el APK firmado y el AAB para Google Play.
 name: Compilar móvil (Android)
 on:
   push:
-    branches: [movil]
+    branches: [main]
     tags: ['v*']
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: write
