@@ -5,7 +5,6 @@ Marca con `[x]` lo que se vaya cerrando.
 
 ## Para Nina (no se puede hacer sin ti)
 
-- [ ] **Modelo de LM Studio.** Decir qué modelo tienes cargado (nombre exacto) para usarlo en el chat libre.
 - [ ] **Acceso a `Arcane-fangame`.** Instalar la app de Claude en GitHub en ese repo para poder subir la rama.
 
 - [ ] **Clave de Ollama Cloud.** Crea una cuenta gratis en ollama.com y una clave en Settings → Keys.
