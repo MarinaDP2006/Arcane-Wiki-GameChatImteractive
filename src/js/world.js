@@ -1,6 +1,6 @@
-// Mapa interactivo de Piltover y Zaun. Con WebGL, la ciudad es una escena 3D (world3d.js:
-// Piltover bajo el cielo, Zaun en una caverna) que se puede inclinar y girar; sin WebGL, o con
-// la vista 2D elegida, es una carta ilustrada (arte de Arcane de la temporada de fondo, barrios,
+// Mapa interactivo de Aurelia y Nácar. Con WebGL, la ciudad es una escena 3D (world3d.js:
+// Aurelia bajo el cielo, Nácar bajo la roca) que se puede inclinar y girar; sin WebGL, o con
+// la vista 2D elegida, es una carta ilustrada (arte original de la ciudad, barrios,
 // calles, canales y edificios). En las dos se arrastra, se amplía con la rueda o pellizcando y se toca.
 // Encima, siempre en 2D, van los lugares, las caras y los rótulos. Los lugares son medallones con su imagen: al
 // pulsar uno NO se entra, se abre su menú (historia, conversar, minijuego, explorar, viajar).
@@ -58,7 +58,7 @@
     const def = W().maps[id];
     const [w, h] = def.size;
     const r = rng(def.seed);
-    // Piltover: manzanas grandes. Zaun: bloques apiñados.
+    // Aurelia: manzanas amplias. Nácar: bloques industriales compactos.
     const BLOCK = def.block || 250;
     const STREET = def.street || 74;
     const keepClear = [
@@ -123,7 +123,7 @@
     return img;
   }
   const ready = (img) => img && img.complete && img.naturalWidth;
-  // Personajes: su avatar de chat (carpeta caras, imágenes de la Arcane Wiki).
+  // Personajes: su avatar de chat (retrato propio o avatar procedural).
   function charImg(id) { return loadImg(`c:${id}`, Portrait.customChar(id, false) || Portrait.charURL(id, 96)); }
 
   // Imagen de cada lugar: la de su temporada (lugares/s1|s2), la de la carpeta de arte o la del Atlas.
@@ -251,12 +251,12 @@
 
     g.fillStyle = P.ground;
     g.fillRect(0, 0, map.w, map.h);
-    // Arte de Arcane de la ciudad, muy oscurecido y difuminado, como lavado de acuarela.
+    // Arte original de la ciudad, oscurecido y difuminado como fondo ambiental.
     const art = cityArt(mapId);
     if (forGround) {
       g.fillStyle = zaun ? '#1a2420' : '#8f7c5a';
       g.fillRect(0, 0, map.w, map.h);
-      // Suelo de la escena 3D: adoquín (Piltover) o roca húmeda (Zaun), sin imagen encima.
+      // Suelo de la escena 3D: piedra clara en Aurelia o roca húmeda en Nácar, sin imagen encima.
       for (let i = 0; i < 9000; i++) {
         g.globalAlpha = 0.05 + r() * 0.1;
         g.fillStyle = zaun ? ['#2a3a30', '#141c18', '#3a3a2a', '#1f2e2a'][i % 4] : ['#a8916a', '#7d6a4a', '#c4ad82', '#8a7656'][i % 4];
@@ -282,7 +282,7 @@
     g.fillStyle = wash;
     g.fillRect(0, 0, map.w, map.h);
 
-    // Agua: el mar de las Hexpuertas en Piltover y el canal químico del Sumidero en Zaun.
+    // Agua: canales de condensación y reservorios geotérmicos de las dos ciudades.
     g.save();
     if (zaun) {
       g.strokeStyle = 'rgba(120,200,80,0.22)';
@@ -362,7 +362,7 @@
     }
     g.globalAlpha = 1;
 
-    // Tuberías de Zaun
+    // Tuberías de Nácar
     if (zaun) {
       g.strokeStyle = 'rgba(143,191,58,0.22)';
       g.lineWidth = 10;
@@ -540,7 +540,7 @@
       ctx.restore();
     }
 
-    // Ambiente: humo químico en Zaun, polvo dorado en Piltover.
+    // Ambiente: vapor mineral en Nácar, polvo dorado en Aurelia.
     if (opt().particles !== false && !opt().reduceMotion) {
       for (const p of particles) {
         if (zaun) {
@@ -1240,7 +1240,7 @@
       }, 'gold'),
     );
     const other = mapId === 'zaun' ? 'piltover' : 'zaun';
-    const sw = mk(mapId === 'zaun' ? 'Subir a Piltover' : 'Bajar a Zaun', `Ver ${W().maps[other].label}`, () => {
+    const sw = mk(mapId === 'zaun' ? 'Subir a Aurelia' : 'Bajar a Nácar', `Ver ${W().maps[other].label}`, () => {
       const br = map.def.locations.find((l) => l.travel);
       setMap(other, br?.travel?.at);
       cb.onTravel?.(other);
