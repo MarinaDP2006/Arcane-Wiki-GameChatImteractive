@@ -1,10 +1,10 @@
-// Personajes en 3D para el mundo abierto: el jugador y los protagonistas caminan, corren y
-// respiran por las calles de Piltover y Zaun en vez de ser iconos redondos.
+// Personajes 3D del universo original: protagonistas de Aurelia y Nácar, con vestuario y rasgos
+// propios. Si falta un GLB, se genera un avatar procedural usando la ficha original del personaje.
 //
 // Cada personaje se monta con un modelo propio:
 //  1. Si hay un modelo .glb (por ejemplo, de Mixamo) en la carpeta «modelos» de tu carpeta de
 //     arte (o en src/models), se usa con sus animaciones de reposo, andar y correr.
-//     Archivos: modelos/<id>.glb (vi.glb, jinx.glb…), modelos/jugador.glb, modelos/generico.glb
+//     Archivos: modelos/<id>.glb (por ejemplo, iria-venn.glb), modelos/jugador.glb, modelos/generico.glb
 //     y, para todos, modelos/animaciones/reposo.glb, andar.glb y correr.glb (Mixamo «In Place»).
 //  2. Si no hay modelo, se construye un muñeco articulado pintado a mano con los colores de la
 //     serie (pelo, piel, ropa), la cara de su retrato y una animación procedural de andar y correr.
@@ -61,7 +61,7 @@
     const c = document.createElement('canvas');
     c.width = c.height = 256;
     const g = c.getContext('2d');
-    // Rasgos grandes, como en los personajes pintados de la serie (escalado desde el centro).
+    // Rasgos estilizados, legibles desde la cámara del juego.
     const F = 1.45;
     g.setTransform(F, 0, 0, F, 128 - 128 * F, 150 - 150 * F);
     const skin = new T.Color(spec.skin);
@@ -102,7 +102,7 @@
       g.fill();
       g.save();
       g.clip();
-      const iris = sx < 0 && acc.includes('scar') && spec.id === 'silco' ? '#d03020' : L.eyeColor || '#4a3a2a';
+      const iris = L.eyeColor || '#4a3a2a';
       g.fillStyle = iris;
       g.beginPath();
       g.arc(ex + sx * 1, ey + 1, eh * 1.05, 0, Math.PI * 2);
@@ -152,8 +152,8 @@
     }
     if (acc.includes('tattoo')) {
       g.fillStyle = 'rgba(150,30,70,0.85)';
-      g.font = 'bold 22px Cinzel, Georgia, serif';
-      g.fillText('VI', 66, 186);
+      g.font = 'bold 22px Georgia, serif';
+      g.fillText('✦', 66, 186);
     }
     if (acc.includes('scar')) {
       g.strokeStyle = 'rgba(110,40,50,0.8)';
@@ -191,21 +191,8 @@
   }
 
   // ---------- Complexión y vestuario de cada protagonista ----------
-  const BUILD = {
-    heimerdinger: { scale: 0.55, head: 1.55, wide: 1.1, ears: true },
-    isha: { scale: 0.62, head: 1.25 },
-    vander: { scale: 1.1, wide: 1.25 },
-    ambessa: { scale: 1.08, wide: 1.15, coat: 'coat' },
-    mel: {},
-    cassandra: {},
-    sevika: { scale: 1.04, wide: 1.15, metalArm: true },
-    kino: { wide: 1.1 },
-    silco: { wide: 0.9 },
-    jinx: { wide: 0.82 },
-    viktor: { wide: 0.88 },
-    jayce: { scale: 1.04, wide: 1.05 },
-    caitlyn: { coat: 'coat' },
-  };
+  // La complexión se define por la ficha original o por opciones del jugador.
+  const BUILD = {};
   const OUTFIT_COAT = { abrigo: 'coat', bata: 'coat', vestido: 'dress' };
 
   const shade = (hex, k) => new T.Color(hex).multiplyScalar(k);
