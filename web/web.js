@@ -29,7 +29,7 @@
         const key = a.dataset.archivo;
         const matches = assets.filter(asset => match(asset, key));
         const file = key === '.apk' ? (matches.find(x => /firmado/i.test(x.name)) || matches[0]) : matches[0];
-        if (file && /^https:\\/\\/github\\.com\\//.test(file.browser_download_url)) {
+        if (file && /^https:\/\/github\.com\//.test(file.browser_download_url)) {
           a.href = file.browser_download_url;
           a.textContent = a.dataset.originalText;
           available++;
