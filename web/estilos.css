@@ -149,3 +149,11 @@ details p { color: var(--muted); margin: 0.6rem 0 0; }
 
 /* Galería editorial de capturas auténticas del juego */
 .galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:1.25rem}.captura{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.captura img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.captura figcaption{padding:1rem;color:var(--text);font-weight:600}.captura figcaption small{display:block;color:var(--muted);font-weight:400;margin-top:.3rem}.galeria-vacia{border:1px dashed var(--line);border-radius:var(--radius);padding:2rem;color:var(--muted);grid-column:1/-1}
+
+/* Actualización editorial y accesibilidad */
+.portada .acciones { margin-top: 1.4rem; }
+.estado-desarrollo { border-bottom: 1px solid var(--line); }
+#novedades .carta { position: relative; overflow: hidden; }
+#novedades .carta::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(var(--gold),var(--zaun)); }
+#estado-version { padding: .85rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg2); max-width: none; }
+@media(max-width: 550px) { .marca { letter-spacing: .1em; font-size: .86rem; } .barra { gap: .5rem; } .barra nav { gap: .4rem; } .boton-sm { padding: .45rem .7rem; } .portada-texto { padding: 2rem 1.1rem; } .portada .acciones .boton { text-align: center; flex: 1 1 160px; } }
