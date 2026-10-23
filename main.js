@@ -13,7 +13,7 @@ const Modelos = require('./modelos');
 
 const SAVE_DIR = () => path.join(app.getPath('userData'), 'partidas');
 // Solo metadatos de las partidas. No se guardan decisiones, chats ni estadísticas aquí.
-const SAVE_SUMMARY_DIR = () => path.join(app.getPath('userData'), 'arcaneData', 'partidas guardadas');
+const SAVE_SUMMARY_DIR = () => path.join(app.getPath('userData'), 'historial', 'partidas-guardadas');
 const SETTINGS_FILE = () => path.join(app.getPath('userData'), 'ajustes.json');
 const SLOTS = ['1', '2', '3'];
 
@@ -46,7 +46,7 @@ function createWindow() {
     minWidth: 980,
     minHeight: 640,
     backgroundColor: '#0d0b14',
-    title: 'Grietas & Gears',
+    title: 'Las ciudades del Umbral',
     show: false,
     icon: path.join(__dirname, 'build', 'icon.png'),
     autoHideMenuBar: true,
