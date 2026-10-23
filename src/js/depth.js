@@ -1,4 +1,4 @@
-// Profundidad para los minijuegos: arte real de Arcane como fondo con paralaje y desenfoque,
+// Profundidad para los minijuegos: arte original del mundo como fondo con paralaje y desenfoque,
 // niebla en capas, rayos de luz, suelo en perspectiva, bloques extruidos hacia un punto de fuga
 // y caras reales de los personajes. Todo en canvas 2D para que vaya igual en PC y en tableta.
 // Depth.backdrop(['tejados', 'callejones']) elige al azar uno de esos lugares (de T1 o T2).
