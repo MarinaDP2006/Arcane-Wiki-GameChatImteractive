@@ -10,21 +10,23 @@
     ollamaCloud: { label: 'Ollama Cloud (alojada, recomendada)', url: (window.ROLEPLAY_CONFIG?.endpoint || (window.location.protocol === 'file:' || window.location.hostname === 'localhost' && window.location.port === '' ? '' : '/api/roleplay')), model: 'gemma4:31b', key: false, help: 'No necesitas instalar Ollama ni descargar el modelo. Se usa Gemma 4 de 31B alojado en Ollama Cloud. El servidor del juego debe publicarse con OLLAMA_API_KEY como secreto; en escritorio o Android indica la URL HTTPS del backend. El uso puede tener límites o costes según Ollama Cloud.' },
     ollama: { label: 'Ollama (en tu PC, sin internet)', url: 'http://localhost:11434/v1/chat/completions', model: 'gemma3:4b', key: false, help: 'Instala Ollama desde ollama.com y descarga un modelo en una terminal: «ollama pull gemma3:4b» (rápido, unos 3 GB) o «ollama pull gemma3:12b» (mejor conversación, necesita una tarjeta gráfica con 8 GB o más). Pulsa «Buscar mis modelos» para elegir uno de los que ya tienes. Mientras Ollama esté abierto, los personajes te responden sin internet. Solo en el ordenador.' },
     lmstudio: { label: 'LM Studio (en tu PC o por la red de casa)', url: 'http://localhost:1234/v1/chat/completions', model: '', key: false, help: 'Abre LM Studio, descarga un modelo y en la pestaña Developer enciende «Start server» (puerto 1234). En este ordenador deja la dirección como está. Para jugar desde la tablet o el móvil activa también «Serve on Local Network» y escribe aquí la dirección de tu PC, por ejemplo http://192.168.1.40:1234. Pulsa «Buscar mis modelos» para elegir uno. Los pasos están en GUIA-LM-STUDIO.md.' },
+    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://localhost:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil escribe la dirección de tu PC, por ejemplo http://192.168.1.40:5001. Los pasos están en GUIA-KOBOLDCPP.md.' },
     custom: { label: 'Otro servidor compatible', url: '', model: '', key: true, help: 'Cualquier servidor con el formato de OpenAI (KoboldCpp, text-generation-webui, vLLM…). Escribe la dirección completa de /chat/completions.' },
   };
 
   // Servidores que corren en tu PC (o en otro de tu red): no piden clave y no salen a internet.
-  const LOCAL = new Set(['ollama', 'lmstudio']);
+  const LOCAL = new Set(['ollama', 'lmstudio', 'koboldcpp']);
 
-  // Para LM Studio basta con escribir «192.168.1.40» o «http://192.168.1.40:1234»:
+  // Para LM Studio y KoboldCpp basta con escribir «192.168.1.40» o «http://192.168.1.40:1234»:
   // se completa el puerto y la ruta de /v1/chat/completions.
+  const PORTS = { lmstudio: '1234', koboldcpp: '5001' };
   function fullUrl(p, url) {
     url = String(url || '').trim();
-    if (p !== 'lmstudio' || !url) return url;
+    if (!PORTS[p] || !url) return url;
     if (!/^https?:\/\//i.test(url)) url = `http://${url}`;
     try {
       const u = new URL(url);
-      if (!u.port && u.protocol === 'http:') u.port = '1234';
+      if (!u.port && u.protocol === 'http:') u.port = PORTS[p];
       if (!/\/chat\/completions$/.test(u.pathname)) u.pathname = `${u.pathname.replace(/\/(v1\/?)?$/, '').replace(/\/+$/, '')}/v1/chat/completions`;
       return u.toString();
     } catch { return url; }
@@ -129,8 +131,14 @@
     return list.sort((a, b) => Number(b.loaded) - Number(a.loaded) || a.name.localeCompare(b.name));
   }
 
+  // KoboldCpp sirve un solo modelo a la vez: el que se eligió al abrirlo.
+  async function koboldModels() {
+    const data = await get(`${cfg().url.replace(/\/v1\/chat\/completions$/, '')}/v1/models`);
+    return (data?.data || []).map((m) => ({ name: m.id, loaded: true, quant: '' }));
+  }
+
   // Lista de modelos del servidor local elegido.
-  const models = () => (cfg().provider === 'lmstudio' ? lmstudioModels() : ollamaModels());
+  const models = () => ({ lmstudio: lmstudioModels, koboldcpp: koboldModels }[cfg().provider] || ollamaModels)();
 
   // Carga el modelo en memoria antes del primer mensaje (la primera respuesta es la lenta).
   let warmed = '';
@@ -158,6 +166,11 @@
     // y se corta si empieza a escribir tu parte.
     if (c.provider === 'lmstudio') {
       body.ttl = 1800;
+      if (opts.stop?.length) body.stop = opts.stop.slice(0, 4);
+      if (THINKERS.test(c.model)) body.max_tokens = Math.max(body.max_tokens, 900);
+    }
+    // KoboldCpp: se corta si empieza a escribir tu parte; Qwen 3 piensa antes de hablar.
+    if (c.provider === 'koboldcpp') {
       if (opts.stop?.length) body.stop = opts.stop.slice(0, 4);
       if (THINKERS.test(c.model)) body.max_tokens = Math.max(body.max_tokens, 900);
     }
