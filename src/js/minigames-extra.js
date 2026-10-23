@@ -94,6 +94,7 @@
                 g.crash = 0.9; g.chase -= ob.kind === 'barricade' ? 22 : 14;
                 FX.burst(w / 2, h * 0.8, 40, { color: ob.kind === 'barrel' ? ['#7aff4a', '#c8ff9a', '#3a8a2a'] : ['#ffd060', '#ff7a3a', '#8a6a4a'], speed: 520, life: 0.7, kind: 'shard', size: 4 });
                 FX.shake(18); FX.hurt(0.8); FX.text(w / 2, h * 0.6, ob.kind === 'barricade' ? '¡Barricada!' : '¡Choque!', '#ff6a6a', 30);
+                FX.impact(w / 2, h * 0.78, { power: 1, colors: ob.kind === 'barrel' ? ['#7aff4a', '#3a8a2a', '#ffe08a'] : ['#ff9a3a', '#ffe08a', '#e0457b'] });
                 Audio2.sfx.locked(); buzz([30, 30, 30]);
               }
             }
@@ -292,13 +293,29 @@
         ctx.strokeStyle = '#d8aa50'; ctx.lineWidth = 3 * s; ctx.stroke();
         // Toberas
         for (const ex of [-52, 52]) { ctx.fillStyle = '#1a1418'; ctx.beginPath(); ctx.ellipse(ex * s, 22 * s, 18 * s, 10 * s, 0, 0, TAU); ctx.fill(); ctx.fillStyle = g.boost ? '#bfeaff' : '#7affd0'; ctx.beginPath(); ctx.ellipse(ex * s, 22 * s, 11 * s, 5 * s, 0, 0, TAU); ctx.fill(); }
-        // Piloto: espalda con chaqueta y capucha
-        ctx.fillStyle = '#2a1a24';
-        ctx.beginPath(); ctx.moveTo(-34 * s, -26 * s); ctx.quadraticCurveTo(-30 * s, -90 * s, 0, -96 * s); ctx.quadraticCurveTo(30 * s, -90 * s, 34 * s, -26 * s); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = '#e0457b'; ctx.fillRect(-26 * s, -70 * s, 52 * s, 6 * s);
-        ctx.fillStyle = '#1a1018'; ctx.beginPath(); ctx.arc(0, -108 * s, 20 * s, 0, TAU); ctx.fill();
-        ctx.strokeStyle = '#e0457b'; ctx.lineWidth = 4 * s;
-        ctx.beginPath(); ctx.moveTo(-6 * s, -92 * s); ctx.quadraticCurveTo(-30 * s, -96 * s + Math.sin(t * 16) * 6 * s, -50 * s - g.lean * 20 * s, -84 * s + Math.sin(t * 13) * 8 * s); ctx.stroke();
+        // Cúpula de cristal y núcleo hextec en el centro (sin piloto)
+        const cg = ctx.createLinearGradient(0, -78 * s, 0, -20 * s);
+        cg.addColorStop(0, 'rgba(160,230,255,0.55)'); cg.addColorStop(1, 'rgba(20,60,70,0.85)');
+        ctx.fillStyle = cg;
+        ctx.beginPath(); ctx.moveTo(-46 * s, -24 * s); ctx.quadraticCurveTo(-40 * s, -78 * s, 0, -80 * s); ctx.quadraticCurveTo(40 * s, -78 * s, 46 * s, -24 * s); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#d8aa50'; ctx.lineWidth = 2.5 * s; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 3 * s;
+        ctx.beginPath(); ctx.moveTo(-30 * s, -36 * s); ctx.quadraticCurveTo(-26 * s, -64 * s, -6 * s, -70 * s); ctx.stroke();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.drawImage(glowSprite(g.boost ? '#bfeaff' : '#7fd0ff'), -40 * s, -70 * s, 80 * s, 60 * s);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.save(); ctx.translate(0, -40 * s); ctx.rotate(t * 2);
+        ctx.fillStyle = '#bfeaff'; ctx.strokeStyle = '#d8aa50'; ctx.lineWidth = 2 * s;
+        ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = (Math.PI / 3) * i; ctx[i ? 'lineTo' : 'moveTo'](Math.cos(a) * 12 * s, Math.sin(a) * 12 * s); } ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.restore();
+        // Antenas con luces de posición
+        for (const ax of [-70, 70]) {
+          ctx.strokeStyle = '#2a2030'; ctx.lineWidth = 3 * s;
+          ctx.beginPath(); ctx.moveTo(ax * s, 0); ctx.lineTo(ax * 1.15 * s, -34 * s); ctx.stroke();
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.drawImage(glowSprite(ax < 0 ? '#e0457b' : '#3fbf9f'), ax * 1.15 * s - 12 * s, -46 * s, 24 * s, 24 * s);
+          ctx.globalCompositeOperation = 'source-over';
+        }
         ctx.restore();
       }
       return g;
@@ -310,10 +327,10 @@
     title: 'La mira de Caitlyn', icon: '', scene: 'piltover', grade: 'piltover',
     backdrops: ['piltover', 'plaza', 'artesanos', 'puente', 'hexpuertas', 'tejados', 'puente-zaun'],
     touchKeys: [['shift', 'Respirar'], [' ', 'Disparar']], touchLayout: 'sides',
-    desc: 'Desde un tejado, con el rifle hextec de Caitlyn. Los matones de Silco se esconden entre la multitud: búscalos con la mira, contén la respiración para que no tiemble y dispara. Ojo con los civiles.',
+    desc: 'Desde un tejado, con el rifle hextec de Caitlyn. Silco ha escondido botes de brillo por la ciudad: búscalos con la mira, contén la respiración para que no tiemble y reviéntalos. No rompas los faroles hextec.',
     controls: 'Ratón para apuntar, clic para disparar. Mantén Mayús o Espacio para contener la respiración.', touchControls: 'Arrastra el dedo para apuntar. Botones: Respirar y Disparar.',
-    goal: 'Abate 6 matones en 50 segundos sin herir a 2 civiles.',
-    winText: 'Caitlyn baja el rifle y asiente. «Nada mal. Nada mal en absoluto.»', loseText: 'La multitud se dispersa y los matones con ella. Respira hondo y otra vez.',
+    goal: 'Revienta 6 botes de brillo en 50 segundos sin romper 2 faroles.',
+    winText: 'Caitlyn baja el rifle y asiente. «Nada mal. Nada mal en absoluto.»', loseText: 'Los botes desaparecen de los tejados. Respira hondo y otra vez.',
     create(w, h, o = {}) {
       const b = o.bonus || 0;
       const need = Math.max(4, 6 - b);
@@ -341,7 +358,7 @@
           if (g.spawn <= 0) {
             g.spawn = Math.max(0.9, 2 - g.t * 0.02);
             const thug = Math.random() < 0.55;
-            g.targets.push({ x: w * (0.08 + Math.random() * 0.84), y: h * (0.25 + Math.random() * 0.62), s: 0.7 + Math.random() * 0.5, thug, life: 0, max: thug ? 4.2 - Math.min(1.8, g.t * 0.03) : 5, vx: (Math.random() - 0.5) * 8, ph: Math.random() * TAU, down: 0 });
+            g.targets.push({ x: w * (0.08 + Math.random() * 0.84), y: h * (0.25 + Math.random() * 0.62), s: 0.7 + Math.random() * 0.5, thug, life: 0, max: thug ? 4.2 - Math.min(1.8, g.t * 0.03) : 5, vx: 0, ph: Math.random() * TAU, down: 0 });
           }
           for (const tg of g.targets) { tg.life += dt; tg.x += tg.vx * dt; if (tg.down) tg.down += dt; }
           g.targets = g.targets.filter((tg) => (tg.down ? tg.down < 1 : tg.life < tg.max));
@@ -353,7 +370,7 @@
         },
         draw(ctx, t) {
           // Fuera de la mira: la ciudad a simple vista, un poco velada.
-          drawPeople(ctx, t, 1);
+          drawPeople(ctx, t);
           ctx.fillStyle = 'rgba(6,6,10,0.42)';
           ctx.fillRect(0, 0, w, h);
           // Dentro de la mira: la misma escena aumentada alrededor del punto de mira.
@@ -362,7 +379,7 @@
           ctx.beginPath(); ctx.arc(x, y, R, 0, TAU); ctx.clip();
           ctx.translate(x, y); ctx.scale(ZOOM, ZOOM); ctx.translate(-x, -y);
           o.bd?.draw(ctx, w, h, g.cam(), t, true);
-          drawPeople(ctx, t, ZOOM);
+          drawPeople(ctx, t);
           ctx.restore();
           ctx.save();
           // Lente: viñeta, reflejo y retícula
@@ -395,32 +412,46 @@
           for (const s of g.shots) { s.life -= 0.03; }
           g.shots = g.shots.filter((s) => s.life > 0);
         },
-        hud() { return bar('Matones', g.hits, need, '#e3c45a') + `<span class="mg-num">${g.hits}/${need} · ${Math.max(0, limit - g.t).toFixed(0)} s</span>` + bar('Aliento', g.breath, 1, '#7fd0ff') + (g.civ ? `<span class="mg-chip">Civiles: ${g.civ}/2</span>` : ''); },
+        hud() { return bar('Botes', g.hits, need, '#c04aff') + `<span class="mg-num">${g.hits}/${need} · ${Math.max(0, limit - g.t).toFixed(0)} s</span>` + bar('Aliento', g.breath, 1, '#7fd0ff') + (g.civ ? `<span class="mg-chip">Faroles: ${g.civ}/2</span>` : ''); },
       };
-      // Silueta de una persona a escala del mundo. Los matones llevan gafas químicas que brillan.
-      function drawPeople(ctx, t, zoom) {
+      // Objetivos a escala del mundo: botes de brillo (morado, se revientan) y faroles hextec de
+      // Piltover (azules, no se tocan). Se ven pequeños a simple vista y nítidos en la mira.
+      function drawPeople(ctx, t) {
         for (const tg of g.targets) {
           const appear = Math.min(1, tg.life * 3, (tg.max - tg.life) * 3);
-          const fall = tg.down ? Math.min(1, tg.down * 3) : 0;
           const s = tg.s * Math.min(w, h) * 0.022;
           ctx.save();
-          ctx.globalAlpha = appear * (1 - (tg.down ? tg.down : 0));
-          ctx.translate(tg.x, tg.y);
-          ctx.rotate(fall * (tg.vx > 0 ? 1.3 : -1.3));
-          const bob = Math.sin(t * 2 + tg.ph) * s * 0.05;
-          ctx.fillStyle = tg.thug ? '#0e0a12' : '#2a2018';
-          ctx.beginPath(); ctx.moveTo(-s * 0.55, s * 1.4); ctx.quadraticCurveTo(-s * 0.6, s * 0.1 + bob, 0, bob); ctx.quadraticCurveTo(s * 0.6, s * 0.1 + bob, s * 0.55, s * 1.4); ctx.closePath(); ctx.fill();
-          ctx.beginPath(); ctx.arc(0, -s * 0.35 + bob, s * 0.32, 0, TAU); ctx.fill();
+          ctx.globalAlpha = appear * (tg.down ? Math.max(0, 1 - tg.down * 4) : 1);
+          ctx.translate(tg.x, tg.y + s * 1.4);
+          const sway = Math.sin(t * 2 + tg.ph) * 0.04;
+          ctx.rotate(sway);
           if (tg.thug) {
-            ctx.fillStyle = '#4a2a5a'; ctx.fillRect(-s * 0.5, s * 0.2 + bob, s, s * 0.12);
+            // Bote de brillo: cristal con líquido morado que burbujea, tapas de latón y caja de madera
+            ctx.fillStyle = '#4a3420'; ctx.fillRect(-s * 0.6, -s * 0.25, s * 1.2, s * 0.25);
+            const lv = 0.55 + Math.sin(t * 3 + tg.ph) * 0.05;
+            ctx.fillStyle = 'rgba(40,20,60,0.85)';
+            ctx.fillRect(-s * 0.32, -s * 1.55, s * 0.64, s * 1.3);
+            const lg = ctx.createLinearGradient(-s * 0.3, 0, s * 0.3, 0);
+            lg.addColorStop(0, '#6a1a9a'); lg.addColorStop(0.5, '#e070ff'); lg.addColorStop(1, '#6a1a9a');
+            ctx.fillStyle = lg;
+            ctx.fillRect(-s * 0.3, -s * 0.25 - s * 1.3 * lv, s * 0.6, s * 1.3 * lv);
             ctx.globalCompositeOperation = 'lighter';
-            const gl = s * (0.55 + Math.sin(t * 6 + tg.ph) * 0.1);
-            ctx.drawImage(glowSprite('#c04aff'), -gl, -s * 0.4 - gl / 2 + bob, gl * 2, gl);
+            ctx.drawImage(glowSprite('#c04aff'), -s * 1.1, -s * 1.9, s * 2.2, s * 2.2);
             ctx.globalCompositeOperation = 'source-over';
-            ctx.fillStyle = '#e8a0ff'; ctx.fillRect(-s * 0.22, -s * 0.42 + bob, s * 0.16, s * 0.08); ctx.fillRect(s * 0.06, -s * 0.42 + bob, s * 0.16, s * 0.08);
+            ctx.fillStyle = '#f6c0ff';
+            for (let k = 0; k < 3; k++) { const by = -s * 0.4 - ((t * 0.8 + k * 0.33 + tg.ph) % 1) * s * 0.7; ctx.beginPath(); ctx.arc(-s * 0.12 + k * s * 0.12, by, s * 0.05, 0, TAU); ctx.fill(); }
+            ctx.fillStyle = '#c8a050';
+            ctx.fillRect(-s * 0.38, -s * 1.7, s * 0.76, s * 0.16); ctx.fillRect(-s * 0.38, -s * 0.32, s * 0.76, s * 0.1);
           } else {
-            ctx.fillStyle = '#6a5038'; ctx.fillRect(-s * 0.42, -s * 0.66 + bob, s * 0.84, s * 0.12); ctx.fillRect(-s * 0.26, -s * 0.9 + bob, s * 0.52, s * 0.26);
-            if (zoom > 1) { ctx.fillStyle = '#e3c45a'; ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(glowSprite('#ffd890'), s * 0.3, s * 0.2, s * 0.8, s * 0.8); }
+            // Farol hextec de Piltover: poste de latón y gema azul encerrada
+            ctx.fillStyle = '#5a4a2a'; ctx.fillRect(-s * 0.07, -s * 1.2, s * 0.14, s * 1.2);
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.drawImage(glowSprite('#7fd0ff'), -s, -s * 2.2, s * 2, s * 2);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = 'rgba(190,235,255,0.85)';
+            ctx.beginPath(); ctx.moveTo(-s * 0.28, -s * 1.25); ctx.lineTo(s * 0.28, -s * 1.25); ctx.lineTo(s * 0.2, -s * 1.75); ctx.lineTo(-s * 0.2, -s * 1.75); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#c8a050';
+            ctx.beginPath(); ctx.moveTo(-s * 0.32, -s * 1.75); ctx.lineTo(0, -s * 2); ctx.lineTo(s * 0.32, -s * 1.75); ctx.closePath(); ctx.fill();
           }
           ctx.restore();
         }
@@ -429,16 +460,21 @@
         g.kick = 1; g.flash = 1; FX.shake(8);
         Audio2.sfx.choice(); buzz(25);
         const { x, y } = g.aim;
-        const hit = g.targets.find((tg) => !tg.down && Math.abs(tg.x - x) < tg.s * Math.min(w, h) * 0.014 && y > tg.y - tg.s * Math.min(w, h) * 0.016 && y < tg.y + tg.s * Math.min(w, h) * 0.03);
+        const hit = g.targets.find((tg) => {
+          const s = tg.s * Math.min(w, h) * 0.022;
+          return !tg.down && Math.abs(tg.x - x) < s * 0.55 && y > tg.y - s * 0.6 && y < tg.y + s * 1.4;
+        });
         if (!hit) { FX.burst(x, y, 6, { color: '#c8b080', kind: 'spark', speed: 140, life: 0.3 }); FX.text(x, y - R - 30, 'Fallo', '#c8b080', 22); return; }
         hit.down = 0.001;
         if (hit.thug) {
           g.hits++;
-          FX.text(x, y - R - 30, g.holding ? '¡Disparo limpio!' : '¡Abatido!', '#ffe08a', 28);
-          FX.burst(x, y, 24, { color: ['#c04aff', '#e8a0ff', '#ffffff'], kind: 'dot', speed: 260, life: 0.5, gravity: 0 });
+          FX.text(x, y - R - 30, g.holding ? '¡Disparo limpio!' : '¡Reventado!', '#ffe08a', 28);
+          FX.burst(x, y, 24, { color: ['#c04aff', '#e8a0ff', '#ffffff'], kind: 'shard', speed: 320, life: 0.6, size: 3 });
+          FX.impact(x, y, { power: 0.9, colors: ['#c04aff', '#e070ff', '#ffe08a'] });
         } else {
           g.civ++;
-          FX.hurt(0.9); FX.text(x, y - R - 30, '¡Un civil!', '#ff6a6a', 30);
+          FX.hurt(0.9); FX.text(x, y - R - 30, '¡Un farol!', '#ff6a6a', 30);
+          FX.burst(x, y, 20, { color: ['#bfeaff', '#7fd0ff', '#ffffff'], kind: 'shard', speed: 300, life: 0.6, size: 3 });
           Audio2.sfx.locked();
         }
       }
@@ -606,6 +642,7 @@
         FX.burst(x, y, 70, { color: ['#ff7ab0', '#e0457b', '#7fd0ff', '#ffe08a'], speed: 620, life: 0.8, size: 4 });
         FX.burst(x, y, 16, { color: '#5a4a5a', kind: 'smoke', speed: 160, life: 1.4, gravity: -60, size: 14 });
         FX.shake(22); FX.flash(0.35, '255,180,220');
+        FX.impact(x, y, { power: 1.4, colors: ['#ff4aa0', '#3fd0ff', '#ffe08a'], frameCol: '255,200,235' });
         Audio2.sfx.unlock(); buzz([40, 20, 40]);
         for (const it of [...crates, ...turrets]) {
           if (it.hp <= 0) continue;

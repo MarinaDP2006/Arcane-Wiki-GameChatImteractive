@@ -5152,6 +5152,15 @@ window.I18N_DATA.fr = {
   "Hay tanto que contar…": "Il y a tant à raconter…",
   "Otra ronda de preguntas.": "Un autre tour de questions.",
   "Siempre.": "Toujours.",
-  "Kino, ¿hablamos largo y tendido?": "Kino, on parle longuement ?"
+  "Kino, ¿hablamos largo y tendido?": "Kino, on parle longuement ?",
   // <<< chat-deep
+  "Desde un tejado, con el rifle hextec de Caitlyn. Silco ha escondido botes de brillo por la ciudad: búscalos con la mira, contén la respiración para que no tiemble y reviéntalos. No rompas los faroles hextec.": "Sur un toit, avec le fusil hextech de Caitlyn. Silco a caché des fioles de lueur dans la ville : trouve-les dans la lunette, retiens ton souffle pour ne pas trembler et fais-les éclater. Ne casse pas les lanternes hextech.",
+  "Revienta 6 botes de brillo en 50 segundos sin romper 2 faroles.": "Fais éclater 6 fioles de lueur en 50 secondes sans casser 2 lanternes.",
+  "Los botes desaparecen de los tejados. Respira hondo y otra vez.": "Les fioles disparaissent des toits. Respire à fond et recommence.",
+  "Botes": "Fioles",
+  "Faroles: {0}/2": "Lanternes : {0}/2",
+  "¡Reventado!": "Éclatée !",
+  "¡Un farol!": "Une lanterne !",
+  "Dianas hextec aparecen y desaparecen. Dispara a las dianas azules y no rompas los faroles de gas.": "Des cibles hextech apparaissent et disparaissent. Tire sur les cibles bleues et ne casse pas les lanternes à gaz.",
+  "-3 ¡Un farol!": "-3 Une lanterne !"
 };
