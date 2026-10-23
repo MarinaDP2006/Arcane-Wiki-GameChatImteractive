@@ -6,7 +6,7 @@
 name: Compilar móvil (Android)
 on:
   push:
-    branches: [claude/project-thread-9huivc-arcane]
+    branches: [main, claude/project-thread-9huivc-arcane]
     tags: ['arcane-v*']
   workflow_dispatch:
 permissions:
@@ -42,7 +42,7 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
           mkdir -p ../apk
-          cp app/build/outputs/apk/debug/app-debug.apk "../apk/grietas-and-gears-$(node -p "require('../package.json').version")-tablet.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "../apk/arcane-fangame-$(node -p "require('../package.json').version")-tablet.apk"
       - name: Compilar APK firmado y AAB (si hay llave)
         if: ${{ env.KEYSTORE != '' }}
         env:
@@ -62,7 +62,7 @@ jobs:
         run: ls -la apk && test -n "$(ls apk/*.apk)"
       - uses: actions/upload-artifact@v4
         with:
-          name: grietas-and-gears-android
+          name: arcane-fangame-android
           path: apk/*
           if-no-files-found: error
       - name: Adjuntar a la versión publicada
