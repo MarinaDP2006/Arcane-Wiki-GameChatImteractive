@@ -23,3 +23,16 @@ Mientras KoboldCpp esté abierto, los personajes te responden con ese modelo.
 - Un modelo de 5 GB sin tarjeta gráfica puede tardar 30 segundos o más por respuesta. El juego espera hasta 90 segundos.
 - Prueba con un modelo más pequeño o con más **GPU Layers**.
 - Si la IA no contesta, el juego ofrece los diálogos escritos para que no te quedes atascada.
+
+
+## La pantalla «Welcome to KoboldAI Lite»
+
+El mensaje de bienvenida («You are using the models…», «Instruct Mode Selected») lo muestra la interfaz web que sirve KoboldCpp; no es un texto que se tenga que pegar en el juego.
+
+1. En el mismo ordenador donde está KoboldCpp, abre `http://localhost:5001`. Ahí puedes confirmar el modelo cargado y usar Instruct, JSON/Character Card o Quick Start Scenario.
+2. En KoboldCpp, selecciona tu archivo GGUF y pulsa **Launch**. En este ejemplo el modelo activo se muestra como `koboldcpp/Llama-3.1-8B-Instruct-Q4_K_M`; el nombre exacto depende del archivo que cargues.
+3. En el juego, abre **Ajustes → IA de la historia y los chats**, elige **KoboldCpp**, deja como endpoint de API `http://localhost:5001/v1/chat/completions`, pulsa **Buscar mis modelos**, selecciona el identificador devuelto por el servidor y después **Probar conexión**.
+4. La interfaz Lite y la API son dos rutas del mismo servidor: `http://localhost:5001/` es la página web; `/v1/chat/completions` es la ruta que usa el juego para pedir respuestas.
+5. En un móvil o tablet, sustituye `localhost` por la IP LAN del ordenador (por ejemplo, `http://192.168.1.40:5001`). No abras el puerto a Internet pública; limita el acceso a tu red local.
+
+Las tarjetas y escenarios que cargues dentro de KoboldAI Lite no se importan automáticamente al juego. El juego sigue enviando su propio contexto de mundo, personaje e historial por la API.
