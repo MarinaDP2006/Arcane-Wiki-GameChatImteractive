@@ -1,7 +1,8 @@
 # Rama de trabajo: modelos 3D, LM Studio y audio
 
-Rama: `feat/arcane-3d-lm-studio`
-Base: `main` (sin fusionar).
+Rama de trabajo original: `feat/arcane-3d-lm-studio`.
+
+El plan documental y las guías operativas se fusionaron en `main` mediante el PR #65. Este archivo sigue siendo una especificación de trabajo, no una confirmación de que todos los objetivos de implementación estén terminados.
 
 ## Estado y alcance
 
