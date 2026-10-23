@@ -1075,6 +1075,7 @@ body[data-city='zaun'] .btn.primary { background: linear-gradient(180deg, #8fe8c
 .ai-off p { margin: 0 0 0.6rem; }
 .ai-settings .ai-help { padding: 0.6rem 0.8rem; border-left: 2px solid var(--gold); background: rgba(227, 196, 90, 0.06); border-radius: 0 8px 8px 0; }
 .ai-status { margin-left: 0.4rem; }
+.ai-lan { display: block; margin: -0.2rem 0 0.6rem; color: var(--gold); }
 .msg.sys .bubble { font-style: italic; }
 body.touch .ai-input { font-size: 16px; }
 

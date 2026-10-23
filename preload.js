@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld('arcane', {
   },
   ai: (url, headers, body) => ipcRenderer.invoke('ai:chat', url, headers, body),
   aiGet: (url) => ipcRenderer.invoke('ai:get', url),
+  lanIps: () => ipcRenderer.invoke('net:ips'),
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch) => ipcRenderer.invoke('settings:set', patch),
