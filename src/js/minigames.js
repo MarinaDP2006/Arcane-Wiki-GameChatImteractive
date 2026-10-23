@@ -360,7 +360,7 @@
       // Eventos de puntero: valen igual para ratón y para dedo (móvil).
       canvas.addEventListener('pointermove', pos);
       canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); pos(e); mouse.down = true; mouse.clicks.push({ x: mouse.x, y: mouse.y }); });
-      const up = () => { mouse.down = false; keys.clear(); };
+      const up = () => { mouse.down = false; };
       window.addEventListener('pointerup', up);
       window.addEventListener('pointercancel', up);
 
