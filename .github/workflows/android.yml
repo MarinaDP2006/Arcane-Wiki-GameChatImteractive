@@ -6,8 +6,8 @@
 name: Compilar móvil (Android)
 on:
   push:
-    branches: [main]
-    tags: ['v*']
+    branches: [claude/project-thread-9huivc-arcane]
+    tags: ['arcane-v*']
   workflow_dispatch:
 permissions:
   contents: write
@@ -66,7 +66,7 @@ jobs:
           path: apk/*
           if-no-files-found: error
       - name: Adjuntar a la versión publicada
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/arcane-v')
         uses: softprops/action-gh-release@v2
         with:
           files: apk/*
