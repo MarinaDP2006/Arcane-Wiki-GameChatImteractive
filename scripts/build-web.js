@@ -59,7 +59,7 @@ function build() {
   for (const f of ['lugares/piltover.webp', 'lugares/zaun.webp', 'codice/mapa-piltover-zaun.webp', 'simbolos/piltover.png', 'simbolos/zaun.png']) {
     copy(path.join(root, 'src', 'img', 'arte', f), path.join(out, 'arte', f));
   }
-  copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
+  // Arte existente del juego para la cronología editorial; no se presenta como capturas históricas.\n  for (const name of ['piltover.webp', 'zaun.webp', 'hexpuertas.webp', 'comuna-viktor.webp']) {\n    copy(path.join(root, 'src', 'img', 'arte', 'lugares', name), path.join(out, 'arte', 'historia', name));\n  }\n  copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
 
   const tarjetas = personajes.map((p) => `
         <li class="pj pj-${esc(p.origin)}">
