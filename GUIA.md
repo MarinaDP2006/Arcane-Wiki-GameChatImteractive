@@ -27,7 +27,7 @@
 
 ## 1. Qué es Rifts & Gears
 
-Rifts & Gears es un juego narrativo de fans inspirado en la estética y el universo de *Arcane*. El jugador crea un protagonista, escoge un origen, toma decisiones en la historia, desarrolla relaciones con personajes, explora localizaciones y accede a actividades y minijuegos.
+Rifts & Gears es una aventura narrativa original de fantasía industrial ambientada en Aurelia y Nácar, dos ciudades conectadas por ascensores y una energía mineral llamada Resonancia. El jugador crea un protagonista, escoge un origen, toma decisiones en la historia, desarrolla relaciones con personajes, explora localizaciones y accede a actividades y minijuegos.
 
 El repositorio contiene la fuente del juego, datos narrativos, arte y recursos del proyecto, herramientas de compilación, una web promocional y guías de desarrollo. No es necesario conocer JavaScript para jugar una versión compilada.
 
@@ -37,7 +37,7 @@ El repositorio contiene la fuente del juego, datos narrativos, arte y recursos d
 |---|---|---|
 | Historia | Archivos de escenas, decisiones, rutas y finales. | Que cada ruta esté probada de principio a fin en cada versión. |
 | Creación | Creador por pasos para origen, identidad, clase, habilidades, aptitudes, retrato, familia/aficiones y ficha final. | Que todas las combinaciones posibles estén equilibradas narrativamente. |
-| Mapa | Mapas de Piltover y Zaun; existe un renderizado 3D y una alternativa visual 2D. | Que todos los lugares tengan un modelo 3D detallado e independiente. |
+| Mapa | Mapas de Aurelia y Nácar; existe un renderizado 3D y una alternativa visual 2D. | Que todos los lugares tengan un modelo 3D detallado e independiente. |
 | Personajes 3D | Soporte para escena Three.js y modelos locales en formatos compatibles. | Que cada personaje tenga modelo original terminado y animaciones completas. |
 | Conversaciones | Diálogos escritos y chat libre con IA opcional. | Que un proveedor de IA funcione sin configuración o internet/red cuando no es local. |
 | Audio | Música procedural y efectos generados mediante Web Audio. | Que existan tres archivos musicales finales MP3/OGG ya exportados e integrados. |
@@ -69,7 +69,7 @@ Estas imágenes son capturas reales almacenadas en el repositorio. Algunas puede
 
 ![Creador de personaje](capturasjuego/03-creador-de-personaje-eleccion-de-retrato.webp)
 
-![Mapa 3D de Zaun](capturasjuego/07-version-actual-mapa-3d-de-zaun.webp)
+![Concepto visual de Aurelia y Nácar](web/arte-propio/ciudades-umbral.svg)
 
 ## 3. Preparar el entorno de desarrollo
 
@@ -143,7 +143,7 @@ flowchart TD
 | <code>src/data/alternate-fates.js</code> | Contenido y condiciones de destinos alternativos. |
 | <code>src/data/chat.js</code>, <code>chat-expansion.js</code>, <code>chat-deep.js</code> | Conversaciones preparadas y sus expansiones. |
 | <code>src/data/guia.js</code> | Introducción al mundo y fichas de personajes sin spoilers importantes. |
-| <code>src/data/ai-voices.js</code>, <code>arcane-lore.js</code> | Rasgos de voz, biografía y contexto que se suministran al chat de IA. |
+| <code>src/data/original-world.js</code> | Fichas, voces, historia, ciudades y contexto original que se suministran al chat de IA. |
 | <code>src/data/relations.js</code> | Relaciones y vínculos entre personajes. |
 | <code>main.js</code>, <code>preload.js</code>, <code>modelos.js</code> | Integración de escritorio y acceso a capacidades de Electron. |
 | <code>scripts/</code> | Scripts de comprobación, generación de la web y preparación de la versión móvil. |
@@ -172,7 +172,7 @@ flowchart TD
 | Añadir escenas y elecciones | <code>src/data/story.js</code> o <code>src/data/story-expansion.js</code>. |
 | Añadir una condición de destino alternativo | <code>src/data/alternate-fates.js</code> y la lógica del motor que actualiza los personajes/flags. |
 | Editar diálogos escritos | <code>src/data/chat.js</code>, <code>src/data/chat-expansion.js</code> o los módulos de conversación profunda. |
-| Afinar el tono de los personajes de IA | <code>src/data/arcane-lore.js</code>, <code>src/data/ai-voices.js</code> y <code>src/js/ai.js</code>. |
+| Afinar el tono de los personajes de IA | <code>src/data/original-world.js</code> y <code>src/js/ai.js</code>. |
 | Cambiar audio | <code>src/js/audio.js</code>. |
 | Cambiar una ciudad o el mapa | Datos de <code>src/data/world.js</code> y módulos del mapa y del mundo 3D. |
 | Cambiar instrucciones sin spoilers | <code>src/data/guia.js</code>. |
@@ -275,7 +275,7 @@ El código de <code>src/js/audio.js</code> sintetiza audio mediante Web Audio. L
 
 **No están confirmadas tres pistas de audio independientes generadas, subidas e integradas.** Para considerar terminado ese trabajo debe existir cada archivo final en el repositorio, haber comprobado su licencia y tamaño, y haberlo conectado al reproductor. Después se debe probar el cambio de ubicación, volumen, silencio, loop, empaquetado web/escritorio/móvil y la reproducción real. La generación de música externa no se considera realizada hasta que los archivos se hayan recibido y probado.
 
-La carpeta de referencia es [assets/music/README.md](assets/music/README.md). No utilices melodías, stems ni grabaciones de la banda sonora oficial de *Arcane*.
+La carpeta de referencia es [assets/music/README.md](assets/music/README.md). No incorpores melodías, stems ni grabaciones comerciales sin licencia; utiliza música original o recursos con licencia compatible.
 
 ## 10. Guardados y datos personales
 
@@ -435,8 +435,8 @@ No uses un nombre de rama de ejemplo si ya existe; comprueba el listado local an
 - [Partidas guardadas](partidas-guardadas-guia.md)
 - [Web en Render](GUIA-WEB-RENDER.md)
 - [Música](assets/music/README.md)
-- [Plan de trabajo 3D, IA y música](docs/ARCANE-3D-LM-STUDIO-AUDIO.md)
+- [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
 
 ## 18. Aviso legal
 
-El repositorio declara licencia MIT para el código; eso no otorga derechos sobre marcas, personajes, música ni recursos de terceros. Rifts & Gears es un proyecto de fans no oficial. Antes de distribuir contenido, verifica las licencias aplicables y las [condiciones legales de Riot Games](https://www.riotgames.com/es/legal).
+El repositorio declara licencia MIT para el código y el universo, nombres e ilustraciones de Las ciudades del Umbral se plantean como contenido original. Revisa por separado las licencias de bibliotecas, tipografías, sonidos y recursos de terceros antes de distribuir.
