@@ -1,6 +1,6 @@
 {
   "name": "grietas-and-gears",
-  "productName": "Rifts & Gears",
+  "productName": "Rifts & Gears: Arcane",
   "version": "1.27.0",
   "description": "Fangame narrativo de rol libre ambientado en Arcane, con Piltover, Zaun y personajes de las temporadas 1 y 2.",
   "main": "main.js",
@@ -65,7 +65,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "shortcutName": "Rifts & Gears",
-      "artifactName": "Rifts-and-Gears-Setup-${version}.${ext}"
+      "artifactName": "Arcane-Fangame-${version}-Setup.${ext}"
     },
     "portable": {
       "artifactName": "Rifts-and-Gears-${version}-portable.${ext}"
@@ -93,7 +93,7 @@
       "artifactName": "Rifts-and-Gears-${version}-mac-${arch}.${ext}"
     },
     "dmg": {
-      "title": "Rifts & Gears ${version}"
+      "title": "Rifts & Gears: Arcane ${version}"
     }
   }
 }
