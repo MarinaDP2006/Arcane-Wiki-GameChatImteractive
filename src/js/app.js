@@ -7,8 +7,14 @@
     view: 'home',
     go(view) {
       App.view = view;
-      // Ciudad del jugador: tiñe los fondos pintados (dorado de Piltover, neón de Zaun).
-      document.body.dataset.city = (view === 'game' && window.Game?.current()?.player?.origin) || 'piltover';
+      // Mantiene la identidad visual al moverse entre el creador, los ajustes y el juego.
+      const body = document.body;
+      const savedCity = body.dataset.ciudad || body.dataset.city;
+      const gameCity = window.Game?.current()?.player?.origin;
+      const city = view === 'game' ? (gameCity || savedCity || 'piltover') : (savedCity || gameCity || 'piltover');
+      body.dataset.city = city;
+      body.dataset.ciudad = city;
+      if (App.applyLook) App.applyLook();
       $$('.view').forEach((v) => v.classList.toggle('active', v.id === `view-${view}`));
       if (view !== 'game') window.World?.stop();
       if (view === 'home') renderTitle();
@@ -197,7 +203,13 @@
     window.World3D?.applySettings?.();
   }
   App.applyLook = applyLook;
-  App.setCity = (city) => { document.body.dataset.ciudad = city || ''; applyLook(); };
+  App.setCity = (city) => {
+    if (city) {
+      document.body.dataset.city = city;
+      document.body.dataset.ciudad = city;
+    }
+    applyLook();
+  };
 
   // Copia de seguridad: partidas y ajustes en un archivo .json (la clave de la IA no se copia).
   async function exportData() {
