@@ -105,3 +105,5 @@ jobs:
             dist/*.exe
             dist/*.dmg
             dist/*.zip
+          overwrite_files: true
+          fail_on_unmatched_files: true
