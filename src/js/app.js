@@ -170,8 +170,8 @@
         d.key ? el('label', { class: 'field' }, el('span', {}, 'Clave (API key)'),
           el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.key || '', placeholder: 'Pega aquí tu clave', onchange: (e) => save({ key: e.target.value.trim() }) })) : null,
         (local || a.provider === 'custom' || a.provider === 'ollamaCloud') ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
-          el('input', { class: 'input', value: a.url || d.url, placeholder: a.provider === 'lmstudio' ? 'http://192.168.1.40:1234' : a.provider === 'ollamaCloud' ? 'https://tu-servicio.onrender.com/api/roleplay' : 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
-        a.provider === 'lmstudio' ? lan : null,
+          el('input', { class: 'input', value: a.url || d.url, placeholder: a.provider === 'lmstudio' ? 'http://192.168.1.40:1234' : a.provider === 'koboldcpp' ? 'http://192.168.1.40:5001' : a.provider === 'ollamaCloud' ? 'https://tu-servicio.onrender.com/api/roleplay' : 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+        (a.provider === 'lmstudio' || a.provider === 'koboldcpp') ? lan : null,
         a.provider !== 'off' ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
           el('input', { class: 'input', value: a.model || d.model, placeholder: a.provider === 'lmstudio' ? 'Pulsa «Buscar mis modelos»' : '', onchange: (e) => save({ model: e.target.value.trim() }) })) : null,
         local ? models : null,
@@ -185,9 +185,10 @@
             } catch (err) { status.textContent = `✗ ${err.message}`; }
           } }, 'Probar conexión'), status) : null);
       // En el PC: la dirección que hay que escribir en la tablet para usar este LM Studio.
-      if (a.provider === 'lmstudio' && window.umbral?.lanIps) {
+      if ((a.provider === 'lmstudio' || a.provider === 'koboldcpp') && window.umbral?.lanIps) {
+        const port = a.provider === 'koboldcpp' ? 5001 : 1234;
         window.umbral.lanIps().then((ips) => {
-          if (ips.length) lan.textContent = `En la tablet o el móvil escribe: ${ips.map((ip) => `http://${ip}:1234`).join(' o ')}`;
+          if (ips.length) lan.textContent = `En la tablet o el móvil escribe: ${ips.map((ip) => `http://${ip}:${port}`).join(' o ')}`;
         }).catch(() => {});
       }
       /** Busca modelos de IA accesibles para el usuario. */
@@ -195,7 +196,7 @@
         status.textContent = 'Buscando…';
         try {
           const list = await window.AI.models();
-          const empty = a.provider === 'lmstudio' ? 'LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).' : 'Ollama no tiene ningún modelo. Abre una terminal y escribe «ollama pull gemma3:4b».';
+          const empty = a.provider === 'lmstudio' ? 'LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).' : a.provider === 'koboldcpp' ? 'KoboldCpp no tiene ningún modelo abierto. Ciérralo, elige un .gguf en «Model» y pulsa «Launch».' : 'Ollama no tiene ningún modelo. Abre una terminal y escribe «ollama pull gemma3:4b».';
           status.textContent = list.length ? 'Elige uno (los pequeños responden antes).' : empty;
           models.replaceChildren(...list.map((m) => el('button', {
             class: `chip${m.name === (a.model || d.model) ? ' active' : ''}`,
