@@ -206,7 +206,7 @@
       drawFx(t, dt);
       const target = inspected ? 'goal' : 'clue';
       const nextStatus = visible(target)
-        ? (inspected ? 'Pulsa la luz del objetivo (o E) para continuar la historia.' : 'Ahí hay algo: pulsa la pista azul (o E) para investigar.')
+        ? (inspected ? `Pulsa la luz del objetivo${U.touch ? '' : ' (o E)'} para continuar la historia.` : `Ahí hay algo: pulsa la pista azul${U.touch ? '' : ' (o E)'} para investigar.`)
         : (inspected ? 'Pista encontrada. Busca la luz del objetivo por el lugar.' : 'Explora el lugar y busca la pista azul.');
       if (status.textContent !== nextStatus) status.textContent = nextStatus;
       session.raf = requestAnimationFrame(frame);

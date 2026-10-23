@@ -1492,3 +1492,7 @@ html[data-tema="zaun"] #view-settings .settings h2 { color: #8af1cc; }
 @media (prefers-reduced-motion: reduce) {
   html[data-tema] body, .origin-card, .creator-body { transition: none !important; animation: none !important; }
 }
+
+/* Pantallas táctiles (Android, tabletas): sin ayudas de teclado. */
+.is-touch kbd, .is-touch .key-only { display: none !important; }
+.is-touch .slot-key kbd, .is-touch .ability-hex kbd { display: inline-block !important; }

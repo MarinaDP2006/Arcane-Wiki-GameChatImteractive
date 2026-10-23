@@ -236,7 +236,7 @@
     if (!o) return;
     const ch = chapterById(G.progress.chapterId);
     if (G.progress.finished) o.innerHTML = '<b>Historia completada</b><br><small>Explora, chatea y busca los fragmentos que te faltan.</small>';
-    else if (G.progress.started) o.innerHTML = `<b>${esc(ch.title)}</b><br><small>Historia en curso · pulsa <kbd>H</kbd> para continuar</small>`;
+    else if (G.progress.started) o.innerHTML = `<b>${esc(ch.title)}</b><br><small>Historia en curso · ${U.touch ? 'toca aquí' : 'pulsa <kbd>H</kbd>'} para continuar</small>`;
     else o.innerHTML = `<b>${esc(ch.title)}</b><br><small>Objetivo: ve a <span class="gold">${esc(objectiveName())}</span></small>`;
     const st = $('#hud-stats');
     if (st) st.innerHTML = Object.entries(S().stats).map(([k, m]) => `<span title="${m.label}">${m.icon} ${G.stats[k]}</span>`).join('');
@@ -764,7 +764,7 @@
       atlas: svgIco('<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'),
       pausa: svgIco('<path d="M9 5v14M15 5v14"/>'),
     };
-    const hudBtn = (label, key, fn, icon) => el('button', { class: 'hud-btn', title: key, onclick: fn }, el('i', { class: 'hud-ico', html: icon }), el('span', { class: 'hud-label' }, label), el('kbd', {}, key));
+    const hudBtn = (label, key, fn, icon) => el('button', { class: 'hud-btn', title: U.touch ? label : key, onclick: fn }, el('i', { class: 'hud-ico', html: icon }), el('span', { class: 'hud-label' }, label), U.touch ? null : el('kbd', {}, key));
     root.append(el('div', { class: 'world' },
       canvas,
       el('div', { class: 'hud hud-top' },

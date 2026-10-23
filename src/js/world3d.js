@@ -183,10 +183,17 @@
   }
 
   /** Edificios instanciados: un cuerpo por fachada y remates (tejados, cúpulas, agujas). */
+  // Lugares con su propio modelo 3D (src/models): se ven desde arriba en el mapa, en lugar
+  // de los bloques genéricos. size = ancho que ocupan en unidades del mapa.
+  const PLACE_MODELS = { 'taller-jayce': { model: 'taller-viktor-jayce', size: 230 } };
+  // Guardias de Piltover (modelo guardia-piltover) de pie junto a estos lugares.
+  const GUARD_POSTS = { ejecutores: 3, consejo: 2, puente: 2 };
+
   function buildings(group, map, zaun) {
     const r = rng(map.def.seed * 7 + 3);
     const q = quality();
-    const list = map.buildings.filter(() => r() < q);
+    const cleared = map.def.locations.filter((l) => PLACE_MODELS[l.id]).map((l) => ({ x: l.x, y: l.y, r: PLACE_MODELS[l.id].size * 0.8 }));
+    const list = map.buildings.filter((b) => r() < q && !cleared.some((c) => Math.hypot(b.x + b.w / 2 - c.x, b.y + b.h / 2 - c.y) < c.r));
     const nFac = 4;
     const bodies = Array.from({ length: nFac }, () => []);
     const roofs = [];
@@ -513,6 +520,7 @@
       water(group, map, zaun);
       scene.add(group);
       world = zaun ? zaunWorld(scene, map) : piltoverWorld(scene, map);
+      buildActors(map);
       if (shadows && world.key) {
         world.key.castShadow = true;
         const s = world.key.shadow;
@@ -521,6 +529,123 @@
         s.camera.near = 100; s.camera.far = 6000;
         s.bias = -0.0005;
       }
+    }
+
+    // ---------- Jugador (bola de luz), personajes de Arcane y decorados ----------
+    // Colores de la bola según la creación del personaje.
+    const ORB = { hombre: '#4fb8ff', mujer: '#ff5aa8', nobinario: '#ffc857' };
+    let actors = null;
+
+    function makeOrb() {
+      const root = new T.Group();
+      const mat = new T.MeshStandardMaterial({ color: '#ffffff', emissive: '#ffffff', emissiveIntensity: 1.6, roughness: 0.25, metalness: 0.1 });
+      const ball = new T.Mesh(new T.SphereGeometry(11, 28, 18), mat);
+      ball.castShadow = true;
+      const halo = new T.Sprite(new T.SpriteMaterial({ map: softSprite('rgba(255,255,255,0.9)', 'rgba(255,255,255,0)'), blending: T.AdditiveBlending, depthWrite: false, transparent: true }));
+      halo.scale.set(70, 70, 1);
+      const light = new T.PointLight('#ffffff', 3, 320, 0);
+      const shadow = new T.Mesh(new T.CircleGeometry(12, 24).rotateX(-Math.PI / 2), new T.MeshBasicMaterial({ color: '#000', transparent: true, opacity: 0.35, depthWrite: false }));
+      shadow.position.y = 0.6;
+      const body = new T.Group();
+      body.add(ball, halo, light);
+      root.add(body, shadow);
+      return { root, body, ball, halo, light, shadow, mat, ph: 0, color: '' };
+    }
+
+    function buildActors(map) {
+      actors = { group: new T.Group(), orb: makeOrb(), npcs: new Map(), guards: [], map };
+      scene.add(actors.group);
+      actors.group.add(actors.orb.root);
+      const A = window.Avatars3D;
+      if (!A) return;
+      const mine = actors;
+      // Decorados con modelo propio.
+      for (const l of map.def.locations) {
+        const pm = PLACE_MODELS[l.id];
+        if (!pm) continue;
+        A.prop(pm.model).then((m) => {
+          if (!m || actors !== mine) return;
+          const box = new T.Box3().setFromObject(m);
+          const size = box.getSize(new T.Vector3());
+          const k = pm.size / Math.max(size.x, size.z, 1e-6);
+          m.scale.setScalar(k);
+          m.position.set(l.x - ((box.min.x + box.max.x) / 2) * k, -box.min.y * k, l.y - ((box.min.z + box.max.z) / 2) * k);
+          mine.group.add(m);
+        }).catch(() => {});
+      }
+      // Guardias de Piltover en sus puestos (mirando hacia la calle hasta que te acercas).
+      if (map.id !== 'zaun') {
+        for (const l of map.def.locations) {
+          const n = GUARD_POSTS[l.id] || 0;
+          for (let i = 0; i < n; i++) {
+            const a = (i / n) * Math.PI * 2 + 0.6;
+            const av = A.create({ id: 'guardia-piltover' });
+            const g = { av, x: l.x + Math.cos(a) * 120, y: l.y + Math.sin(a) * 120 };
+            g.home = Math.atan2(g.x - l.x, g.y - l.y);
+            av.holder.position.set(g.x, 0, g.y);
+            mine.group.add(av.holder);
+            mine.guards.push(g);
+          }
+        }
+      }
+    }
+
+    // Distancia a la que un personaje se gira para mirarte.
+    const NOTICE = 240;
+    function turnTo(av, x, y, home, p, dt, t) {
+      const near = p && Math.hypot(p.x - x, p.y - y) < NOTICE;
+      const yaw = near ? Math.atan2(p.x - x, p.y - y) : home;
+      window.Avatars3D.update(av, dt, 0, yaw, t, true);
+    }
+
+    /**
+     * Coloca a los actores del fotograma: player = { x, y, gender, moving, speed },
+     * npcs = [{ id, x, y, home }]. Los personajes no se animan: solo se giran hacia ti.
+     */
+    function updateActors(st, t, dt) {
+      if (!actors || !st) return;
+      const { orb } = actors;
+      const p = st.player;
+      if (p) {
+        orb.root.visible = true;
+        const color = ORB[p.gender] || ORB.nobinario;
+        if (orb.color !== color) {
+          orb.color = color;
+          orb.mat.color.set(color);
+          orb.mat.emissive.set(color);
+          orb.halo.material.color.set(color);
+          orb.light.color.set(color);
+        }
+        orb.root.position.set(p.x, 0, p.y);
+        // Al andar da saltitos (aplastándose al tocar el suelo); quieta, flota y respira.
+        if (p.moving) orb.ph += dt * Math.max(7, (p.speed || 230) / 26);
+        const hop = p.moving ? Math.abs(Math.sin(orb.ph)) : 0;
+        const idle = p.moving ? 0 : Math.sin(t * 2.2) * 2;
+        orb.body.position.y = 13 + hop * 26 + idle;
+        const squash = p.moving ? 1 - (1 - hop) * 0.22 : 1;
+        orb.ball.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash));
+        const s = 1 - hop * 0.45;
+        orb.shadow.scale.set(s, s, s);
+        orb.shadow.material.opacity = 0.35 * s;
+        orb.halo.material.opacity = 0.75 + Math.sin(t * 3) * 0.15;
+      } else orb.root.visible = false;
+      // Personajes de Arcane: se crean al aparecer y se quitan al irse.
+      const A = window.Avatars3D;
+      if (!A) return;
+      const seen = new Set();
+      for (const n of st.npcs || []) {
+        seen.add(n.id);
+        let e = actors.npcs.get(n.id);
+        if (!e) {
+          e = { av: A.create({ id: n.id }) };
+          actors.npcs.set(n.id, e);
+          actors.group.add(e.av.holder);
+        }
+        e.av.holder.position.set(n.x, 0, n.y);
+        turnTo(e.av, n.x, n.y, n.home ?? 0, p, dt, t);
+      }
+      for (const [id, e] of actors.npcs) if (!seen.has(id)) { A.dispose(e.av); actors.npcs.delete(id); }
+      for (const g of actors.guards) turnTo(g.av, g.x, g.y, g.home, p, dt, t);
     }
 
     /** Distancia de la cámara para que el zoom (px por unidad en el centro) se respete. */
@@ -544,8 +669,9 @@
         camera.aspect = cw / ch;
         camera.updateProjectionMatrix();
       },
-      render(c, t, dt) {
+      render(c, t, dt, st) {
         place(c);
+        updateActors(st, t, dt);
         world?.tick?.(t, dt);
         renderer.render(scene, camera);
       },

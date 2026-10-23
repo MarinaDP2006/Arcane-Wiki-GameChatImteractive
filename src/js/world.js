@@ -37,6 +37,13 @@
   let fade = 0;
   const keys = new Set();
   const pointers = new Map();
+  // Tu personaje en el mapa: una bola de luz que anda (WASD o tocando el suelo) y salta a cada paso.
+  const WALK = 230; // unidades por segundo
+  const NEAR_LOC = 120; // a esta distancia de un lugar puedes entrar
+  const NEAR_CHAR = 95; // y de un personaje, hablar
+  let walkTo = null; // { x, y, thing? } destino al tocar el suelo, un lugar o una cara
+  let moving = false;
+  let near = null; // lugar o personaje al que has llegado
   let gesture = null;
   const imgCache = new Map();
 
@@ -175,7 +182,11 @@
       const loc = locById(W().homes[id]);
       if (!loc || loc.map !== mapId) continue;
       const n = (byLoc[loc.id] = (byLoc[loc.id] || 0) + 1);
-      out.push({ kind: 'char', id, loc: loc.id, slot: n - 1, name: window.WIKI.personajes.find((p) => p.id === id)?.name || id, x: loc.x, y: loc.y });
+      // De pie alrededor de su lugar, mirando hacia fuera hasta que te acercas.
+      const a = 2.3 + (n - 1) * 1.15;
+      const px = loc.x + Math.cos(a) * 85;
+      const py = loc.y + Math.sin(a) * 85;
+      out.push({ kind: 'char', id, loc: loc.id, slot: n - 1, name: window.WIKI.personajes.find((p) => p.id === id)?.name || id, x: loc.x, y: loc.y, px, py, home: Math.atan2(px - loc.x, py - loc.y) });
     }
     return out;
   }
@@ -474,7 +485,10 @@
     if (r3d) {
       try {
         ctx.clearRect(0, 0, cw, ch);
-        r3d.render(camState(), t / 1000, dt);
+        r3d.render(camState(), t / 1000, dt, {
+          player: { x: G.world.px, y: G.world.py, gender: G.player.gender, moving, speed: WALK },
+          npcs: npcs().map((n) => ({ id: n.id, x: n.px, y: n.py, home: n.home })),
+        });
         drawOverlay(t, zaun);
         return;
       } catch (err) {
@@ -511,8 +525,47 @@
   }
 
   /** Lo que va encima del mapa (2D o 3D): ruta, ambiente, cristales, lugares, caras y rótulos. */
+  // Colores de tu bola de luz (los mismos que en world3d.js).
+  const ORB = { hombre: '#4fb8ff', mujer: '#ff5aa8', nobinario: '#ffc857' };
+  let orbPh = 0;
+  /** Tu personaje en la carta 2D: una bola de luz con sombra que salta al andar. */
+  function drawOrb2D(t) {
+    if (r3d || G.world.px == null) return;
+    const c = ORB[G.player.gender] || ORB.nobinario;
+    const p = toScreen(G.world.px, G.world.py);
+    if (moving) orbPh += 0.016 * 9;
+    const hop = moving ? Math.abs(Math.sin(orbPh)) : 0;
+    const r = Math.max(7, 11 * zoom * 1.6);
+    const lift = r * 0.9 + hop * r * 2 + (moving ? 0 : Math.sin(t / 450) * r * 0.12);
+    ctx.save();
+    ctx.globalAlpha = 0.35 * (1 - hop * 0.45);
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(p.x, p.y, r * (1 - hop * 0.4), r * 0.45 * (1 - hop * 0.4), 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    const g = ctx.createRadialGradient(p.x, p.y - lift, 0, p.x, p.y - lift, r * 3.2);
+    g.addColorStop(0, c);
+    g.addColorStop(0.3, `${c}88`);
+    g.addColorStop(1, `${c}00`);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y - lift, r * 3.2, 0, Math.PI * 2);
+    ctx.fill();
+    const b = ctx.createRadialGradient(p.x - r * 0.3, p.y - lift - r * 0.3, r * 0.1, p.x, p.y - lift, r);
+    b.addColorStop(0, '#fff');
+    b.addColorStop(0.45, c);
+    b.addColorStop(1, c);
+    ctx.fillStyle = b;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y - lift, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
   function drawOverlay(t, zaun) {
     const PIN_H = r3d ? 95 : 0; // altura a la que flotan los medallones en 3D
+    drawOrb2D(t);
 
     // Ruta animada hasta el objetivo por las calles.
     const obj = objectiveLoc();
@@ -958,16 +1011,40 @@
     // Teclado: flechas o WASD desplazan, + y - amplían.
     const dx = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
     const dy = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
+    let mx = 0; let my = 0;
     if (dx || dy) {
-      const sp = (650 * (opt().camSpeed || 1)) / zoom;
       // En 3D, «arriba» es hacia donde mira la cámara.
       const c = Math.cos(yaw); const sn = Math.sin(yaw);
-      const mx = r3d ? dx * c + dy * sn : dx;
-      const my = r3d ? -dx * sn + dy * c : dy;
-      G.world.x += mx * sp * dt;
-      G.world.y += my * sp * dt;
-      fly = null;
+      mx = r3d ? dx * c + dy * sn : dx;
+      my = r3d ? -dx * sn + dy * c : dy;
+      const l = Math.hypot(mx, my) || 1;
+      mx /= l; my /= l;
+      walkTo = null;
+    } else if (walkTo) {
+      const ddx = walkTo.x - G.world.px;
+      const ddy = walkTo.y - G.world.py;
+      const d = Math.hypot(ddx, ddy);
+      const stop = walkTo.thing ? (walkTo.thing.kind === 'char' ? NEAR_CHAR * 0.6 : NEAR_LOC * 0.6) : 4;
+      if (d <= stop) {
+        const th = walkTo.thing;
+        walkTo = null;
+        if (th) open(th);
+      } else { mx = ddx / d; my = ddy / d; }
     }
+    moving = Boolean(mx || my);
+    if (moving) {
+      const sp = WALK * (opt().camSpeed || 1);
+      G.world.px = Math.max(40, Math.min(map.w - 40, G.world.px + mx * sp * dt));
+      G.world.py = Math.max(40, Math.min(map.h - 40, G.world.py + my * sp * dt));
+      G.world.face = Math.atan2(mx, my);
+      (G.world.pos ||= {})[mapId] = { x: G.world.px, y: G.world.py };
+      // La cámara sigue a tu personaje.
+      fly = null;
+      const f = Math.min(1, dt * 3.5);
+      G.world.x += (G.world.px - G.world.x) * f;
+      G.world.y += (G.world.py - G.world.y) * f;
+    }
+    updateNear();
     if (r3d) {
       if (keys.has('q')) yaw += 1.4 * dt;
       if (keys.has('r')) yaw -= 1.4 * dt;
@@ -998,6 +1075,27 @@
     updateDistrict();
   }
 
+  /** Lugar o personaje junto al que está tu personaje (el más cercano dentro de su radio). */
+  function updateNear() {
+    let best = null;
+    let bd = Infinity;
+    for (const n of npcs()) {
+      const d = Math.hypot(n.px - G.world.px, n.py - G.world.py);
+      if (d < NEAR_CHAR && d < bd) { best = n; bd = d; }
+    }
+    if (!best) {
+      for (const l of map.def.locations) {
+        const d = Math.hypot(l.x - G.world.px, l.y - G.world.py);
+        if (d < NEAR_LOC && d < bd) { best = { kind: 'loc', ...l }; bd = d; }
+      }
+    }
+    const key = best ? `${best.kind}:${best.id}` : '';
+    if (key !== (near ? `${near.kind}:${near.id}` : '')) {
+      near = best;
+      updatePrompt();
+    }
+  }
+
   let lastDistrict = '';
   /** Nombre del barrio que hay en el centro de la vista. */
   function updateDistrict() {
@@ -1015,8 +1113,11 @@
     const el = document.getElementById('world-prompt');
     if (!el) return;
     let txt = '';
+    const act = U.touch ? 'toca aquí' : 'pulsa <kbd>E</kbd>';
     if (hover?.kind === 'loc') txt = `<b>${U.esc(hover.name)}</b> · ${U.touch ? 'toca' : 'clic'} para ver qué hacer`;
     else if (hover?.kind === 'char') txt = `Hablar con <b>${U.esc(hover.name)}</b>`;
+    else if (near?.kind === 'char') txt = `<b>${U.esc(near.name)}</b> te mira · ${act} para hablar`;
+    else if (near?.kind === 'loc') txt = `<b>${U.esc(near.name)}</b> · ${act} para entrar`;
     if (el.dataset.txt !== txt) {
       el.innerHTML = txt;
       el.dataset.txt = txt;
@@ -1059,6 +1160,7 @@
   /** Abre el lugar resaltado o, si no hay ninguno, el más cercano al centro de la vista. */
   function interact() {
     if (hover) return open(hover);
+    if (near) return open(near);
     const l = map.def.locations.reduce((b, x) => (Math.hypot(x.x - G.world.x, x.y - G.world.y) < Math.hypot(b.x - G.world.x, b.y - G.world.y) ? x : b));
     open({ kind: 'loc', ...l });
   }
@@ -1167,7 +1269,17 @@
       if (g && g.kind === 'pan' && !g.moved && e.type === 'pointerup') {
         vel = { x: 0, y: 0 };
         const thing = thingAt(p.x, p.y);
-        if (thing) { hover = thing; open(thing); }
+        if (thing) {
+          hover = thing;
+          // Tu personaje va andando hasta allí; si ya está al lado, se abre directamente.
+          const tx = thing.kind === 'char' ? thing.px ?? thing.x : thing.x;
+          const ty = thing.kind === 'char' ? thing.py ?? thing.y : thing.y;
+          if (thing.kind === 'frag' || Math.hypot(tx - G.world.px, ty - G.world.py) < (thing.kind === 'char' ? NEAR_CHAR : NEAR_LOC)) open(thing);
+          else walkTo = { x: tx, y: ty, thing };
+        } else {
+          const w = toWorld(p.x, p.y);
+          if (w) walkTo = { x: w.x, y: w.y };
+        }
       } else if (performance.now() - (g?.t || 0) > 90) vel = { x: 0, y: 0 };
     } else if (pointers.size === 1) {
       const [q] = [...pointers.values()];
@@ -1319,6 +1431,15 @@
     } else {
       zoom = fit * Math.max(0.92, G.world.zoom || 1.25);
     }
+    // Tu personaje aparece junto al lugar de llegada (o donde lo dejaste en esta ciudad).
+    const saved = G.world.pos?.[id];
+    if (loc) { G.world.px = loc.x; G.world.py = loc.y + 90; }
+    else if (saved) { G.world.px = saved.x; G.world.py = saved.y; }
+    else { G.world.px = G.world.x; G.world.py = G.world.y; }
+    G.world.px = Math.max(40, Math.min(map.w - 40, G.world.px));
+    G.world.py = Math.max(40, Math.min(map.h - 40, G.world.py));
+    walkTo = null;
+    near = null;
     fly = null;
     vel = { x: 0, y: 0 };
     // La cámara se pone del lado del centro de la ciudad, mirando hacia fuera desde los bordes
