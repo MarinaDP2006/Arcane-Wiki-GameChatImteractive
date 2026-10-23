@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grietas &amp; Gears</title>
+  <meta name="description" content="Grietas & Gears: juego narrativo de fans ambientado en Piltover y Zaun. Gratis para Windows, Mac y Android.">
+  <meta property="og:title" content="Grietas & Gears">
+  <meta property="og:description" content="Historia interactiva, conversaciones y mundo abierto de Piltover y Zaun. Juego de fans gratuito.">
+  <meta property="og:image" content="arte/lugares/piltover.webp">
+  <link rel="icon" href="icono.png">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <a class="marca" href="#inicio">GRIETAS <span>&amp;</span> GEARS</a>
+    <nav>
+      <a href="#juego">El juego</a>
+      <a href="#personajes">Personajes</a>
+      <a href="#mapa">Mapa</a>
+      <a href="#preguntas">Preguntas</a>
+      <a class="boton boton-sm" href="#descargar">Descargar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="inicio" class="portada">
+      <div class="mitad mitad-piltover" aria-hidden="true"></div>
+      <div class="mitad mitad-zaun" aria-hidden="true"></div>
+      <div class="portada-texto">
+        <p class="antetitulo">Juego de fans · Piltover y Zaun</p>
+        <h1>Grietas <span>&amp;</span> Gears</h1>
+        <p class="lema">Arriba, el oro de la ciudad del progreso. Abajo, el neón y la niebla. Tú decides de qué lado caes, en quién confías y cómo acaba la historia.</p>
+        <div class="acciones">
+          <a class="boton" href="#descargar" id="boton-principal">Descargar gratis</a>
+          <a class="boton boton-sec" href="#juego">Ver qué incluye</a>
+        </div>
+        <p class="version">Versión {{VERSION}} · Windows, Mac y Android</p>
+      </div>
+    </section>
+
+    <section class="cifras" aria-label="El juego en cifras">
+      <div><strong>{{CAPITULOS}}</strong><span>capítulos</span></div>
+      <div><strong>{{FINALES}}</strong><span>finales</span></div>
+      <div><strong>{{PERSONAJES}}</strong><span>personajes</span></div>
+      <div><strong>{{LUGARES}}</strong><span>lugares</span></div>
+      <div><strong>{{TEMAS}}</strong><span>temas de charla</span></div>
+    </section>
+
+    <section id="juego" class="seccion">
+      <h2>El juego</h2>
+      <div class="rejilla">
+        <article class="carta">
+          <h3>Tu historia, tus finales</h3>
+          <p>Crea tu personaje, elige si naces en Piltover o en Zaun y vive una campaña en dos partes donde tus decisiones pueden salvar, o condenar, a quienes conoces.</p>
+        </article>
+        <article class="carta">
+          <h3>Conversaciones de verdad</h3>
+          <p>Habla con el reparto por el comunicador. Cada respuesta abre nuevos temas, y tus decisiones cambian la afinidad y lo que te cuentan.</p>
+        </article>
+        <article class="carta">
+          <h3>Dos ciudades para explorar</h3>
+          <p>Recorre distritos, talleres, tabernas y callejones. Cada lugar te propone algo: charlar, jugar un minijuego o seguir la historia.</p>
+        </article>
+        <article class="carta">
+          <h3>Minijuegos</h3>
+          <p>Carreras por los tejados, circuitos de hextec, runas, puntería, regateo en el mercado y más, con récords y recompensas.</p>
+        </article>
+        <article class="carta">
+          <h3>Modo libre con IA (opcional)</h3>
+          <p>Si quieres, conecta un modelo en tu propio ordenador (Ollama o LM Studio) y charla sin guion con los personajes. Sin IA, el juego funciona igual de completo.</p>
+        </article>
+        <article class="carta">
+          <h3>Sin conexión y sin anuncios</h3>
+          <p>Todo el arte y los datos van dentro. No pide cuenta, no tiene compras ni anuncios y tus partidas se quedan en tu dispositivo.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="personajes" class="seccion">
+      <h2>Personajes</h2>
+      <p class="intro">Los {{PERSONAJES}} protagonistas tienen voz en la historia y en el chat. Algunos te abrirán la puerta; otros, la pistola.</p>
+      <ul class="personajes">{{TARJETAS}}
+      </ul>
+    </section>
+
+    <section id="mapa" class="seccion seccion-mapa">
+      <div>
+        <h2>Mapa de Piltover y Zaun</h2>
+        <p class="intro">{{LUGARES}} lugares con su propia historia. Toca uno en el juego y elige qué hacer allí.</p>
+        <ul class="lugares">{{LISTA_LUGARES}}</ul>
+      </div>
+      <img src="arte/codice/mapa-piltover-zaun.webp" alt="Mapa ilustrado de Piltover y Zaun" width="1080" height="909" loading="lazy">
+    </section>
+
+    <section id="descargar" class="seccion">
+      <h2>Descargar</h2>
+      <p class="intro">Gratis, siempre. Elige tu plataforma; los archivos salen de la última versión publicada en GitHub.</p>
+      <div class="rejilla descargas">
+        <article class="carta descarga" data-plataforma="windows">
+          <h3>Windows</h3>
+          <p>Instalador con acceso directo, o versión portable sin instalar.</p>
+          <a class="boton" data-archivo="Setup" href="https://github.com/MarinaDP2006/grietas-and-gears/releases/latest">Instalador .exe</a>
+          <a class="enlace" data-archivo="portable" href="https://github.com/MarinaDP2006/grietas-and-gears/releases/latest">Portable .exe</a>
+          <p class="nota">Si aparece SmartScreen: «Más información» → «Ejecutar de todas formas». La app no lleva firma de pago.</p>
+        </article>
+        <article class="carta descarga" data-plataforma="mac">
+          <h3>Mac</h3>
+          <p>Para Apple Silicon (M1 en adelante) o Intel.</p>
+          <a class="boton" data-archivo="mac-arm64.dmg" href="https://github.com/MarinaDP2006/grietas-and-gears/releases/latest">Apple Silicon .dmg</a>
+          <a class="enlace" data-archivo="mac-x64.dmg" href="https://github.com/MarinaDP2006/grietas-and-gears/releases/latest">Intel .dmg</a>
+          <p class="nota">La primera vez, abre la app con clic derecho → «Abrir», porque no está firmada por Apple.</p>
+        </article>
+        <article class="carta descarga" data-plataforma="android">
+          <h3>Android</h3>
+          <p>Móvil y tableta. Pronto también en Google Play.</p>
+          <a class="boton" data-archivo=".apk" href="https://github.com/MarinaDP2006/grietas-and-gears/releases/latest">Descargar APK</a>
+          <p class="nota">Permite «instalar apps de origen desconocido» para tu navegador o gestor de archivos.</p>
+        </article>
+      </div>
+      <p class="intro pequeno" id="estado-version">Próximamente también en itch.io.</p>
+    </section>
+
+    <section id="preguntas" class="seccion">
+      <h2>Preguntas frecuentes</h2>
+      <details>
+        <summary>¿Cuesta algo?</summary>
+        <p>No. Es un juego de fans gratuito, sin anuncios ni compras, y seguirá siéndolo.</p>
+      </details>
+      <details>
+        <summary>¿Dónde se guardan mis partidas?</summary>
+        <p>En tu dispositivo. En Windows, en <code>%APPDATA%\Arcane Piltover y Zaun\partidas</code>; en Android, dentro de la app. Desde la pantalla de Partidas puedes exportarlas a un archivo y llevarlas de la tableta al PC, o al revés.</p>
+      </details>
+      <details>
+        <summary>¿Necesito internet?</summary>
+        <p>No. Solo el modo libre con IA necesita un servidor, y puede ser uno que tengas en tu propio ordenador.</p>
+      </details>
+      <details>
+        <summary>¿En qué idiomas está?</summary>
+        <p>Español, inglés y francés. Se cambia en Ajustes.</p>
+      </details>
+      <details>
+        <summary>¿Recoge datos?</summary>
+        <p>No. Lee la <a href="https://github.com/MarinaDP2006/grietas-and-gears/blob/main/PRIVACIDAD.md">política de privacidad</a>.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p><strong>Grietas &amp; Gears</strong> es un proyecto de fans no oficial, gratuito y sin ánimo de lucro, creado por MarinaDP2006.</p>
+    <p class="legal">Grietas &amp; Gears no está respaldado por Riot Games y no refleja las opiniones de Riot Games ni de nadie oficialmente involucrado en la producción o gestión de las propiedades de Riot Games. Riot Games, Arcane, League of Legends y todas las propiedades asociadas son marcas comerciales o marcas registradas de Riot Games, Inc.</p>
+    <p><a href="https://github.com/MarinaDP2006/grietas-and-gears">Código en GitHub</a> · <a href="https://github.com/MarinaDP2006/grietas-and-gears/blob/main/PRIVACIDAD.md">Privacidad</a> · {{ANIO}}</p>
+  </footer>
+  <script src="web.js"></script>
+</body>
+</html>
