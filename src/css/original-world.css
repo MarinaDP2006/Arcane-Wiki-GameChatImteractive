@@ -1,0 +1,43 @@
+/* Identidad visual de Las ciudades del Umbral.
+   Los colores sustituyen la codificación cromática de la rama fan-game. */
+:root {
+  --bg: #101513;
+  --bg2: #171E1A;
+  --panel: rgba(30, 39, 34, 0.92);
+  --line: rgba(183, 139, 69, 0.28);
+  --text: #E5E8E0;
+  --muted: #A8B5AC;
+  --gold: #B78B45;
+  --gold2: #8F6936;
+  --zaun: #55D6A2;
+  --zaun2: #2E8D72;
+  --pink: #C27665;
+  --blue: #5A8799;
+  --violet: #7C8F86;
+  --danger: #C65A56;
+  --radius: 10px;
+  --font: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --display: "Georgia", "Times New Roman", serif;
+  --logo: "Georgia", "Times New Roman", serif;
+}
+html, body { background-color: var(--bg); }
+body {
+  background:
+    radial-gradient(1100px 720px at 2% 0%, rgba(183,139,69,.11), transparent 60%),
+    radial-gradient(900px 640px at 100% 96%, rgba(85,214,162,.10), transparent 63%),
+    linear-gradient(135deg, #101513 0%, #151D19 55%, #0D1210 100%);
+  color: var(--text);
+}
+h1, h2, h3, .logo, .game-title, .screen-title, .chapter-title {
+  font-family: var(--display);
+  letter-spacing: .035em;
+}
+button, input, select, textarea { border-radius: 7px; }
+button:hover { border-color: rgba(85,214,162,.52); }
+:focus-visible { outline: 2px solid var(--zaun); outline-offset: 3px; }
+a { color: #8FD9B9; }
+.panel, .card, .modal, .dialogue-panel, .creator-panel {
+  border-color: var(--line);
+  background-color: var(--panel);
+}
+.badge, .tag, .chip { border-color: var(--line); }

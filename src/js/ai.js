@@ -7,6 +7,7 @@
 (function () {
   const PROVIDERS = {
     off: { label: 'Desactivada' },
+    ollamaCloud: { label: 'Ollama Cloud (alojada, recomendada)', url: (window.ROLEPLAY_CONFIG?.endpoint || (window.location.protocol === 'file:' ? '' : '/api/roleplay')), model: 'gemma4:31b', key: false, help: 'La conversación se ejecuta en la nube: no tienes que instalar Ollama ni descargar el modelo. La página web necesita el backend publicado con OLLAMA_API_KEY configurada como secreto; en escritorio o Android indica la URL HTTPS de ese servidor. El uso depende de los límites y créditos de Ollama Cloud.' },
     ollama: { label: 'Ollama (en tu PC, sin internet)', url: 'http://localhost:11434/v1/chat/completions', model: 'gemma3:4b', key: false, help: 'Instala Ollama desde ollama.com y descarga un modelo en una terminal: «ollama pull gemma3:4b» (rápido, unos 3 GB) o «ollama pull gemma3:12b» (mejor conversación, necesita una tarjeta gráfica con 8 GB o más). Pulsa «Buscar mis modelos» para elegir uno de los que ya tienes. Mientras Ollama esté abierto, los personajes te responden sin internet. Solo en el ordenador.' },
     lmstudio: { label: 'LM Studio (en tu PC o por la red de casa)', url: 'http://localhost:1234/v1/chat/completions', model: '', key: false, help: 'Abre LM Studio, descarga un modelo y en la pestaña Developer enciende «Start server» (puerto 1234). En este ordenador deja la dirección como está. Para jugar desde la tablet o el móvil activa también «Serve on Local Network» y escribe aquí la dirección de tu PC, por ejemplo http://192.168.1.40:1234. Pulsa «Buscar mis modelos» para elegir uno. Los pasos están en GUIA-LM-STUDIO.md.' },
     custom: { label: 'Otro servidor compatible', url: '', model: '', key: true, help: 'Cualquier servidor con el formato de OpenAI (KoboldCpp, text-generation-webui, vLLM…). Escribe la dirección completa de /chat/completions.' },
@@ -31,9 +32,9 @@
 
   function cfg() {
     const a = window.App?.settings?.ai || {};
-    const p = PROVIDERS[a.provider] ? a.provider : 'off';
+    const p = PROVIDERS[a.provider] ? a.provider : (a.provider ? 'off' : 'ollamaCloud');
     const d = PROVIDERS[p];
-    return { provider: p, url: LOCAL.has(p) || p === 'custom' ? fullUrl(p, a.url || d.url) : d.url, model: a.model || d.model, key: a.key || '' };
+    return { provider: p, url: (LOCAL.has(p) || p === 'custom' || p === 'ollamaCloud') ? fullUrl(p, a.url || d.url) : d.url, model: a.model || d.model, key: a.key || '' };
   }
 
   function ready() {

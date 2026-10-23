@@ -3,151 +3,168 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rifts &amp; Gears</title>
-  <meta name="description" content="Rifts & Gears: juego narrativo de fans ambientado en Piltover y Zaun. Gratis para Windows, Mac y Android.">
-  <meta property="og:title" content="Rifts & Gears">
-  <meta property="og:description" content="Fangame gratuito en desarrollo. Información del juego, capturas reales y descargas disponibles.">
-  <meta property="og:image" content="arte-propio/portada.jpg">
+  <meta name="theme-color" content="#0e1113">
+  <meta name="description" content="Las ciudades del Umbral: aventura narrativa de fantasía industrial. Dos ciudades, una energía compartida y una historia que escribes tú, sin opciones fijas.">
+  <meta property="og:title" content="Las ciudades del Umbral · Rifts &amp; Gears">
+  <meta property="og:description" content="Aurelia vive en las alturas. Nácar, bajo la piedra. Una frecuencia imposible está a punto de unirlas.">
+  <meta property="og:image" content="arte-propio/ciudades-umbral.svg">
+  <title>Las ciudades del Umbral · Rifts &amp; Gears</title>
   <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-  <header class="barra">
-    <a class="marca" href="#inicio" data-tab="inicio"><span class="marca-engranaje">✥</span> RIFTS <span>&amp;</span> GEARS</a>
-    <nav aria-label="Navegación principal">
-      <a href="#inicio" data-tab="inicio" class="nav-activo">Inicio</a>
-      <a href="#juego" data-tab="juego">El juego</a>
-      <a href="#novedades" data-tab="novedades">Novedades</a>
-      <a href="#fichas" data-tab="fichas">Personajes</a>
-      <a href="#desarrollando" data-tab="desarrollando">Desarrollo</a>
-      <a href="#capturas" data-tab="capturas">Capturas</a>
-      <a href="#descargar" data-tab="descargar">Descargas</a>
-      <a class="boton boton-sm boton-demo-nav" href="demo.html" target="_blank" rel="noopener">✦ Probar demo</a>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <a class="logo" href="#inicio" aria-label="Las ciudades del Umbral, inicio">
+      <span class="logo-sello" aria-hidden="true">U</span>
+      <span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span>
+    </a>
+    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <nav id="menu" class="menu" aria-label="Navegación principal">
+      <a href="#cronica">Crónica</a>
+      <a href="#ciudades">Ciudades</a>
+      <a href="#resonancia">Resonancia</a>
+      <a href="#reparto">Reparto</a>
+      <a href="#como-se-juega">Cómo se juega</a>
+      <a class="btn btn-primario btn-sm" href="demo.html">Jugar la demo</a>
     </nav>
   </header>
 
-  <main>
-    <section id="inicio" class="portada">
-      <div class="mitad mitad-piltover" aria-hidden="true"></div>
-      <div class="mitad mitad-zaun" aria-hidden="true"></div>
+  <main id="contenido">
+    <section class="portada" id="inicio">
       <div class="portada-texto">
-        
-        <h1>Rifts <span>&amp;</span> Gears</h1>
-        <p class="lema">Dos ciudades, incontables decisiones. Descubre cómo un pequeño proyecto narrativo se convirtió en un mundo de historias, mapas, personajes y posibilidades.</p>
-        <div class="acciones"><a class="boton" href="#descargar">Ver descargas</a><a class="boton boton-sec" href="#novedades">Descubrir novedades</a></div>
-        
+        <p class="kicker"><span class="latido" aria-hidden="true"></span> Registro 00:03 · vibración fuera de rango</p>
+        <h1>La ciudad de arriba no recuerda a la de abajo. <em>La piedra, sí.</em></h1>
+        <p class="entradilla">Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Cuando un ascensor se detiene entre las dos, una frecuencia imposible empieza a contar una historia que alguien borró.</p>
+        <div class="acciones">
+          <a class="btn btn-primario" href="demo.html">Entrar en la historia</a>
+          <a class="btn btn-borde" href="#cronica">Leer la crónica</a>
+        </div>
+        <dl class="cifras">
+          <div><dt>Ciudades</dt><dd>2</dd></div>
+          <div><dt>Personajes</dt><dd>{{PERSONAJES}}</dd></div>
+          <div><dt>Partes</dt><dd>3</dd></div>
+          <div><dt>Opciones fijas</dt><dd>0</dd></div>
+        </dl>
       </div>
+      <figure class="portada-arte">
+        <img src="arte-propio/ciudades-umbral.svg" alt="Ilustración original: una ciudad elevada de piedra clara sobre galerías industriales iluminadas">
+        <figcaption>Aurelia y Nácar, unidas por la red de contrapesos.</figcaption>
+      </figure>
     </section>
 
-    <section class="seccion estado-desarrollo" aria-label="Estado del proyecto"><p class="antetitulo">Proyecto independiente de fans</p><h2>Un videojuego en desarrollo</h2><p class="intro">Rifts &amp; Gears es un proyecto gratuito y no oficial. Puedes consultar las compilaciones publicadas y seguir su evolución.</p></section>
-
-    <section id="juego" class="seccion"><p class="antetitulo">Sobre el proyecto</p><h2>El juego</h2><div class="rejilla"><article class="carta"><h3>Aventura narrativa</h3><p>Un videojuego de fans ambientado en un universo inspirado por Piltover y Zaun, con decisiones, exploración y sistemas que siguen evolucionando.</p></article><article class="carta"><h3>Desarrollo activo</h3><p>El proyecto todavía está en construcción. Las capturas muestran pantallas reales del desarrollo y pueden cambiar en versiones posteriores.</p></article><article class="carta"><h3>Acceso gratuito</h3><p>Consulta las compilaciones disponibles para ordenador y Android. No necesitas registrarte en esta web para acceder a la información ni a las descargas públicas.</p></article></div><h2 style="margin-top:3rem">Próximas etapas de desarrollo</h2><div class="rejilla"><article class="carta"><h3>IA local opcional</h3><p>El código incluye conectores para Ollama y LM Studio. Su funcionamiento depende de la configuración y del modelo local disponible.</p></article><article class="carta"><h3>Personajes en 3D</h3><p>Creación e integración futura de modelos tridimensionales y sus animaciones dentro del juego.</p></article><article class="carta"><h3>Ciudades y escenarios 3D</h3><p>Planificación de entornos exteriores tridimensionales, ubicaciones y recorridos de las ciudades. No es todavía un mundo 3D completo jugable.</p></article></div></section>
-
-    <section id="novedades" class="seccion" aria-labelledby="titulo-novedades">
-      <p class="antetitulo">Evolución del juego</p>
-      <h2 id="titulo-novedades">Novedades de octubre de 2026</h2>
-      
-      <div class="rejilla">
-        <article class="carta"><h3>Mapa interactivo</h3><p>Explora el mapa ilustrado de Piltover y Zaun, selecciona lugares y consulta sus actividades.</p></article>
-        <article class="carta"><h3>Controles táctiles</h3><p>Botones de dirección e interacción para las escenas 2D y mejoras de pulsación en los minijuegos de móvil y tablet.</p></article>
-        <article class="carta"><h3>Conversaciones ramificadas</h3><p>Nuevos hilos de diálogo con los 16 personajes del comunicador.</p></article>
-        <article class="carta"><h3>Minijuegos con profundidad</h3><p>Efectos de paralaje, arte de los lugares y tres actividades adicionales.</p></article>
-        <article class="carta"><h3>Partidas portátiles</h3><p>Exporta e importa partidas entre ordenador y tablet desde el menú de partidas.</p></article>
-        <article class="carta"><h3>Mejor rendimiento</h3><p>Menos redibujados innecesarios y ajustes de resolución para reducir la carga gráfica.</p></article>
-      </div>
-      
+    <section class="seccion" id="cronica" aria-labelledby="t-cronica">
+      <header class="seccion-cabeza">
+        <p class="kicker">01 · Crónica del Umbral</p>
+        <h2 id="t-cronica">Trescientos años de silencio en cinco fechas.</h2>
+        <p>Nadie en Aurelia enseña esta historia completa en la escuela. En Nácar se cuenta a trozos, de taller en taller.</p>
+      </header>
+      <ol class="cronica">
+        <li><span class="fecha">Año 0</span><h3>El Hundimiento</h3><p>La meseta de Umbral cede en una sola noche. Los barrios del borde se quedan arriba y fundan Aurelia. Los que caen con la roca sobreviven en las galerías y levantan Nácar con lo que encuentran.</p></li>
+        <li><span class="fecha">Año 112</span><h3>La piedra que canta</h3><p>Una minera de Nácar descubre que ciertos cristales vibran al ritmo del subsuelo. Con válvulas y amortiguadores, esa vibración mueve máquinas. Nace la Resonancia.</p></li>
+        <li><span class="fecha">Año 190</span><h3>El Pacto de los Contrapesos</h3><p>Aurelia financia los ascensores públicos que unen las dos ciudades. A cambio, puede extraer energía de los estratos profundos. Tres cláusulas del pacto nunca se publicaron.</p></li>
+        <li><span class="fecha">Año 251</span><h3>El Silencio de Cobre</h3><p>Una galería de Nácar se derrumba durante un pico de extracción. El informe oficial habla de un fallo de mantenimiento. Los registros de frecuencia de esa noche desaparecen del Archivo.</p></li>
+        <li class="cronica-ahora"><span class="fecha">Año 298</span><h3>Registro 00:03</h3><p>Un ascensor se detiene entre los dos niveles. El medidor marca tres pulsos y una pausa larga, el mismo patrón que se borró hace casi cincuenta años. Y tú estás allí.</p></li>
+      </ol>
     </section>
 
-
-    <section id="fichas" class="seccion demo" aria-labelledby="fichas-titulo"><p class="antetitulo">Archivo de personajes · Ejemplo original</p><h2 id="fichas-titulo">Ficha de personaje</h2><p class="intro">Así es la ficha dentro del juego. Kael y Lyra son personajes originales de ejemplo, creados con el mismo creador y el mismo retrato pintado que usa el juego.</p>
-      <div class="ficha-selector" role="group" aria-label="Seleccionar personaje"><button type="button" class="activo" data-personaje="kael" aria-pressed="true">Kael · Piltover</button><button type="button" data-personaje="lyra" aria-pressed="false">Lyra · Zaun</button></div>
-      <article class="fj" id="ficha-juego" aria-live="polite">
-        <span class="fj-esquina fj-si" aria-hidden="true"></span><span class="fj-esquina fj-sd" aria-hidden="true"></span><span class="fj-esquina fj-ii" aria-hidden="true"></span><span class="fj-esquina fj-id" aria-hidden="true"></span>
-        <header class="fj-cabeza"><img id="fj-retrato" class="fj-retrato" src="arte-propio/ficha-kael.jpg" alt="Retrato pintado de Kael" width="160" height="160"><div><small>Ficha de personaje</small><h3 id="fj-nombre">Kael</h3><span id="fj-ciudad" class="fj-chip fj-chip-piltover">Piltover</span></div></header>
-        <dl class="fj-lista" id="fj-lista"></dl>
-        <h4>Estadísticas</h4><div class="fj-barras" id="fj-stats"></div>
-        <h4>Reputación</h4><div class="fj-barras" id="fj-rep"></div>
-        <h4>Relaciones</h4><div class="fj-rels" id="fj-rels"></div>
-        <h4>Progreso</h4><p id="fj-progreso"></p>
-      </article></section>
-    <section id="desarrollando" class="seccion viaje" aria-labelledby="titulo-viaje">
-      <div class="viaje-cabecera">
-        <div><p class="antetitulo">Diario de creación</p><h2 id="titulo-viaje">Desarrollando R&amp;G</h2></div>
-
-      </div>
-      <div class="linea-tiempo">
-        <article class="hito"><div class="hito-contenido"><h3>El primer latido</h3><p>Nace la aplicación de escritorio: menú, historia, partidas y primeras conversaciones. La aventura deja de ser solo una idea.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Las historias toman caminos</h3><p>La temporada 2, el chat local con Ollama y las opciones de diálogo dan forma a una aventura con decisiones y un Atlas de las Dos Ciudades.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Un universo con rostro</h3><p>Llegan los retratos, el creador de personajes, un menú cinematográfico y los primeros experimentos de mapas 2D y 3D.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Más plataformas, más decisiones</h3><p>Se incorpora Android, la selección de idiomas, las relaciones entre personajes y una experiencia que puede funcionar sin conexión para las funciones locales.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Las ciudades se pueden recorrer</h3><p>Se amplía la historia, llegan ambientes musicales propios, escenas ilustradas en 2D y la exportación e importación de partidas entre dispositivos.</p></div></article>
-        <article class="hito"><div class="hito-contenido"><h3>Un mundo que responde</h3><p>El mapa 2D interactivo, los diálogos de 16 personajes, nuevos minijuegos, los controles táctiles y las optimizaciones acercan el proyecto a una experiencia jugable más completa.</p></div></article>
-        <article class="hito hito-futuro"><div class="hito-contenido"><h3>Rifts &amp; Gears mira al futuro</h3><p>La web oficial, el nuevo nombre y el plan de personajes 3D marcan la siguiente etapa. Los modelos definitivos y el mundo 3D completo aún no están terminados.</p></div></article>
-      </div>
-      
-    </section>
-
-    <section id="capturas" class="seccion"><p class="antetitulo">Un vistazo al juego</p><h2>Capturas del juego</h2><div class="galeria">{{CAPTURAS}}</div></section>
-
-    <section id="descargar" class="seccion">
-      <h2>Descargar</h2>
-      
-      <div class="rejilla descargas">
-        <article class="carta descarga" data-plataforma="windows">
-          <h3>Windows</h3>
-          <p>Instalador con acceso directo, o versión portable sin instalar.</p>
-          <a class="boton" data-archivo="Setup" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Instalador .exe</a>
-          <a class="enlace" data-archivo="portable" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Portable .exe</a>
-          <p class="nota">Descarga solo archivos de la página oficial de GitHub y comprueba el editor antes de abrir un ejecutable.</p>
+    <section class="seccion" id="ciudades" aria-labelledby="t-ciudades">
+      <header class="seccion-cabeza">
+        <p class="kicker">02 · Las ciudades</p>
+        <h2 id="t-ciudades">Dos caras del mismo mapa.</h2>
+        <p>Una promete orden. La otra mantiene la maquinaria en marcha. Ninguna entiende la crisis mirando solo sus propias paredes.</p>
+      </header>
+      <div class="ciudades">
+        <article class="ciudad ciudad-aurelia">
+          <img src="arte-propio/aurelia.svg" alt="Arte original de Aurelia, ciudad de piedra clara y observatorios" loading="lazy">
+          <div class="ciudad-texto">
+            <p class="etiqueta">Ciudad elevada</p>
+            <h3>Aurelia</h3>
+            <p>Observatorios, gremios técnicos, pasarelas de cristal y ascensores de contrapesos. Desde sus terrazas el progreso luce impecable, aunque su coste no siempre salga en los informes del Consejo.</p>
+            <ul><li>Plaza del Archivo</li><li>Terrazas del Observatorio</li><li>Patio de Gremios</li><li>Estación de Ascensores</li></ul>
+          </div>
         </article>
-        <article class="carta descarga" data-plataforma="mac">
-          <h3>Mac</h3>
-          <p>Para Apple Silicon (M1 en adelante) o Intel.</p>
-          <a class="boton" data-archivo="mac-arm64.dmg" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Apple Silicon .dmg</a>
-          <a class="enlace" data-archivo="mac-x64.dmg" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Intel .dmg</a>
-          <p class="nota">La primera vez, abre la app con clic derecho → «Abrir», porque no está firmada por Apple.</p>
-        </article>
-        <article class="carta descarga" data-plataforma="android">
-          <h3>Android</h3>
-          <p>Compilación Android para móvil y tableta, si está disponible en la última versión publicada.</p>
-          <a class="boton" data-archivo=".apk" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases/latest">Descargar APK</a>
-          <p class="nota">Permite «instalar apps de origen desconocido» para tu navegador o gestor de archivos.</p>
+        <article class="ciudad ciudad-nacar">
+          <img src="arte-propio/nacar.svg" alt="Arte original de Nácar, ciudad subterránea de talleres y canales de vapor" loading="lazy">
+          <div class="ciudad-texto">
+            <p class="etiqueta">Ciudad subterránea</p>
+            <h3>Nácar</h3>
+            <p>Galerías geotérmicas, mercados, clínicas vecinales y jardines de musgo. No es una ruina: es una ciudad que su gente sostiene a mano, válvula a válvula, cada día.</p>
+            <ul><li>Mercado de las Tuberías</li><li>Galerías Geotérmicas</li><li>Jardín de Musgo</li><li>Canal de Cobre</li></ul>
+          </div>
         </article>
       </div>
-      <p class="intro pequeno" id="estado-version" role="status" aria-live="polite" hidden></p>
     </section>
 
-    <section id="preguntas" class="seccion">
-      <h2>Preguntas frecuentes</h2>
-      <details>
-        <summary>¿Cuesta algo?</summary>
-        <p>No. Es un proyecto de fans gratuito y sin ánimo de lucro.</p>
-      </details>
-      <details>
-        <summary>¿Dónde se guardan mis partidas?</summary>
-        <p>En tu dispositivo. En Windows, en <code>%APPDATA%\Arcane Piltover y Zaun\partidas</code>; en Android, dentro de la app. Desde la pantalla de Partidas puedes exportarlas a un archivo y llevarlas de la tableta al PC, o al revés.</p>
-      </details>
-      <details>
-        <summary>¿Está terminado el juego?</summary>
-        <p>No. Sigue en desarrollo. La conexión a LM Studio ya figura en el código, pero requiere un servidor configurado. Los siete modelos 3D definitivos y los escenarios 3D completos siguen pendientes.</p>
-      </details>
-      <details>
-        <summary>¿En qué idiomas está?</summary>
-        <p>Español, inglés y francés. Se cambia en Ajustes.</p>
-      </details>
-      <details>
-        <summary>¿Recoge datos?</summary>
-        <p>Las partidas se guardan localmente. Algunas funciones opcionales y el alojamiento web pueden implicar servicios externos. Lee la <a href="privacidad.html">política de privacidad</a>.</p>
-      </details>
+    <section class="banda" id="resonancia" aria-labelledby="t-resonancia">
+      <div class="seccion banda-dentro">
+        <img src="arte-propio/resonancia.svg" alt="Diagrama original de una red geológica de Resonancia" loading="lazy">
+        <div>
+          <p class="kicker">03 · La tecnología</p>
+          <h2 id="t-resonancia">Resonancia: energía que alguien tiene que escuchar.</h2>
+          <p>Los cristales registran las vibraciones de la roca. Un sistema de válvulas y amortiguadores convierte una parte en trabajo mecánico: mueve ascensores, bombea aire y calienta las clínicas.</p>
+          <p>El problema es el límite. Si se extrae más de lo que el estrato repone, los canales pierden presión y la piedra se queja. La pregunta del juego no es técnica: <strong>¿quién asume el riesgo cuando la red falla?</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="partes" aria-labelledby="t-partes">
+      <header class="seccion-cabeza">
+        <p class="kicker">04 · La campaña</p>
+        <h2 id="t-partes">Tres partes, una pregunta.</h2>
+      </header>
+      <div class="partes">
+        <article><span>Parte I</span><h3>La ciudad bajo la piedra</h3><p>Una avería, una frecuencia borrada y gente con mucho que perder si alguien la escucha.</p></article>
+        <article><span>Parte II</span><h3>El precio de la Resonancia</h3><p>Archivos censurados, conductos que no salen en los mapas y un acuerdo que nadie votó.</p></article>
+        <article><span>Parte III</span><h3>Un pacto que no se hereda</h3><p>Decidir cómo compartir una energía sin fingir que las diferencias han desaparecido.</p></article>
+      </div>
+    </section>
+
+    <section class="seccion" id="reparto" aria-labelledby="t-reparto">
+      <header class="seccion-cabeza">
+        <p class="kicker">05 · Reparto</p>
+        <h2 id="t-reparto">Nadie es solo su ciudad.</h2>
+        <p>Diez personas con oficio, contradicciones y lealtades que cambian según lo que les digas.</p>
+      </header>
+      <div class="fichas">{{REPARTO}}</div>
+    </section>
+
+    <section class="seccion" id="como-se-juega" aria-labelledby="t-juego">
+      <header class="seccion-cabeza">
+        <p class="kicker">06 · Cómo se juega</p>
+        <h2 id="t-juego">Sin botones de respuesta. Hablas tú.</h2>
+      </header>
+      <div class="pasos">
+        <article><span class="paso-num">1</span><h3>Te preguntamos si conoces el mundo</h3><p>Si es tu primera vez, una introducción breve. Si ya lo conoces, pasas directo a la creación.</p></article>
+        <article><span class="paso-num">2</span><h3>Creas a tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus propias palabras.</p></article>
+        <article><span class="paso-num">3</span><h3>Escribes lo que dices o haces</h3><p>Los personajes te contestan, te preguntan, discuten entre ellos y recuerdan lo que hiciste. La historia la construyes tú, dentro de las reglas del Umbral.</p></article>
+        <article><span class="paso-num">4</span><h3>La IA vive en el servidor</h3><p>No tienes que instalar nada. El rol lo mueve un modelo de Ollama alojado en el servidor del juego, con las reglas del mundo cargadas.</p></article>
+      </div>
+    </section>
+
+    <section class="seccion demo-cta" aria-labelledby="t-demo">
+      <div>
+        <p class="kicker">Prueba abierta · en el navegador</p>
+        <h2 id="t-demo">Empieza por la primera avería.</h2>
+        <p>La demo te deja crear un personaje y vivir la primera escena en Aurelia o en Nácar con conversación libre.</p>
+        <a class="btn btn-primario" href="demo.html">Abrir la demo</a>
+      </div>
+      <ul class="estado">
+        <li><span class="punto punto-listo"></span><strong>Universo y campaña base</strong> Ciudades, Resonancia, tres partes y diez personajes.</li>
+        <li><span class="punto punto-proto"></span><strong>Modelos 3D</strong> Prototipos low-poly, sin rig ni animaciones finales.</li>
+        <li><span class="punto punto-proto"></span><strong>IA en servidor</strong> Funciona cuando el servidor tiene configurada su clave de Ollama Cloud.</li>
+        <li><span class="punto punto-info"></span><strong>Versión</strong> {{VERSION}} · en desarrollo activo.</li>
+      </ul>
     </section>
   </main>
 
   <footer class="pie">
-    <p class="legal">Rifts &amp; Gears es un fangame independiente y no está patrocinado, autorizado ni respaldado por Riot Games. Las marcas y elementos originales de Riot Games pertenecen a sus titulares. La gratuidad y el carácter no oficial no implican autorización para usar propiedad intelectual de terceros.</p>
-    <p><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">Código en GitHub</a> · <a href="privacidad.html">Privacidad</a> · <a href="privacidad.html#aviso-legal">Aviso legal</a> · {{ANIO}}</p>
+    <div class="logo"><span class="logo-sello" aria-hidden="true">U</span><span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span></div>
+    <p>Universo original de fantasía industrial creado por MarinaDP2006. Nombres, historia y diseños propios, aún en desarrollo.</p>
+    <nav aria-label="Enlaces del pie"><a href="demo.html">Demo</a><a href="privacidad.html">Privacidad</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">Código</a></nav>
+    <small>© {{ANIO}} Rifts &amp; Gears</small>
   </footer>
-  <script src="web.js"></script>
-  <script src="pestanas.js" defer></script>
-  <script src="experiencia.js" defer></script>
+  <script src="menu.js" defer></script>
 </body>
 </html>

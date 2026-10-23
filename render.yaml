@@ -1,17 +1,17 @@
 services:
   - type: web
-    name: grietas-and-gears
-    runtime: static
-    buildCommand: node scripts/build-web.js
-    staticPublishPath: web-dist
+    name: las-ciudades-del-umbral
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run web
+    startCommand: node server/index.js
     autoDeployTrigger: commit
-    headers:
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: Referrer-Policy
-        value: strict-origin-when-cross-origin
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
+    envVars:
+      - key: OLLAMA_API_KEY
+        sync: false
+      - key: OLLAMA_MODEL
+        value: gemma4:31b
+      - key: ROLEPLAY_MAX_PER_HOUR
+        value: "24"
+      - key: NODE_VERSION
+        value: "22"

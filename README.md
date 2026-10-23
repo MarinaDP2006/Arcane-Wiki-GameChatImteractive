@@ -1,74 +1,69 @@
-# Rifts & Gears
+# Las ciudades del Umbral · Rifts & Gears
 
-Juego narrativo en proceso de migración a un universo original de fantasía industrial. Crea un personaje, explora dos ciudades enfrentadas por la tecnología y la desigualdad, y toma decisiones que alteran la historia. Esta rama define el plan para sustituir nombres, tramas y recursos identificables de franquicias existentes por propiedad intelectual propia.
+Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Las dos dependen de la **Resonancia**, una energía que nace de la vibración de la piedra, y de un pacto antiguo que nadie ha leído entero.
 
-> **Estado del proyecto:** el repositorio contiene el juego y sus sistemas actuales, además de documentación sobre mejoras propuestas. Los documentos de planificación no significan que todas las funciones o recursos descritos estén terminados. Consulta las limitaciones y pruebas pendientes de cada guía.
+Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
 
-## Empezar en 5 minutos
+> **Rama `main` = mundo nuevo.** Todo lo de este universo original vive aquí. El fangame de Arcane está en su propia rama, `arcane/fangame-actualizado`, con su web y su README.
 
-Necesitas [Node.js](https://nodejs.org/) compatible con el proyecto y Git. Desde una terminal, en la carpeta del repositorio:
+## La historia en cinco fechas
+
+| Año | Suceso |
+|---|---|
+| 0 | **El Hundimiento.** La meseta de Umbral se parte. Arriba nace Aurelia; abajo, Nácar. |
+| 112 | **La piedra que canta.** Una minera de Nácar descubre los cristales de Resonancia. |
+| 190 | **El Pacto de los Contrapesos.** Aurelia paga los ascensores públicos a cambio de extraer de los estratos profundos. Tres cláusulas nunca se publican. |
+| 251 | **El Silencio de Cobre.** Un derrumbe en Nácar durante un pico de extracción. Los registros de esa noche desaparecen. |
+| 298 | **Registro 00:03.** Un ascensor se detiene y un medidor marca el mismo patrón borrado. Aquí empiezas tú. |
+
+La campaña tiene tres partes: *La ciudad bajo la piedra*, *El precio de la Resonancia* y *Un pacto que no se hereda*. Hay diez personajes principales, cinco de cada ciudad; sus fichas están en `src/data/original-world.js`.
+
+## Web y demo
+
+La carpeta `web/` contiene la web pública:
+
+- `index.html`: portada con la crónica, las ciudades, la Resonancia, la campaña, el reparto y cómo se juega.
+- `demo.html` + `demo-juego.js`: demo de rol libre. Pregunta si conoces el mundo (si no, da una introducción breve), te deja crear el personaje y abre la primera escena en Aurelia o en Nácar con conversación libre.
+- `demo-base.json`: textos de la demo (introducción, reglas del mundo para la IA, escenas y giros).
+- `estilos.css`, `menu.js`, `privacidad.html` y el arte propio en `arte-propio/`.
+
+`npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, versión). La web no ofrece descargas.
+
+## IA en el servidor, sin instalar nada
+
+El diálogo libre usa un modelo de Ollama alojado en el servidor (`server/index.js`, endpoint `/api/roleplay`), así que nadie tiene que instalar Ollama en su equipo. Si el servidor no está disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
+
+Variables del servidor (ver `.env.example`); se configuran como secretos en el alojamiento, nunca en el repositorio:
+
+- `OLLAMA_API_KEY`: clave de Ollama Cloud.
+- `OLLAMA_MODEL`: modelo de chat (por defecto `gemma4:31b`).
+- `ROLEPLAY_MAX_PER_HOUR`: límite de mensajes por hora y visitante.
+
+`render.yaml` despliega la web y la API juntas: `npm ci && npm run web` y después `node server/index.js`.
+
+## Desarrollo
 
 ```bash
 npm ci
-npm run check
-npm start
+npm run check      # comprobaciones de datos y scripts
+npm start          # versión de escritorio (Electron)
+npm run web        # genera la web en web-dist/
+npm run serve:web  # sirve web-dist/ y la API en http://localhost:10000
 ```
 
-- `npm ci`: instala las dependencias del proyecto.
-- `npm run check`: ejecuta las comprobaciones automatizadas disponibles. No sustituye una prueba jugando.
-- `npm start`: abre la versión de escritorio con Electron.
-- `npm run web`: genera la versión web estática en `web-dist/`.
-- `npm run dist:win`: intenta crear instalador y ejecutable portable de Windows en `dist/`.
+## Estado
 
-Si solo quieres jugar, mira **[Releases](https://github.com/MarinaDP2006/RIFTS-GEARS/releases)** para ver si hay una versión publicada. No descargues ejecutables de fuentes desconocidas. Si no hay una versión disponible, consulta [Actions](https://github.com/MarinaDP2006/RIFTS-GEARS/actions) y revisa que la compilación haya terminado correctamente antes de usar un artefacto.
+- **Hecho:** universo, ciudades, Resonancia, tres partes y diez personajes. Web y demo nuevas.
+- **Prototipo:** modelos 3D low-poly en `src/models/` (sin rig ni animaciones finales).
+- **Pendiente de configurar:** la clave de Ollama Cloud en el servidor publicado.
 
 ## Guías
 
-| Quiero… | Guía |
-|---|---|
-| Funcionamiento completo, arquitectura, código, compilación y exportación | [Guía completa](GUIA.md) |
-| Aprender a jugar y probar el juego | [Guía de usuario y testing](GUIAJUEGO.md) |
-| Entender el proyecto y cómo desplegar la web | [Web en Render](GUIA-WEB-RENDER.md) |
-| Configurar el chat con LM Studio en el PC o en la red doméstica | [Guía de LM Studio](GUIA-LM-STUDIO.md) |
-| Cambiar diálogos, personalidad de la IA y contenido de campaña | [IA y campaña](GUIA-IA-Y-CAMPANA.md) |
-| Importar modelos 3D personales y probarlos en Windows | [Modelos 3D y pruebas](GUIA-MODELOS-3D-Y-PRUEBAS.md) |
-| Exportar, importar y recuperar partidas | [Partidas guardadas](partidas-guardadas-guia.md) |
-| Consultar el estado propuesto para 3D, IA y música | [Plan de 3D, LM Studio y audio](docs/ARCANE-3D-LM-STUDIO-AUDIO.md) |
-| Migrar historia, nombres y arte a un universo propio en tres partes | [Plan de universo original](docs/PLAN-UNIVERSO-ORIGINAL.md) |
-| Preparar personajes de cuerpo entero y la migración a 3D | [Hoja de ruta 3D, LM Studio y avatares](docs/HOJA_DE_RUTA_3D_LM_STUDIO_Y_AVATARES.md) |
-| Entender la música actual y cómo añadir archivos de audio | [Documentación de música](assets/music/README.md) |
+- [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
+- [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
+- [Guía completa del código](GUIA.md) y [guía de juego](GUIAJUEGO.md)
+- [Partidas guardadas](partidas-guardadas-guia.md)
 
-## Qué incluye el proyecto
+## Licencia
 
-- Creación de personaje y elección de origen.
-- Exploración de escenarios con Three.js, cámara, colisiones y mapa 2D de respaldo.
-- Historia interactiva, decisiones, relaciones, misiones, códice y minijuegos.
-- Guardado de partidas y opciones de gráficos y audio.
-- Conversaciones escritas y chat libre con IA opcional, según el proveedor configurado.
-- Empaquetado de escritorio con Electron y herramientas para compilar Android.
-
-Las funciones disponibles pueden variar según la versión y la plataforma. Los modelos 3D personales son archivos locales del jugador y no se deben subir al repositorio. Antes de publicar, revisar código, nombres, textos, imágenes, fuentes y metadatos para retirar referencias de franquicias de terceros. La guía de esta rama define un plan; no significa que todo el contenido antiguo ya se haya reescrito.
-
-## IA y privacidad
-
-La IA es opcional. El modo de diálogo escrito no requiere un modelo de lenguaje. LM Studio u otros servicios deben configurarse por separado; la calidad y disponibilidad dependen del modelo y del servidor. Si conectas el juego a un servidor en tu red, los mensajes enviados a ese servidor salen del dispositivo del juego. No expongas LM Studio a Internet ni compartas claves privadas.
-
-## Música
-
-El reproductor prioriza archivos locales en `assets/music/` para el menú (`menu-theme.mp3`), Zaun (`zaun-theme.mp3`) y Piltover (`piltover-theme.mp3`), y conserva el sintetizador procedural como respaldo si falta una pista. **Los tres MP3 todavía deben incorporarse al repositorio** antes de que las pistas renderizadas puedan darse por integradas; consulta `assets/music/README.md` y la [hoja de ruta](docs/HOJA_DE_RUTA_3D_LM_STUDIO_Y_AVATARES.md).
-
-## Partidas guardadas
-
-En Windows, la carpeta habitual es `%APPDATA%\\Arcane Piltover y Zaun\\partidas`. Haz una copia antes de probar cambios. En Android, exporta la ranura desde el menú **Partidas** antes de desinstalar la aplicación. Consulta la [guía de partidas](partidas-guardadas-guia.md) para mover partidas entre dispositivos y recuperar copias.
-
-**No subas al repositorio** partidas, modelos privados, claves, tokens, credenciales ni otros datos personales.
-
-## Compilaciones y pruebas
-
-Las comprobaciones automáticas ayudan a detectar errores, pero no garantizan que todas las rutas narrativas funcionen ni que la aplicación se haya probado en un equipo real. Antes de publicar una versión, comprueba el arranque, controles, diálogos, guardado/carga y cambios de escena en cada plataforma que vayas a distribuir.
-
-Para la web pública, consulta [GUIA-WEB-RENDER.md](GUIA-WEB-RENDER.md). El generador ejecuta `npm run web` y escribe los archivos estáticos en `web-dist/`; los instaladores se distribuyen mediante GitHub Releases, no desde Render.
-
-## Licencia y propiedad intelectual
-
-El repositorio declara licencia MIT para el código, pero eso no concede derechos sobre marcas, personajes ni materiales de terceros. Es un proyecto de fans no oficial. Antes de distribuir recursos, verifica su licencia y las [condiciones legales de Riot Games](https://www.riotgames.com/es/legal).
+Código bajo licencia MIT. El universo, sus nombres, su historia y su arte son originales de MarinaDP2006.

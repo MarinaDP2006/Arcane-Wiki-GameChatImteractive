@@ -129,7 +129,7 @@
   function aiSettings(set) {
     const box = el('div', { class: 'ai-settings' });
     const draw = () => {
-      const a = { provider: 'off', ...(App.settings.ai || {}) };
+      const a = { provider: 'ollamaCloud', ...(App.settings.ai || {}) };
       const P = window.AI.PROVIDERS;
       const d = P[a.provider] || P.off;
       const save = (patch) => set({ ai: { ...a, ...patch } }).then(draw);
@@ -141,15 +141,15 @@
       box.innerHTML = '';
       box.append(
         el('h3', {}, 'IA para los chats (opcional)'),
-        el('p', { class: 'muted small' }, 'Con la IA activada puedes escribir lo que quieras en el Comunicador y cada personaje te responde en su papel, recordando vuestra relación. Es gratis: elige un servicio y sigue los pasos. Los diálogos escritos siguen ahí siempre.'),
+        el('p', { class: 'muted small' }, 'Con Ollama Cloud puedes escribir con libertad y cada personaje responde en su papel. No necesitas instalar modelos. El servicio alojado debe estar configurado y su uso puede tener límites o costes; los diálogos escritos siguen disponibles.'),
         el('label', { class: 'field' }, el('span', {}, 'Servicio'),
           el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
         a.provider !== 'off' ? el('p', { class: 'small ai-help' }, d.help) : null,
         d.key ? el('label', { class: 'field' }, el('span', {}, 'Clave (API key)'),
           el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.key || '', placeholder: 'Pega aquí tu clave', onchange: (e) => save({ key: e.target.value.trim() }) })) : null,
-        local || a.provider === 'custom' ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
-          el('input', { class: 'input', value: a.url || d.url, placeholder: a.provider === 'lmstudio' ? 'http://192.168.1.40:1234' : 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+        (local || a.provider === 'custom' || a.provider === 'ollamaCloud') ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
+          el('input', { class: 'input', value: a.url || d.url, placeholder: a.provider === 'lmstudio' ? 'http://192.168.1.40:1234' : a.provider === 'ollamaCloud' ? 'https://tu-servicio.onrender.com/api/roleplay' : 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
         a.provider === 'lmstudio' ? lan : null,
         a.provider !== 'off' ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
           el('input', { class: 'input', value: a.model || d.model, placeholder: a.provider === 'lmstudio' ? 'Pulsa «Buscar mis modelos»' : '', onchange: (e) => save({ model: e.target.value.trim() }) })) : null,
