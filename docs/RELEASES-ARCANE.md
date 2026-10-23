@@ -10,7 +10,7 @@ El repositorio `MarinaDP2006/Arcane-fangame` existe, pero estaba vacío cuando s
 4. Abre **Actions → Publicar Arcane en el repositorio independiente → Run workflow**.
 5. En el campo de confirmación escribe exactamente `PUBLICAR` y ejecuta el workflow.
 
-El workflow copia la rama Arcane completa, incluyendo su historial y recursos binarios, a `Arcane-fangame/main`. Después crea y publica automáticamente la etiqueta `arcane-v` más el número de versión de `package.json`. Esto dispara las compilaciones de escritorio y Android y crea la primera Release. Solo reemplaza `Arcane-fangame/main`; no escribe en `RIFTS-GEARS/main`.
+El workflow exporta el árbol actual de la rama Arcane, incluidos sus recursos binarios, a un historial independiente en `Arcane-fangame/main`; no arrastra el historial compartido de `RIFTS-GEARS/main`. Después crea y publica automáticamente la etiqueta `arcane-v` más el número de versión de `package.json`. Esto dispara las compilaciones de escritorio y Android y crea la primera Release. Solo reemplaza `Arcane-fangame/main`; no escribe en `RIFTS-GEARS/main`.
 
 ## 2. Crear los releases
 
