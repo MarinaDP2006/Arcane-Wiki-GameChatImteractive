@@ -1073,7 +1073,6 @@ window.I18N_DATA.fr = {
   "Cruzan igual. Horas después, solo vuelve Ekko. Heimerdinger se quedó al otro lado para que él pudiera volver.": "Ils traversent quand même. Des heures plus tard, seul Ekko revient. Heimerdinger est resté de l'autre côté pour qu'il puisse rentrer.",
   "Cruzar la grieta con Ekko y el profesor.": "Traverser la faille avec Ekko et le professeur.",
   "Créame: la paciencia nunca pasa de moda.": "Croyez-moi : la patience ne se démode jamais.",
-  "Cualquier servidor con el formato de OpenAI (LM Studio, KoboldCpp, text-generation-webui…). Escribe la dirección completa de /chat/completions.": "N'importe quel serveur au format OpenAI (LM Studio, KoboldCpp, text-generation-webui…). Écris l'adresse complète de /chat/completions.",
   "Cuando Sevika llega, el Brillo ya arde en el canal con un humo violeta que sube hasta las chimeneas.": "Quand Sevika arrive, le Shimmer brûle déjà dans le canal, avec une fumée violette qui monte jusqu'aux cheminées.",
   "Cuando Viktor sale a toser al pasillo, Jayce baja la voz.": "Quand Viktor sort tousser dans le couloir, Jayce baisse la voix.",
   "Cuando era niño, una maga me salvó la vida en una tormenta de nieve. Desde entonces solo quiero una cosa: que la magia sea de todos. No solo de unos pocos.": "Quand j'étais enfant, une mage m'a sauvé la vie dans une tempête de neige. Depuis, je ne veux qu'une chose : que la magie appartienne à tous. Pas seulement à quelques-uns.",
@@ -3928,5 +3927,11 @@ window.I18N_DATA.fr = {
   "No se pudo exportar la partida": "Impossible d'exporter la partie",
   "Ese archivo no es una partida de Grietas & Gears": "Ce fichier n'est pas une partie de Grietas & Gears",
   "Partida de {0} importada en la ranura {1}": "Partie de {0} importée dans l'emplacement {1}",
-  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?"
+  "La ranura {0} tiene la partida de {1}. ¿Reemplazarla por la de {2}?": "L'emplacement {0} contient la partie de {1}. La remplacer par celle de {2} ?",
+  "LM Studio (en tu PC o por la red de casa)": "LM Studio (sur ton PC ou via le réseau de la maison)",
+  "Abre LM Studio, descarga un modelo y en la pestaña Developer enciende «Start server» (puerto 1234). En este ordenador deja la dirección como está. Para jugar desde la tablet o el móvil activa también «Serve on Local Network» y escribe aquí la dirección de tu PC, por ejemplo http://192.168.1.40:1234. Pulsa «Buscar mis modelos» para elegir uno. Los pasos están en GUIA-LM-STUDIO.md.": "Ouvre LM Studio, télécharge un modèle et dans l'onglet Developer active «Start server» (port 1234). Sur cet ordinateur, laisse l'adresse telle quelle. Pour jouer depuis la tablette ou le téléphone, active aussi «Serve on Local Network» et écris ici l'adresse de ton PC, par exemple http://192.168.1.40:1234. Appuie sur «Chercher mes modèles» pour en choisir un. Les étapes sont dans GUIA-LM-STUDIO.md.",
+  "Cualquier servidor con el formato de OpenAI (KoboldCpp, text-generation-webui, vLLM…). Escribe la dirección completa de /chat/completions.": "N'importe quel serveur au format OpenAI (KoboldCpp, text-generation-webui, vLLM…). Écris l'adresse complète de /chat/completions.",
+  "Pulsa «Buscar mis modelos»": "Appuie sur «Chercher mes modèles»",
+  "LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).": "LM Studio n'a aucun modèle. Télécharges-en un depuis sa recherche (par exemple Gemma 3 12B).",
+  "En la tablet o el móvil escribe: {0}": "Sur la tablette ou le téléphone, écris : {0}"
 };
