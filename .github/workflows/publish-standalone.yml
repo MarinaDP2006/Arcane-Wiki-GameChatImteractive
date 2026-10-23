@@ -32,9 +32,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add standalone "https://x-access-token:${ARCANE_REPO_TOKEN}@github.com/MarinaDP2006/Arcane-fangame.git"
-          git push standalone HEAD:refs/heads/main --force
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Exporta solo el árbol Arcane en un historial nuevo; no arrastra commits de main.
+          git checkout --orphan standalone-main
+          git rm -f .github/workflows/publish-standalone.yml
+          git add -A
+          git commit -m "Initial standalone Arcane-fangame release"
           VERSION="$(node -p "require('./package.json').version")"
           TAG="arcane-v$VERSION"
+          git push standalone HEAD:refs/heads/main --force
           git tag -f "$TAG" HEAD
           git push standalone "refs/tags/$TAG" --force
-          echo "::notice::Publicado Arcane-fangame/main y lanzadas las compilaciones de Release $TAG."
+          echo "::notice::Publicado un árbol Arcane independiente y lanzadas las compilaciones de Release $TAG."
