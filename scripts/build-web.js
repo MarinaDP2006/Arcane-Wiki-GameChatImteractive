@@ -118,6 +118,13 @@ function build() {
       fs.writeFileSync(path.join(out, f), txt);
     } else copy(src, path.join(out, f));
   }
+  // Copia también las pistas locales cuando existan; la demo no falla si aún no se han añadido.
+  const music = path.join(root, 'assets', 'music');
+  if (fs.existsSync(music)) {
+    for (const file of fs.readdirSync(music).filter(f => /\.(mp3|ogg|opus|m4a|wav)$/i.test(f))) {
+      copy(path.join(music, file), path.join(out, 'assets', 'music', file));
+    }
+  }
   // Publicar los mapas mentales originales del diario de desarrollo.
   const notas = path.join(root, 'web', 'notas-desarrollo');
   if (fs.existsSync(notas)) {
