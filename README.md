@@ -2,18 +2,18 @@
 
 Fangame gratuito y no oficial de rol libre ambientado en **Arcane** (temporadas 1 y 2). Creas tu personaje en Piltover o en Zaun y entras en la historia. No hay respuestas prefabricadas: escribes lo que tu personaje dice o hace, y los personajes de la serie te contestan, te preguntan y reaccionan como lo harían ellos, sin salirse del lore.
 
-> **Esta rama (`arcane/fangame-actualizado`) es la única rama de Arcane.** Todo lo del fangame vive aquí. La rama `main` es el mundo nuevo y original, *Las ciudades del Umbral*.
+> **Repositorio independiente:** este proyecto se publica en [MarinaDP2006/Arcane-fangame](https://github.com/MarinaDP2006/Arcane-fangame). Su fuente de desarrollo está en la rama `claude/project-thread-9huivc-arcane` de `RIFTS-GEARS`; `RIFTS-GEARS/main` pertenece al universo original *Las ciudades del Umbral* y no se incluye en este repositorio.
 
 ## Cómo funciona
 
 1. **¿Conoces Arcane?** Antes de crear el personaje el juego lo pregunta. Si dices que no, te da una introducción breve. Si dices que sí, pasas directo a la creación.
 2. **Creación de personaje:** nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus palabras.
 3. **Rol libre:** escribes y te contestan. Los personajes solo saben lo que han vivido hasta tu momento de la historia y respetan el canon de las temporadas 1 y 2.
-4. **IA en el servidor:** el diálogo lo lleva Gemma 4 31B alojado en Ollama Cloud. No tienes que instalar nada.
+4. **IA en el servidor:** el diálogo usa el proveedor configurado (Ollama Cloud, LM Studio o una API compatible con OpenAI). No se exponen claves al navegador.
 
 ## Web y demo
 
-La carpeta `web/` tiene la web pública del fangame, **sin sección de descargas**:
+La carpeta `web/` tiene la web pública del fangame, con una sección de descargas que enlaza al repositorio independiente:
 
 - `index.html`: portada, introducción para quien no conoce Arcane, ciudades, personajes, cómo se juega y demo.
 - `demo.html` + `demo-juego.js`: demo de rol libre. Escena en La Última Gota (Zaun) o en el taller de hextec de la Academia (Piltover), en la temporada 1, acto 2.
@@ -40,7 +40,7 @@ npm run web        # genera la web en web-dist/
 - **Hecho:** historia, personajes de Piltover, Zaun y Noxus, rol libre con bloqueo de canon, web y demo nuevas.
 - **Prototipo:** modelos 3D de fan-art en `src/models/` (sin rig ni animaciones finales).
 - **Pendiente de configurar:** el servidor publicado con la clave de Ollama Cloud.
-- **Sin descargas públicas** por ahora.
+- **Releases automatizadas:** Windows, macOS y Android se compilan con etiquetas `arcane-v*`. La primera etiqueta la publica el workflow de sincronización del repositorio `RIFTS-GEARS`.
 
 ## Guías
 
@@ -52,3 +52,23 @@ npm run web        # genera la web en web-dist/
 ## Aviso legal
 
 Proyecto de fans gratuito, sin ánimo de lucro y no respaldado por Riot Games. Arcane, League of Legends, Piltover, Zaun y sus personajes pertenecen a Riot Games. El código está bajo licencia MIT, que no da derechos sobre esas marcas ni personajes. Consulta las [condiciones legales de Riot Games](https://www.riotgames.com/es/legal).
+
+
+## IA para el juego y la web demo
+
+El servidor (`server/roleplay-server.js`) admite LM Studio y proveedores compatibles con la API de OpenAI. Para probar todo en el mismo PC, carga en LM Studio un GGUF pequeño, activa **Developer → Start server** y configura en el entorno del servidor:
+
+```env
+AI_BASE_URL=http://127.0.0.1:1234/v1
+AI_MODEL=<identificador-exacto-del-modelo>
+AI_API_KEY=
+```
+
+Modelo inicial recomendado: **Qwen3 0.6B GGUF Q4_K_M**, alrededor de 0,4–0,5 GB. Es pequeño y sirve para validar la integración; la calidad de roleplay es limitada frente a modelos mayores. La URL `127.0.0.1` solo sirve si el servidor Node y LM Studio se ejecutan en el mismo ordenador. Una web pública necesita un proveedor remoto o una conexión privada segura al equipo que ejecuta LM Studio; no expongas el puerto de LM Studio sin autenticación.
+
+Para un proveedor remoto compatible con OpenAI, usa `AI_BASE_URL`, `AI_MODEL` y `AI_API_KEY`. Para conservar Ollama Cloud, deja `AI_BASE_URL` sin definir y configura `OLLAMA_API_KEY` y `OLLAMA_MODEL`. Las claves se guardan en secretos del alojamiento, nunca en el navegador ni en Git.
+
+
+## Publicación independiente
+
+- [Copiar esta rama a Arcane-fangame y crear releases](docs/RELEASES-ARCANE.md)

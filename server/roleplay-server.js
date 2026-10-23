@@ -28,6 +28,13 @@ const DEFAULT_MODEL = process.env.ROLEPLAY_MODEL || process.env.OLLAMA_MODEL || 
 const MODELS = new Set((process.env.ROLEPLAY_MODELS || `${DEFAULT_MODEL},mistral-large-3:675b,gpt-oss:120b`).split(',').map((m) => m.trim()).filter(Boolean));
 const RPM = Number(process.env.ROLEPLAY_RPM) || 20;
 const ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean);
+// Alternativa a Ollama Cloud: cualquier API compatible con OpenAI (LM Studio en el mismo equipo,
+// por ejemplo AI_BASE_URL=http://127.0.0.1:1234/v1). Si no se define, se usa Ollama Cloud.
+const AI_BASE_URL = String(process.env.AI_BASE_URL || '').replace(/\/+$/, '');
+const AI_KEY = process.env.AI_API_KEY || '';
+const AI_MODEL = process.env.AI_MODEL || '';
+const isLocal = (u) => { try { return ['localhost', '127.0.0.1', '::1'].includes(new URL(u).hostname); } catch { return false; } };
+const READY = AI_BASE_URL ? Boolean(AI_KEY || isLocal(AI_BASE_URL)) : Boolean(KEY);
 
 const STATIC = path.resolve(process.env.STATIC_DIR || path.join(__dirname, '..', 'web-dist'));
 const TYPES = {
@@ -140,6 +147,7 @@ async function roleplay(body) {
       ...(Array.isArray(body.stop) ? { stop: body.stop.filter((s) => typeof s === 'string').slice(0, 4) } : {}),
     },
   };
+  if (AI_BASE_URL) return openaiCompatible(payload);
   if (/gpt-oss/.test(model)) payload.think = 'low';
   const r = await fetch(`${UPSTREAM}/api/chat`, {
     method: 'POST',
@@ -165,22 +173,40 @@ async function roleplay(body) {
   };
 }
 
+async function openaiCompatible({ messages, options }) {
+  const model = AI_MODEL || DEFAULT_MODEL;
+  const r = await fetch(`${AI_BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(AI_KEY ? { Authorization: `Bearer ${AI_KEY}` } : {}) },
+    body: JSON.stringify({ model, messages, stream: false, temperature: options.temperature, top_p: options.top_p,
+      max_tokens: options.num_predict, ...(options.stop ? { stop: options.stop } : {}) }),
+    signal: AbortSignal.timeout(85000),
+  });
+  const data = await r.json().catch(() => ({}));
+  const content = String(data?.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  if (!r.ok || !content) {
+    throw Object.assign(new Error(r.status === 429 ? 'El servidor de IA está saturado. Prueba en un rato.'
+      : 'El proveedor de IA no ha respondido. Revisa AI_BASE_URL, AI_MODEL y la clave.'), { status: r.status === 429 ? 429 : 502 });
+  }
+  return { model, choices: [{ index: 0, message: { role: 'assistant', content }, finish_reason: 'stop' }], usage: data.usage || {} };
+}
+
 const server = http.createServer(async (req, res) => {
   const origin = req.headers.origin;
   const url = new URL(req.url, 'http://x');
   if (req.method === 'OPTIONS') return send(res, 204, {}, origin);
   if (req.method === 'GET' && url.pathname === '/api/health') {
-    return send(res, 200, { ok: true, service: 'rifts-arcane-roleplay', model: DEFAULT_MODEL, ready: Boolean(KEY) }, origin);
+    return send(res, 200, { ok: true, service: 'rifts-arcane-roleplay', model: DEFAULT_MODEL, ready: READY }, origin);
   }
   if ((req.method === 'GET' || req.method === 'HEAD') && !url.pathname.startsWith('/api/')) {
     if (serveStatic(req, res, url.pathname)) return;
-    if (url.pathname === '/') return send(res, 200, { ok: true, service: 'rifts-arcane-roleplay', ready: Boolean(KEY) }, origin);
+    if (url.pathname === '/') return send(res, 200, { ok: true, service: 'rifts-arcane-roleplay', ready: READY }, origin);
     return send(res, 404, { error: 'No encontrado' }, origin);
   }
   if (url.pathname !== '/api/roleplay' && url.pathname !== '/api/roleplay/v1/chat/completions') return send(res, 404, { error: 'No encontrado' }, origin);
   if (req.method !== 'POST') return send(res, 405, { error: 'Usa POST' }, origin);
   if (ORIGINS.length && origin && !corsOrigin(origin)) return send(res, 403, { error: 'Origen no permitido' }, origin);
-  if (!KEY) return send(res, 503, { error: { message: 'El servidor no tiene configurada OLLAMA_API_KEY.' } }, origin);
+  if (!READY) return send(res, 503, { error: { message: AI_BASE_URL ? 'Falta AI_API_KEY para el proveedor remoto.' : 'El servidor no tiene configurada OLLAMA_API_KEY.' } }, origin);
   const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
   if (limited(ip)) return send(res, 429, { error: { message: 'Vas muy rápido: espera unos segundos antes de volver a escribir.' } }, origin);
   try {
@@ -195,7 +221,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 if (require.main === module) {
-  server.listen(PORT, () => console.log(`Roleplay de Arcane escuchando en :${PORT} (modelo ${DEFAULT_MODEL}${KEY ? '' : ', SIN CLAVE'})`));
+  server.listen(PORT, () => console.log(`Roleplay de Arcane escuchando en :${PORT} (${AI_BASE_URL ? `API compatible ${AI_BASE_URL}, modelo ${AI_MODEL || DEFAULT_MODEL}` : `modelo ${DEFAULT_MODEL}`}${READY ? '' : ', SIN CLAVE'})`));
 }
 
 module.exports = { server, roleplay, cleanMessages };

@@ -8,11 +8,16 @@ LM Studio puede ejecutar un modelo de lenguaje en tu ordenador y ofrecerlo al ch
 2. En la lupa (**Discover**), busca uno de los modelos de la tabla de abajo y descárgalo. Si puedes elegir el archivo, coge el que termina en **Q4_K_M**, que es el más equilibrado.
 3. En la parte de arriba, carga el modelo. Ajusta **GPU Offload** al nivel más alto que tu equipo pueda mantener sin quedarse sin memoria. Si aparecen errores o el equipo se ralentiza, baja el ajuste o prueba un modelo más pequeño.
 
+### Modelo pequeño (archivo de menos de 1 GB)
+
+Para probar el juego con un modelo ligero, busca **Qwen3 0.6B GGUF** y selecciona **Q4_K_M**. El archivo suele ocupar aproximadamente **0,4–0,5 GB**, según la publicación exacta. La memoria de ejecución será algo mayor que el archivo descargado. Es suficiente para validar la conexión y mantener conversaciones sencillas, aunque la coherencia de rol será limitada frente a modelos mayores.
+
 ### Qué modelo elegir según la memoria de tu tarjeta (VRAM)
 
 | VRAM | Modelo recomendado | Cómo va |
 |---|---|---|
-| 6 GB | Gemma 3 4B, Llama 3.2 3B | Muy rápido, conversación sencilla |
+| Menos de 1 GB de archivo | **Qwen3 0.6B GGUF Q4_K_M** | Prueba de conexión y rol sencillo |
+| 6 GB de VRAM | Gemma 3 4B, Llama 3.2 3B | Muy rápido, conversación sencilla |
 | 8 GB | Llama 3.1 8B, Qwen3 8B | Rápido y con buena personalidad |
 | 12 GB | **Gemma 3 12B**, Mistral Nemo 12B | El punto dulce para el rol: buena memoria y buen español |
 | 16 GB | Gemma 3 12B (Q6/Q8), Qwen3 14B | Más fino, igual de rápido |
@@ -51,7 +56,7 @@ Si no lo preguntó, o la tablet no conecta:
 2. Abre PowerShell como administrador y pega esto:
 
 ```powershell
-New-NetFirewallRule -DisplayName "LM Studio (Grietas & Gears)" -Direction Inbound -Protocol TCP -LocalPort 1234 -Action Allow -Profile Private
+New-NetFirewallRule -DisplayName "LM Studio (Arcane-fangame)" -Direction Inbound -Protocol TCP -LocalPort 1234 -Action Allow -Profile Private
 ```
 
 ## Problemas típicos
@@ -67,3 +72,16 @@ New-NetFirewallRule -DisplayName "LM Studio (Grietas & Gears)" -Direction Inboun
 **Seguridad:** activa el acceso por red local solo cuando lo necesites y en una red de confianza. No abras el puerto 1234 en el router ni lo uses desde una wifi pública. Una dirección IP local no es un mecanismo de autenticación: cualquier dispositivo con acceso de red y permitido por el firewall podría intentar conectarse.
 
 En Android, el juego permite conexiones `http://` normales para poder hablar con el PC de casa. Los servicios de internet (Gemini, Groq, OpenRouter) siguen yendo por `https://`.
+
+## Conectar la web demo mediante el servidor Node
+
+Si LM Studio y Node se ejecutan en el mismo ordenador, configura en el entorno del servidor:
+
+```env
+AI_PROVIDER=lm-studio
+AI_BASE_URL=http://127.0.0.1:1234/v1
+AI_MODEL=<identificador-exacto-de-LM-Studio>
+AI_API_KEY=
+```
+
+La web demo llama a `/api/roleplay`; la clave del proveedor no se expone al navegador. Si la web está alojada en Render, `127.0.0.1` apunta a Render, no a tu PC. Para una demo pública usa un proveedor remoto o una conexión privada y autenticada al equipo que ejecuta LM Studio. No expongas el puerto 1234 directamente a Internet.
