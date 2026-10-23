@@ -261,7 +261,7 @@
     const who = `${draft.name || 'yo'}${draft.title ? `, ${tpl(draft.title, draft)}` : ''}`;
     const lines = [
       `¿Qué miras? Soy ${who}.`,
-      cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'piltover' ? 'Piltover' : 'Zaun'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
+      cls ? `${tpl(cls.label, draft)} de ${draft.origin === 'piltover' ? 'Aurelia' : 'Nácar'}. Y de las buenas.` : 'Aún no sé a qué me dedico. ¿Me ayudas?',
       '¡Eh, sin tocar!',
       'Si me vuelves a pinchar, te lanzo una bomba de pintura.',
       draft.origin === 'piltover' ? 'El progreso no espera, y yo tampoco.' : 'Aquí abajo nadie viene a salvarnos.',
@@ -314,7 +314,7 @@
           rerender();
         },
       }, cv, el('div', { class: 'origin-info' }, el('h3', {}, o.label), el('p', {}, o.tagline),
-        el('small', {}, id === 'zaun' ? 'Empiezas con: Vander, Vi, Jinx' : 'Empiezas con: Jayce, Viktor, Heimerdinger')));
+        el('small', {}, id === 'zaun' ? 'Empiezas con: Darel, Nyra, Oren' : 'Empiezas con: Iria, Saia, Toren')));
       grid.append(card);
       requestAnimationFrame(() => Scenes.mount(cv, id === 'zaun' ? 'zaun' : 'piltover'));
     }
