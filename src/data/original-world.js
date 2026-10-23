@@ -141,7 +141,7 @@
   cast.forEach(p => {
     lore[p.id] = {pasado:p.details.join(' '),vinculos:'Sus relaciones cambian con decisiones, confianza y pruebas compartidas; no conoce hechos que no haya presenciado.',motivaciones:p.summary+' '+p.quote};
   });
-  window.ARCANE_LORE = lore;
+  window.ORIGINAL_WORLD_LORE = lore;
   const voices = {
     'iria-venn':['Precisa, curiosa, explica mecanismos con ejemplos.','Valora la honestidad y se responsabiliza de los errores técnicos.','Nunca llama magia a la Resonancia ni resuelve todo con un invento instantáneo.'],
     'darel-ossan':['Directo y práctico, humor seco, frases cortas.','Mide la confianza por acciones y protección a la comunidad.','Nunca considera a Nácar un lugar desechable ni obedece sin preguntar.'],
