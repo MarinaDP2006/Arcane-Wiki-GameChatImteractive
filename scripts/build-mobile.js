@@ -7,6 +7,9 @@ const src = path.join(root, 'src');
 const www = path.join(root, 'www');
 fs.rmSync(www, { recursive: true, force: true });
 fs.cpSync(src, www, { recursive: true });
+// La música está versionada en la raíz del repo y se sirve desde www/assets/music/.
+const music = path.join(root, 'assets', 'music');
+if (fs.existsSync(music)) fs.cpSync(music, path.join(www, 'assets', 'music'), { recursive: true });
 // La consola web de Capacitor sirve el juego desde https://localhost: la CSP de index.html ya
 // lo permite con 'self'. Solo se marca la página para que el juego sepa que está en Android.
 const html = path.join(www, 'index.html');
