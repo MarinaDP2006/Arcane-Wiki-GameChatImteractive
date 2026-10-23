@@ -8,7 +8,15 @@ const { URL } = require('node:url');
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_DIR = path.join(ROOT, 'web-dist');
 const PORT = Number(process.env.PORT || 10000);
-const MODEL = process.env.OLLAMA_MODEL || 'gemma4:31b';
+// Compatible con LM Studio (local) y proveedores OpenAI-compatible. Por defecto conserva Ollama Cloud.
+const AI_BASE_URL = String(process.env.AI_BASE_URL || 'https://ollama.com/v1').replace(/\/+$/, '');
+const MODEL = process.env.AI_MODEL || process.env.OLLAMA_MODEL || 'gemma4:31b';
+const AI_API_KEY = process.env.AI_API_KEY || process.env.OLLAMA_API_KEY || '';
+const AI_PROVIDER = process.env.AI_PROVIDER || (AI_BASE_URL.includes('ollama.com') ? 'ollama-cloud' : 'openai-compatible');
+function requiresApiKey() {
+  try { const u = new URL(AI_BASE_URL); return !['localhost', '127.0.0.1', '::1'].includes(u.hostname) && !AI_API_KEY; }
+  catch { return true; }
+}
 const MAX_BODY = 24 * 1024;
 const MAX_MESSAGES = 24;
 const MAX_MESSAGE_CHARS = 6000;
@@ -76,8 +84,8 @@ function readJson(req) {
 async function roleplay(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error:'Método no permitido.' }, { Allow:'POST' });
   if (rateLimited(clientKey(req))) return send(res, 429, { error:'Límite temporal alcanzado. Espera un poco e inténtalo de nuevo.' }, { 'Retry-After':'60' });
-  if (!process.env.OLLAMA_API_KEY) {
-    return send(res, 503, { error:'La IA en la nube aún no está configurada. Falta el secreto OLLAMA_API_KEY en el servicio de alojamiento.' });
+  if (requiresApiKey()) {
+    return send(res, 503, { error:'Falta AI_API_KEY (o OLLAMA_API_KEY) para el proveedor de IA remoto.' });
   }
   const origin = req.headers.origin;
   if (origin && origin !== 'null') {
@@ -115,12 +123,11 @@ async function roleplay(req, res) {
     const timer = setTimeout(() => controller.abort(), 75000);
     let upstream;
     try {
-      upstream = await fetch('https://ollama.com/v1/chat/completions', {
+      const headers = { 'Content-Type':'application/json' };
+      if (AI_API_KEY) headers.Authorization = `Bearer ${AI_API_KEY}`;
+      upstream = await fetch(`${AI_BASE_URL}/chat/completions`, {
         method:'POST',
-        headers:{
-          'Authorization':`Bearer ${process.env.OLLAMA_API_KEY}`,
-          'Content-Type':'application/json'
-        },
+        headers,
         body:JSON.stringify({
           model:MODEL,
           messages,
@@ -134,7 +141,7 @@ async function roleplay(req, res) {
     const payload = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
       // No exponer respuesta completa del proveedor: podría contener datos operativos.
-      return send(res, upstream.status >= 500 ? 502 : upstream.status, { error:'El servicio de IA no ha podido responder. Revisa el modelo y el saldo/uso de la cuenta Ollama Cloud.' });
+      return send(res, upstream.status >= 500 ? 502 : upstream.status, { error:'El servicio de IA no ha podido responder. Revisa AI_BASE_URL, el nombre del modelo y las credenciales del proveedor.' });
     }
     const answer = payload?.choices?.[0]?.message?.content;
     if (typeof answer !== 'string' || !answer.trim()) return send(res, 502, { error:'El modelo devolvió una respuesta vacía.' });
@@ -174,9 +181,9 @@ function staticFile(req, res) {
 const server = http.createServer((req, res) => {
   if (req.url.split('?')[0] === '/api/health') {
     if (req.method !== 'GET') return send(res, 405, { error:'Método no permitido.' }, { Allow:'GET' });
-    return send(res, 200, { ok:true, provider:'ollama-cloud', model:MODEL, configured:Boolean(process.env.OLLAMA_API_KEY) });
+    return send(res, 200, { ok:true, provider:AI_PROVIDER, model:MODEL, configured:Boolean(AI_API_KEY || !requiresApiKey()) });
   }
   if (req.url.split('?')[0] === '/api/roleplay') return roleplay(req,res);
   return staticFile(req,res);
 });
-server.listen(PORT, '0.0.0.0', () => console.log(`Web + roleplay API listening on :${PORT}; model=${MODEL}; key-configured=${Boolean(process.env.OLLAMA_API_KEY)}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Web + roleplay API listening on :${PORT}; model=${MODEL}; key-configured=${Boolean(AI_API_KEY || !requiresApiKey())}`));

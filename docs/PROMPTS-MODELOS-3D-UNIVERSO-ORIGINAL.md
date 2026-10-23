@@ -15,6 +15,22 @@
 - Naming: `src/models/<id>.glb`; nombres de malla como `Body`, `Head`, `Hair`, `Outerwear`, `Gear`; texturas `BaseColor`, `Normal`, `ORM`.
 - Evitar: piel/plástico brillante, manos fundidas, ropa que atraviesa el cuerpo, joyería flotante, armas enormes que oculten la pose, logotipos, letras, marcas registradas, diseños reconocibles de franquicias y texturas descargadas sin licencia.
 
+## Dirección visual basada en el moodboard de autora
+
+Usa la imagen de referencia como guía de **contraste ambiental**, no como plantilla para copiar personajes: Aurelia debe sentirse luminosa y vertical, con piedra marfil, vegetación, puentes y latón bajo luz cálida; Nácar debe ser densa, húmeda y vertical, con tuberías, pasarelas, talleres, reflejos verde turquesa y puntos de luz ámbar. El diseño web usa esta separación cálida/fría como identidad visual del mundo original.
+
+El lineup inferior de la referencia sirve solo para estudiar variedad de siluetas. Cada protagonista de Rifts & Gears debe conservar su propia identidad: ropa funcional acorde a su oficio, paletas distintas, peinados y colores de pelo no repetidos por defecto, proporciones y accesorios originales. No recrear el rostro, ropa ni silueta exacta de personajes reconocibles de Arcane.
+
+### Orden de producción de mapas 3D
+
+1. **Aurelia:** plaza central y observatorio, viaductos, estación de contrapesos, patios de gremios y calles altas.
+2. **Nácar:** mercado de tuberías, clínica vecinal, taller de canales, puente de cadenas, jardín de musgo y estación geotérmica.
+3. **Conector jugable:** ascensor central y dos plantas de transición que expliquen la verticalidad entre ambas ciudades.
+4. **Interiores modulares:** crear primero módulos repetibles de puertas, ventanas, barandillas, escaleras, tuberías y faroles; luego montar cada barrio.
+5. **Entrega de cada zona:** archivo fuente de Blender, GLB optimizado, colisiones, puntos de navegación, LODs y prueba dentro del motor.
+
+Los SVG de `web/arte-propio/` son ilustraciones vectoriales de concepto para la web; **no son mapas 3D ni modelos de producción**. La producción final requiere modelado, UV, materiales, colisiones, navegación y pruebas de rendimiento en el juego.
+
 ## Identidad del mundo
 
 ### Aurelia, la ciudad elevada
