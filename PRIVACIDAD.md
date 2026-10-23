@@ -1,31 +1,36 @@
-# Política de privacidad · Arcane: Piltover y Zaun (juego de fans)
+# Política de privacidad · Rifts & Gears: Las ciudades del Umbral
 
-Última actualización: 21 de octubre de 2026
+Última actualización: 23 de octubre de 2026
 
-Este juego es un proyecto de fans **gratuito y sin ánimo de lucro**, creado por MarinaDP2006.
+Rifts & Gears es una aventura narrativa original desarrollada por MarinaDP2006.
 
-## Qué datos recoge
+## Datos locales
 
-**Ninguno.** El juego no tiene cuentas de usuario, no tiene anuncios, no usa analíticas ni rastreadores y no envía tus datos a ningún servidor propio.
+- No se requiere una cuenta para jugar.
+- Las partidas y los ajustes del juego de escritorio se guardan en la carpeta de datos de la aplicación en tu dispositivo. En Android se almacenan en el espacio privado de la app.
+- Si eliges una imagen para el retrato de tu personaje, se guarda en tu partida local.
+- La web promocional puede usar almacenamiento local del navegador para recordar la partida de demostración. Puedes borrar esos datos desde la configuración del navegador.
 
-- Tus partidas y ajustes se guardan **solo en tu dispositivo**. Si desinstalas el juego (en Android), se borran.
-- Si eliges «Subir mi foto» en el creador de personaje, la imagen se guarda solo dentro de tu partida, en tu dispositivo.
-- En la versión de ordenador, el juego puede descargar imágenes públicas de la Arcane Wiki (arcane.fandom.com). Al hacerlo, tu ordenador se conecta a esa web como lo haría un navegador.
-- **IA para los chats (opcional, desactivada por defecto).** Si en Ajustes eliges un servicio de IA (Google Gemini, Groq, OpenRouter u otro) y pones tu propia clave, lo que escribes en el comunicador, los últimos mensajes de esa conversación y el contexto del personaje (tu nombre de personaje, tu ciudad, tu afinidad y vuestra relación) se envían a ese servicio para generar la respuesta, y se aplica su política de privacidad. Con Ollama todo se queda en tu ordenador. Tu clave se guarda solo en tu dispositivo. No escribas datos personales reales en el chat.
-- La pestaña «Mapas de la Wiki» abre páginas de arcane.fandom.com, que tiene su propia política de privacidad.
+## Uso opcional de IA
 
-## Permisos de la app de Android
+El juego puede funcionar sin un modelo de lenguaje; la conversación escrita y el narrador local básico siguen disponibles.
 
-Solo **acceso a internet**, para la pestaña de mapas de la Arcane Wiki y, si la activas, la IA de los chats. El resto del juego funciona sin conexión.
+Si activas un proveedor de IA, los mensajes necesarios para generar la respuesta y parte del contexto narrativo (personaje, ciudad, afinidad, capítulo y recuerdos recientes) se envían al proveedor que hayas configurado. Ese proveedor procesa la petición conforme a sus propias condiciones y política de privacidad. Si usas LM Studio en tu ordenador, las peticiones pueden quedarse en tu red local. Si usas un proveedor remoto, la petición sale de tu dispositivo.
+
+- No escribas contraseñas, datos financieros ni información personal real en las conversaciones.
+- Las claves de API se configuran en los ajustes locales o en los secretos del servidor; no deben publicarse en el código.
+- En la demo web alojada, las peticiones pasan por el servidor de la web antes de llegar al proveedor configurado.
+
+## Conexiones externas
+
+La web puede descargar fuentes web y recursos necesarios para mostrar la interfaz. Si se configura un proveedor remoto de IA, tu dispositivo o el servidor también se conecta a ese proveedor. No hay una integración de la Arcane Wiki en el mundo original.
 
 ## Menores
 
-El juego no recoge datos de nadie, tampoco de menores de edad.
+No se solicita información identificativa para jugar. Las personas responsables deben supervisar el uso de servicios externos de IA de acuerdo con sus condiciones de edad.
 
-## Aviso legal
+## Licencia y contacto
 
-Este juego se creó según la política «Legal Jibber Jabber» de Riot Games usando recursos propiedad de Riot Games. Riot Games no respalda ni patrocina este proyecto. Arcane y League of Legends son marcas de Riot Games, Inc.
+El código del proyecto se publica bajo licencia MIT. La historia, los personajes, las ciudades y el arte de Las ciudades del Umbral son contenido original del proyecto; las bibliotecas y otros recursos de terceros mantienen sus propias licencias.
 
-## Contacto
-
-Para cualquier duda, abre una incidencia en https://github.com/MarinaDP2006/Arcane-Wiki-GameChatImteractive/issues
+Para comunicar un problema, abre una incidencia en https://github.com/MarinaDP2006/RIFTS-GEARS/issues.
