@@ -152,7 +152,7 @@
     }
     if (acc.includes('tattoo')) {
       g.fillStyle = 'rgba(150,30,70,0.85)';
-      g.font = 'bold 22px Georgia, serif';
+      g.font = 'bold 22px Cinzel, Georgia, serif';
       g.fillText('VI', 66, 186);
     }
     if (acc.includes('scar')) {

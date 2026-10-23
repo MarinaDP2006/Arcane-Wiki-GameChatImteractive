@@ -52,47 +52,71 @@
   }
   App.tiltAll = tiltAll;
 
-  // Menú principal: ilustraciones de Piltover y Zaun pintadas, con fundido lento entre ellas,
-  // y el menú a la izquierda sobre la sombra. Sin escena 3D de bloques.
-  const TITLE_ART = [
-    ['piltover', '50% 40%'], ['hexpuertas', '50% 30%'], ['zaun', '50% 45%'], ['comuna-viktor', '50% 50%'],
-  ];
+  // Menú principal: Piltover (cielo) y Zaun (cueva) pintadas a la vez, separadas por una grieta
+  // de luz que sigue al ratón o al dedo. Los efectos viven en js/title-fx.js.
+  const TITLE_ART = {
+    pilt: [['piltover', '50% 40%'], ['hexpuertas', '50% 30%']],
+    zaun: [['zaun', '50% 45%'], ['comuna-viktor', '50% 50%']],
+  };
+  let stopTitleFx = null;
 
   /** Dibuja el menú principal y sus botones. */
   async function renderTitle() {
     const root = $('#view-home');
+    if (stopTitleFx) stopTitleFx();
     root.innerHTML = '';
     const slots = await store.listSlots();
     const hasSave = slots.some((s) => !s.empty);
     const btn = (label, fn, cls = '') => el('button', { class: `home-btn ${cls}`, onclick: () => { Audio2.sfx.choice(); fn(); } }, el('i', { class: 'home-gem' }), el('span', {}, label));
-    const art = TITLE_ART.map(([id, pos]) => [window.CustomArt.image('lugares', id) || `img/arte/lugares/${id}.webp`, pos]);
-    const slides = art.map(([src, pos], i) => el('div', { class: `home-slide${i ? '' : ' on'}`, style: `background-image:url("${src}");background-position:${pos}` }));
-    root.append(el('div', { class: 'home' },
-      el('div', { class: 'home-art' }, ...slides),
+    const layer = (side) => {
+      const slides = TITLE_ART[side].map(([id, pos], i) => el('div', {
+        class: `home-slide${i ? '' : ' on'}`,
+        style: `background-image:url("${window.CustomArt.image('lugares', id) || `img/arte/lugares/${id}.webp`}");background-position:${pos}`,
+      }));
+      // El recorte va por fuera y el parallax por dentro, para que el borde coincida con la grieta.
+      return el('div', { class: `home-art ${side}` }, el('div', { class: 'home-art-in' }, ...slides));
+    };
+    const pilt = layer('pilt');
+    const zaun = layer('zaun');
+    // Título letra a letra; el «&» lleva detrás un engranaje que gira al mover el cursor.
+    const letters = (word, from) => [...word].map((ch, i) => el('span', { class: 'home-letter', style: `--i:${from + i}` }, ch));
+    const amp = el('span', { class: 'home-amp', style: '--i:7' }, el('span', { class: 'home-gear', html: window.TitleFX.GEAR_SVG }), el('b', {}, '&'));
+    const city = (id, label) => el('button', { class: 'home-city', 'data-city': id, type: 'button' },
+      el('img', { src: `img/arte/simbolos/${id}.png`, alt: '' }), el('span', {}, label));
+    const s = App.settings;
+    const home = el('div', { class: 'home' },
+      pilt, zaun,
+      el('div', { class: 'home-rift', 'aria-hidden': 'true',
+        html: '<svg viewBox="0 0 1000 1000" preserveAspectRatio="none"><polyline class="glow"/><path class="glow"/><polyline class="mid"/><path class="core"/><polyline class="core"/></svg>' }),
+      el('canvas', { class: 'home-fx', 'aria-hidden': 'true' }),
       el('div', { class: 'home-grain' }),
       el('div', { class: 'home-shade' }),
-      el('div', { class: 'home-motes' }, ...Array.from({ length: 22 }, (_, i) => el('i', { class: i % 3 ? 'blue' : 'green', style: `left:${(i * 47) % 100}%;animation-delay:${(i * 1.7) % 12}s;animation-duration:${10 + (i % 6) * 2.5}s` }))),
       el('div', { class: 'home-panel' },
         el('div', { class: 'home-logo' },
-          el('h1', { class: 'home-title' }, 'GRIETAS & GEARS'),
-          el('div', { class: 'home-cities' },
-            el('img', { src: 'img/arte/simbolos/piltover.png', alt: 'Piltover' }),
-            el('span', {}, 'Piltover'), el('b', {}), el('span', {}, 'Zaun'),
-            el('img', { src: 'img/arte/simbolos/zaun.png', alt: 'Zaun' }))),
+          el('h1', { class: 'home-title', 'aria-label': 'Grietas & Gears' }, el('span', { class: 'home-word' }, ...letters('GRIETAS', 0)), amp, el('span', { class: 'home-word' }, ...letters('GEARS', 8))),
+          el('div', { class: 'home-cities' }, city('piltover', 'Piltover'), el('b', {}), city('zaun', 'Zaun'))),
         el('nav', { class: 'home-menu' },
           hasSave ? btn('Continuar', async () => { if (!(await Game.continueLatest())) toast('No hay partidas', 'warn'); }, 'primary') : null,
           btn('Nueva partida', () => Game.newGame(), hasSave ? '' : 'primary'),
           btn('Cargar partida', () => App.go('game')),
           btn('Ajustes', () => App.go('settings')),
-          U.desktop ? btn('Salir', () => window.arcane.quit(), 'quiet') : null))));
+          U.desktop ? btn('Salir', () => window.arcane.quit(), 'quiet') : null)),
+      el('div', { class: 'home-hint' }, U.touch ? 'Desliza el dedo para abrir la grieta entre Piltover y Zaun' : 'Mueve el ratón para abrir la grieta entre Piltover y Zaun'));
+    root.append(home);
     Audio2.playMusic('wiki');
-    let k = 0;
-    const timer = setInterval(() => {
-      if (!slides[0].isConnected) return clearInterval(timer);
-      slides[k].classList.remove('on');
-      k = (k + 1) % slides.length;
-      slides[k].classList.add('on');
-    }, 9000);
+    stopTitleFx = window.TitleFX.mount(home, { reduce: s.reduceMotion, particles: s.particles, low: s.quality === 'baja' });
+    // Cada ciudad cambia de ilustración a su ritmo, desfasadas para que nunca cambien a la vez.
+    [pilt, zaun].forEach((layerEl, n) => {
+      const slides = [...layerEl.firstElementChild.children];
+      let k = 0;
+      setTimeout(function next() {
+        if (!layerEl.isConnected) return;
+        slides[k].classList.remove('on');
+        k = (k + 1) % slides.length;
+        slides[k].classList.add('on');
+        setTimeout(next, 12000);
+      }, 7000 + n * 6000);
+    });
   }
 
   // IA opcional para el chat libre con los personajes.
@@ -434,6 +458,8 @@
     App.settings = await store.getSettings();
     window.I18N.setLang(App.settings.lang);
     applyLook();
+    // Las letras de Arcane también se usan en los minijuegos (canvas): se cargan ya para que no salgan en Georgia.
+    document.fonts?.load?.('700 20px Cinzel').catch(() => {});
     // Sin sonido cuando el juego queda en segundo plano (si así se ha elegido).
     document.addEventListener('visibilitychange', () => {
       if (App.settings.muteBackground === false) return;

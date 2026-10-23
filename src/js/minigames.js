@@ -115,7 +115,7 @@
         for (const t of texts) {
           const k = t.life > 0.85 ? 1 + (t.life - 0.85) * 3 : 1;
           ctx.globalAlpha = Math.min(1, t.life * 1.6);
-          ctx.font = `700 ${Math.round(t.size * k)}px Georgia, serif`;
+          ctx.font = `700 ${Math.round(t.size * k)}px Cinzel, Georgia, serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.lineWidth = 5;
@@ -244,7 +244,7 @@
         ctx.fillStyle = `rgba(5,4,10,${Math.min(0.45, count * 0.3)})`;
         ctx.fillRect(0, 0, W, H);
         ctx.globalAlpha = n > 0 ? Math.min(1, 0.3 + (f < 0 ? 1 : f) * 1.2) : Math.max(0, count / 0.6);
-        ctx.font = `700 ${Math.round(Math.min(W, H) * 0.22 * k)}px Georgia, serif`;
+        ctx.font = `700 ${Math.round(Math.min(W, H) * 0.22 * k)}px Cinzel, Georgia, serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.lineWidth = 8;
@@ -380,7 +380,7 @@
     return `<span class="mg-meter${p < 25 ? ' low' : ''}"><b>${label}</b><span class="mg-track"><i style="width:${p}%;--c:${color}"></i></span></span>`;
   }
 
-  function glowText(ctx, text, x, y, size, color, font = 'Georgia, serif') {
+  function glowText(ctx, text, x, y, size, color, font = 'Cinzel, Georgia, serif') {
     ctx.save();
     ctx.font = `bold ${size}px ${font}`;
     ctx.textAlign = 'center';
@@ -901,7 +901,7 @@
               ctx.beginPath(); ctx.arc(0, -tg.r * 0.45, tg.r * 0.38, 0, TAU); ctx.fill(); ctx.stroke();
               ctx.beginPath(); ctx.moveTo(-tg.r * 0.6, tg.r * 0.9); ctx.quadraticCurveTo(-tg.r * 0.6, -tg.r * 0.05, 0, -tg.r * 0.05); ctx.quadraticCurveTo(tg.r * 0.6, -tg.r * 0.05, tg.r * 0.6, tg.r * 0.9); ctx.closePath(); ctx.fill(); ctx.stroke();
               ctx.fillStyle = '#c0453a';
-              ctx.font = `bold ${Math.round(tg.r * 0.3)}px Georgia, serif`;
+              ctx.font = `bold ${Math.round(tg.r * 0.3)}px Cinzel, Georgia, serif`;
               ctx.textAlign = 'center';
               ctx.fillText('CIVIL', 0, tg.r * 0.55);
             } else {
@@ -1305,7 +1305,7 @@
           hexPath(ctx, px + sh, py, ps / 2 + 3, Math.PI / 6);
           ctx.lineWidth = 3; ctx.strokeStyle = rim; ctx.stroke();
           // Bocadillo
-          ctx.font = 'italic 22px Georgia, serif';
+          ctx.font = "italic 24px 'Alegreya Sans', Georgia, serif";
           const tw = Math.min(w - 60, ctx.measureText(`«${g.msg}»`).width + 50);
           plate(ctx, w / 2 - tw / 2, h * 0.43 - 26, tw, 52, { top: 'rgba(44,34,26,0.92)', bot: 'rgba(20,14,10,0.95)', cut: 12, edge: 'rgba(240,160,64,0.6)' });
           glowText(ctx, `«${g.msg}»`, w / 2, h * 0.43, 21, '#f4efe6');

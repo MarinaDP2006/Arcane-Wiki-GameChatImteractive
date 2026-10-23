@@ -3933,5 +3933,7 @@ window.I18N_DATA.fr = {
   "Cualquier servidor con el formato de OpenAI (KoboldCpp, text-generation-webui, vLLM…). Escribe la dirección completa de /chat/completions.": "N'importe quel serveur au format OpenAI (KoboldCpp, text-generation-webui, vLLM…). Écris l'adresse complète de /chat/completions.",
   "Pulsa «Buscar mis modelos»": "Appuie sur «Chercher mes modèles»",
   "LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).": "LM Studio n'a aucun modèle. Télécharges-en un depuis sa recherche (par exemple Gemma 3 12B).",
-  "En la tablet o el móvil escribe: {0}": "Sur la tablette ou le téléphone, écris : {0}"
+  "En la tablet o el móvil escribe: {0}": "Sur la tablette ou le téléphone, écris : {0}",
+  "Mueve el ratón para abrir la grieta entre Piltover y Zaun": "Bouge la souris pour ouvrir la faille entre Piltover et Zaun",
+  "Desliza el dedo para abrir la grieta entre Piltover y Zaun": "Fais glisser ton doigt pour ouvrir la faille entre Piltover et Zaun"
 };
