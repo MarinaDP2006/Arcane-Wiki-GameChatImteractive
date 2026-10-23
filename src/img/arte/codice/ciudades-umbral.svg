@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t d">
+<title id="t">Aurelia y Nácar, concepto visual de Las ciudades del Umbral</title>
+<desc id="d">Una ciudad elevada de piedra clara y latón al atardecer contrasta con una ciudad subterránea de metal, canales y luces verde turquesa. Abajo, siluetas originales de personajes con ropa, peinados y paletas distintas.</desc>
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#9db9c9"/><stop offset=".52" stop-color="#f5d4a0"/><stop offset="1" stop-color="#b78b52"/></linearGradient>
+ <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#fff0d2"/><stop offset="1" stop-color="#9b927f"/></linearGradient>
+ <linearGradient id="deep" x2="0" y2="1"><stop stop-color="#173b3b"/><stop offset=".55" stop-color="#102522"/><stop offset="1" stop-color="#080e10"/></linearGradient>
+ <linearGradient id="water" x2="1"><stop stop-color="#143a35"/><stop offset=".5" stop-color="#4ed7b1"/><stop offset="1" stop-color="#172d2b"/></linearGradient>
+ <linearGradient id="panel" x2="0" y2="1"><stop stop-color="#292c2e"/><stop offset="1" stop-color="#17191b"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="7"/></filter>
+ <pattern id="windows" width="26" height="32" patternUnits="userSpaceOnUse"><rect x="7" y="6" width="8" height="14" rx="2" fill="#f8d58b" opacity=".8"/></pattern>
+</defs>
+<rect width="800" height="500" fill="url(#sky)"/>
+<circle cx="590" cy="105" r="66" fill="#fff0c8" opacity=".82"/>
+<circle cx="590" cy="105" r="90" fill="#fff0c8" opacity=".22" filter="url(#glow)"/>
+<path d="M0 330 90 255 160 290 260 190 340 275 430 150 500 250 600 180 800 250V500H0Z" fill="#7e9ba0" opacity=".55"/>
+<g fill="#d4c9b3" stroke="#a08f74" stroke-width="4">
+ <path d="M0 390V270H90V390M75 390V225H170V390M150 390V300H240V390M220 390V210H330V390M315 390V250H400V390M380 390V180H480V390M470 390V240H560V390M550 390V210H660V390M645 390V280H735V390M715 390V250H800V390"/>
+</g>
+<g fill="#4b6472">
+ <path d="M65 225 122 150 180 225Z"/><path d="M202 210 275 112 348 210Z"/><path d="M362 180 430 70 498 180Z"/><path d="M532 210 605 120 678 210Z"/><path d="M700 250 755 180 810 250Z"/>
+</g>
+<g fill="url(#windows)"><path d="M0 270H90V390H0ZM75 225H170V390H75ZM220 210H330V390H220ZM380 180H480V390H380ZM550 210H660V390H550ZM715 250H800V390H715Z"/></g>
+<g stroke="#d5b16a" stroke-width="7" fill="none"><path d="M0 410H800M122 150V410M275 112V410M430 70V410M605 120V410M755 180V410"/></g>
+<g stroke="#f7e3b8" stroke-width="4" fill="none" opacity=".85"><path d="M0 440H800M110 390V470M270 390V470M430 390V470M600 390V470M760 390V470"/></g>
+<text x="42" y="54" font-family="Georgia,serif" font-size="26" letter-spacing="8" fill="#263744">AURELIA</text>
+<text x="42" y="82" font-family="monospace" font-size="12" letter-spacing="3" fill="#263744">CIUDAD ELEVADA · PIEDRA / LATÓN</text>
+<rect x="800" width="800" height="500" fill="url(#deep)"/>
+<path d="M800 85 910 130 1000 70 1110 145 1200 65 1300 120 1410 60 1500 130 1600 80V500H800Z" fill="#1e3530"/>
+<g fill="#101918" stroke="#3d5149" stroke-width="5">
+ <path d="M820 315V160H940V315M955 350V105H1090V350M1110 305V180H1235V305M1250 355V125H1385V355M1400 310V165H1520V310M1530 350V215H1600V350"/>
+ <path d="M835 160 880 110 925 160M970 105 1020 45 1075 105M1265 125 1320 65 1375 125M1415 165 1460 105 1505 165"/>
+</g>
+<g stroke="#53d6b3" stroke-width="4" fill="none" opacity=".75">
+ <path d="M800 215H930L965 245H1110L1150 215H1300L1340 245H1480L1520 210H1600"/>
+ <path d="M850 0V155Q850 190 885 190H950M1070 0V70Q1070 100 1100 100H1175M1450 0V120Q1450 150 1480 150H1600"/>
+ <path d="M890 350V500M1030 350V500M1200 350V500M1390 350V500M1550 350V500"/>
+</g>
+<g fill="#ec65bd" opacity=".9"><rect x="890" y="230" width="32" height="23" rx="3"/><rect x="1165" y="260" width="38" height="24" rx="3"/><rect x="1450" y="215" width="44" height="24" rx="3"/></g>
+<g fill="#f0b46c" opacity=".9"><rect x="975" y="210" width="18" height="42"/><rect x="1040" y="250" width="18" height="40"/><rect x="1285" y="205" width="20" height="48"/><rect x="1535" y="250" width="20" height="40"/></g>
+<path d="M800 420Q930 385 1050 430T1310 425T1600 420V500H800Z" fill="url(#water)" opacity=".9"/>
+<g stroke="#56d8b8" stroke-width="2" opacity=".6"><path d="M800 455H1600M840 477H1190M1320 470H1600"/></g>
+<text x="842" y="54" font-family="Georgia,serif" font-size="26" letter-spacing="8" fill="#e4eee4">NÁCAR</text>
+<text x="842" y="82" font-family="monospace" font-size="12" letter-spacing="3" fill="#7ce0c3">CIUDAD SUBTERRÁNEA · ACERO / VAPOR</text>
+<rect y="500" width="1600" height="500" fill="url(#panel)"/>
+<path d="M0 500H1600" stroke="#bba27c" stroke-width="2" opacity=".8"/>
+<text x="42" y="540" font-family="monospace" font-size="15" letter-spacing="6" fill="#e8dfc9">ESTUDIOS DE PERSONAJES · DISEÑOS ORIGINALES</text>
+<g stroke="#77716a" stroke-width="1" opacity=".6"><path d="M160 565V950M320 565V950M480 565V950M640 565V950M800 565V950M960 565V950M1120 565V950M1280 565V950M1440 565V950"/></g>
+<!-- Siluetas conceptuales: vestuario, cabello y proporciones diferenciados; no son modelos finales. -->
+<g stroke="#121416" stroke-width="5" stroke-linejoin="round">
+ <g transform="translate(35 0)"><path fill="#202d3c" d="M30 650 10 625 18 580 45 558 65 580 70 620 57 650 60 760 78 875 58 890 42 790 28 890 5 890 20 760Z"/><path fill="#236caa" d="M18 582Q-2 545 23 555L40 535 50 557 68 540 73 582 55 600 50 570 33 590Z"/><path fill="#d9c5a4" d="M25 604 52 604 58 632 39 645 20 627Z"/><path fill="#141b24" d="M23 648H57L67 710 17 710Z"/><path fill="#a34e7a" d="M17 710 66 710 60 758 14 758Z"/><path fill="#c1a77b" d="M10 875H32L29 900H3ZM48 875H66L82 900H52Z"/></g>
+ <g transform="translate(190 0)"><path fill="#3b352c" d="M27 645 10 620 17 580 44 558 66 580 72 620 55 645 59 770 74 880 52 890 38 790 24 890 1 890 17 770Z"/><path fill="#d9d4c6" d="M17 582Q10 545 35 550L45 535 55 554 72 548 69 583 53 598 48 566 32 590Z"/><path fill="#bf8b51" d="M19 647H58L65 710 13 710Z"/><path fill="#6c735b" d="M13 710H65L60 765H10Z"/><path fill="#222624" d="M10 765H29L25 878H3ZM47 765H65L78 878H56Z"/><path fill="#8e6a43" d="M3 875H27L30 900H0ZM56 875H80L86 900H56Z"/></g>
+ <g transform="translate(350 0)"><path fill="#17262b" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#9d536d" d="M15 582Q5 550 27 545L42 530 52 550 70 548 69 582 51 598 48 567 31 590Z"/><path fill="#e1d5c1" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#812f4e" d="M18 647H58L70 720 8 720Z"/><path fill="#262b2e" d="M8 720H70L61 766H12Z"/></g>
+ <g transform="translate(510 0)"><path fill="#253a4c" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#1d2531" d="M15 582Q12 546 30 544L42 530 53 548 70 547 69 583 52 598 47 566 31 590Z"/><path fill="#d2b69a" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#203a57" d="M18 647H58L70 720 8 720Z"/><path fill="#c4b38c" d="M9 720H68L60 766H12Z"/></g>
+ <g transform="translate(670 0)"><path fill="#302332" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#5b3429" d="M15 582Q-1 550 26 544L42 530 55 548 74 545 69 583 52 598 47 566 31 590Z"/><path fill="#d8b69c" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#6d2438" d="M18 647H58L73 733 4 733Z"/><path fill="#bd9656" d="M15 647 39 668 60 647 54 690H22Z"/></g>
+ <g transform="translate(830 0)"><path fill="#37312b" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#c7b9a5" d="M15 582Q7 547 27 543L42 530 55 548 72 546 69 583 52 598 47 566 31 590Z"/><path fill="#d4b99d" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#e4e0d5" d="M18 647H58L70 720 8 720Z"/><path fill="#5d625a" d="M8 720H70L60 766H12Z"/></g>
+ <g transform="translate(990 0)"><path fill="#252a28" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#2b171d" d="M15 582Q-2 550 26 544L42 530 55 548 74 545 69 583 52 598 47 566 31 590Z"/><path fill="#b88969" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#a17a36" d="M18 647H58L70 720 8 720Z"/><path fill="#171b1b" d="M8 720H70L60 766H12Z"/></g>
+ <g transform="translate(1150 0)"><path fill="#2a3035" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#171e22" d="M15 582Q8 548 27 543L42 530 55 548 72 546 69 583 52 598 47 566 31 590Z"/><path fill="#d7ad8a" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#48544d" d="M18 647H58L70 720 8 720Z"/><path fill="#8d6b49" d="M8 720H70L60 766H12Z"/></g>
+ <g transform="translate(1310 0)"><path fill="#29242b" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#30201f" d="M15 582Q-2 550 26 544L42 530 55 548 74 545 69 583 52 598 47 566 31 590Z"/><path fill="#c99877" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#ba9452" d="M18 647H58L70 720 8 720Z"/><path fill="#181c1b" d="M8 720H70L60 766H12Z"/></g>
+ <g transform="translate(1470 0)"><path fill="#242d2b" d="M26 645 8 620 16 580 43 558 65 580 72 620 56 645 62 765 78 880 54 890 38 790 22 890 0 890 16 765Z"/><path fill="#121d1b" d="M15 582Q8 548 27 543L42 530 55 548 72 546 69 583 52 598 47 566 31 590Z"/><path fill="#b78d6d" d="M23 603H53L59 631 39 643 19 627Z"/><path fill="#1c5147" d="M18 647H58L70 720 8 720Z"/><path fill="#c5a46d" d="M8 720H70L60 766H12Z"/></g>
+</g>
+<g fill="#d5cdbf" font-family="monospace" font-size="11" letter-spacing="2"><text x="40" y="965">IRIA</text><text x="200" y="965">DAREL</text><text x="360" y="965">SAIA</text><text x="520" y="965">TOREN</text><text x="680" y="965">NYRA</text><text x="840" y="965">BASTIAN</text><text x="1000" y="965">OREN</text><text x="1160" y="965">MAELIS</text><text x="1320" y="965">JOREN</text><text x="1480" y="965">EDDA</text></g>
+</svg>
