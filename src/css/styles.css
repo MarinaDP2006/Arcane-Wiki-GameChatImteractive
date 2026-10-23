@@ -701,6 +701,19 @@ canvas.scene-bg { position: absolute; inset: 0; width: 100%; height: 100%; opaci
 .avatar-card:hover img { transform: scale(1.06); filter: none; }
 .avatar-card.active { border-color: #c8aa6e; box-shadow: 0 0 0 2px #463714, 0 0 18px rgba(200, 170, 110, 0.6); }
 .avatar-card.active img { filter: none; }
+.gender-pick { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.4rem 0 1.2rem; }
+.gender-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 190px)); gap: 0.8rem; }
+.gender-card { position: relative; padding: 0; aspect-ratio: 3 / 4; overflow: hidden; border: 2px solid #3c3c41; border-radius: 4px; background: #0a0d14; cursor: pointer; color: inherit; }
+.gender-card img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; display: block; filter: saturate(0.7) brightness(0.65); transition: filter 0.3s ease, transform 0.3s ease; }
+.gender-card:hover img { filter: saturate(0.95) brightness(0.9); transform: scale(1.04); }
+.gender-card strong { position: absolute; left: 0; right: 0; bottom: 1.5rem; text-align: center; font-size: 1.3rem; letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 2px 6px #000; }
+.gender-card small { position: absolute; left: 0; right: 0; bottom: 0.5rem; text-align: center; color: #c8aa6e; text-shadow: 0 1px 4px #000; }
+.gender-card .gender-empty { display: block; width: 100%; height: 100%; background: linear-gradient(160deg, #1a1f2b, #0a0d14); }
+.gender-card.active { border-color: #c8aa6e; box-shadow: 0 0 0 2px #463714, 0 0 18px rgba(200, 170, 110, 0.6); }
+.gender-card.active img { filter: none; }
+.gender-pick .seg { align-self: flex-start; }
+.portrait-gender { margin-bottom: 0.4rem; }
+@media (max-width: 520px) { .gender-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .gallery-empty { margin: 1rem 0; padding: 1.5rem; text-align: center; border: 1px dashed rgba(200, 170, 110, 0.4); border-radius: 8px; }
 @media (max-width: 1100px) { .splash { max-width: 320px; } }
 
@@ -1075,6 +1088,7 @@ body[data-city='zaun'] .btn.primary { background: linear-gradient(180deg, #8fe8c
 .ai-off p { margin: 0 0 0.6rem; }
 .ai-settings .ai-help { padding: 0.6rem 0.8rem; border-left: 2px solid var(--gold); background: rgba(227, 196, 90, 0.06); border-radius: 0 8px 8px 0; }
 .ai-status { margin-left: 0.4rem; }
+.ai-lan { display: block; margin: -0.2rem 0 0.6rem; color: var(--gold); }
 .msg.sys .bubble { font-style: italic; }
 body.touch .ai-input { font-size: 16px; }
 

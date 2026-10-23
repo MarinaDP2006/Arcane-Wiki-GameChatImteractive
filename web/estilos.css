@@ -1,0 +1,151 @@
+/* Web de Grietas & Gears. Mismos colores y tipografías que el juego (src/css/styles.css). */
+:root {
+  --bg: #0d0b14;
+  --bg2: #15121f;
+  --panel: rgba(28, 24, 40, 0.82);
+  --line: rgba(227, 196, 90, 0.18);
+  --text: #ece6f2;
+  --muted: #a39cb3;
+  --gold: #e3c45a;
+  --gold2: #c99a3b;
+  --zaun: #3fbf9f;
+  --zaun2: #8fbf3a;
+  --pink: #e0457b;
+  --radius: 14px;
+  --font: 'Segoe UI', 'SF Pro Text', system-ui, -apple-system, sans-serif;
+  --display: 'Georgia', 'Times New Roman', serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text);
+  line-height: 1.55;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(227, 196, 90, 0.10), transparent 60%),
+    radial-gradient(1000px 600px at 110% 110%, rgba(63, 191, 159, 0.12), transparent 60%),
+    var(--bg);
+}
+a { color: var(--gold); }
+code { background: var(--bg2); padding: 0.1rem 0.35rem; border-radius: 6px; font-size: 0.9em; word-break: break-all; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; }
+h2 { color: var(--gold); font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: 0.08em; margin: 0 0 0.8rem; }
+
+/* Barra superior */
+.barra {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+  background: rgba(13, 11, 20, 0.88);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.marca { font-family: var(--display); letter-spacing: 0.25em; font-weight: 700; color: var(--gold); text-decoration: none; white-space: nowrap; }
+.marca span, h1 span { color: var(--zaun); }
+.barra nav { display: flex; align-items: center; gap: 1.2rem; }
+.barra nav a:not(.boton) { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+.barra nav a:not(.boton):hover { color: var(--text); }
+
+/* Botones */
+.boton {
+  display: inline-block; padding: 0.75rem 1.4rem; border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold), var(--gold2));
+  color: #1a1408; font-weight: 700; text-decoration: none; letter-spacing: 0.03em;
+  border: 1px solid rgba(255, 230, 150, 0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.boton:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(227, 196, 90, 0.25); }
+.boton:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--zaun); outline-offset: 3px; }
+.boton-sec { background: transparent; color: var(--text); border-color: var(--line); }
+.boton-sec:hover { box-shadow: 0 6px 24px rgba(63, 191, 159, 0.2); }
+.boton-sm { padding: 0.45rem 1rem; font-size: 0.9rem; }
+
+/* Portada partida en dos: Piltover arriba a la izquierda, Zaun a la derecha */
+.portada { position: relative; min-height: min(88vh, 760px); display: flex; align-items: center; overflow: hidden; }
+.mitad { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.mitad-piltover { background-image: url(arte/lugares/piltover.webp); clip-path: polygon(0 0, 62% 0, 38% 100%, 0 100%); }
+.mitad-zaun { background-image: url(arte/lugares/zaun.webp); clip-path: polygon(62% 0, 100% 0, 100% 100%, 38% 100%); filter: saturate(1.15); }
+.portada::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(13, 11, 20, 0.92) 0%, rgba(13, 11, 20, 0.6) 55%, rgba(13, 11, 20, 0.3) 100%),
+              linear-gradient(0deg, var(--bg) 0%, transparent 30%);
+}
+.portada-texto { position: relative; z-index: 1; max-width: 640px; padding: 3rem clamp(1rem, 6vw, 4rem); }
+.antetitulo { color: var(--zaun); letter-spacing: 0.3em; text-transform: uppercase; font-size: 0.8rem; margin: 0; }
+h1 { font-size: clamp(2.6rem, 9vw, 5rem); letter-spacing: 0.12em; margin: 0.3rem 0 0.6rem; color: var(--gold); line-height: 1.05; }
+.lema { font-size: 1.15rem; color: var(--text); margin: 0 0 1.6rem; }
+.acciones { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.version { color: var(--muted); font-size: 0.9rem; margin-top: 1.2rem; }
+
+/* Cifras */
+.cifras {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px;
+  margin: 0 auto; width: min(1100px, calc(100% - 2rem)); background: var(--line);
+  border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+}
+.cifras div { background: var(--bg2); padding: 1.1rem; text-align: center; }
+.cifras strong { display: block; font-family: var(--display); font-size: 2rem; color: var(--gold); }
+.cifras span { color: var(--muted); font-size: 0.9rem; }
+
+/* Secciones */
+.seccion { max-width: 1100px; margin: 0 auto; padding: 4.5rem clamp(1rem, 4vw, 2rem) 1rem; }
+.intro { color: var(--muted); max-width: 680px; margin: 0 0 1.8rem; }
+.pequeno { font-size: 0.9rem; margin-top: 1.2rem; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.carta { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem 1.4rem; }
+.carta h3 { margin: 0 0 0.4rem; color: var(--text); font-size: 1.2rem; }
+.carta p { margin: 0; color: var(--muted); }
+
+/* Personajes */
+.personajes { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.pj { display: flex; gap: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem; }
+.pj img { width: 84px; height: 84px; border-radius: 12px; object-fit: cover; flex: none; border: 2px solid var(--gold2); }
+.pj-zaun img { border-color: var(--zaun); }
+.pj h3 { margin: 0; font-size: 1.1rem; }
+.pj .rol { color: var(--gold); font-size: 0.85rem; margin: 0 0 0.3rem; }
+.pj-zaun .rol { color: var(--zaun); }
+.pj p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+/* Mapa */
+.seccion-mapa { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; align-items: start; }
+.seccion-mapa img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+.lugares { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.lugares li { padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.85rem; border: 1px solid var(--line); background: var(--bg2); }
+.lugares .lugar-piltover { border-color: rgba(227, 196, 90, 0.45); }
+.lugares .lugar-zaun { border-color: rgba(63, 191, 159, 0.45); }
+
+/* Descargas */
+.descarga { display: flex; flex-direction: column; gap: 0.7rem; align-items: flex-start; }
+.descarga .boton { margin-top: 0.4rem; }
+.descarga .enlace { font-size: 0.95rem; }
+.descarga .nota { font-size: 0.82rem; }
+.descarga.tuya { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+
+/* Preguntas */
+details { border-bottom: 1px solid var(--line); padding: 0.9rem 0; max-width: 800px; }
+summary { cursor: pointer; font-weight: 600; }
+details p { color: var(--muted); margin: 0.6rem 0 0; }
+
+/* Pie */
+.pie { margin-top: 4rem; padding: 2rem clamp(1rem, 4vw, 2.5rem) 2.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; text-align: center; }
+.pie p { max-width: 820px; margin: 0.5rem auto; }
+.legal { font-size: 0.8rem; }
+
+@media (max-width: 760px) {
+  .barra nav a:not(.boton) { display: none; }
+  .seccion-mapa { grid-template-columns: 1fr; }
+  .mitad-piltover { clip-path: polygon(0 0, 100% 0, 100% 45%, 0 60%); }
+  .mitad-zaun { clip-path: polygon(0 60%, 100% 45%, 100% 100%, 0 100%); }
+  .portada::after { background: linear-gradient(0deg, rgba(13, 11, 20, 0.95) 10%, rgba(13, 11, 20, 0.55) 100%); }
+  .personajes { grid-template-columns: 1fr; }
+  .portada { min-height: auto; padding: 2rem 0 3rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .boton { transition: none; }
+}
+
+/* Galería editorial de capturas auténticas del juego */
+.galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:1.25rem}.captura{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.captura img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.captura figcaption{padding:1rem;color:var(--text);font-weight:600}.captura figcaption small{display:block;color:var(--muted);font-weight:400;margin-top:.3rem}.galeria-vacia{border:1px dashed var(--line);border-radius:var(--radius);padding:2rem;color:var(--muted);grid-column:1/-1}

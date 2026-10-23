@@ -2,6 +2,7 @@
 const { app, BrowserWindow, ipcMain, shell, dialog, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { pathToFileURL } = require('url');
 
 // La app se llama «Grietas & Gears», pero las partidas, ajustes y arte siguen en la carpeta de siempre
@@ -165,6 +166,12 @@ ipcMain.handle('art:list', () => {
     out[d] = Object.assign({}, listArt(bundledRoot(), d), ...roots.map((r) => listArt(r, d)), listArt(artRoot(), d));
   }
   out.lugares = { ...listDir(path.join(artRoot(), 'escenas')), ...out.lugares };
+  // Subcarpetas avatares/mujer y avatares/hombre: sus retratos salen solo con ese género.
+  for (const g of ['mujer', 'hombre']) {
+    for (const root of [...roots, artRoot()]) {
+      for (const [n, url] of Object.entries(listArt(root, path.join('avatares', g)))) out.avatares[`${g}-${n}`] = url;
+    }
+  }
   return out;
 });
 ipcMain.handle('art:open', (_e, sub) => {
@@ -334,22 +341,34 @@ ipcMain.handle('ai:chat', async (_e, url, headers, body) => {
     try { data = JSON.parse(text); } catch { data = { error: text.slice(0, 300) }; }
     return { status: res.status, data };
   } catch (err) {
-    const msg = err?.cause?.code === 'ECONNREFUSED' ? 'No hay nada escuchando en esa dirección (¿está Ollama abierto?)' : err?.name === 'TimeoutError' ? 'La IA ha tardado demasiado en responder' : String(err?.message || err);
-    return { error: msg };
+    return { error: aiNetError(err, 'La IA ha tardado demasiado en responder') };
   }
 });
 
-// Lista de modelos de Ollama (solo direcciones del propio ordenador).
+function aiNetError(err, slow) {
+  const code = err?.cause?.code;
+  if (code === 'ECONNREFUSED') return 'No hay nada escuchando en esa dirección (¿está abierto Ollama o el servidor de LM Studio?)';
+  if (code === 'EHOSTUNREACH' || code === 'ENETUNREACH' || code === 'UND_ERR_CONNECT_TIMEOUT') return 'No se llega a ese ordenador: revisa la IP y que estéis en la misma red wifi';
+  if (err?.name === 'TimeoutError') return slow;
+  return String(err?.message || err);
+}
+
+// Lista de modelos de Ollama o LM Studio: solo servidores de este ordenador o de la red de casa.
+const LAN_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[\w-]+\.local)$/i;
 ipcMain.handle('ai:get', async (_e, url) => {
   try {
     const u = new URL(String(url));
-    if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(u.hostname)) return { error: 'Solo se pueden mirar servidores de este ordenador' };
+    if (!LAN_HOST.test(u.hostname)) return { error: 'Solo se pueden mirar servidores de este ordenador o de tu red de casa' };
     const res = await fetch(u, { signal: AbortSignal.timeout(8000) });
     return { status: res.status, data: await res.json() };
   } catch (err) {
-    return { error: err?.cause?.code === 'ECONNREFUSED' ? 'Ollama no está abierto' : String(err?.message || err) };
+    return { error: aiNetError(err, 'El servidor no contesta') };
   }
 });
+
+// IP de este PC en la red de casa, para escribirla en la tablet (LM Studio en red local).
+ipcMain.handle('net:ips', () => Object.values(os.networkInterfaces()).flat()
+  .filter((n) => n && n.family === 'IPv4' && !n.internal && LAN_HOST.test(n.address)).map((n) => n.address));
 
 // ---------- Ventana ----------
 ipcMain.handle('app:quit', () => app.quit());

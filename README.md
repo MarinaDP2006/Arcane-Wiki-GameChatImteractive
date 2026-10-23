@@ -1,15 +1,18 @@
-# Grietas & Gears · Windows
+# Grietas & Gears
 
 Juego narrativo de fans ambientado en Piltover y Zaun e inspirado en la estética de *Arcane*. Crea tu personaje, explora sus distritos, habla con el reparto y toma decisiones que cambian tus relaciones y los finales. Proyecto no oficial.
 
-## Descargar para Windows
+**Web promocional en Render:** https://grietas-and-gears-5saz.onrender.com · [Administrar despliegues](https://dashboard.render.com/static/srv-dbdgglnb9u1s739khst0).
+
+## Descargar
 
 Entra en **[Releases](https://github.com/MarinaDP2006/grietas-and-gears/releases)** y elige:
 
-- **Grietas-and-Gears-Setup-VERSION.exe**: instalador de Windows, con acceso directo.
-- **Grietas-and-Gears-VERSION-portable.exe**: ejecutable que no requiere instalación.
+- **Windows** · `Grietas-and-Gears-Setup-VERSION.exe` (instalador con acceso directo) o `Grietas-and-Gears-VERSION-portable.exe` (sin instalar).
+- **Mac** · `Grietas-and-Gears-VERSION-mac-arm64.dmg` (Apple Silicon, M1 en adelante) o `…-mac-x64.dmg` (Intel). No lleva firma de Apple: la primera vez ábrelo con clic derecho → **Abrir**.
+- **Android (móvil y tableta)** · `grietas-and-gears-VERSION-tablet.apk`.
 
-Si aún no hay una versión publicada, abre [Actions](https://github.com/MarinaDP2006/grietas-and-gears/actions) → **Compilar Windows** → ejecución correcta → artefacto `grietas-and-gears-windows`. Extrae el ZIP antes de ejecutar el archivo .exe.
+Si aún no hay una versión publicada, abre [Actions](https://github.com/MarinaDP2006/grietas-and-gears/actions) → **Compilar escritorio (Windows y Mac)** o **Compilar móvil (Android)** → ejecución correcta → artefacto `grietas-and-gears-windows`, `-mac` o `-android`. Extrae el ZIP antes de usar el archivo.
 
 **Importante:** la primera instalación puede mostrar un aviso de Windows SmartScreen si la aplicación no tiene firma digital. Descarga únicamente desde este repositorio y verifica el origen.
 
@@ -23,7 +26,9 @@ El juego acepta modelos `.zip`, `.fbx`, `.obj` y `.glb` con texturas (los ZIP pu
 
 La historia se presenta ahora en **Parte I · El inicio** y **Parte II · Las consecuencias**, y permite alterar destinos de personajes importantes mediante decisiones: rescates de Silco, Cassandra, Isha, Jinx y Jayce/Viktor, con un final alternativo. Se han añadido seis capítulos con decisiones del protagonista, conservando las rutas y escenas existentes y los identificadores de guardado para no perder partidas anteriores. El comunicador incorpora nuevos temas escritos que recuerdan tus decisiones, incluso si la IA está desactivada.
 
-El chat libre usa biografías, motivaciones y contradicciones de los 16 personajes, así como la información del personaje creado, los acontecimientos recientes de la partida y el historial del chat. El prompt principal se construye en `src/js/ai.js`, función `systemPrompt(G, id)`. Para ajustarlo consulta **[Guía de IA y campaña](GUIA-IA-Y-CAMPANA.md)**.
+**Conversaciones sin fin:** cada uno de los 16 personajes tiene un tema «Hablemos sin prisa» con tres hilos que se ramifican. Cada respuesta del personaje abre nuevas opciones, los hilos se enlazan entre sí y al volver a un punto ya visitado el personaje dice algo distinto, así que la charla no se acaba hasta que eliges «Cambiar de tema» o «Hasta luego», que ahora están disponibles en cualquier momento. Los diálogos están en español, inglés y francés; se escriben en `scripts/chat-deep/` y se generan con `node scripts/chat-deep/gen.js`.
+
+El chat libre usa biografías, motivaciones y contradicciones de los 16 personajes, así como la información del personaje creado, los acontecimientos recientes de la partida y el historial del chat. El prompt principal se construye en `src/js/ai.js`, función `systemPrompt(G, id)`. Para ajustarlo consulta **[Guía de IA y campaña](GUIA-IA-Y-CAMPANA.md)**. Para usar tu tarjeta gráfica con LM Studio, también desde la tablet o el móvil de casa, sigue la **[Guía de LM Studio](GUIA-LM-STUDIO.md)**.
 
 La respuesta final también depende de la calidad del modelo local de Ollama. La ampliación de historia se ha validado estructuralmente, pero sigue necesitando una partida completa de prueba en Windows.
 
@@ -33,7 +38,7 @@ La respuesta final también depende de la calidad del modelo local de Ollama. La
 - Exploración con calles y escenarios 3D, cámara con seguimiento, colisiones y un mapa 2D de respaldo.
 - Iluminación, niebla ambiental, partículas y posprocesado con un acabado pictórico cinematográfico.
 - Diálogos, decisiones, misiones, afinidad con personajes y varios finales.
-- Atlas y códice, actividades y minijuegos.
+- Atlas y códice, actividades y 10 minijuegos con profundidad: fondos con el arte real de cada lugar (T1 y T2) que cambian en cada partida, paralaje, niebla y suelo en perspectiva. Pelea en el foso, tejados, aerotabla, galería de tiro, circuito hextec, runas, regateo, y los nuevos: persecución en aerodeslizador (carretera en 3D), la mira de Caitlyn y los chompers de Jinx. Se juegan con teclado, ratón o botones táctiles en tableta.
 - Sistema de guardado, opciones gráficas y audio; chat libre con IA opcional.
 
 La estética está inspirada en la serie. No se incluyen ni se prometen modelos o fotogramas oficiales de *Arcane*.
@@ -85,3 +90,34 @@ npm run dist:win
 ```
 
 Los archivos resultantes quedan en `dist/`. El workflow de GitHub Actions ejecuta `npm ci`, valida los datos, comprueba la sintaxis del motor, diálogos, avatares y ajustes, y exige los dos ejecutables antes de publicar el artefacto. No es una prueba de uso en todos los equipos: conviene verificar instalación, arranque, movimientos, diálogos y carga/guardado en un Windows real.
+
+## Ramas y compilaciones
+
+| Rama | Para qué sirve | Qué compila |
+|---|---|---|
+| `main` | Todo el código del juego. Cualquier cambio se hace aquí (con un pull request). | Solo comprobaciones y la web |
+| `escritorio` | Versión de PC. Se actualiza sola desde `main`. | Windows (instalador + portable) y Mac (DMG + ZIP) |
+| `movil` | Versión de móvil y tableta. Se actualiza sola desde `main`. | APK de Android (y AAB firmado si hay llave) |
+
+Cada vez que algo entra en `main`, el workflow **Sincronizar ramas de plataforma** fusiona `main` en `escritorio` y `movil` y lanza sus compilaciones. Así no se programa nada dos veces: el juego es el mismo y las ramas solo deciden qué se empaqueta. Lo que es solo de móvil (controles táctiles, `src/js/mobile.js`) o solo de PC (`main.js`) también vive en `main`, y cada plataforma usa lo suyo.
+
+- Los pull requests compilan Windows y Android para detectar fallos antes de fusionar (Mac solo en `escritorio` y en versiones, porque tarda más).
+- Al crear una etiqueta `v*` (por ejemplo `v1.26.0`) se compilan las tres plataformas y se adjuntan a la versión publicada.
+- **Límite de GitHub:** el token automático no puede subir cambios de `.github/workflows`. Si un cambio de `main` toca workflows, la sincronización falla con un aviso. Para que lo haga sola, crea un token personal (*fine-grained*, solo este repositorio, permisos **Contents** y **Workflows** de lectura y escritura) y guárdalo en *Settings → Secrets and variables → Actions* como `SYNC_TOKEN`. Sin token, basta con fusionar `main` en la rama a mano esa vez.
+
+## Página web promocional
+
+La web está en [`web/`](web/) y se genera con `npm run web` en `web-dist/`. La migración desde GitHub Pages a **Render Static Site** se integró en el [PR #42](https://github.com/MarinaDP2006/grietas-and-gears/pull/42). El servicio se creó en **My Workspace** el 23/10/2026 y su dirección es **https://grietas-and-gears-5saz.onrender.com**. El primer despliegue se inició, pero su finalización todavía no está confirmada.
+
+La nueva versión incluye una galería para capturas reales del inicio, creación de personaje, comunicador, mapa y códice, sin conversaciones de personajes ni spoilers. Se han retirado las referencias promocionales a IA, pero las funciones del juego permanecen intactas. La publicación usa la rama `main`, el comando `node scripts/build-web.js`, la carpeta `web-dist` y actualizaciones automáticas por commit. Configuración: [`render.yaml`](render.yaml). [Ver el servicio en Render](https://dashboard.render.com/static/srv-dbdgglnb9u1s739khst0).
+
+## Ramas de Claude pendientes de revisión
+
+| Rama | Comparación con `main` (23/10/2026) |
+|---|---|
+| `claude/project-thread-l6k2hb` | 0 commits exclusivos; 4 por detrás |
+| `claude/project-thread-pgzumn` | 0 commits exclusivos; 20 por detrás |
+| `claude/project-thread-ync0fe` | 1 commit exclusivo; 21 por detrás |
+
+La rama `claude/project-thread-ync0fe` requiere auditoría antes de integrar: modifica `src/js/game.js`, `src/js/world.js` y `src/css/styles.css`. No fusionarla automáticamente sin revisar conflictos y compatibilidad.
+

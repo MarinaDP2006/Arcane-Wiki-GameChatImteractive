@@ -1,7 +1,7 @@
 {
   "name": "grietas-and-gears",
   "productName": "Grietas & Gears",
-  "version": "1.25.0",
+  "version": "1.26.0",
   "description": "Grietas & Gears, juego de fans de Arcane: historia interactiva, conversaciones con opciones de diálogo y mundo abierto de Piltover y Zaun.",
   "main": "main.js",
   "author": "MarinaDP2006",
@@ -12,7 +12,9 @@
     "check": "node scripts/check.js && node scripts/check-runtime.js",
     "dist": "electron-builder --win",
     "dist:win": "electron-builder --win",
-    "android:sync": "node scripts/build-mobile.js && cap sync android"
+    "android:sync": "node scripts/build-mobile.js && cap sync android",
+    "dist:mac": "electron-builder --mac",
+    "web": "node scripts/build-web.js"
   },
   "devDependencies": {
     "@capacitor/android": "^8.5.3",
@@ -65,6 +67,31 @@
     },
     "portable": {
       "artifactName": "Grietas-and-Gears-${version}-portable.${ext}"
+    },
+    "mac": {
+      "category": "public.app-category.role-playing-games",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "identity": null,
+      "artifactName": "Grietas-and-Gears-${version}-mac-${arch}.${ext}"
+    },
+    "dmg": {
+      "title": "Grietas & Gears ${version}"
     }
   }
 }
