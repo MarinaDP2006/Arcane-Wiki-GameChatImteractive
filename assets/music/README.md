@@ -2,36 +2,26 @@
 
 ## Estado actual
 
-Rutas objetivo de la integración. Hay que comprobar el código y los paquetes para confirmar que el reproductor realmente las carga:
+El código reproduce una banda sonora procedural mediante Web Audio. **No hay pistas MP3 finales versionadas en este repositorio**; las rutas siguientes son objetivos de integración, no archivos existentes.
 
-| Uso | Ruta esperada |
+| Uso | Archivo previsto |
 |---|---|
 | Menú / inicio | `assets/music/menu-theme.mp3` |
-| Zaun | `assets/music/zaun-theme.mp3` |
-| Piltover | `assets/music/piltover-theme.mp3` |
+| Aurelia | `assets/music/aurelia-theme.mp3` |
+| Nácar | `assets/music/nacar-theme.mp3` |
 
-Los tres MP3 convertidos existen fuera del repositorio, pero todavía no están versionados aquí. No se puede afirmar que el audio renderizado esté integrado ni que el bucle o el empaquetado hayan pasado pruebas. Mantener la música procedural como fallback hasta añadir los binarios y probar la reproducción real.
+Los IDs internos `wiki`, `piltover` y `zaun` se conservan por compatibilidad, aunque la interfaz muestra Aurelia y Nácar.
 
-La música procedural de respaldo está en `src/js/audio.js`. Sus identificadores son:
+## Requisito de los dos proyectos
 
-| Uso | Identificador en el código |
-|---|---|
-| Menú principal / wiki | `wiki` |
-| Piltover | `piltover` |
-| Zaun | `zaun` |
+Cuando se incorporen los MP3 finales, deben copiarse **byte por byte, sin reexportarlos ni recomprimirlos** a `RIFTS-GEARS` y `Arcane-fangame`. Las dos versiones pueden cambiar el contexto visual, pero compartirán exactamente los mismos archivos de música. Conviene verificar los SHA-256 antes de publicar ambos repositorios.
 
-Puedes localizar las llamadas a `Audio2.playMusic(...)` en el código para ver cuándo cambia cada tema. Esta carpeta documenta futuras pistas renderizadas; su presencia no significa que ya haya archivos de audio integrados.
+## Integración pendiente
 
-## Pasos de integración y verificación
+1. Añadir los tres archivos finales con licencia comprobada.
+2. Mapear menú, Aurelia y Nácar a las pistas; conservar la música procedural como fallback.
+3. Evitar superposición al cambiar de ciudad y probar volumen, silencio, pausa y bucle.
+4. Verificar que Electron, la web y Capacitor empaquetan las pistas.
+5. Ejecutar `npm run check`, `npm run web` y `npm run android:sync`; probar manualmente escritorio, navegador y Android.
 
-1. Añadir menu-theme.mp3, zaun-theme.mp3 y piltover-theme.mp3 como binarios reales y verificar los derechos de distribución.
-2. Mapear menú a menu-theme.mp3, Zaun a zaun-theme.mp3 y Piltover a piltover-theme.mp3, conservando IDs internos si otras partes dependen de ellos.
-3. Mantener volumen global/musical, silencio y cambio rápido de zona; detener la pista anterior para que no se superpongan.
-4. Usar loop nativo y probar que no haya un hueco audible. Gestionar errores de carga o reproducción con fallback procedural.
-5. Verificar que Electron incluye assets/music, que el build web copia esa carpeta y que el script Android la coloca en los assets servidos por Capacitor.
-6. Ejecutar npm run check, npm run web y npm run android:sync; probar manualmente Electron, navegador y dispositivo Android: inicio, cambio de ciudad, volumen, mute, pausa y retorno.
-7. Confirmar los MP3 en GitHub y compilar una distribución antes de cerrar la tarea.
-
-## Derechos y estado
-
-No usar melodías, stems ni grabaciones oficiales de *Arcane*. La música generada por un servicio externo solo está lista para integrarse cuando existe un archivo final, se ha revisado la licencia aplicable y se ha probado en el juego. La documentación no habilita por sí misma Suno ni otro servicio musical.
+No usar melodías ni grabaciones comerciales sin licencia compatible. La documentación no implica que las pistas finales estén creadas o integradas.
