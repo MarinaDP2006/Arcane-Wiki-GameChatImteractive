@@ -68,3 +68,8 @@ AI_API_KEY=
 Modelo inicial recomendado: **Qwen3 0.6B GGUF Q4_K_M**, alrededor de 0,4–0,5 GB. Es pequeño y sirve para validar la integración; la calidad de roleplay es limitada frente a modelos mayores. La URL `127.0.0.1` solo sirve si el servidor Node y LM Studio se ejecutan en el mismo ordenador. Una web pública necesita un proveedor remoto o una conexión privada segura al equipo que ejecuta LM Studio; no expongas el puerto de LM Studio sin autenticación.
 
 Para un proveedor remoto compatible con OpenAI, usa `AI_BASE_URL`, `AI_MODEL` y `AI_API_KEY`. Para conservar Ollama Cloud, deja `AI_BASE_URL` sin definir y configura `OLLAMA_API_KEY` y `OLLAMA_MODEL`. Las claves se guardan en secretos del alojamiento, nunca en el navegador ni en Git.
+
+
+## Publicación independiente
+
+- [Copiar esta rama a Arcane-fangame y crear releases](docs/RELEASES-ARCANE.md)
