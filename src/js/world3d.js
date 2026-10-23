@@ -3,7 +3,7 @@
 // - Aurelia: meseta de piedra sobre los acantilados, con cielo dorado, sol, mar de nubes y
 //   torres con cúpulas de oro y tejados de cobre.
 // - Nácar: una caverna oculta bajo Aurelia: bóveda de roca con estalactitas, grietas por las que
-//   cae la luz de arriba, pilas de chabolas de metal con neones, tuberías y niebla química.
+//   cae la luz de arriba, talleres de metal con luces verdes, tuberías y niebla de vapor.
 // Las texturas se pintan a mano en lienzos (pinceladas, ruido, ventanas), sin descargar nada.
 (function () {
   if (!window.THREE) return;
@@ -272,7 +272,7 @@
     inst(spire, new T.MeshStandardMaterial({ color: '#e8c060', roughness: 0.3, metalness: 0.9 }), spires, (o) => { dummy.position.set(o.x, o.y, o.z); });
     // Neones de Nácar
     if (nacar && neons.length) {
-      const cols = ['#ff3fa0', '#3fffd0', '#b6ff3f', '#c86bff'];
+      const cols = ['#55e6a8', '#3fffd0', '#b6ff3f', '#2fbf8f'];
       cols.forEach((c, ci) => {
         inst(new T.BoxGeometry(1, 5, 2), new T.MeshBasicMaterial({ color: c, toneMapped: false }), neons.filter((n) => n.c === ci),
           (o) => { dummy.position.set(o.x, o.y, o.z); dummy.scale.set(o.sx, 1, 1); });
@@ -433,7 +433,7 @@
     key.target.position.set(map.w / 2, 0, map.h / 2);
     scene.add(key, key.target);
     const lamps = [];
-    const lampCols = ['#3fffd0', '#ff3fa0', '#b6ff3f', '#ffb060'];
+    const lampCols = ['#3fffd0', '#55e6a8', '#b6ff3f', '#ffb060'];
     for (let i = 0; i < 6; i++) {
       const l = new T.PointLight(lampCols[i % 4], 2.5, 1300, 1.4);
       l.position.set(300 + r() * (map.w - 600), 140 + r() * 120, 300 + r() * (map.h - 600));

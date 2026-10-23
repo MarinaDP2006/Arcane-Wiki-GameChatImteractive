@@ -1,7 +1,7 @@
 ﻿# Inspecciona los ZIP 3D del usuario sin extraer ni modificar los modelos.
 # Uso: powershell -ExecutionPolicy Bypass -File scripts/comprobar-modelos.ps1
 param(
-  [string]$Carpeta = "$env:APPDATA\Arcane Aurelia y Nácar\arte\modelos"
+  [string]$Carpeta = "$env:APPDATA\Rifts & Gears - Las ciudades del Umbral\arte\modelos"
 )
 
 Add-Type -AssemblyName System.IO.Compression
@@ -15,7 +15,7 @@ function Revisar-ModeloZip {
     try {
       $archivos = @($zip.Entries | Where-Object { $_.Name -ne '' })
       $modelos = @($archivos | Where-Object { $_.Name -match '\.(fbx|glb|obj)$' })
-      # Un ZIP dentro del ZIP (por ejemplo source/jinx.zip con un .obj) también lo abre el juego.
+      # Un ZIP dentro del ZIP (por ejemplo source/nyra-quell.zip con un .obj) también lo abre el juego.
       $internos = @($archivos | Where-Object { $_.Name -match '\.zip$' })
       $blend = @($archivos | Where-Object { $_.Name -match '\.blend$' })
       $texturas = @($archivos | Where-Object { $_.Name -match '\.(png|jpe?g|webp|bmp|tga)$' })

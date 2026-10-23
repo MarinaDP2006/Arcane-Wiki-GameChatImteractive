@@ -13,7 +13,7 @@ const out = path.join(root, 'web-dist');
 function loadData() {
   const ctx = { window: {} };
   vm.createContext(ctx);
-  for (const f of ['wiki.js', 'creation.js', 'relations.js', 'story.js', 'story-expansion.js', 'alternate-fates.js', 'chat.js', 'chat-expansion.js', 'chat-deep.js', 'world.js', 'atlas.js', 'arte.js', 'arcane-lore.js', 'ai-voices.js', 'original-world.js']) {
+  for (const f of ['creation.js', 'relations.js', 'world.js', 'arte.js', 'original-world.js']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'src', 'data', f), 'utf8'), ctx, { filename: f });
   }
   return ctx.window;
@@ -83,7 +83,7 @@ function build() {
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
 
-  // La web no publica arte de Arcane: solo ilustraciones propias (web/arte-propio) y el icono.
+  // La web solo publica ilustraciones propias (web/arte-propio) y el icono.
   const personajes = WIKI.personajes;
   copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
   const lugares = ATLAS.places.map((l) => `<li class="lugar-${esc(l.city)}">${esc(l.name)}</li>`).join('');

@@ -4,7 +4,7 @@ Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas
 
 Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
 
-> **Rama `main` = mundo nuevo.** Todo lo de este universo original vive aquí. El fangame de Arcane está en su propia rama, `arcane/fangame-actualizado`, con su web y su README.
+> Este repositorio es solo del mundo nuevo: historia, personajes, lugares, arte, colores y música propios.
 
 ## La historia en cinco fechas
 
@@ -51,19 +51,26 @@ npm run web        # genera la web en web-dist/
 npm run serve:web  # sirve web-dist/ y la API en http://localhost:10000
 ```
 
+## Estilo y música
+
+- **Aurelia:** oro envejecido y beige. **Nácar:** negro y verde de vapor. **Inicio y ajustes:** azul neutro. Los colores están en `src/css/umbral.css`.
+- Cada lugar tiene su ilustración propia en `src/img/umbral/lugares/`, además del mapa y los símbolos de las dos ciudades.
+- Tres pistas propias en `assets/music/`: `menu-theme.mp3` (inicio), `aurelia-theme.mp3` y `nacar-theme.mp3`.
+
 ## Estado
 
-- **Hecho:** universo, ciudades, Resonancia, tres partes y diez personajes. Web y demo nuevas.
+- **Hecho:** universo, dos ciudades, Resonancia, tres partes por ruta y un final, diez personajes con relaciones, creador, mapa 3D y 2D, minijuegos, colores por ciudad y música.
 - **Prototipo:** modelos 3D low-poly en `src/models/` (sin rig ni animaciones finales).
-- **Pendiente de configurar:** la clave de Ollama Cloud en el servidor publicado.
+- Lo que falta está en [PENDIENTES.md](PENDIENTES.md).
 
 ## Guías
 
+- [Guía del juego y del código](GUIA.md)
+- [Pendientes](PENDIENTES.md)
 - [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
 - [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
-- [Guía completa del código](GUIA.md) y [guía de juego](GUIAJUEGO.md)
-- [Partidas guardadas](partidas-guardadas-guia.md)
+- [LM Studio](GUIA-LM-STUDIO.md) · [Web en Render](GUIA-WEB-RENDER.md) · [Privacidad](PRIVACIDAD.md)
 
 ## Licencia
 
-Código bajo licencia MIT. El universo, sus nombres, su historia y su arte son originales de MarinaDP2006.
+Código bajo licencia MIT. El universo, sus nombres, su historia, su arte y su música son originales de MarinaDP2006.

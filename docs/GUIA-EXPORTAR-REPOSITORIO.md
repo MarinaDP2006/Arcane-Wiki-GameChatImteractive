@@ -71,6 +71,6 @@ No subas partidas, claves, tokens, certificados/keystores, modelos privados sin 
 ## Referencias
 - [Repositorio](https://github.com/MarinaDP2006/RIFTS-GEARS)
 - `GUIA-WEB-RENDER.md`
-- `GUIA-IA-Y-CAMPANA.md`
+- `GUIA.md`
 - `GUIA-LM-STUDIO.md`
-- `GUIA-MODELOS-3D-Y-PRUEBAS.md`
+- `PENDIENTES.md`

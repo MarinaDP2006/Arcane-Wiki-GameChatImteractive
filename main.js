@@ -92,8 +92,8 @@ function ensureArtDir() {
 }
 
 // Otros nombres con los que la jugadora guarda las caras de los personajes.
-const ART_ALIASES = { ambressa: 'ambessa', kiraman: 'cassandra', kiramman: 'cassandra', 'cassandra-kiramman': 'cassandra', powder: 'jinx', violet: 'vi',
-  heirmendinger: 'heimerdinger', heimendinger: 'heimerdinger', heimer: 'heimerdinger' };
+const ART_ALIASES = { iria: 'iria-venn', darel: 'darel-ossan', saia: 'saia-merel', toren: 'toren-vale', nyra: 'nyra-quell',
+  bastian: 'bastian-rook', oren: 'oren-caldus', maelis: 'maelis-thorn', joren: 'joren-ash', edda: 'edda-lume' };
 
 /** Enumera el contenido de una carpeta autorizada. */
 function listDir(dir) {
@@ -166,8 +166,8 @@ ipcMain.handle('art:guide', (_e, text) => {
 // («Iria_Venn.zip» es iria-venn). También se miran las carpetas de personajes con «3d» en el nombre
 // (personajes/3d models). Se leen de src/models (incluidos con el juego), de las carpetas «arte»
 // de siempre y de la carpeta de arte de AppData, que manda sobre las demás.
-const MODEL_IDS = ['vi', 'jinx', 'caitlyn', 'jayce', 'viktor', 'mel', 'heimerdinger', 'silco', 'vander', 'ekko', 'sevika', 'ambessa', 'cassandra', 'isha', 'maddie', 'kino', 'jugador', 'generico'];
-const MODEL_ALIASES = { ...ART_ALIASES, cait: 'caitlyn', heimer: 'heimerdinger', player: 'jugador', generic: 'generico' };
+const MODEL_IDS = ['iria-venn', 'darel-ossan', 'saia-merel', 'toren-vale', 'nyra-quell', 'bastian-rook', 'oren-caldus', 'maelis-thorn', 'joren-ash', 'edda-lume', 'jugador', 'generico'];
+const MODEL_ALIASES = { ...ART_ALIASES, player: 'jugador', generic: 'generico' };
 const MODEL_EXT = /\.(glb|fbx|obj|zip)$/i;
 // Carpeta persistente donde se guardan los modelos ya preparados (texturas reducidas).
 const modelCache = () => path.join(artRoot(), 'modelos', '_cache');
@@ -177,7 +177,9 @@ function modelName(base) {
   const n = base.replace(MODEL_EXT, '').toLowerCase();
   if (MODEL_IDS.includes(n)) return n;
   if (MODEL_ALIASES[n]) return MODEL_ALIASES[n];
-  for (const w of n.split(/[^a-z0-9]+/)) {
+  const words = n.split(/[^a-z0-9]+/);
+  for (let i = 0; i < words.length - 1; i++) if (MODEL_IDS.includes(`${words[i]}-${words[i + 1]}`)) return `${words[i]}-${words[i + 1]}`;
+  for (const w of words) {
     if (MODEL_IDS.includes(w)) return w;
     if (MODEL_ALIASES[w]) return MODEL_ALIASES[w];
   }

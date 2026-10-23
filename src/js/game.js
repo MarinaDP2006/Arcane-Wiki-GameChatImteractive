@@ -271,7 +271,7 @@
 
   /**
    * Menú de un lugar del mapa. Al tocar un lugar no se entra directamente: se muestra su imagen de
-   * Arcane (de la temporada que se juega) y lo que se puede hacer allí, por secciones: la historia,
+   * la ilustración propia del lugar y lo que se puede hacer allí, por secciones: la historia,
    * con quién hablar, el minijuego o la actividad, explorar el escenario 2D y viajar.
    */
   function onLocation(loc) {
@@ -548,7 +548,7 @@
       el('button', { class: 'btn ghost', onclick: () => openOverlay('menu') }, '← Volver')));
   }
 
-  // ---------- Atlas de las Dos Ciudades (Códice) ----------
+  // ---------- Atlas del Umbral (Códice) ----------
   // Mapa ilustrado con los lugares del Umbral: al pulsar uno se abre su ficha, con
   // puntos de interés, quién vive allí y un diario de los lugares explorados.
   function renderAtlas(body, placeId) {
@@ -712,7 +712,7 @@
       'Haz clic en un lugar (o E) para ver qué puedes hacer allí: seguir la historia, hablar con quien esté, jugar su minijuego, explorarlo o viajar. Clic en una cara para hablar con ese personaje.',
       'La línea dorada discontinua marca el camino hasta el objetivo. Los números 1-9 eligen una opción del menú del lugar.',
       'En 3D: botón derecho (o Mayús) arrastrando gira e inclina la cámara; Q y R giran, Re Pág y Av Pág inclinan. El botón 2D/3D cambia de vista.',
-      'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas de las Dos Ciudades · Esc: pausa.',
+      'H: historia · C: comunicador · F: ficha · K: Códice · M: Atlas del Umbral · Esc: pausa.',
       'Recoge los hexágonos azules del mapa para completar el Códice. Las actividades de cada lugar suben tus estadísticas, que desbloquean opciones en la historia.',
     ].join('\n'));
   }
@@ -1224,6 +1224,7 @@
       closeOverlay();
       renderMain();
       showChoices([]);
+      await playEnding();
       toast('Has llegado al final de esta ruta. Puedes rejugarla o seguir conversando.', 'good');
       return;
     }
@@ -1296,7 +1297,7 @@
     G.progress.finished = true;
     talk(false);
     await Cinematic.play([
-      { scene: ending.scene || 'ascensor-central', dur: 7, kicker: G.progress.season === 2 ? 'Fin de la Parte II' : 'Fin de la Parte I', title: ending.title.replace('Final · ', ''), lines: [G.progress.season === 2 ? 'Gracias por jugar. La historia de Aurelia y Nácar termina aquí… por ahora.' : 'Tu historia queda escrita en las dos ciudades. Pero la Resonancia aún guarda secretos…'], zoom: [1.0, 1.2], align: 'center' },
+      { scene: ending.scene || 'ascensor-central', dur: 7, kicker: 'Fin de la campaña', title: ending.title.replace('Final · ', ''), lines: ['Gracias por jugar. Tu historia queda escrita en Aurelia y Nácar… pero la Resonancia aún guarda secretos.'], zoom: [1.0, 1.2], align: 'center' },
     ]);
     const fresh = (ch.unlocks || []).filter((id) => !G.unlocked.includes(id) && G.met.includes(id));
     G.unlocked.push(...fresh);
@@ -1307,7 +1308,7 @@
       pushLog('sistema', `✦ Personajes desbloqueados para chatear: ${alive.map(charName).join(', ')}`);
       $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     }
-    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 ? ' ¡Gracias por jugar!' : ' La Parte II · Las consecuencias te espera.'}`);
+    pushLog('sistema', `Has conseguido ${G.endings.length} de ${allEndings().length} finales.${G.progress.season === 2 || window.GAME_UNIVERSE ? ' ¡Gracias por jugar!' : ' La Parte II · Las consecuencias te espera.'}`);
     $('#story-log')?.append(bubble('sistema', G.log[G.log.length - 1].t));
     scrollLog();
     renderContacts();

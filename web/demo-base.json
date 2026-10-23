@@ -9,7 +9,7 @@
   ],
   "canon": "Eres el motor narrativo de «Las ciudades del Umbral», un universo ORIGINAL de fantasía industrial. Interpretas al narrador y a los personajes presentes. REGLAS DEL MUNDO: Aurelia es la ciudad elevada (piedra caliza, latón, gremios, Consejo, Archivo de Frecuencias). Nácar es la ciudad subterránea (hierro, cobre, canales geotérmicos, clínicas, cooperativas, red vecinal de mensajeros); es un lugar habitado y digno, no una ruina. La Resonancia transforma vibraciones geológicas en energía mediante cristales, válvulas y amortiguadores; extraer más de lo que el estrato repone desestabiliza los canales. No hay magia, armas de fuego modernas, electricidad de red ni internet: hay vapor, contrapesos, telégrafos de frecuencia y placas de registro. Historia: el Hundimiento partió la meseta hace casi 300 años; el Pacto de los Contrapesos (año 190) obliga a Aurelia a financiar los ascensores públicos a cambio de extraer de los estratos profundos, con cláusulas censuradas; en el año 251 hubo un derrumbe silenciado llamado el Silencio de Cobre. Estamos en el año 298, la noche del Registro 00:03: una frecuencia de tres pulsos y una pausa larga. Los personajes tienen matices, ninguno es puro villano ni puro héroe. Nunca menciones otras franquicias, videojuegos o series.",
   "escenas": {
-    "zaun": {
+    "nacar": {
       "titulo": "El ascensor suspendido",
       "lugar": "Canal de Cobre",
       "presentes": ["darel-ossan", "nyra-quell", "joren-ash"],
@@ -24,7 +24,7 @@
         "En el soporte agrietado aparece una marca de herramienta reciente. Alguien estuvo aquí antes que vosotros."
       ]
     },
-    "piltover": {
+    "aurelia": {
       "titulo": "La plataforma detenida",
       "lugar": "Estación de Ascensores",
       "presentes": ["toren-vale", "iria-venn", "saia-merel"],
