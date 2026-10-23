@@ -93,6 +93,8 @@
   const choice = (t,next,fx={}) => ({t,next,fx});
   const chapter = (id,route,part,title,intro,nodes) => ({id,route,part,title,intro,start:'a',unlocks:cast.map(x=>x.id),nodes});
   window.STORY = {
+    routes:{zaun:['z1','z2','z3'],piltover:['p1','p2','p3']},
+    endings:[{id:'pacto-compartido',title:'Un pacto que no se hereda'}], endings2:[], rescues:{},
     stats:{ingenio:{label:'Ingenio',icon:'Ing'},carisma:{label:'Carisma',icon:'Car'},valor:{label:'Valor',icon:'Val'},sigilo:{label:'Sigilo',icon:'Sig'}},
     cast:cast.map(x=>x.id), romanceFrom:{zaun:'z1',piltover:'p1'}, deaths:{},
     chapters:[
@@ -192,7 +194,7 @@
     {name:'Clínica de los Tres Arcos',rect:[1500,700,1500,800],tint:'rgba(210,224,216,0.04)'},
     {name:'Canal de Cobre',rect:[0,1500,3000,700],tint:'rgba(125,87,63,0.07)'}
   ];
-  window.WORLD = {maps:{
+  window.WORLD = {...(window.WORLD || {}), maps:{
     piltover:cityMap('piltover','Aurelia',7,{ground:'#292822',street:'#4C4940',building:['#E8DFC9','#CFC4AB','#D8D1C0','#B7A98B'],roof:['#24384A','#51737A','#B78B45'],outline:'#5B594F',glow:'#B78B45',particle:'gold'},{
       districts:aurDist,points:[
         {id:'archivo',name:'Archivo de Frecuencias',x:600,y:400,icon:'',codex:'archivo',activity:{label:'Comparar registros',stat:'ingenio',game:'runas',text:'Encuentras una frecuencia ausente en la copia oficial.'}},
