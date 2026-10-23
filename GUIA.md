@@ -61,15 +61,12 @@ Esta es la ruta adecuada si quieres jugar, probar una descarga o ayudar a encont
 
 No necesitas VS Code, Git ni Node.js para ejecutar una descarga ya compilada.
 
-### Capturas de referencia
+### Referencia visual del universo original
 
-Estas imágenes son capturas reales almacenadas en el repositorio. Algunas pueden proceder de una versión anterior y la interfaz puede cambiar entre versiones.
-
-![Menú principal de Rifts & Gears](capturasjuego/02-menu-inicial-grieta-entre-piltover-y-zaun.webp)
-
-![Creador de personaje](capturasjuego/03-creador-de-personaje-eleccion-de-retrato.webp)
+La web y las escenas 2D usan ilustraciones propias de Aurelia y Nácar. Las ilustraciones SVG son conceptos visuales; no deben confundirse con modelos 3D terminados.
 
 ![Concepto visual de Aurelia y Nácar](web/arte-propio/ciudades-umbral.svg)
+
 
 ## 3. Preparar el entorno de desarrollo
 
