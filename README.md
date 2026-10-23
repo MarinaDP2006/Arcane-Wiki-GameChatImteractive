@@ -34,6 +34,7 @@ Si solo quieres jugar, mira **[Releases](https://github.com/MarinaDP2006/RIFTS-G
 | Importar modelos 3D personales y probarlos en Windows | [Modelos 3D y pruebas](GUIA-MODELOS-3D-Y-PRUEBAS.md) |
 | Exportar, importar y recuperar partidas | [Partidas guardadas](partidas-guardadas-guia.md) |
 | Consultar el estado propuesto para 3D, IA y música | [Plan de 3D, LM Studio y audio](docs/ARCANE-3D-LM-STUDIO-AUDIO.md) |
+| Preparar personajes de cuerpo entero y la migración a 3D | [Hoja de ruta 3D, LM Studio y avatares](docs/HOJA_DE_RUTA_3D_LM_STUDIO_Y_AVATARES.md) |
 | Entender la música actual y cómo añadir archivos de audio | [Documentación de música](assets/music/README.md) |
 
 ## Qué incluye el proyecto
@@ -53,7 +54,7 @@ La IA es opcional. El modo de diálogo escrito no requiere un modelo de lenguaje
 
 ## Música
 
-Los temas actuales se generan de forma procedural mediante Web Audio en `src/js/audio.js`; no son pistas MP3/OGG externas. Los identificadores actuales son `wiki` (menú), `piltover` y `zaun`. Las pistas renderizadas independientes son una mejora futura hasta que existan archivos finales integrados y probados.
+El reproductor prioriza archivos locales en `assets/music/` para el menú (`menu-theme.mp3`), Zaun (`zaun-theme.mp3`) y Piltover (`piltover-theme.mp3`), y conserva el sintetizador procedural como respaldo si falta una pista. **Los tres MP3 todavía deben incorporarse al repositorio** antes de que las pistas renderizadas puedan darse por integradas; consulta `assets/music/README.md` y la [hoja de ruta](docs/HOJA_DE_RUTA_3D_LM_STUDIO_Y_AVATARES.md).
 
 ## Partidas guardadas
 
