@@ -43,7 +43,14 @@
       {id:'aurelia',name:'Aurelia',summary:'Ciudad elevada de observatorios, gremios públicos y ascensores de contrapesos.',details:['La ciudad concentra academias técnicas y redes de transporte vertical.','La prosperidad depende de infraestructura que conecta con galerías de Nácar.']},
       {id:'nacar',name:'Nácar',summary:'Ciudad subterránea construida alrededor de canales geotérmicos y talleres comunitarios.',details:['Nácar reúne mercados, clínicas, jardines de musgo y depósitos de vapor.','La ciudad es un lugar habitado, no un paisaje de ruinas: la infraestructura falla y las comunidades la sostienen.']},
       {id:'archivo-de-frecuencias',name:'Archivo de Frecuencias',summary:'Repositorio donde se registran pulsos geológicos de la red de Resonancia.'},
-      {id:'ascensor-central',name:'Ascensor Central',summary:'Plataforma de contrapesos que conecta los niveles de Aurelia y Nácar.'}
+      {id:'ascensor-central',name:'Ascensor Central',summary:'Plataforma de contrapesos que conecta los niveles de Aurelia y Nácar.'},
+      {id:'observatorio',name:'Terrazas del Observatorio',summary:'Puesto de medición que registra los cambios de vibración de la meseta.'},
+      {id:'bulevar',name:'Bulevar de Cristal',summary:'Corredor de tránsito de Aurelia donde se transportan materiales y datos.'},
+      {id:'mercado',name:'Mercado de las Tuberías',summary:'Mercado de Nácar que distribuye repuestos, alimentos y noticias entre barrios.'},
+      {id:'galerias',name:'Galerías Geotérmicas',summary:'Red de túneles que transforma vibraciones minerales en energía utilizable.'},
+      {id:'jardin',name:'Jardín de Musgo',summary:'Espacio comunitario que regula humedad y aire en los barrios subterráneos.'},
+      {id:'clinica',name:'Clínica de los Tres Arcos',summary:'Clínica vecinal que atiende a las personas afectadas por fallos industriales.'},
+      {id:'canal',name:'Canal de Cobre',summary:'Canal de condensación que conecta talleres y estaciones de bombeo.'}
     ],
     criaturas:[{id:'polillas-de-cristal',name:'Polillas de cristal',summary:'Insectos pequeños atraídos por vibraciones suaves; sirven como indicador ambiental, no como amenaza.'}],
     tecnologia:[
@@ -197,7 +204,7 @@
   window.WORLD = {...(window.WORLD || {}), maps:{
     piltover:cityMap('piltover','Aurelia',7,{ground:'#292822',street:'#4C4940',building:['#E8DFC9','#CFC4AB','#D8D1C0','#B7A98B'],roof:['#24384A','#51737A','#B78B45'],outline:'#5B594F',glow:'#B78B45',particle:'gold'},{
       districts:aurDist,points:[
-        {id:'archivo',name:'Archivo de Frecuencias',x:600,y:400,icon:'',codex:'archivo',activity:{label:'Comparar registros',stat:'ingenio',game:'runas',text:'Encuentras una frecuencia ausente en la copia oficial.'}},
+        {id:'archivo',name:'Archivo de Frecuencias',x:600,y:400,icon:'',codex:'archivo-de-frecuencias',activity:{label:'Comparar registros',stat:'ingenio',game:'runas',text:'Encuentras una frecuencia ausente en la copia oficial.'}},
         {id:'observatorio',name:'Terrazas del Observatorio',x:1400,y:520,icon:'',codex:'observatorio'},
         {id:'gremios',name:'Patio de Gremios',x:2200,y:650,icon:'',codex:'gremios',activity:{label:'Negociar mantenimiento',stat:'carisma',text:'Logras que dos equipos compartan un turno de revisión.'}},
         {id:'ascensor-central',name:'Estación de Ascensores',x:1900,y:1250,icon:'',codex:'ascensor-central',travel:{to:'zaun',at:'mercado-nacar',label:'Bajar a Nácar'}},
