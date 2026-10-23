@@ -114,11 +114,11 @@
     async getSettings() {
       const base = { ...SETTINGS_DEFAULTS };
       if (desktop) return { ...base, ...(await window.arcane.settings.get()) };
-      return { ...base, ...LS.get('arcane-settings', {}) };
+      return { ...base, ...LS.get('rifts-gears-settings', {}) };
     },
     async setSettings(patch) {
       if (desktop) return window.arcane.settings.set(patch);
-      LS.set('arcane-settings', { ...LS.get('arcane-settings', {}), ...patch });
+      LS.set('rifts-gears-settings', { ...LS.get('rifts-gears-settings', {}), ...patch });
       return true;
     },
   };
