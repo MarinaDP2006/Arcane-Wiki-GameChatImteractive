@@ -17,7 +17,7 @@
   const chapterById = (id) => S().chapters.find((c) => c.id === id);
   const charName = (id) => window.WIKI.personajes.find((p) => p.id === id)?.name || id;
   const affOf = (id) => G.aff[id] ?? 0;
-  // Personajes que han muerto en la historia (canon de Arcane): ya no chatean.
+  // Personajes ausentes según los sucesos registrados de esta partida: ya no chatean.
   const isFallen = (id) => (G.fallen || []).includes(id);
   const talkable = () => G.unlocked.filter((id) => !isFallen(id));
   // Familia del jugador elegida en la creación (se conocen desde siempre).
@@ -58,7 +58,7 @@
     root.innerHTML = '';
     setTimeout(() => window.App.backdrop3d?.(root, 'menu'), 0);
     root.append(el('div', { class: 'menu' },
-      el('h1', { class: 'title-arcane' }, 'Partidas'),
+      el('h1', { class: 'title-rifts-gears' }, 'Partidas'),
       el('p', { class: 'muted' }, 'Elige una ranura. Cada partida guarda tu personaje, tu posición en el mapa, tus decisiones y tus conversaciones.'),
       el('button', { class: 'btn ghost', onclick: () => window.App.go('home') }, '← Menú principal'),
       el('div', { class: 'slots' }, slots.map((s) => el('div', { class: `slot panel${s.empty ? ' empty' : ''}` },
