@@ -124,7 +124,7 @@
   async function complete(messages, opts = {}) {
     const c = cfg();
     if (!ready()) throw new Error('La IA está desactivada. Actívala en Ajustes → IA con KoboldCpp.');
-    const body = { model: c.model, messages, temperature: opts.temperature ?? 0.9, max_tokens: opts.max ?? 350 };
+    const body = { model: c.model, messages, temperature: opts.temperature ?? 0.72, max_tokens: opts.max ?? 350 };
     // Se corta si empieza a escribir tu parte; los modelos que piensan necesitan más margen.
     if (opts.stop?.length) body.stop = opts.stop.slice(0, 4);
     if (THINKERS.test(c.model)) body.max_tokens = Math.max(body.max_tokens, 900);
@@ -258,7 +258,7 @@
       ...history(G, id),
       { role: 'user', content: 'Continúa la escena con una respuesta natural en personaje. Devuelve solo la respuesta y los dos marcadores técnicos requeridos.' }
     ];
-    const raw = await complete(messages, { max: 480, temperature: 0.82 });
+    const raw = await complete(messages, { max: 480, temperature: 0.68 });
     const am = raw.match(/\[\[\s*afinidad\s*:\s*([+-]?\d)\s*\]\]/i);
     const aff = am ? Math.max(-1, Math.min(1, Number(am[1]))) : 0;
     const cm = raw.match(/\[\[\s*opcion\s*:\s*(\d+)\s*\]\]/i);
@@ -318,7 +318,7 @@
     const paths = scene.paths.map((c, i) => `[${i + 1}] ${U.tpl(c.t, p)}`).join('\n');
     const sys = [
       `Eres el director de escena de Las ciudades del Umbral (Aurelia y Nácar), un juego de rol narrativo. Escribes en ${LANG[window.I18N?.lang] || LANG.es}.`,
-      `COHERENCIA DEL MUNDO: Aurelia es la ciudad elevada (observatorios, gremios, ascensores de contrapesos) y Nácar la ciudad bajo la piedra (canales de vapor, galerías geotérmicas, redes vecinales). Las une la Resonancia, energía que se extrae de vibraciones geológicas y que puede agotarse. Respeta personalidades, cronología, quién conoce a quién, lugares y tono. No inventes poderes, ciudades ni parentescos que no encajen y no menciones otras obras ni universos. El protagonista puede cambiar cosas solo mediante lo que ocurre en esta partida.`,
+      `COHERENCIA DEL MUNDO: Aurelia es la ciudad elevada (observatorios, gremios, ascensores de contrapesos) y Nácar la ciudad bajo la piedra (canales de vapor, galerías geotérmicas, redes vecinales). Las une la Resonancia, energía que se extrae de vibraciones geológicas y que puede agotarse. Respeta personalidades, cronología, quién conoce a quién, lugares y tono. No inventes poderes, ciudades ni parentescos que no encajen y no menciones otras obras ni universos. El protagonista puede cambiar cosas solo mediante lo que ocurre en esta partida. Este universo no contiene Piltover, Zaun, hextec ni personajes de Arcane; no mezcles ambos mundos.`,
       `Estamos en la parte ${part} (${part === 1 ? 'El inicio' : 'Las consecuencias'}), ${scene.chapter}. ${scene.intro || ''}`,
       gone.length ? `Ya no están (no pueden hablar): ${gone.join(', ')}.` : '',
       saved.length ? `Siguen vivos gracias al protagonista: ${saved.join(', ')}.` : '',
@@ -393,7 +393,8 @@ vi: ¿Y tú quién demonios eres?
         const id = allowed.has(k) ? k : byName.get(k) || (/narra/.test(k) ? 'narrador' : null);
         // Si la IA escribe por el protagonista, se descarta esa línea.
         if (k === p.name.toLowerCase() || k === 'yo') continue;
-        if (id) { s = id; t = m[2]; }
+        if (!id) continue; // No convertir nombres inventados en narración: solo reparto permitido.
+        s = id; t = m[2];
       }
       lines.push({ s, t: t.trim() });
     }

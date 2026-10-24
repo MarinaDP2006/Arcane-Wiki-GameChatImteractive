@@ -263,7 +263,7 @@
 
   function sistema() {
     const esc = D.escenas[st.pj.ciudad]; const pj = st.pj;
-    const fichas = esc.presentes.map(id => { const p = D.reparto.find(x => x.id === id); return p ? `- ${p.name} (${p.role}): ${p.summary} Frase típica: «${p.quote}»` : ''; }).join('\n');
+    const fichas = esc.presentes.map(id => { const p = D.reparto.find(x => x.id === id); if (!p) return ''; const v = p.voice || {}; const l = p.lore || {}; return [`- ${p.name} (${p.role}): ${p.summary}`, p.details?.length ? `  Datos conocidos: ${p.details.join(' ')}` : '', p.quote ? `  Frase de referencia: «${p.quote}»` : '', v.habla ? `  Voz y ritmo: ${v.habla}` : '', v.contigo ? `  Trato al jugador: ${v.contigo}` : '', v.nunca ? `  Límites de personaje: ${v.nunca}` : '', l.pasado ? `  Pasado: ${l.pasado}` : '', l.vinculos ? `  Relaciones: ${l.vinculos}` : '', l.motivaciones ? `  Motivaciones: ${l.motivaciones}` : ''].filter(Boolean).join('\n'); }).join('\n');
     return [
       D.canon,
       `ESCENA: ${esc.titulo}, en ${esc.lugar} (${D.ciudades[pj.ciudad].label}). ${esc.contexto}`,
@@ -280,14 +280,15 @@
     if (K && cx.estado === 'listo') {
       try {
         const historial = st.log.slice(-16).map(m => ({ role: m.role, content: m.content }));
-        return await K.chat(cx.cfg, [{ role: 'system', content: sistema() }, ...historial], { temperature: 0.85, max: 380 });
+        return await K.chat(cx.cfg, [{ role: 'system', content: sistema() }, ...historial], { temperature: 0.65, max: 420 });
       } catch (err) {
         cx.estado = 'local'; cx.error = err.message; pintarEstado();
-        mensaje('error', err.message + ' Mientras tanto responde el narrador local.', err.tipo === 'https' ? ALTERNATIVAS : null);
+        mensaje('error', err.message + ' No se ha generado diálogo de sustitución.', err.tipo === 'https' ? ALTERNATIVAS : null);
         if (panel) panel.open = true;
+        return 'Narrador: [KoboldCpp no ha devuelto una respuesta. No se ha inventado diálogo. Revisa el panel «Conexión con KoboldCpp» y pulsa «Probar conexión».]';
       }
     }
-    return local(txt);
+    return 'Narrador: [La IA está desconectada; no se ha generado diálogo. Revisa el panel «Conexión con KoboldCpp» y pulsa «Probar conexión».]';
   }
 
   // Narrador local: no entiende como una IA, pero reacciona a lo que escribes y hace avanzar la escena.
