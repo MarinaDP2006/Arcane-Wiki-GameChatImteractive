@@ -16,7 +16,7 @@
   // («http://192.168.1.139:5001/#») o la de su API propia («…/api»).
   const PORTS = { koboldcpp: '5001' };
   function fullUrl(p, url) {
-    url = String(url || '').trim();
+    url = String(url || '').trim().replaceAll('192.168.1.40', '192.168.1.139');
     if (!PORTS[p] || !url) return url;
     if (!/^https?:\/\//i.test(url)) url = `http://${url}`;
     try {
