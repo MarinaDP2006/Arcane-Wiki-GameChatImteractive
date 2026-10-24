@@ -170,7 +170,7 @@
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
         on ? el('p', { class: 'small ai-help' }, d.help) : null,
         on ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
-          el('input', { class: 'input', value: a.url || d.url, placeholder: 'http://192.168.1.139:5001', inputmode: 'url', autocapitalize: 'off', spellcheck: 'false', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+          el('input', { class: 'input', value: (a.url || d.url).replaceAll('192.168.1.40', '192.168.1.139'), placeholder: 'http://192.168.1.139:5001', inputmode: 'url', autocapitalize: 'off', spellcheck: 'false', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
         on ? el('label', { class: 'field' }, el('span', {}, 'Contraseña de KoboldCpp (opcional)'),
           el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.password || '', placeholder: 'Déjala vacía si no configuraste Password', onchange: (e) => save({ password: e.target.value }) })) : null,
         on ? el('p', { class: 'small ai-help' }, 'En Chrome/Edge sobre una web HTTPS, permite «Acceso a la red local» cuando conectes. Si usas Password en KoboldCpp, escribe aquí la misma contraseña.') : null,
