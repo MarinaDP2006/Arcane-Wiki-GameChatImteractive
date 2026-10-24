@@ -89,7 +89,7 @@
   // GET corto (lista de modelos), por el mismo camino que post().
   async function get(url, headers = {}) {
     if (window.umbral?.aiGet) {
-      const r = await window.umbral.aiGet(url);
+      const r = await window.umbral.aiGet(url, headers);
       if (r.error) throw new Error(r.error);
       return r.data;
     }
