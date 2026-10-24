@@ -33,9 +33,9 @@
   function cargar() {
     let c = {};
     try { c = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch { /* sin almacenamiento */ }
-    return { modo: c.modo === 'mio' ? 'mio' : 'servidor', url: typeof c.url === 'string' ? c.url : '' };
+    return { modo: c.modo === 'mio' ? 'mio' : 'servidor', url: typeof c.url === 'string' ? c.url : '', password: typeof c.password === 'string' ? c.password : '' };
   }
-  function guardar(c) { try { localStorage.setItem(CLAVE, JSON.stringify({ modo: c.modo, url: c.url })); } catch { /* sin almacenamiento */ } }
+  function guardar(c) { try { localStorage.setItem(CLAVE, JSON.stringify({ modo: c.modo, url: c.url, password: c.password || '' })); } catch { /* sin almacenamiento */ } }
 
   // Una página https no puede pedir nada a una dirección http (contenido mixto). Los navegadores
   // hacen una excepción con «localhost» del propio aparato, pero no con las IP de la red de casa.
@@ -50,7 +50,7 @@
     if (err && err.tipo) return err;
     let u = null; try { u = new URL(url); } catch { /* dirección rara */ }
     if (u && esLoopback(u.hostname) && esTactil()) return fallo('localhost', '«localhost» es este mismo móvil o tablet, no tu PC. Escribe la IP del PC con KoboldCpp, por ejemplo 192.168.1.139 (la ves en el PC con «ipconfig», Dirección IPv4).');
-    if (bloqueadoPorHttps(url)) return fallo('https', `Esta web va por https y el navegador no la deja hablar con ${hostDe(url)} por http. Pulsa «Ver alternativas» para saber cómo seguir.`);
+
     if (u && /^192\.168\.\d+\.1$/.test(u.hostname)) return fallo('router', `${u.hostname} suele ser el router, no tu PC. Usa la «Dirección IPv4» que da «ipconfig» en el PC con KoboldCpp, por ejemplo 192.168.1.139.`);
     if (err && (err.name === 'AbortError' || err.name === 'TimeoutError')) return fallo('lento', 'KoboldCpp ha tardado demasiado en responder. Prueba con un modelo más pequeño o con más «GPU Layers».');
     return fallo('red', `No se llega a KoboldCpp en ${hostDe(url)}. Comprueba que está abierto con el modelo cargado, que el PC y este aparato están en la misma wifi y que el cortafuegos de Windows deja pasar el puerto 5001.`);
@@ -61,7 +61,8 @@
   // navegadores que no lo conocen lo ignoran.
   async function directo(url, init, ms) {
     const opciones = { ...init, signal: AbortSignal.timeout(ms) };
-    try { const u = new URL(url); if (!esLoopback(u.hostname)) opciones.targetAddressSpace = 'local'; } catch { /* sigue */ }
+    // Chrome/Edge gestionan el permiso de acceso a la red local desde la página HTTPS.
+    // No se debe bloquear aquí: el permiso aparece al probar la conexión desde un botón.
     try { return await fetch(url, opciones); } catch (err) { throw explicar(err, url); }
   }
 
@@ -96,7 +97,7 @@
     if (cfg.modo === 'mio') {
       const url = normalizar(cfg.url);
       if (!url) throw fallo('vacia', 'Falta la dirección de tu KoboldCpp. Escríbela en «Conexión con KoboldCpp».');
-      r = await directo(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, 90000);
+      r = await directo(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(cfg.password ? { Authorization: `Bearer ${cfg.password}` } : {}) }, body: JSON.stringify(body) }, 90000);
     } else {
       if (location.protocol === 'file:') throw fallo('sin-servidor', 'Abriste la página como archivo: no hay servidor. Elige «Mi KoboldCpp» o ábrela con «npm run serve:web».');
       try {
