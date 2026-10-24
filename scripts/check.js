@@ -17,7 +17,7 @@ const cast = new Set(STORY.cast || []);
 const speakers = new Set([...cast, 'narrador', 'yo', 'sistema']);
 cast.forEach((id) => { if (!chars.has(id)) errors.push(`reparto: "${id}" no está en la wiki`); });
 const FLAG_SET = new Set(['familia_famosa']);
-const GAME_IDS = ['foso', 'tejados', 'aerotabla', 'tiro', 'circuito', 'runas', 'regateo', 'persecucion', 'francotiradora', 'chompers'];
+const GAME_IDS = ['foso', 'tejados', 'aerotabla', 'tiro', 'circuito', 'runas', 'regateo', 'persecucion', 'francotiradora', 'chompers', 'reliquias'];
 
 for (const ch of STORY.chapters) {
   for (const n of Object.values(ch.nodes)) for (const c of n.choices || []) [...(c.fx?.flags || []), ...(c.game?.winFx?.flags || [])].forEach((f) => FLAG_SET.add(f));
