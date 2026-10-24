@@ -263,7 +263,7 @@
 
   function sistema() {
     const esc = D.escenas[st.pj.ciudad]; const pj = st.pj;
-    const fichas = esc.presentes.map(id => { const p = D.reparto.find(x => x.id === id); return p ? `- ${p.name} (${p.role}): ${p.summary} Frase típica: «${p.quote}»` : ''; }).join('\n');
+    const fichas = esc.presentes.map(id => { const p = D.reparto.find(x => x.id === id); if (!p) return ''; const v = p.voice || {}; const l = p.lore || {}; return [`- ${p.name} (${p.role}): ${p.summary}`, p.details?.length ? `  Datos conocidos: ${p.details.join(' ')}` : '', p.quote ? `  Frase de referencia: «${p.quote}»` : '', v.habla ? `  Voz y ritmo: ${v.habla}` : '', v.contigo ? `  Trato al jugador: ${v.contigo}` : '', v.nunca ? `  Límites de personaje: ${v.nunca}` : '', l.pasado ? `  Pasado: ${l.pasado}` : '', l.vinculos ? `  Relaciones: ${l.vinculos}` : '', l.motivaciones ? `  Motivaciones: ${l.motivaciones}` : ''].filter(Boolean).join('\n'); }).join('\n');
     return [
       D.canon,
       `ESCENA: ${esc.titulo}, en ${esc.lugar} (${D.ciudades[pj.ciudad].label}). ${esc.contexto}`,
