@@ -19,7 +19,7 @@
 
   let st = load() || { paso: 'pregunta' };
   // Conexión con KoboldCpp: se comprueba en cada visita. estado: comprobando | listo | local
-  const cx = { cfg: K ? K.cargar() : { modo: 'servidor', url: '' }, estado: 'comprobando', modelo: '', error: '' };
+  const cx = { cfg: K ? K.cargar() : { modo: 'servidor', url: '', password: '' }, estado: 'comprobando', modelo: '', error: '' };
   function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { /* sin almacenamiento: la demo sigue */ } }
   function go(paso) { st.paso = paso; save(); render(); app.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
@@ -112,11 +112,13 @@
     const fila = make('div', 'kc-fila');
     const input = make('input'); input.type = 'text'; input.id = 'kc-url'; input.value = cx.cfg.url; input.placeholder = '192.168.1.139 o localhost';
     input.inputMode = 'url'; input.autocomplete = 'off'; input.spellcheck = false; input.setAttribute('autocapitalize', 'off');
+    const passLabel = make('label', 'dj-campo'); const passInput = make('input'); passInput.type = 'password'; passInput.id = 'kc-password'; passInput.autocomplete = 'off'; passInput.spellcheck = false; passInput.value = cx.cfg.password || ''; passInput.placeholder = 'Opcional: contraseña Password de KoboldCpp';
+    passLabel.append(make('span', '', 'Contraseña Password de KoboldCpp (opcional)'), passInput);
     const probar = make('button', 'btn btn-primario', 'Probar conexión'); probar.type = 'button'; probar.dataset.kcProbar = '';
     fila.append(input, probar);
     const usara = make('p', 'kc-usara');
     const avisoHttps = make('p', 'kc-msg'); avisoHttps.dataset.tipo = 'aviso';
-    bloqueUrl.append(lab, fila, usara, avisoHttps);
+    bloqueUrl.append(lab, fila, passLabel, usara, avisoHttps);
 
     const recomprobar = make('button', 'btn btn-borde btn-sm', 'Comprobar de nuevo'); recomprobar.type = 'button'; recomprobar.dataset.kcProbar = '';
     const msg = make('p', 'kc-msg'); msg.hidden = true; msg.dataset.kcMsg = ''; msg.setAttribute('role', 'status');
@@ -130,16 +132,16 @@
       const full = K ? K.normalizar(input.value) : '';
       usara.textContent = full ? 'La demo usará: ' + full.replace(/\/v1\/chat\/completions$/, '') + ' (API /v1/chat/completions)' : 'Escribe solo la IP o el nombre del PC; el puerto 5001 se pone solo.';
       let aviso = '';
-      if (full && K.bloqueadoPorHttps(full)) aviso = 'Esta web va por https y muchos navegadores bloquean direcciones http de tu red. Si al probar sale un error, mira las alternativas.';
+      if (full && K.bloqueadoPorHttps(full)) aviso = 'Esta web usa HTTPS. En Chrome/Edge modernos, al probar la IP local aparecerá un permiso «Acceso a la red local»: pulsa «Permitir». Si lo bloqueaste antes, ve a Ajustes del sitio → Acceso a la red local → Permitir.';
       else if (full && matchMedia('(pointer: coarse)').matches && K.esLoopback(new URL(full).hostname)) aviso = 'En un móvil o una tablet, «localhost» es el propio aparato. Escribe la IP del PC con KoboldCpp.';
       avisoHttps.hidden = !aviso || !mio; avisoHttps.textContent = aviso;
-      if (aviso && aviso.startsWith('Esta web')) { const a = make('a', '', ALTERNATIVAS[0]); a.href = ALTERNATIVAS[1]; avisoHttps.append(' ', a); }
     };
     fs.addEventListener('change', (e) => {
       cx.cfg.modo = e.target.value; K && K.guardar(cx.cfg); actualizar();
       if (cx.cfg.modo === 'servidor' || cx.cfg.url) comprobar(); else { cx.estado = 'local'; pintarEstado(); mensaje('aviso', 'Escribe la dirección de tu KoboldCpp y pulsa «Probar conexión».'); input.focus(); }
     });
     input.addEventListener('input', () => { cx.cfg.url = input.value.trim(); K && K.guardar(cx.cfg); actualizar(); });
+    passInput.addEventListener('input', () => { cx.cfg.password = passInput.value; K && K.guardar(cx.cfg); });
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); comprobar(); } });
     probar.onclick = comprobar; recomprobar.onclick = comprobar;
     actualizar(); pintarEstado();

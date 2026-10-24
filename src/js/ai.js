@@ -34,7 +34,7 @@
     const a = window.App?.settings?.ai || {};
     const p = PROVIDERS[a.provider] ? a.provider : 'off';
     const d = PROVIDERS[p];
-    return { provider: p, url: p === 'koboldcpp' ? fullUrl(p, a.url || d.url) : '', model: a.model || d.model || '' };
+    return { provider: p, url: p === 'koboldcpp' ? fullUrl(p, a.url || d.url) : '', model: a.model || d.model || '', password: p === 'koboldcpp' ? String(a.password || '') : '' };
   }
 
   function ready() {
@@ -54,7 +54,7 @@
     let where = url;
     try { const u = new URL(url); where = u.host; } catch { /* dirección rara: se muestra tal cual */ }
     if (isLoopback(url) && remoteDevice()) return new Error('En el móvil o la tablet «localhost» es el propio aparato. Escribe la IP de tu PC con KoboldCpp, por ejemplo 192.168.1.139 (la ves en el PC con «ipconfig»).');
-    if (location.protocol === 'https:' && /^http:/i.test(url) && !native()) return new Error('Esta página va por https y el navegador no deja hablar con KoboldCpp por http. Usa el juego de escritorio o la app de Android.');
+    if (location.protocol === 'https:' && /^http:/i.test(url) && !native()) return new Error('Chrome/Edge puede pedir permiso «Acceso a la red local». Permítelo para esta web; revisa Ajustes del sitio → Acceso a la red local si se bloqueó. En este móvil escribe la IP local del PC, no localhost.');
     return new Error(`No se llega a KoboldCpp en ${where}. Comprueba que está abierto con el modelo cargado, que el PC y este aparato están en la misma wifi y que el cortafuegos de Windows deja pasar el puerto 5001.`);
   }
 
@@ -118,7 +118,7 @@
     const c = cfg();
     if (!ready() || warmed === c.model) return;
     warmed = c.model;
-    post(c.url, {}, { model: c.model, messages: [{ role: 'user', content: 'Hola' }], max_tokens: 1 }).catch(() => { warmed = ''; });
+    post(c.url, c.password ? { Authorization: `Bearer ${c.password}` } : {}, { model: c.model, messages: [{ role: 'user', content: 'Hola' }], max_tokens: 1 }).catch(() => { warmed = ''; });
   }
 
   async function complete(messages, opts = {}) {
@@ -128,7 +128,7 @@
     // Se corta si empieza a escribir tu parte; los modelos que piensan necesitan más margen.
     if (opts.stop?.length) body.stop = opts.stop.slice(0, 4);
     if (THINKERS.test(c.model)) body.max_tokens = Math.max(body.max_tokens, 900);
-    const r = await post(c.url, {}, body);
+    const r = await post(c.url, c.password ? { Authorization: `Bearer ${c.password}` } : {}, body);
     if (r.status >= 400 || r.data?.error) {
       let msg = r.data?.error?.message || r.data?.error || r.data?.message || `HTTP ${r.status}`;
       msg = typeof msg === 'string' ? msg : JSON.stringify(msg);
