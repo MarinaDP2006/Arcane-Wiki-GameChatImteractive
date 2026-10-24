@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Aurelia — horizonte de piedra y latón</title><desc id="desc">Paisaje panorámico original de una ciudad elevada de observatorios, puentes suspendidos y ascensores de contrapesos bajo un cielo dorado.</desc>
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#101b33"/><stop offset=".36" stop-color="#53627b"/><stop offset=".64" stop-color="#cc9861"/><stop offset="1" stop-color="#f2d9a5"/></linearGradient>
+ <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#e7d7b0"/><stop offset=".55" stop-color="#a78d68"/><stop offset="1" stop-color="#51473c"/></linearGradient>
+ <linearGradient id="brass" x2="1" y2="1"><stop stop-color="#f6dda0"/><stop offset=".45" stop-color="#a98548"/><stop offset="1" stop-color="#4c4639"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#fff4ce" stop-opacity=".95"/><stop offset=".36" stop-color="#f6d7a0" stop-opacity=".42"/><stop offset="1" stop-color="#e3ad71" stop-opacity="0"/></radialGradient>
+ <linearGradient id="mist" x2="0" y2="1"><stop stop-color="#fff0c8" stop-opacity="0"/><stop offset="1" stop-color="#f2d9b1" stop-opacity=".27"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="28"/></filter>
+ <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="2" seed="11"/><feColorMatrix values=".35 0 0 0 .5 .0 .3 0 0 .45 0 0 .25 0 .3 0 0 0 .15 0"/></filter>
+ <pattern id="windows" width="48" height="54" patternUnits="userSpaceOnUse"><rect x="11" y="8" width="9" height="20" rx="4" fill="#ffe2a2" opacity=".66"/><rect x="29" y="8" width="7" height="20" rx="3" fill="#79bfca" opacity=".4"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/><circle cx="1160" cy="205" r="310" fill="url(#sun)"/>
+<g fill="#e7d2b2" opacity=".16"><path d="M0 260Q220 205 420 255T870 240T1300 245T1600 218V350H0Z"/><path d="M0 330Q280 275 500 320T960 302T1400 325T1600 300V390H0Z"/></g>
+<ellipse cx="850" cy="650" rx="740" ry="160" fill="#f0c58b" opacity=".23" filter="url(#soft)"/>
+<!-- Mesetas altas -->
+<path d="M0 520 120 458 240 486 355 405 480 470 610 382 740 450 870 365 1030 442 1170 365 1290 425 1430 365 1600 420V900H0Z" fill="#414b5b" opacity=".74"/>
+<path d="M0 595 180 520 320 555 460 475 610 530 760 455 910 535 1070 475 1200 530 1370 470 1600 535V900H0Z" fill="#796b61" opacity=".7"/>
+<!-- Silueta lejana de barrios -->
+<g fill="#273244" opacity=".82"><path d="M0 650V520H80V480H115V650H165V540H220V650H280V490H330V650H405V545H465V650H525V470H580V650H650V510H720V650H780V455H835V650H900V520H960V650H1030V470H1085V650H1160V535H1220V650H1290V480H1350V650H1425V520H1490V650H1600V900H0Z"/></g>
+<!-- Torre de observatorio -->
+<g stroke="#594c3b" stroke-width="8" fill="url(#stone)">
+ <path d="M625 900V420H975V900Z"/><path d="M590 450 800 282 1010 450Z"/><path d="M684 416V365L800 250 916 365V416Z"/>
+ <path d="M755 282V210H845V282Z"/><path d="M780 210V165H820V210Z"/>
+ <path d="M555 510H1045L1008 550H592Z"/><path d="M600 600H1000L967 635H633Z"/>
+</g>
+<path d="M755 282V210H845V282Z" fill="url(#windows)" opacity=".8"/><path d="M645 470H955V900H645Z" fill="url(#windows)" opacity=".55"/>
+<!-- Torres laterales, fachadas y tejados -->
+<g stroke="#51483d" stroke-width="6" fill="url(#brass)">
+ <path d="M70 900V590H250V900Z"/><path d="M45 590 160 470 275 590Z"/><path d="M110 510V455H210V510Z"/>
+ <path d="M260 900V650H430V900Z"/><path d="M235 650 345 545 455 650Z"/>
+ <path d="M1050 900V580H1240V900Z"/><path d="M1020 580 1145 455 1270 580Z"/>
+ <path d="M1250 900V650H1440V900Z"/><path d="M1225 650 1345 520 1465 650Z"/>
+ <path d="M1430 900V595H1585V900Z"/><path d="M1400 595 1505 490 1610 595Z"/>
+</g>
+<g opacity=".72" fill="url(#windows)"><path d="M90 610H230V890H90Z"/><path d="M285 670H410V890H285Z"/><path d="M1075 605H1215V890H1075Z"/><path d="M1275 670H1415V890H1275Z"/><path d="M1448 615H1570V890H1448Z"/></g>
+<!-- Pasarelas y ascensores de contrapeso -->
+<g fill="none" stroke-linecap="round">
+ <path d="M0 650Q300 625 610 655T1130 640T1600 660" stroke="#e4c88d" stroke-width="18"/>
+ <path d="M0 650Q300 625 610 655T1130 640T1600 660" stroke="#4e4b48" stroke-width="4"/>
+ <path d="M280 650V820M345 650V800M1160 640V820M1220 640V800" stroke="#e3c78e" stroke-width="8"/>
+ <path d="M535 540V860M555 540V860M1040 550V860M1060 550V860" stroke="#4f565f" stroke-width="9"/>
+ <path d="M545 560V850M1050 570V850" stroke="#f2d9a5" stroke-width="2"/>
+</g>
+<g fill="#b3d8dc" opacity=".75"><rect x="528" y="718" width="34" height="55" rx="3"/><rect x="1033" y="700" width="34" height="55" rx="3"/></g>
+<g stroke="#c8a262" stroke-width="4" fill="none"><path d="M0 790H1600"/><path d="M0 824H1600"/><path d="M0 860H1600"/></g>
+<path d="M0 810Q350 765 700 820T1300 800T1600 812V900H0Z" fill="#151d2b" opacity=".88"/>
+<!-- Tramos de luz en cristales y polvo suspendido -->
+<g fill="#fff0c4"><circle cx="360" cy="590" r="3"/><circle cx="465" cy="620" r="2"/><circle cx="1000" cy="500" r="3"/><circle cx="1218" cy="560" r="2"/><circle cx="710" cy="350" r="2"/><circle cx="870" cy="385" r="2"/><circle cx="1390" cy="600" r="2"/></g>
+<rect width="1600" height="900" fill="url(#mist)"/><rect width="1600" height="900" filter="url(#grain)" opacity=".12"/>
+</svg>
