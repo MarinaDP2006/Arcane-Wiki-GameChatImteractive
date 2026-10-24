@@ -19,7 +19,7 @@
 
   let st = load() || { paso: 'pregunta' };
   // Conexión con KoboldCpp: se comprueba en cada visita. estado: comprobando | listo | local
-  const cx = { cfg: K ? K.cargar() : { modo: 'servidor', url: '', password: '' }, estado: 'comprobando', modelo: '', error: '' };
+  const cx = { cfg: K ? K.cargar() : { modo: 'mio', url: 'http://192.168.1.139:5001', password: '' }, estado: 'local', modelo: '', error: '' };
   function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { /* sin almacenamiento: la demo sigue */ } }
   function go(paso) { st.paso = paso; save(); render(); app.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
@@ -110,7 +110,7 @@
     const bloqueUrl = make('div', 'kc-url');
     const lab = make('label', 'dj-campo'); lab.htmlFor = 'kc-url'; lab.textContent = 'Dirección de tu KoboldCpp';
     const fila = make('div', 'kc-fila');
-    const input = make('input'); input.type = 'text'; input.id = 'kc-url'; input.value = cx.cfg.url; input.placeholder = '192.168.1.139 o localhost';
+    const input = make('input'); input.type = 'text'; input.id = 'kc-url'; input.value = cx.cfg.url; input.placeholder = 'http://192.168.1.139:5001';
     input.inputMode = 'url'; input.autocomplete = 'off'; input.spellcheck = false; input.setAttribute('autocapitalize', 'off');
     const passLabel = make('label', 'dj-campo'); const passInput = make('input'); passInput.type = 'password'; passInput.id = 'kc-password'; passInput.autocomplete = 'off'; passInput.spellcheck = false; passInput.value = cx.cfg.password || ''; passInput.placeholder = 'Opcional: contraseña Password de KoboldCpp';
     passLabel.append(make('span', '', 'Contraseña Password de KoboldCpp (opcional)'), passInput);
@@ -130,7 +130,7 @@
       const mio = cx.cfg.modo === 'mio';
       bloqueUrl.hidden = !mio; recomprobar.hidden = mio;
       const full = K ? K.normalizar(input.value) : '';
-      usara.textContent = full ? 'La demo usará: ' + full.replace(/\/v1\/chat\/completions$/, '') + ' (API /v1/chat/completions)' : 'Escribe solo la IP o el nombre del PC; el puerto 5001 se pone solo.';
+      usara.textContent = full ? 'La demo usará: ' + full.replace(/\/v1\/chat\/completions$/, '') + ' (API /v1/chat/completions)' : 'Dirección inicial: http://192.168.1.139:5001. Si la IP cambia, actualízala aquí.';
       let aviso = '';
       if (full && K.bloqueadoPorHttps(full)) aviso = 'Esta web usa HTTPS. En Chrome/Edge modernos, al probar la IP local aparecerá un permiso «Acceso a la red local»: pulsa «Permitir». Si lo bloqueaste antes, ve a Ajustes del sitio → Acceso a la red local → Permitir.';
       else if (full && matchMedia('(pointer: coarse)').matches && K.esLoopback(new URL(full).hostname)) aviso = 'En un móvil o una tablet, «localhost» es el propio aparato. Escribe la IP del PC con KoboldCpp.';

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="512 288 512 288" role="img" aria-labelledby="title desc">
+<title id="title">Ascensor industrial</title>
+<desc id="desc">Hueco de ascensor con vigas, cables y una cabina de servicio.</desc>
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#d3a16d"/><stop offset=".55" stop-color="#71838a"/><stop offset="1" stop-color="#172b35"/></linearGradient>
+ <linearGradient id="night" x2="0" y2="1"><stop stop-color="#394e58"/><stop offset=".6" stop-color="#1a3038"/><stop offset="1" stop-color="#09161c"/></linearGradient>
+ <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#b9ad94"/><stop offset="1" stop-color="#5e625e"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#577984"/><stop offset="1" stop-color="#13242c"/></linearGradient>
+ <pattern id="windows" width="24" height="28" patternUnits="userSpaceOnUse"><rect x="6" y="5" width="8" height="14" fill="#f4c37e" opacity=".82"/></pattern>
+ <pattern id="brick" width="44" height="24" patternUnits="userSpaceOnUse"><path d="M0 0H44M0 12H44M22 0V12M0 12V24M44 12V24" stroke="#6b6256" stroke-width="1" opacity=".6"/></pattern>
+</defs>
+<!-- Aurelia: civic rooftops, bridges and stone towers -->
+<g>
+ <rect width="512" height="288" fill="url(#sky)"/><circle cx="90" cy="50" r="27" fill="#f5d8a8" opacity=".8"/>
+ <path d="M0 176 42 139 78 158 119 105 154 145 196 118 238 153 278 110 322 144 364 102 410 143 454 110 512 145V288H0Z" fill="#39494e" opacity=".8"/>
+ <g fill="url(#stone)" stroke="#515653" stroke-width="2"><path d="M14 288V169H62V126H79V169H110V288Z"/><path d="M121 288V146H150V113H164V146H186V288Z"/><path d="M198 288V180H226V155H239V180H264V288Z"/><path d="M279 288V139H315V94H329V139H351V288Z"/><path d="M366 288V163H395V127H408V163H431V288Z"/><path d="M441 288V146H470V105H483V146H504V288Z"/></g>
+ <g fill="url(#windows)"><path d="M14 169H110V288H14Z"/><path d="M121 146H186V288H121Z"/><path d="M279 139H351V288H279Z"/><path d="M441 146H504V288H441Z"/></g>
+ <path d="M0 231 512 217" stroke="#d4b780" stroke-width="7" opacity=".7"/><path d="M0 248H512M38 216V256M190 216V256M342 216V256M480 216V256" stroke="#263338" stroke-width="5"/>
+ <path d="M0 270Q110 253 220 270T512 270V288H0Z" fill="#1d2e35"/>
+</g>
+<!-- Nacar: canal, workshops, pipes and market awnings -->
+<g>
+ <rect x="512" width="512" height="288" fill="url(#night)"/><rect x="512" width="512" height="288" fill="url(#brick)" opacity=".5"/>
+ <g fill="#20343b" stroke="#5c6b6d" stroke-width="2"><path d="M520 288V75H570V41H586V75H620V288Z"/><path d="M632 288V101H670V54H684V101H720V288Z"/><path d="M737 288V62H784V20H799V62H832V288Z"/><path d="M846 288V104H889V65H903V104H931V288Z"/><path d="M944 288V76H986V38H1001V76H1024V288Z"/></g>
+ <g fill="url(#windows)"><path d="M520 75H620V288H520Z"/><path d="M632 101H720V288H632Z"/><path d="M737 62H832V288H737Z"/><path d="M846 104H931V288H846Z"/></g>
+ <g fill="none" stroke="#a67c4c" stroke-width="8"><path d="M512 70H1024M512 126H1024"/><path d="M535 0V190Q535 210 555 210H598"/><path d="M707 0V150Q707 174 733 174H765"/><path d="M947 0V155"/></g>
+ <path d="M512 224H1024V288H512Z" fill="url(#water)"/><path d="M512 246Q610 237 710 249T910 248T1024 246M512 266Q612 257 720 266T928 264T1024 265" fill="none" stroke="#91a8ad" stroke-width="2" opacity=".65"/>
+ <g fill="#3b332b" stroke="#b78c55" stroke-width="2"><path d="M534 210H612L602 228H544Z"/><path d="M652 203H716L705 221H663Z"/><path d="M824 206H894L883 225H834Z"/></g>
+ <g fill="#ffd28a"><circle cx="548" cy="160" r="6"/><circle cx="646" cy="178" r="6"/><circle cx="779" cy="157" r="6"/><circle cx="913" cy="184" r="6"/><circle cx="987" cy="143" r="6"/></g>
+</g>
+<!-- City archive: stone arches, shelves and brass reading lamps -->
+<g>
+ <rect y="288" width="512" height="288" fill="#263640"/>
+ <g fill="#707879" stroke="#4c585c" stroke-width="3"><path d="M12 576V350Q12 300 74 300Q136 300 136 350V576Z"/><path d="M176 576V346Q176 294 234 294Q292 294 292 346V576Z"/><path d="M332 576V348Q332 300 386 300Q440 300 440 348V576Z"/></g>
+ <g fill="#2d434d"><path d="M28 576V352Q28 314 74 314Q120 314 120 352V576Z"/><path d="M190 576V347Q190 311 234 311Q278 311 278 347V576Z"/><path d="M346 576V349Q346 315 386 315Q426 315 426 349V576Z"/></g>
+ <g fill="#554332" stroke="#b08a56" stroke-width="3"><rect x="10" y="402" width="126" height="154"/><rect x="148" y="384" width="151" height="172"/><rect x="311" y="408" width="139" height="148"/></g>
+ <g fill="#8b704d"><path d="M18 414H128V428H18ZM18 449H128V463H18ZM18 484H128V498H18ZM156 396H291V410H156ZM156 431H291V445H156ZM156 466H291V480H156ZM319 420H442V434H319ZM319 455H442V469H319ZM319 490H442V504H319Z"/></g>
+ <path d="M0 320H512M0 340H512M147 288V376M300 288V376M452 288V376" stroke="#a88758" stroke-width="3" fill="none"/><path d="M0 556H512V576H0Z" fill="#101d24"/><path d="M240 502 256 477 272 502Z" fill="#ffd18b"/><path d="M248 557V512H266V557" stroke="#c49a60" stroke-width="5" fill="none"/>
+</g>
+<!-- Lift shaft: steel frames, cables, counterweights and a service cabin -->
+<g>
+ <rect x="512" y="288" width="512" height="288" fill="url(#night)"/><rect x="512" y="288" width="512" height="288" fill="url(#brick)" opacity=".35"/>
+ <g fill="#34464d" stroke="#7b898a" stroke-width="4"><rect x="538" y="288" width="24" height="288"/><rect x="974" y="288" width="24" height="288"/><rect x="586" y="288" width="16" height="288"/><rect x="930" y="288" width="16" height="288"/></g>
+ <g stroke="#9b794d" stroke-width="6" fill="none"><path d="M550 288V576M590 288V576M938 288V576M986 288V576M512 320H1024M512 390H1024M512 510H1024"/></g>
+ <g fill="#111e25" stroke="#a78250" stroke-width="5"><rect x="664" y="382" width="212" height="108" rx="5"/><rect x="680" y="398" width="180" height="77" fill="#293c43" stroke="#68787a" stroke-width="3"/><rect x="700" y="411" width="30" height="51"/><rect x="746" y="411" width="30" height="51"/><rect x="792" y="411" width="30" height="51"/></g>
+ <g stroke="#c5a26a" stroke-width="5"><path d="M682 382V330M858 382V330M700 330H840M682 490V536M858 490V536M700 536H840"/></g>
+ <g fill="#ffd28a"><circle cx="694" cy="372" r="7"/><circle cx="846" cy="372" r="7"/><circle cx="694" cy="500" r="7"/><circle cx="846" cy="500" r="7"/></g>
+ <path d="M512 553H1024" stroke="#111a1e" stroke-width="22"/><path d="M512 554H1024" stroke="#d2b078" stroke-width="3" opacity=".6"/>
+</g>
+<path d="M512 0V576M0 288H1024" stroke="#d2b078" stroke-width="3" opacity=".65"/>
+</svg>

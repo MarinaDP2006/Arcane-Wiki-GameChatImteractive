@@ -7,9 +7,9 @@
   <meta name="description" content="Las ciudades del Umbral: aventura narrativa de fantasía industrial. Dos ciudades, una energía compartida y una historia que escribes tú, sin opciones fijas.">
   <meta property="og:title" content="Las ciudades del Umbral · Rifts &amp; Gears">
   <meta property="og:description" content="Aurelia, ciudad de piedra y latón; Nácar, ciudad subterránea de acero y luces de Resonancia. Diez personajes originales quedan atrapados entre ambas.">
-  <meta property="og:image" content="arte-propio/ciudades-umbral.svg">
+  <meta property="og:image" content="arte-propio/aurelia-industrial.svg">
   <title>Las ciudades del Umbral · Rifts &amp; Gears</title>
-  <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
+  <link rel="icon" href="icono-umbral.svg" type="image/svg+xml">
   <link rel="preload" href="fuentes/cinzel-decorative-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilos.css">
 </head>
@@ -36,16 +36,16 @@
     <!-- Portada: el menú principal del juego. Aurelia y Nácar a la vez, partidas por la grieta. -->
     <section class="home" id="inicio" aria-labelledby="t-portada">
       <div class="home-art aurelia"><div class="home-art-in">
-        <div class="home-slide on" style="background-image:url('lugares/aurelia.svg');background-position:50% 40%"></div>
+        <div class="home-slide on scene-aurelia" style="background-image:url('arte-propio/aurelia-industrial.svg');background-position:center;background-size:cover"></div>
         <div class="home-slide" style="background-image:url('lugares/observatorio.svg');background-position:50% 40%"></div>
         <div class="home-slide" style="background-image:url('lugares/ascensor-central.svg');background-position:50% 40%"></div>
-        <div class="home-slide" style="background-image:url('arte-propio/aurelia-portada.svg');background-position:50% 40%"></div>
+        <div class="home-slide scene-aurelia-alt" style="background-image:url('arte-propio/archivo-ciudad.svg');background-position:center;background-size:cover"></div>
       </div></div>
       <div class="home-art nacar"><div class="home-art-in">
-        <div class="home-slide on" style="background-image:url('lugares/nacar.svg');background-position:50% 50%"></div>
+        <div class="home-slide on scene-nacar" style="background-image:url('arte-propio/nacar-canal.svg');background-position:center;background-size:cover"></div>
         <div class="home-slide" style="background-image:url('lugares/galerias.svg');background-position:50% 50%"></div>
         <div class="home-slide" style="background-image:url('lugares/canal-cobre.svg');background-position:50% 50%"></div>
-        <div class="home-slide" style="background-image:url('arte-propio/nacar-portada.svg');background-position:50% 50%"></div>
+        <div class="home-slide scene-nacar-alt" style="background-image:url('arte-propio/ascensor-industrial.svg');background-position:center;background-size:cover"></div>
       </div></div>
       <div class="home-rift" aria-hidden="true"><svg viewBox="0 0 1000 1000" preserveAspectRatio="none"><polyline class="glow"/><path class="glow"/><polyline class="mid"/><path class="core"/><polyline class="core"/></svg></div>
       <canvas class="home-fx" aria-hidden="true"></canvas>
@@ -213,16 +213,15 @@
         </article>
       </div>
       <details class="aviso-https">
-        <summary><i class="gema" aria-hidden="true"></i>Por qué tu KoboldCpp de casa puede no conectar desde esta web</summary>
+        <summary><i class="gema" aria-hidden="true"></i>Conectar KoboldCpp desde una web HTTPS</summary>
         <div>
-          <p>Esta web se sirve por <strong>https</strong> y KoboldCpp habla por <strong>http</strong>. Los navegadores bloquean que una página segura pida datos a una dirección sin cifrar de tu red, como <code>http://192.168.1.139:5001</code> (lo llaman «contenido mixto»). La excepción es <code>localhost</code>: desde el mismo PC donde está KoboldCpp sí suele funcionar. Algunos navegadores recientes te piden permiso para «acceder a dispositivos de tu red local»: si sale, acéptalo.</p>
-          <p>Si desde la tablet o el móvil no conecta, tienes estas alternativas:</p>
+          <p>La demo puede conectarse directamente a tu KoboldCpp local en <code>http://192.168.1.139:5001</code>. En Chrome/Edge recientes, pulsa <strong>Probar conexión</strong> y, si el navegador solicita <strong>Acceso a la red local</strong>, elige <strong>Permitir</strong>. No se hace la petición al abrir la página, para que el permiso se solicite tras una acción tuya.</p>
           <ol>
-            <li><strong>El juego descargado</strong> (Windows, Mac o Android) habla con KoboldCpp por tu red sin esta limitación. Ajustes → IA → escribe la IP del PC.</li>
-            <li><strong>La web servida desde tu PC por http.</strong> En el PC con KoboldCpp: <code>npm run web</code> y <code>npm run serve:web</code>. En la tablet abre <code>http://192.168.1.139:10000/demo.html</code> (con tu IP) y elige «La del servidor»: el PC reenvía a su KoboldCpp.</li>
-            <li><strong>Una dirección https para KoboldCpp</strong>, con su opción «Remote Tunnel». Pega esa dirección <code>https://…</code> en «Mi KoboldCpp». Ojo: cualquiera con el enlace podría usarlo; ciérralo al terminar.</li>
+            <li>En KoboldCpp, usa el puerto <code>5001</code>, deja <strong>Host</strong> vacío (o usa <code>0.0.0.0</code>) y mantén <strong>Remote Tunnel</strong> desactivado.</li>
+            <li>Conecta el PC y el móvil/tablet a la misma Wi-Fi. En el móvil abre <code>http://192.168.1.139:5001/v1/models</code>; debe aparecer JSON. No uses <code>localhost</code> desde el móvil.</li>
+            <li>Si no aparece el JSON, revisa el cortafuegos de Windows para la red privada y que la Wi-Fi no aísle los dispositivos. Si la web no obtiene permiso, abre la información del sitio → configuración/permisos → Acceso a la red local → Permitir.</li>
           </ol>
-          <p>Nunca abras el puerto 5001 en el router: basta con la red de casa. Pasos completos en la <a href="https://github.com/MarinaDP2006/RIFTS-GEARS/blob/main/GUIA-KOBOLDCPP.md">guía de KoboldCpp</a>.</p>
+          <p>No abras el puerto 5001 en el router ni lo expongas a Internet. La IP inicial es <code>192.168.1.139</code>; si tu router la cambia, actualízala en «Mi KoboldCpp».</p>
         </div>
       </details>
     </section>
@@ -240,6 +239,17 @@
         <li><span class="punto punto-listo" aria-hidden="true"></span><strong>IA (KoboldCpp)</strong> La del servidor, la tuya o, si no hay, el narrador local.</li>
         <li><span class="punto punto-info" aria-hidden="true"></span><strong>Versión</strong> {{VERSION}} · en desarrollo activo.</li>
       </ul>
+    </section>
+    <section class="seccion revelar" id="enlaces-publicos" aria-labelledby="t-enlaces-publicos">
+      <header class="seccion-cabeza">
+        <p class="kicker">VI · Seguimiento del proyecto</p>
+        <h2 id="t-enlaces-publicos">Versiones y avisos.</h2>
+        <p>Descarga las compilaciones publicadas o comunica un problema. La web no enlaza al código fuente ni a la página general del repositorio.</p>
+      </header>
+      <p class="acciones">
+        <a class="btn btn-primario" href="https://github.com/MarinaDP2006/RIFTS-GEARS/releases" rel="noopener noreferrer">Releases</a>
+        <a class="btn btn-borde" href="https://github.com/MarinaDP2006/RIFTS-GEARS/issues" rel="noopener noreferrer">Problemas (Issues)</a>
+      </p>
     </section>
   </main>
 
