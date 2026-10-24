@@ -2,14 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0e1113">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070b14">
   <meta name="description" content="Las ciudades del Umbral: aventura narrativa de fantasía industrial. Dos ciudades, una energía compartida y una historia que escribes tú, sin opciones fijas.">
   <meta property="og:title" content="Las ciudades del Umbral · Rifts &amp; Gears">
   <meta property="og:description" content="Aurelia, ciudad de piedra y latón; Nácar, ciudad subterránea de acero y luces de Resonancia. Diez personajes originales quedan atrapados entre ambas.">
   <meta property="og:image" content="arte-propio/ciudades-umbral.svg">
   <title>Las ciudades del Umbral · Rifts &amp; Gears</title>
   <link rel="icon" href="icono-rg.svg" type="image/svg+xml">
+  <link rel="preload" href="fuentes/cinzel-decorative-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -17,46 +18,72 @@
 
   <header class="cabecera">
     <a class="logo" href="#inicio" aria-label="Las ciudades del Umbral, inicio">
-      <span class="logo-sello" aria-hidden="true">U</span>
-      <span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span>
+      <span class="logo-sello" aria-hidden="true">{{ENGRANAJE}}<b>&amp;</b></span>
+      <span class="logo-texto"><strong>Rifts &amp; Gears</strong><small>Las ciudades del Umbral</small></span>
     </a>
-    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu"><i class="gema" aria-hidden="true"></i>Menú</button>
     <nav id="menu" class="menu" aria-label="Navegación principal">
       <a href="#cronica">Crónica</a>
       <a href="#ciudades">Ciudades</a>
       <a href="#resonancia">Resonancia</a>
       <a href="#reparto">Reparto</a>
-      <a href="#como-se-juega">Cómo se juega</a>
+      <a href="#ia">KoboldCpp</a>
       <a class="btn btn-primario btn-sm" href="demo.html">Jugar la demo</a>
     </nav>
   </header>
 
   <main id="contenido">
-    <section class="portada" id="inicio">
-      <div class="portada-texto">
+    <!-- Portada: el menú principal del juego. Aurelia y Nácar a la vez, partidas por la grieta. -->
+    <section class="home" id="inicio" aria-labelledby="t-portada">
+      <div class="home-art aurelia"><div class="home-art-in">
+        <div class="home-slide on" style="background-image:url('lugares/aurelia.svg');background-position:50% 40%"></div>
+        <div class="home-slide" style="background-image:url('lugares/observatorio.svg');background-position:50% 40%"></div>
+        <div class="home-slide" style="background-image:url('lugares/ascensor-central.svg');background-position:50% 40%"></div>
+      </div></div>
+      <div class="home-art nacar"><div class="home-art-in">
+        <div class="home-slide on" style="background-image:url('lugares/nacar.svg');background-position:50% 50%"></div>
+        <div class="home-slide" style="background-image:url('lugares/galerias.svg');background-position:50% 50%"></div>
+        <div class="home-slide" style="background-image:url('lugares/canal-cobre.svg');background-position:50% 50%"></div>
+      </div></div>
+      <div class="home-rift" aria-hidden="true"><svg viewBox="0 0 1000 1000" preserveAspectRatio="none"><polyline class="glow"/><path class="glow"/><polyline class="mid"/><path class="core"/><polyline class="core"/></svg></div>
+      <canvas class="home-fx" aria-hidden="true"></canvas>
+      <div class="home-grain" aria-hidden="true"></div>
+      <div class="home-shade" aria-hidden="true"></div>
+      <div class="home-panel">
         <p class="kicker"><span class="latido" aria-hidden="true"></span> Registro 00:03 · vibración fuera de rango</p>
-        <h1>La ciudad de arriba no recuerda a la de abajo. <em>La piedra, sí.</em></h1>
-        <p class="entradilla">Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Cuando un ascensor se detiene entre las dos, una frecuencia imposible empieza a contar una historia que alguien borró.</p>
-        <div class="acciones">
-          <a class="btn btn-primario" href="demo.html">Entrar en la historia</a>
-          <a class="btn btn-borde" href="#cronica">Leer la crónica</a>
+        <h1 class="home-title" id="t-portada" aria-label="Rifts &amp; Gears">
+          <span class="home-word" aria-hidden="true"><span class="home-letter" style="--i:0">R</span><span class="home-letter" style="--i:1">I</span><span class="home-letter" style="--i:2">F</span><span class="home-letter" style="--i:3">T</span><span class="home-letter" style="--i:4">S</span></span>
+          <span class="home-amp" style="--i:5" aria-hidden="true"><span class="home-gear">{{ENGRANAJE}}</span><b>&amp;</b></span>
+          <span class="home-word" aria-hidden="true"><span class="home-letter" style="--i:6">G</span><span class="home-letter" style="--i:7">E</span><span class="home-letter" style="--i:8">A</span><span class="home-letter" style="--i:9">R</span><span class="home-letter" style="--i:10">S</span></span>
+        </h1>
+        <p class="home-sub">Las ciudades del Umbral</p>
+        <div class="home-cities">
+          <button class="home-city" data-city="aurelia" type="button"><img src="simbolos/aurelia.svg" alt=""><span>Aurelia</span></button>
+          <b aria-hidden="true"></b>
+          <button class="home-city" data-city="nacar" type="button"><img src="simbolos/nacar.svg" alt=""><span>Nácar</span></button>
         </div>
-        <dl class="cifras">
-          <div><dt>Ciudades</dt><dd>2</dd></div>
-          <div><dt>Personajes</dt><dd>{{PERSONAJES}}</dd></div>
-          <div><dt>Partes</dt><dd>3</dd></div>
-          <div><dt>Opciones fijas</dt><dd>0</dd></div>
-        </dl>
+        <p class="home-lema">La ciudad de arriba no recuerda a la de abajo. <em>La piedra, sí.</em></p>
+        <nav class="home-menu" aria-label="Empezar">
+          <a class="home-btn primary" href="demo.html"><i class="home-gem" aria-hidden="true"></i><span>Jugar la demo</span></a>
+          <a class="home-btn" href="#cronica"><i class="home-gem" aria-hidden="true"></i><span>Leer la crónica</span></a>
+          <a class="home-btn" href="#ia"><i class="home-gem" aria-hidden="true"></i><span>Conectar KoboldCpp</span></a>
+        </nav>
+        <p class="home-motto">Dos ciudades. Un mismo pacto.</p>
       </div>
-      <figure class="portada-arte">
-        <img src="arte-propio/ciudades-umbral.svg" alt="Concepto visual original de Aurelia, Nácar y los diez protagonistas de Las ciudades del Umbral">
-        <figcaption>Concepto visual de las dos ciudades y el reparto original; las siluetas son estudios, no modelos 3D finales.</figcaption>
-      </figure>
+      <div class="home-hint" aria-hidden="true"><span class="solo-raton">Mueve el ratón para abrir la grieta entre Aurelia y Nácar</span><span class="solo-tactil">Toca la imagen para abrir la grieta entre Aurelia y Nácar</span></div>
     </section>
 
-    <section class="seccion" id="cronica" aria-labelledby="t-cronica">
+    <dl class="cifras" aria-label="El juego en cifras">
+      <div><dt>Ciudades</dt><dd>2</dd></div>
+      <div><dt>Personajes</dt><dd>{{PERSONAJES}}</dd></div>
+      <div><dt>Lugares</dt><dd>{{LUGARES}}</dd></div>
+      <div><dt>Partes</dt><dd>3</dd></div>
+      <div><dt>Opciones fijas</dt><dd>0</dd></div>
+    </dl>
+
+    <section class="seccion revelar" id="cronica" aria-labelledby="t-cronica">
       <header class="seccion-cabeza">
-        <p class="kicker">01 · Crónica del Umbral</p>
+        <p class="kicker">I · Crónica del Umbral</p>
         <h2 id="t-cronica">Trescientos años de silencio en cinco fechas.</h2>
         <p>Nadie en Aurelia enseña esta historia completa en la escuela. En Nácar se cuenta a trozos, de taller en taller.</p>
       </header>
@@ -69,26 +96,27 @@
       </ol>
     </section>
 
-    <section class="seccion" id="ciudades" aria-labelledby="t-ciudades">
+    <section class="seccion revelar" id="ciudades" aria-labelledby="t-ciudades">
       <header class="seccion-cabeza">
-        <p class="kicker">02 · Las ciudades</p>
+        <p class="kicker">II · Las ciudades</p>
         <h2 id="t-ciudades">Dos caras del mismo mapa.</h2>
         <p>Una promete orden. La otra mantiene la maquinaria en marcha. Ninguna entiende la crisis mirando solo sus propias paredes.</p>
       </header>
       <div class="ciudades">
-        <article class="ciudad ciudad-aurelia">
+        <article class="ciudad" data-tema="aurelia">
           <img src="arte-propio/aurelia.svg" alt="Arte original de Aurelia, ciudad de piedra clara y observatorios" loading="lazy">
           <div class="ciudad-texto">
-            <p class="etiqueta">Ciudad elevada</p>
+            <p class="etiqueta"><img src="simbolos/aurelia.svg" alt="" width="22" height="22"> Ciudad elevada</p>
             <h3>Aurelia</h3>
             <p>Observatorios, gremios técnicos, pasarelas de cristal y ascensores de contrapesos. Desde sus terrazas el progreso luce impecable, aunque su coste no siempre salga en los informes del Consejo.</p>
             <ul><li>Plaza del Archivo</li><li>Terrazas del Observatorio</li><li>Patio de Gremios</li><li>Estación de Ascensores</li></ul>
           </div>
         </article>
-        <article class="ciudad ciudad-nacar">
+        <div class="ciudades-grieta" aria-hidden="true"></div>
+        <article class="ciudad" data-tema="nacar">
           <img src="arte-propio/nacar.svg" alt="Arte original de Nácar, ciudad subterránea de talleres y canales de vapor" loading="lazy">
           <div class="ciudad-texto">
-            <p class="etiqueta">Ciudad subterránea</p>
+            <p class="etiqueta"><img src="simbolos/nacar.svg" alt="" width="22" height="22"> Ciudad subterránea</p>
             <h3>Nácar</h3>
             <p>Galerías geotérmicas, mercados, clínicas vecinales y jardines de musgo. No es una ruina: es una ciudad que su gente sostiene a mano, válvula a válvula, cada día.</p>
             <ul><li>Mercado de las Tuberías</li><li>Galerías Geotérmicas</li><li>Jardín de Musgo</li><li>Canal de Cobre</li></ul>
@@ -97,11 +125,27 @@
       </div>
     </section>
 
-    <section class="banda" id="resonancia" aria-labelledby="t-resonancia">
+    <section class="seccion revelar" id="lugares" aria-labelledby="t-lugares">
+      <header class="seccion-cabeza">
+        <p class="kicker">III · Por dónde te moverás</p>
+        <h2 id="t-lugares">Diez paradas entre el cielo y la roca.</h2>
+        <p>Los mismos escenarios que recorres en el juego. Desliza para bajar de Aurelia a Nácar.</p>
+      </header>
+      <div class="lugares" tabindex="0" aria-label="Galería de lugares">{{GALERIA_LUGARES}}</div>
+    </section>
+
+    <section class="banda revelar" id="resonancia" aria-labelledby="t-resonancia">
       <div class="seccion banda-dentro">
-        <img src="arte-propio/resonancia.svg" alt="Diagrama original de una red geológica de Resonancia" loading="lazy">
+        <figure class="monitor">
+          <img src="arte-propio/resonancia.svg" alt="Diagrama original de una red geológica de Resonancia" loading="lazy">
+          <figcaption>
+            <span class="monitor-rotulo">Medidor · Canal de Cobre</span>
+            <svg class="onda" viewBox="0 0 600 80" preserveAspectRatio="none" aria-hidden="true"><path class="onda-base" d="M0 40H600"/><path class="onda-pulso" d="M0 40H70l12-30 12 60 12-30h28l12-30 12 60 12-30h28l12-30 12 60 12-30H600"/></svg>
+            <span class="monitor-rotulo">Tres pulsos · pausa larga</span>
+          </figcaption>
+        </figure>
         <div>
-          <p class="kicker">03 · La tecnología</p>
+          <p class="kicker">IV · La tecnología</p>
           <h2 id="t-resonancia">Resonancia: energía que alguien tiene que escuchar.</h2>
           <p>Los cristales registran las vibraciones de la roca. Un sistema de válvulas y amortiguadores convierte una parte en trabajo mecánico: mueve ascensores, bombea aire y calienta las clínicas.</p>
           <p>El problema es el límite. Si se extrae más de lo que el estrato repone, los canales pierden presión y la piedra se queja. La pregunta del juego no es técnica: <strong>¿quién asume el riesgo cuando la red falla?</strong></p>
@@ -109,62 +153,113 @@
       </div>
     </section>
 
-    <section class="seccion" id="partes" aria-labelledby="t-partes">
+    <section class="seccion revelar" id="partes" aria-labelledby="t-partes">
       <header class="seccion-cabeza">
-        <p class="kicker">04 · La campaña</p>
+        <p class="kicker">V · La campaña</p>
         <h2 id="t-partes">Tres partes, una pregunta.</h2>
       </header>
       <div class="partes">
-        <article><span>Parte I</span><h3>La ciudad bajo la piedra</h3><p>Una avería, una frecuencia borrada y gente con mucho que perder si alguien la escucha.</p></article>
-        <article><span>Parte II</span><h3>El precio de la Resonancia</h3><p>Archivos censurados, conductos que no salen en los mapas y un acuerdo que nadie votó.</p></article>
+        <article data-tema="nacar"><span>Parte I</span><h3>La ciudad bajo la piedra</h3><p>Una avería, una frecuencia borrada y gente con mucho que perder si alguien la escucha.</p></article>
+        <article data-tema="aurelia"><span>Parte II</span><h3>El precio de la Resonancia</h3><p>Archivos censurados, conductos que no salen en los mapas y un acuerdo que nadie votó.</p></article>
         <article><span>Parte III</span><h3>Un pacto que no se hereda</h3><p>Decidir cómo compartir una energía sin fingir que las diferencias han desaparecido.</p></article>
       </div>
     </section>
 
-    <section class="seccion" id="reparto" aria-labelledby="t-reparto">
+    <section class="seccion revelar" id="reparto" aria-labelledby="t-reparto">
       <header class="seccion-cabeza">
-        <p class="kicker">05 · Reparto</p>
+        <p class="kicker">VI · Reparto</p>
         <h2 id="t-reparto">Nadie es solo su ciudad.</h2>
         <p>Diez personas con oficio, contradicciones y lealtades que cambian según lo que les digas.</p>
       </header>
       <div class="fichas">{{REPARTO}}</div>
     </section>
 
-    <section class="seccion" id="como-se-juega" aria-labelledby="t-juego">
+    <section class="seccion revelar" id="como-se-juega" aria-labelledby="t-juego">
       <header class="seccion-cabeza">
-        <p class="kicker">06 · Cómo se juega</p>
+        <p class="kicker">VII · Cómo se juega</p>
         <h2 id="t-juego">Sin botones de respuesta. Hablas tú.</h2>
       </header>
-      <div class="pasos">
-        <article><span class="paso-num">1</span><h3>Te preguntamos si conoces el mundo</h3><p>Si es tu primera vez, una introducción breve. Si ya lo conoces, pasas directo a la creación.</p></article>
-        <article><span class="paso-num">2</span><h3>Creas a tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus propias palabras.</p></article>
-        <article><span class="paso-num">3</span><h3>Escribes lo que dices o haces</h3><p>Los personajes te contestan, te preguntan, discuten entre ellos y recuerdan lo que hiciste. La historia la construyes tú, dentro de las reglas del Umbral.</p></article>
-        <article><span class="paso-num">4</span><h3>Una sola IA: KoboldCpp</h3><p>El rol lo mueve KoboldCpp, la única IA del juego, con las reglas del mundo cargadas. En la web la usa el servidor; en el juego, la tuya en tu PC o en tu red de casa.</p></article>
-      </div>
+      <ol class="pasos">
+        <li><h3>Te preguntamos si conoces el mundo</h3><p>Si es tu primera vez, una introducción breve. Si ya lo conoces, pasas directo a la creación.</p></li>
+        <li><h3>Creas a tu personaje</h3><p>Nombre, pronombres, ciudad, oficio y lo que quieras contar de ti con tus propias palabras.</p></li>
+        <li><h3>Escribes lo que dices o haces</h3><p>Los personajes te contestan, te preguntan, discuten entre ellos y recuerdan lo que hiciste.</p></li>
+        <li><h3>KoboldCpp pone las voces</h3><p>Con las reglas del mundo cargadas. Si no hay IA a mano, un narrador local mantiene la escena viva.</p></li>
+      </ol>
     </section>
 
-    <section class="seccion demo-cta" aria-labelledby="t-demo">
-      <div>
+    <section class="seccion revelar" id="ia" aria-labelledby="t-ia">
+      <header class="seccion-cabeza">
+        <p class="kicker">VIII · La IA del Umbral</p>
+        <h2 id="t-ia">Una sola IA: KoboldCpp.</h2>
+        <p>KoboldCpp corre en un ordenador, sin claves ni cuentas. La demo puede usarla de dos maneras, y tú eliges cuál en la propia demo.</p>
+      </header>
+      <div class="ia-estado" data-ia-estado aria-live="polite">
+        <span class="punto punto-espera" aria-hidden="true"></span>
+        <span><strong>KoboldCpp del servidor</strong> <span data-ia-texto>Comprobando…</span></span>
+      </div>
+      <div class="ia-caminos">
+        <article>
+          <span class="ia-num" aria-hidden="true">A</span>
+          <h3>La del servidor de la web</h3>
+          <p>No instalas nada. El servidor reenvía tus mensajes al KoboldCpp que tenga configurado (<code>KOBOLDCPP_URL</code>). Arriba ves si está encendido ahora mismo.</p>
+        </article>
+        <article>
+          <span class="ia-num" aria-hidden="true">B</span>
+          <h3>La tuya, en tu PC o tu red de casa</h3>
+          <p>Abre KoboldCpp con tu modelo y escribe su dirección en la demo: <code>localhost</code> si juegas en ese mismo PC, o su IP, por ejemplo <code>192.168.1.139</code>, desde la tablet o el móvil. El puerto 5001 se pone solo.</p>
+        </article>
+        <article>
+          <span class="ia-num" aria-hidden="true">C</span>
+          <h3>Sin IA: narrador local</h3>
+          <p>Si no hay KoboldCpp disponible, la demo no se queda muda: un narrador sencillo reacciona a lo que escribes y hace avanzar la escena.</p>
+        </article>
+      </div>
+      <details class="aviso-https">
+        <summary><i class="gema" aria-hidden="true"></i>Por qué tu KoboldCpp de casa puede no conectar desde esta web</summary>
+        <div>
+          <p>Esta web se sirve por <strong>https</strong> y KoboldCpp habla por <strong>http</strong>. Los navegadores bloquean que una página segura pida datos a una dirección sin cifrar de tu red, como <code>http://192.168.1.139:5001</code> (lo llaman «contenido mixto»). La excepción es <code>localhost</code>: desde el mismo PC donde está KoboldCpp sí suele funcionar. Algunos navegadores recientes te piden permiso para «acceder a dispositivos de tu red local»: si sale, acéptalo.</p>
+          <p>Si desde la tablet o el móvil no conecta, tienes estas alternativas:</p>
+          <ol>
+            <li><strong>El juego descargado</strong> (Windows, Mac o Android) habla con KoboldCpp por tu red sin esta limitación. Ajustes → IA → escribe la IP del PC.</li>
+            <li><strong>La web servida desde tu PC por http.</strong> En el PC con KoboldCpp: <code>npm run web</code> y <code>npm run serve:web</code>. En la tablet abre <code>http://192.168.1.139:10000/demo.html</code> (con tu IP) y elige «La del servidor»: el PC reenvía a su KoboldCpp.</li>
+            <li><strong>Una dirección https para KoboldCpp</strong>, con su opción «Remote Tunnel». Pega esa dirección <code>https://…</code> en «Mi KoboldCpp». Ojo: cualquiera con el enlace podría usarlo; ciérralo al terminar.</li>
+          </ol>
+          <p>Nunca abras el puerto 5001 en el router: basta con la red de casa. Pasos completos en la <a href="https://github.com/MarinaDP2006/RIFTS-GEARS/blob/main/GUIA-KOBOLDCPP.md">guía de KoboldCpp</a>.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="seccion demo-cta revelar" aria-labelledby="t-demo">
+      <div class="demo-cta-caja">
         <p class="kicker">Prueba abierta · en el navegador</p>
         <h2 id="t-demo">Empieza por la primera avería.</h2>
-        <p>La demo te deja crear un personaje y vivir la primera escena en Aurelia o en Nácar con conversación libre.</p>
-        <a class="btn btn-primario" href="demo.html">Abrir la demo</a>
+        <p>Crea un personaje y vive la primera escena en Aurelia o en Nácar con conversación libre.</p>
+        <a class="btn btn-primario" href="demo.html"><i class="gema" aria-hidden="true"></i>Abrir la demo</a>
       </div>
       <ul class="estado">
-        <li><span class="punto punto-listo"></span><strong>Universo y campaña base</strong> Ciudades, Resonancia, tres partes y diez personajes.</li>
-        <li><span class="punto punto-proto"></span><strong>Modelos 3D</strong> Prototipos low-poly, sin rig ni animaciones finales.</li>
-        <li><span class="punto punto-proto"></span><strong>IA (KoboldCpp)</strong> Funciona cuando el servidor tiene un KoboldCpp configurado; si no, responde un narrador local.</li>
-        <li><span class="punto punto-info"></span><strong>Versión</strong> {{VERSION}} · en desarrollo activo.</li>
+        <li><span class="punto punto-listo" aria-hidden="true"></span><strong>Universo y campaña base</strong> Ciudades, Resonancia, tres partes y diez personajes.</li>
+        <li><span class="punto punto-proto" aria-hidden="true"></span><strong>Modelos 3D</strong> Prototipos low-poly, sin rig ni animaciones finales.</li>
+        <li><span class="punto punto-listo" aria-hidden="true"></span><strong>IA (KoboldCpp)</strong> La del servidor, la tuya o, si no hay, el narrador local.</li>
+        <li><span class="punto punto-info" aria-hidden="true"></span><strong>Versión</strong> {{VERSION}} · en desarrollo activo.</li>
       </ul>
     </section>
   </main>
 
+  <div class="ascensor" aria-hidden="true">
+    <img src="simbolos/aurelia.svg" alt="">
+    <span class="ascensor-hueco"><span class="ascensor-cabina"></span></span>
+    <img src="simbolos/nacar.svg" alt="">
+  </div>
+
   <footer class="pie">
-    <div class="logo"><span class="logo-sello" aria-hidden="true">U</span><span class="logo-texto"><strong>Las ciudades del Umbral</strong><small>Rifts &amp; Gears</small></span></div>
+    <div class="logo"><span class="logo-sello" aria-hidden="true">{{ENGRANAJE}}<b>&amp;</b></span><span class="logo-texto"><strong>Rifts &amp; Gears</strong><small>Las ciudades del Umbral</small></span></div>
     <p>Universo original de fantasía industrial creado por MarinaDP2006. Nombres, historia y diseños propios, aún en desarrollo.</p>
     <nav aria-label="Enlaces del pie"><a href="demo.html">Demo</a><a href="privacidad.html">Privacidad</a><a href="https://github.com/MarinaDP2006/RIFTS-GEARS">Código</a></nav>
     <small>© {{ANIO}} Rifts &amp; Gears</small>
   </footer>
   <script src="menu.js" defer></script>
+  <script src="title-fx.js" defer></script>
+  <script src="koboldcpp.js" defer></script>
+  <script src="portada.js" defer></script>
 </body>
 </html>

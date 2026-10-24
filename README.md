@@ -22,16 +22,17 @@ La campaña tiene tres partes: *La ciudad bajo la piedra*, *El precio de la Reso
 
 La carpeta `web/` contiene la web pública:
 
-- `index.html`: portada con la crónica, las ciudades, la Resonancia, la campaña, el reparto y cómo se juega.
-- `demo.html` + `demo-juego.js`: demo de rol libre. Pregunta si conoces el mundo (si no, da una introducción breve), te deja crear el personaje y abre la primera escena en Aurelia o en Nácar con conversación libre.
+- `index.html` + `portada.js`: portada con el mismo menú principal del juego (Aurelia y Nácar partidas por la grieta, con `src/js/title-fx.js`), la crónica, las ciudades, los lugares, la Resonancia, la campaña, el reparto, cómo se juega y la sección de KoboldCpp con su estado en vivo.
+- `demo.html` + `demo-juego.js`: demo de rol libre. Pregunta si conoces el mundo (si no, da una introducción breve), te deja crear el personaje y abre la primera escena en Aurelia o en Nácar con conversación libre. Arriba tiene el panel **Conexión con KoboldCpp**.
+- `koboldcpp.js`: conexión con KoboldCpp (la del servidor o la tuya) y sus mensajes de error.
 - `demo-base.json`: textos de la demo (introducción, reglas del mundo para la IA, escenas y giros).
 - `estilos.css`, `menu.js`, `privacidad.html` y el arte propio en `arte-propio/`.
 
-`npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, versión). La web no ofrece descargas.
+`npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, lugares, versión) y copiando sin cambios las fuentes, las ilustraciones de lugares y los emblemas del juego. La web no ofrece descargas.
 
 ## IA: solo KoboldCpp
 
-La única IA del juego es **KoboldCpp**. No hay otros proveedores. En el juego se activa en **Ajustes → IA de la historia y los chats** ([GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md)); la tablet y el móvil usan el KoboldCpp del PC por la red de casa. La demo web pasa por el servidor (`server/index.js`, endpoint `/api/roleplay`), que reenvía a KoboldCpp. Si no hay KoboldCpp disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
+La única IA del juego es **KoboldCpp**. No hay otros proveedores. En el juego se activa en **Ajustes → IA de la historia y los chats** ([GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md)); la tablet y el móvil usan el KoboldCpp del PC por la red de casa. La demo web puede usar el KoboldCpp del servidor (`server/index.js`, endpoint `/api/roleplay`, que reenvía a `KOBOLDCPP_URL`) o el tuyo directamente («Mi KoboldCpp», por ejemplo `192.168.1.139`). `/api/health` dice si el KoboldCpp del servidor está encendido. Si no hay KoboldCpp disponible, la demo cambia a un narrador local sencillo para no quedarse muda. Desde la web en `https://`, el navegador suele bloquear un KoboldCpp de la red de casa por `http://`; la web explica las alternativas (ver [GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md)).
 
 Variables del servidor (ver `.env.example`):
 

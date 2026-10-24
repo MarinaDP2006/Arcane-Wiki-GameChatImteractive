@@ -22,6 +22,14 @@ function loadData() {
 // Escapa texto para meterlo en HTML.
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+// El engranaje de latón del título, dibujado por el mismo código que el menú del juego.
+function engranaje() {
+  const ctx = { window: {} };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(path.join(root, 'src', 'js', 'title-fx.js'), 'utf8'), ctx, { filename: 'title-fx.js' });
+  return ctx.window.TitleFX.GEAR_SVG;
+}
+
 // Copia un archivo creando las carpetas que falten.
 function copy(from, to) {
   fs.mkdirSync(path.dirname(to), { recursive: true });
@@ -71,9 +79,19 @@ function demoData(w) {
   return '// Generado por scripts/build-web.js a partir de src/data y web/demo-base.json. No editar a mano.\nwindow.DEMO = ' + JSON.stringify(datos) + ';\n';
 }
 
-// Tarjetas del reparto para la portada.
+// Tarjetas del reparto para la portada. El sello usa los dos colores del personaje en el juego.
 function repartoHtml(personajes, ciudades) {
-  return personajes.map((p, i) => `<article class="ficha ficha-${esc(p.origin)}"><span class="ficha-num">${String(i + 1).padStart(2, '0')}</span><p class="ficha-ciudad">${esc(ciudades[p.origin] || p.origin)}</p><h3>${esc(p.name)}</h3><p class="ficha-alias">${esc(p.alias)}</p><p>${esc(p.summary)}</p><blockquote>«${esc(p.quote)}»</blockquote></article>`).join('');
+  const iniciales = (n) => String(n).split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  return personajes.map((p, i) => {
+    const [c1, c2] = (p.colors || []).concat('#6f8db8', '#0e1524');
+    return `<article class="ficha" data-tema="${esc(p.origin)}"><span class="ficha-sello" style="--c1:${esc(c1)};--c2:${esc(c2)}" aria-hidden="true">${esc(iniciales(p.name))}</span><span class="ficha-num">${String(i + 1).padStart(2, '0')}</span><p class="ficha-ciudad">${esc(ciudades[p.origin] || p.origin)} · ${esc(p.role)}</p><h3>${esc(p.name)}</h3><p class="ficha-alias">${esc(p.alias)}</p><p>${esc(p.summary)}</p><blockquote>«${esc(p.quote)}»</blockquote></article>`;
+  }).join('');
+}
+
+// Galería de lugares con las ilustraciones del juego (src/img/umbral/lugares), sin tocarlas.
+function lugaresHtml(sitios, ciudades) {
+  return sitios.filter((l) => fs.existsSync(path.join(root, 'src', 'img', 'umbral', 'lugares', l.id + '.svg')))
+    .map((l) => `<figure class="lugar" data-tema="${esc(l.city)}"><img src="lugares/${esc(l.id)}.svg" alt="" loading="lazy" width="1600" height="900"><figcaption><span>${esc(ciudades[l.city] || l.city)}</span><strong>${esc(l.name)}</strong><small>${esc(l.summary)}</small></figcaption></figure>`).join('');
 }
 
 function build() {
@@ -83,9 +101,18 @@ function build() {
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
 
-  // La web solo publica ilustraciones propias (web/arte-propio) y el icono.
+  // La web publica ilustraciones propias (web/arte-propio), el icono y, tal cual, el arte, las
+  // fuentes y el efecto de la grieta del menú principal del juego, para que se vean igual.
   const personajes = WIKI.personajes;
   copy(path.join(root, 'build', 'icon.png'), path.join(out, 'icono.png'));
+  for (const sub of ['lugares', 'simbolos']) {
+    const dir = path.join(root, 'src', 'img', 'umbral', sub);
+    for (const f of fs.readdirSync(dir).filter((n) => n.endsWith('.svg'))) copy(path.join(dir, f), path.join(out, sub, f));
+  }
+  const fuentes = path.join(root, 'src', 'fonts');
+  for (const f of fs.readdirSync(fuentes).filter((n) => /\.(woff2|txt)$/.test(n))) copy(path.join(fuentes, f), path.join(out, 'fuentes', f));
+  copy(path.join(root, 'src', 'js', 'title-fx.js'), path.join(out, 'title-fx.js'));
+  const nombresCiudad = Object.fromEntries(Object.entries(extra.CREATION.origins).map(([k, c]) => [k, c.label]));
   // Los diez lugares del mapa (los del Códice que tienen ciudad).
   const sitios = WIKI.lugares.filter((l) => l.city);
   const lugares = sitios.map((l) => `<li class="lugar-${esc(l.city)}">${esc(l.name)}</li>`).join('');
@@ -100,8 +127,10 @@ function build() {
     TEMAS: dialogos,
     CAPTURAS: buildCapturas(),
     LISTA_LUGARES: lugares,
-    REPARTO: repartoHtml(personajes, Object.fromEntries(Object.entries(extra.CREATION.origins).map(([k, c]) => [k, c.label]))),
+    REPARTO: repartoHtml(personajes, nombresCiudad),
+    GALERIA_LUGARES: lugaresHtml(sitios, nombresCiudad),
     ANIO: new Date().getFullYear(),
+    ENGRANAJE: engranaje(),
   };
   for (const f of fs.readdirSync(path.join(root, 'web'))) {
     const src = path.join(root, 'web', f);

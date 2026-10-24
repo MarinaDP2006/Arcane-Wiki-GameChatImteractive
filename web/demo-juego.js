@@ -1,15 +1,15 @@
 // Demo de rol libre en el navegador. Sin opciones fijas: escribes lo que tu personaje dice o
 // hace y el narrador y los personajes te contestan. Los datos del mundo vienen de window.DEMO
-// (demo-datos.js). La IA es KoboldCpp, a través del servidor (/api/roleplay): no hay que instalar
-// nada. Si el servidor no responde, un narrador local mantiene la escena para que la demo no se
-// quede muda.
+// (demo-datos.js). La IA es KoboldCpp (koboldcpp.js): la del servidor de la web o la tuya, en tu
+// PC o en tu red de casa. Si ninguna responde, un narrador local mantiene la escena para que la
+// demo no se quede muda, y el panel «Conexión con KoboldCpp» explica por qué.
 (() => {
   'use strict';
   const D = window.DEMO;
   const app = document.getElementById('demo-app');
   if (!D || !app) return;
 
-  const ENDPOINT = (window.ROLEPLAY_CONFIG && window.ROLEPLAY_CONFIG.endpoint) || (location.protocol === 'file:' ? '' : '/api/roleplay');
+  const K = window.KoboldWeb;
   const KEY = 'demo-' + D.id;
   const PRONOMBRES = [['el', 'Él'], ['ella', 'Ella'], ['elle', 'Elle']];
 
@@ -18,14 +18,131 @@
   const pick = (arr, n) => arr[Math.abs(n) % arr.length];
 
   let st = load() || { paso: 'pregunta' };
-  st.offline = false; // en cada visita se vuelve a probar la IA del servidor
+  // Conexión con KoboldCpp: se comprueba en cada visita. estado: comprobando | listo | local
+  const cx = { cfg: K ? K.cargar() : { modo: 'servidor', url: '' }, estado: 'comprobando', modelo: '', error: '' };
   function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch { /* sin almacenamiento: la demo sigue */ } }
   function go(paso) { st.paso = paso; save(); render(); app.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
   function render() {
     app.replaceChildren();
+    tema(st.paso === 'juego' && st.pj ? st.pj.ciudad : '');
     ({ pregunta, intro, crear, juego }[st.paso] || pregunta)();
+  }
+  // Como en el juego («Colores según la ciudad»): la página toma la paleta de tu ciudad.
+  function tema(ciudad) { if (ciudad) document.documentElement.dataset.tema = ciudad; else delete document.documentElement.dataset.tema; }
+
+  // ---------- Conexión con KoboldCpp ----------
+  const zona = document.getElementById('demo-conexion');
+  let panel = null;
+
+  function textoEstado() {
+    if (cx.estado === 'comprobando') return ['punto-espera', 'Comprobando KoboldCpp…'];
+    if (cx.estado === 'listo') {
+      const donde = cx.cfg.modo === 'mio' ? 'Tu KoboldCpp' : 'KoboldCpp del servidor';
+      return ['punto-listo', donde + (cx.modelo ? ' · ' + cx.modelo : '') + ' · conectado'];
+    }
+    return ['punto-apagado', 'Narrador local (sin IA)'];
+  }
+  function pintarEstado() {
+    const [cls, txt] = textoEstado();
+    document.querySelectorAll('[data-kc-estado]').forEach((el) => {
+      el.replaceChildren(make('span', 'punto ' + cls), document.createTextNode(txt));
+    });
+  }
+
+  function mensaje(tipo, texto, enlace) {
+    const m = panel && panel.querySelector('[data-kc-msg]');
+    if (!m) return;
+    m.hidden = !texto; m.dataset.tipo = tipo; m.textContent = texto || '';
+    if (enlace) { const a = make('a', '', enlace[0]); a.href = enlace[1]; m.append(' ', a); }
+  }
+  const ALTERNATIVAS = ['Ver alternativas', 'index.html#ia'];
+
+  async function comprobar() {
+    if (!K) { cx.estado = 'local'; pintarEstado(); return; }
+    cx.estado = 'comprobando'; cx.error = ''; pintarEstado(); mensaje('aviso', '');
+    const boton = panel && panel.querySelector('[data-kc-probar]'); if (boton) boton.disabled = true;
+    try {
+      if (cx.cfg.modo === 'mio') {
+        const r = await K.probarMio(cx.cfg.url);
+        cx.estado = 'listo'; cx.modelo = r.modelo;
+        mensaje('ok', `Conectado con tu KoboldCpp${r.modelo ? ' (' + r.modelo + ')' : ''}. Los personajes ya responden con IA.`);
+      } else {
+        const r = await K.estadoServidor();
+        if (r.estado === 'conectado') { cx.estado = 'listo'; cx.modelo = r.modelo; mensaje('ok', 'El servidor de la web tiene KoboldCpp encendido. No necesitas instalar nada.'); }
+        else {
+          cx.estado = 'local';
+          cx.error = {
+            'sin-modelo': 'El servidor llega a KoboldCpp, pero no tiene un modelo abierto ahora mismo.',
+            'sin-conexion': 'El KoboldCpp del servidor está apagado ahora mismo.',
+            'sin-servidor': 'Esta copia de la web no tiene servidor.',
+          }[r.estado] || 'No se ha podido comprobar el servidor.';
+          mensaje('aviso', cx.error + ' Puedes elegir «Mi KoboldCpp» o seguir con el narrador local.');
+        }
+      }
+    } catch (err) {
+      cx.estado = 'local'; cx.error = err.message;
+      mensaje('error', err.message, err.tipo === 'https' ? ALTERNATIVAS : null);
+    }
+    if (boton) boton.disabled = false;
+    pintarEstado();
+    // Abierto mientras no haya IA, para que se vea por qué y cómo conectarla.
+    if (panel) panel.open = cx.estado !== 'listo';
+  }
+
+  function panelConexion() {
+    if (!zona) return;
+    panel = make('details', 'kc');
+    const sum = make('summary');
+    const titulo = make('span', 'kc-titulo'); titulo.append(make('i', 'gema'), document.createTextNode('Conexión con KoboldCpp'));
+    const pastilla = make('span', 'kc-pastilla'); pastilla.dataset.kcEstado = ''; pastilla.setAttribute('aria-live', 'polite');
+    sum.append(titulo, pastilla);
+    const cuerpo = make('div', 'kc-cuerpo');
+
+    const fs = make('fieldset', 'kc-modos'); fs.append(make('legend', '', '¿Qué KoboldCpp usa la demo?'));
+    [['servidor', 'La del servidor de la web', 'Sin instalar nada. Funciona si el servidor tiene KoboldCpp encendido.'],
+     ['mio', 'Mi KoboldCpp', 'En este PC o en otro de tu red de casa, por ejemplo 192.168.1.139.']].forEach(([v, t, d]) => {
+      const l = make('label', 'kc-modo'); const r = make('input'); r.type = 'radio'; r.name = 'kc-modo'; r.value = v; r.checked = cx.cfg.modo === v;
+      const sp = make('span'); sp.append(make('strong', '', t), make('small', '', d)); l.append(r, sp); fs.append(l);
+    });
+
+    const bloqueUrl = make('div', 'kc-url');
+    const lab = make('label', 'dj-campo'); lab.htmlFor = 'kc-url'; lab.textContent = 'Dirección de tu KoboldCpp';
+    const fila = make('div', 'kc-fila');
+    const input = make('input'); input.type = 'text'; input.id = 'kc-url'; input.value = cx.cfg.url; input.placeholder = '192.168.1.139 o localhost';
+    input.inputMode = 'url'; input.autocomplete = 'off'; input.spellcheck = false; input.setAttribute('autocapitalize', 'off');
+    const probar = make('button', 'btn btn-primario', 'Probar conexión'); probar.type = 'button'; probar.dataset.kcProbar = '';
+    fila.append(input, probar);
+    const usara = make('p', 'kc-usara');
+    const avisoHttps = make('p', 'kc-msg'); avisoHttps.dataset.tipo = 'aviso';
+    bloqueUrl.append(lab, fila, usara, avisoHttps);
+
+    const recomprobar = make('button', 'btn btn-borde btn-sm', 'Comprobar de nuevo'); recomprobar.type = 'button'; recomprobar.dataset.kcProbar = '';
+    const msg = make('p', 'kc-msg'); msg.hidden = true; msg.dataset.kcMsg = ''; msg.setAttribute('role', 'status');
+    cuerpo.append(fs, bloqueUrl, recomprobar, msg);
+    panel.append(sum, cuerpo);
+    zona.replaceChildren(panel);
+
+    const actualizar = () => {
+      const mio = cx.cfg.modo === 'mio';
+      bloqueUrl.hidden = !mio; recomprobar.hidden = mio;
+      const full = K ? K.normalizar(input.value) : '';
+      usara.textContent = full ? 'La demo usará: ' + full.replace(/\/v1\/chat\/completions$/, '') + ' (API /v1/chat/completions)' : 'Escribe solo la IP o el nombre del PC; el puerto 5001 se pone solo.';
+      let aviso = '';
+      if (full && K.bloqueadoPorHttps(full)) aviso = 'Esta web va por https y muchos navegadores bloquean direcciones http de tu red. Si al probar sale un error, mira las alternativas.';
+      else if (full && matchMedia('(pointer: coarse)').matches && K.esLoopback(new URL(full).hostname)) aviso = 'En un móvil o una tablet, «localhost» es el propio aparato. Escribe la IP del PC con KoboldCpp.';
+      avisoHttps.hidden = !aviso || !mio; avisoHttps.textContent = aviso;
+      if (aviso && aviso.startsWith('Esta web')) { const a = make('a', '', ALTERNATIVAS[0]); a.href = ALTERNATIVAS[1]; avisoHttps.append(' ', a); }
+    };
+    fs.addEventListener('change', (e) => {
+      cx.cfg.modo = e.target.value; K && K.guardar(cx.cfg); actualizar();
+      if (cx.cfg.modo === 'servidor' || cx.cfg.url) comprobar(); else { cx.estado = 'local'; pintarEstado(); mensaje('aviso', 'Escribe la dirección de tu KoboldCpp y pulsa «Probar conexión».'); input.focus(); }
+    });
+    input.addEventListener('input', () => { cx.cfg.url = input.value.trim(); K && K.guardar(cx.cfg); actualizar(); });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); comprobar(); } });
+    probar.onclick = comprobar; recomprobar.onclick = comprobar;
+    actualizar(); pintarEstado();
   }
 
   // 1. ¿Conoce el mundo? Si no, introducción breve; si sí, directo a la creación.
@@ -56,12 +173,13 @@
     f.append(campo('Nombre', nombre), campo('Pronombres', pron));
 
     const fs = make('fieldset', 'dj-ciudades'); fs.append(make('legend', '', 'Ciudad de origen'));
+    // Cada ciudad trae su paleta, como en el creador del juego.
     const ids = Object.keys(D.ciudades);
     ids.forEach((id, i) => {
       const c = D.ciudades[id]; const l = make('label', 'dj-ciudad dj-ciudad-' + id);
       const r = make('input'); r.type = 'radio'; r.name = 'ciudad'; r.value = id; r.checked = i === 0;
       const t = make('span'); t.append(make('strong', '', c.label), make('small', '', c.tagline));
-      l.append(r, t); fs.append(l);
+      l.dataset.tema = id; l.append(r, t); fs.append(l);
     });
     f.append(fs);
 
@@ -75,7 +193,7 @@
     f.append(campo('Cuéntanos algo de tu personaje', yo));
     const enviar = make('button', 'btn btn-primario', 'Entrar en la historia'); enviar.type = 'submit'; f.append(enviar);
 
-    f.addEventListener('change', e => { if (e.target.name === 'ciudad' || e.target === pron) fillOficios(); });
+    f.addEventListener('change', e => { if (e.target.name === 'ciudad' || e.target === pron) fillOficios(); if (e.target.name === 'ciudad') tema(e.target.value); });
     f.addEventListener('submit', e => {
       e.preventDefault();
       const ciudad = f.ciudad.value;
@@ -84,7 +202,7 @@
       st.log.push({ role: 'assistant', content: 'Narrador: ' + esc.apertura.replace('{nombre}', st.pj.nombre).replace('{oficio}', st.pj.oficio.charAt(0).toLowerCase() + st.pj.oficio.slice(1)) });
       go('juego');
     });
-    app.append(f); fillOficios(); nombre.focus();
+    app.append(f); fillOficios(); tema(f.ciudad.value); nombre.focus({ preventScroll: true });
   }
 
   // 3. Rol libre.
@@ -100,7 +218,7 @@
     st.log.forEach(m => log.append(burbuja(m)));
     wrap.append(log);
 
-    const estado = make('p', 'dj-estado', st.offline ? 'Narrador local: la IA del servidor no está disponible ahora mismo.' : 'IA en servidor · sin instalar nada');
+    const estado = make('p', 'dj-estado'); estado.dataset.kcEstado = ''; estado.setAttribute('aria-live', 'polite');
     const form = make('form', 'dj-entrada');
     const ta = make('textarea'); ta.rows = 2; ta.maxLength = 600; ta.required = true;
     ta.placeholder = 'Escribe lo que dices o haces. Por ejemplo: «Me acerco a ' + nombreDe(esc.presentes[0]) + ' y le pregunto qué ha visto».';
@@ -118,7 +236,6 @@
       pensando.remove();
       const a = { role: 'assistant', content: r }; st.log.push(a); st.turno++; save();
       log.append(burbuja(a)); bajar(log);
-      estado.textContent = st.offline ? 'Narrador local: la IA del servidor no está disponible ahora mismo.' : 'IA en servidor · sin instalar nada';
       send.disabled = ta.disabled = false; ta.focus();
     });
 
@@ -126,7 +243,7 @@
     const reset = make('button', 'btn btn-texto', 'Empezar de nuevo');
     reset.onclick = () => { if (confirm('¿Borrar esta partida de la demo y crear otro personaje?')) { st = { paso: 'pregunta' }; save(); render(); } };
     pie.append(estado, reset);
-    wrap.append(form, pie); app.append(wrap); bajar(log);
+    wrap.append(form, pie); app.append(wrap); bajar(log); pintarEstado();
   }
 
   const nombreDe = id => (D.reparto.find(p => p.id === id) || {}).name || id;
@@ -156,17 +273,19 @@
     ].join('\n\n');
   }
 
+  // Pide la respuesta a KoboldCpp. Si falla, se explica en el panel de conexión y responde el
+  // narrador local; «Probar conexión» vuelve a activar la IA.
   async function responder(txt) {
-    if (ENDPOINT && !st.offline) {
+    if (cx.estado === 'comprobando') await comprobacion;
+    if (K && cx.estado === 'listo') {
       try {
         const historial = st.log.slice(-16).map(m => ({ role: m.role, content: m.content }));
-        const r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'system', content: sistema() }, ...historial], temperature: 0.85, max_tokens: 380 }) });
-        const j = await r.json().catch(() => ({}));
-        const c = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
-        if (r.ok && c && c.trim()) return c.trim();
-        if (r.status === 429) return 'Narrador: La escena se detiene un momento: el servidor pide un respiro. Espera un minuto y vuelve a escribir.';
-      } catch { /* sin red o sin servidor: pasamos al narrador local */ }
-      st.offline = true;
+        return await K.chat(cx.cfg, [{ role: 'system', content: sistema() }, ...historial], { temperature: 0.85, max: 380 });
+      } catch (err) {
+        cx.estado = 'local'; cx.error = err.message; pintarEstado();
+        mensaje('error', err.message + ' Mientras tanto responde el narrador local.', err.tipo === 'https' ? ALTERNATIVAS : null);
+        if (panel) panel.open = true;
+      }
     }
     return local(txt);
   }
@@ -186,5 +305,7 @@
     return `${nom}: ${voz}\nNarrador: ${pick(esc.giros, n)}`;
   }
 
+  panelConexion();
+  const comprobacion = comprobar();
   render();
 })();
