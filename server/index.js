@@ -141,6 +141,23 @@ async function roleplay(req, res) {
   }
 }
 
+// Estado real de KoboldCpp para la web: pregunta a /v1/models (rápido, no genera texto) y guarda
+// el resultado unos segundos para no molestar a KoboldCpp con cada visita. Nunca expone la URL.
+let health = { at:0, data:null };
+async function koboldStatus() {
+  if (health.data && Date.now() - health.at < 20000) return health.data;
+  const configured = Boolean(process.env.KOBOLDCPP_URL);
+  let data;
+  try {
+    const r = await fetch(`${KOBOLDCPP_URL}/v1/models`, { signal:AbortSignal.timeout(4000) });
+    const j = await r.json().catch(() => ({}));
+    const id = j?.data?.[0]?.id;
+    data = r.ok ? { koboldcpp:'conectado', model:typeof id === 'string' ? id.replace(/^koboldcpp\//, '').slice(0, 80) : MODEL } : { koboldcpp:'sin-modelo' };
+  } catch { data = { koboldcpp:'sin-conexion' }; }
+  health = { at:Date.now(), data:{ ok:true, provider:'koboldcpp', configured, ...data } };
+  return health.data;
+}
+
 function staticFile(req, res) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, { error:'Método no permitido.' }, { Allow:'GET, HEAD' });
   if (!fs.existsSync(PUBLIC_DIR)) return send(res, 503, { error:'La web todavía no se ha construido. Ejecuta npm run web.' });
@@ -171,7 +188,7 @@ function staticFile(req, res) {
 const server = http.createServer((req, res) => {
   if (req.url.split('?')[0] === '/api/health') {
     if (req.method !== 'GET') return send(res, 405, { error:'Método no permitido.' }, { Allow:'GET' });
-    return send(res, 200, { ok:true, provider:'koboldcpp', model:MODEL });
+    return koboldStatus().then(data => send(res, 200, data));
   }
   if (req.url.split('?')[0] === '/api/roleplay') return roleplay(req,res);
   return staticFile(req,res);

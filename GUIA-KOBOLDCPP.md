@@ -27,7 +27,27 @@ Mientras KoboldCpp esté abierto, los personajes te responden con ese modelo.
 5. **En el juego** abre **Ajustes → IA de la historia y los chats**, elige **KoboldCpp** y en **Dirección** escribe solo la IP: `192.168.1.139`. Debajo verás «El juego usará: `http://192.168.1.139:5001/v1/chat/completions`»: el puerto y la ruta se ponen solos. También vale pegar `http://192.168.1.139:5001`, la dirección de KoboldAI Lite (`…:5001/#`) o la de su API (`…:5001/api`).
 6. Pulsa **Buscar mi modelo** y después **Probar conexión**. Si funciona, la historia libre y los chats ya responden con KoboldCpp. Si lo dejas en `localhost` en la tablet o el móvil, el juego te avisa.
 
-Funciona en el juego de escritorio (Windows y Mac) y en la app de Android. En la web publicada por `https://` el navegador no deja hablar con KoboldCpp por `http://`: para la IA usa el juego descargado.
+Funciona en el juego de escritorio (Windows y Mac) y en la app de Android.
+
+## En la demo de la web
+
+La demo tiene arriba el panel **Conexión con KoboldCpp**, con dos opciones:
+
+- **La del servidor de la web**: no instalas nada. El servidor reenvía al KoboldCpp de `KOBOLDCPP_URL`. El panel (y la sección KoboldCpp de la portada) dice si está encendido y con qué modelo.
+- **Mi KoboldCpp**: escribe `localhost` si juegas en el mismo PC, o la IP del PC (por ejemplo `192.168.1.139`) desde la tablet o el móvil, y pulsa **Probar conexión**. Debajo verás «La demo usará: `http://192.168.1.139:5001`». Los mensajes van directos de tu navegador a tu KoboldCpp, sin pasar por el servidor.
+
+**Límite del navegador:** la web publicada va por `https://` y KoboldCpp por `http://`. Los navegadores bloquean que una página `https` pida datos a una IP de tu red por `http` («contenido mixto»); con `localhost` en el mismo PC sí suele funcionar, y algunos navegadores recientes piden permiso para acceder a la red local. Si no conecta, la demo lo dice y sigue con el narrador local. Alternativas:
+
+1. Usa el juego descargado (escritorio o Android), que no tiene esta limitación.
+2. Sirve la web desde tu PC por `http`: `npm run web` y `npm run serve:web`. En la tablet abre `http://192.168.1.139:10000/demo.html` (con tu IP) y elige «La del servidor»: el PC reenvía a su KoboldCpp en `localhost:5001`.
+3. Activa **Remote Tunnel** en KoboldCpp y pega la dirección `https://…` que te da en «Mi KoboldCpp». Cualquiera con ese enlace podría usar tu KoboldCpp: ciérralo al terminar.
+
+| Mensaje de la demo | Qué hacer |
+|---|---|
+| «El KoboldCpp del servidor está apagado» | Elige «Mi KoboldCpp» o juega con el narrador local. |
+| «Esta web va por https y el navegador no la deja hablar con…» | Usa una de las tres alternativas de arriba. |
+| «192.168.1.1 suele ser el router» | Escribe la Dirección IPv4 del PC (`ipconfig`). |
+| «“localhost” es este mismo móvil o tablet» | Escribe la IP del PC con KoboldCpp. |
 
 Si no conecta:
 
