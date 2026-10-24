@@ -1,4 +1,4 @@
-# Hoja de ruta: universo original, personajes, animación 2D/3D y LM Studio
+# Hoja de ruta: universo original, personajes, animación 2D/3D y KoboldCpp
 
 ## Objetivo
 
@@ -28,16 +28,13 @@ Mantener el juego jugable mientras se prepara una actualización 3D por fases y 
    - Verificar escritorio, navegador y Android real; revisar memoria, carga inicial, controles, orientación, colisiones, sonido de pasos, guardado y cambio de ciudad.
    - Criterios de aceptación: caminar y correr son distinguibles, las animaciones no se reproducen si el personaje está quieto, sin congelaciones, y el modo 2D sigue disponible como alternativa.
 
-## Guía práctica de LM Studio
+## Guía práctica de KoboldCpp
 
-LM Studio se utiliza como servidor local de inferencia, no como motor gráfico. El cliente del juego debe tratar a la IA como una dependencia opcional y nunca bloquear el mapa o el creador mientras el servidor no esté activo.
+KoboldCpp es la única IA del juego. Se utiliza como servidor local de inferencia, no como motor gráfico. El cliente del juego debe tratar a la IA como una dependencia opcional y nunca bloquear el mapa o el creador mientras el servidor no esté activo.
 
-1. Abrir LM Studio, descargar un modelo de conversación que quepa en la memoria del equipo y cargarlo en la pestaña Chat/Developer.
-2. Activar el servidor local en Developer. La documentación actual recomienda la API REST nativa `/api/v1/*` para nuevas integraciones; los endpoints compatibles con OpenAI también están disponibles. Referencias oficiales:
-   - Servidor: https://lmstudio.ai/docs/developer/core/server
-   - API REST: https://lmstudio.ai/docs/developer/rest
-   - Requisitos del sistema: https://lmstudio.ai/docs/app/system-requirements
-3. En los Ajustes de Rifts & Gears, usar la URL local configurada por LM Studio (normalmente `http://localhost:1234` en el mismo equipo). En el navegador, el juego debe ejecutarse en el mismo ordenador que LM Studio para que `localhost` apunte al lugar correcto; en Android, `localhost` señala el propio móvil, no el PC.
+1. Abrir KoboldCpp, elegir un modelo `.gguf` que quepa en la memoria del equipo y pulsar **Launch** (pasos en [GUIA-KOBOLDCPP.md](../GUIA-KOBOLDCPP.md)).
+2. El juego usa su API compatible en `/v1/chat/completions` (puerto 5001).
+3. En los Ajustes de Rifts & Gears, usar `http://localhost:5001` en el mismo equipo. En Android o en la tablet, `localhost` señala el propio dispositivo: hay que escribir la IP del PC en la misma wifi.
 4. Separar el prompt de sistema y el contexto de partida de los mensajes del jugador. Limitar el contexto enviado a lo relevante (personaje, relaciones, capítulo y últimas intervenciones) y usar límites de salida y tiempo de espera.
 5. Validar las respuestas, preferir salida estructurada cuando la función la admita, descartar instrucciones que intenten cambiar el estado de la partida fuera de las acciones permitidas y conservar un diálogo preescrito si la IA no responde.
 6. No incrustar secretos en el repositorio. La IA local no exige una clave de nube por defecto; si se configura un token, tratarlo como secreto y no incluirlo en capturas, registros ni exportaciones.
@@ -51,5 +48,5 @@ LM Studio se utiliza como servidor local de inferencia, no como motor gráfico. 
 - [ ] Preparar los sprites de cuerpo entero con sets idle/walk/run.
 - [ ] Implementar movimiento 2D con animación de caminar/correr.
 - [ ] Prototipo GLB riggeado, luego modelo 3D por personaje.
-- [ ] Validar LM Studio con servidor local, desconexión, tiempo de espera y respuesta alternativa.
+- [ ] Validar KoboldCpp con servidor local, desconexión, tiempo de espera y respuesta alternativa.
 - [ ] Ejecutar `npm run check`, `npm run web`, `npm run android:sync` y compilaciones de escritorio/Android con los recursos nuevos.

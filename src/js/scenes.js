@@ -484,6 +484,10 @@
     let alive = true;
     let raf = 0;
     const t0 = performance.now();
+    // En móvil y tableta el fondo va a 30 fps: a 60 fps, junto con los desenfoques de la
+    // interfaz, las burbujas y los botones de la historia se animaban a tirones.
+    const minGap = window.U?.touch ? 33 : 0;
+    let last = 0;
     function fit() {
       const r = canvas.parentElement?.getBoundingClientRect();
       if (!r) return;
@@ -500,7 +504,14 @@
         raf = requestAnimationFrame(frame);
         return;
       }
-      const t = (now - t0) / 1000;
+      const calm = Boolean(window.App?.settings?.reduceMotion);
+      // Con «Reducir movimiento» el fondo queda quieto y solo se repinta para el fundido o al cambiar de tamaño.
+      if ((minGap && now - last < minGap) || (calm && fadeT >= 1 && now - last < 500)) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
+      last = now;
+      const t = calm ? 3 : (now - t0) / 1000;
       const w = canvas.width;
       const h = canvas.height;
       if (prev && fadeT < 1) {

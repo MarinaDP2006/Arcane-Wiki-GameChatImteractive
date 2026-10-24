@@ -519,8 +519,8 @@
     }
     tab = kind;
     if (who !== undefined) contact = who;
-    box.append(el('div', { class: 'panel overlay-panel' },
-      el('div', { class: 'play' },
+    box.append(el('div', { class: 'panel overlay-panel play-panel' },
+      el('div', { class: 'play', 'data-tab': kind },
         el('aside', { class: 'contacts' },
           el('div', { class: 'me', onclick: () => setTab('ficha') },
             el('div', { class: 'avatar', html: Portrait.forPlayer(G.player) }),
@@ -852,6 +852,8 @@
     const main = $('#play-main');
     if (!main) return;
     main.innerHTML = '';
+    // En móvil y tableta la lista de personajes se oculta en la historia para dejar sitio al diálogo.
+    main.closest('.play')?.setAttribute('data-tab', tab);
     if (tab === 'historia') renderStory(main);
     else if (tab === 'chats') renderChat(main);
     else renderSheet(main);
@@ -884,7 +886,7 @@
     setSpeaker(last?.s || null);
     const log = $('#story-log');
     for (const m of G.log) log.append(bubble(m.s, m.t, true));
-    log.scrollTop = log.scrollHeight;
+    scrollLog();
     if (!busy) showChoices(currentChoices());
   }
 
@@ -904,7 +906,11 @@
   /** Desplaza el historial del diálogo al mensaje visible. */
   function scrollLog() {
     const log = $('#story-log');
-    if (log) log.scrollTop = log.scrollHeight;
+    if (!log) return;
+    log.scrollTop = log.scrollHeight;
+    // Otra vez tras el siguiente pintado: en pantallas bajas (móvil en horizontal) la última
+    // burbuja aún no tenía su alto final y se quedaba cortada bajo la caja de texto.
+    requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
   }
 
   // ---------- Escena animada y busto del personaje que habla ----------
@@ -1220,6 +1226,8 @@
     const ch = chapterById(G.progress.chapterId);
     const node = ch.nodes[G.progress.node];
     busy = true;
+    // «Saltar» de la escena anterior no debe acelerar las respuestas de este turno.
+    skipping = false;
     showChoices([]);
     pushLog('yo', text);
     $('#story-log')?.append(bubble('yo', text));

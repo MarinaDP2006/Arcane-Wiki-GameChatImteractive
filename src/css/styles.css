@@ -790,9 +790,9 @@ body[data-city='nacar'] { --accent: var(--nacar); --accent-glow: rgba(63, 191, 1
 body[data-city='aurelia'], body:not([data-city]) { --accent: var(--gold); --accent-glow: rgba(227, 196, 90, 0.4); }
 
 /* Paneles con marco dorado doble y esquinas ornamentadas */
-.panel { border: 1px solid color-mix(in srgb, var(--accent, var(--gold)) 45%, transparent); border-radius: 6px; position: relative;
+.panel { border: 1px solid rgba(var(--accent-rgb, 227, 196, 90), 0.45); border-radius: 6px; position: relative;
   background: linear-gradient(160deg, rgba(34, 28, 48, 0.9), rgba(14, 12, 22, 0.9));
-  box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.35), inset 0 0 0 5px color-mix(in srgb, var(--accent, var(--gold)) 22%, transparent), 0 14px 44px rgba(0, 0, 0, 0.5); }
+  box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.35), inset 0 0 0 5px rgba(var(--accent-rgb, 227, 196, 90), 0.22), 0 14px 44px rgba(0, 0, 0, 0.5); }
 .panel::before, .panel::after { content: ''; position: absolute; width: 18px; height: 18px; pointer-events: none; border: 2px solid var(--accent, var(--gold)); opacity: 0.85; }
 .panel::before { top: 6px; left: 6px; border-right: 0; border-bottom: 0; }
 .panel::after { bottom: 6px; right: 6px; border-left: 0; border-top: 0; }
@@ -804,7 +804,7 @@ h2::after { content: ''; display: block; height: 2px; margin-top: 0.35rem; width
 .overlay-head h2::after, .atlas-cityhead h2::after, .title-umbral::after { display: none; }
 
 /* Botones de bordes biselados */
-.btn { border-radius: 2px; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); border-color: color-mix(in srgb, var(--accent, var(--gold)) 40%, transparent); text-transform: none; letter-spacing: 0.03em; }
+.btn { border-radius: 2px; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); border-color: rgba(var(--accent-rgb, 227, 196, 90), 0.4); text-transform: none; letter-spacing: 0.03em; }
 .btn.primary { background: linear-gradient(180deg, #f6dd8a, var(--gold2) 60%, #8a6422); box-shadow: 0 0 18px var(--accent-glow, rgba(227, 196, 90, 0.4)); }
 body[data-city='nacar'] .btn.primary { background: linear-gradient(180deg, #8fe8cc, var(--nacar) 60%, #1f7a64); color: #06150f; }
 .btn:hover:not(:disabled) { box-shadow: 0 0 16px var(--accent-glow, rgba(227, 196, 90, 0.35)); }
@@ -815,7 +815,7 @@ body[data-city='nacar'] .btn.primary { background: linear-gradient(180deg, #8fe8
 .avatar-card:hover, .origin-card:hover, .atlas-jitem:hover { box-shadow: 0 0 22px var(--accent-glow, rgba(227, 196, 90, 0.4)); transform: translateY(-2px); }
 .origin-nacar:hover { box-shadow: 0 0 26px rgba(63, 191, 159, 0.55); }
 .origin-aurelia:hover { box-shadow: 0 0 26px rgba(227, 196, 90, 0.5); }
-.topbar { border-bottom: 1px solid color-mix(in srgb, var(--accent, var(--gold)) 45%, transparent); box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5); }
+.topbar { border-bottom: 1px solid rgba(var(--accent-rgb, 227, 196, 90), 0.45); box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5); }
 .avatar-card.active { box-shadow: 0 0 0 2px var(--accent, var(--gold)), 0 0 26px var(--accent-glow, rgba(227, 196, 90, 0.5)); }
 .splash { border-radius: 4px; box-shadow: 0 0 0 1px var(--accent, var(--gold)), 0 18px 50px rgba(0, 0, 0, 0.7); }
 
@@ -1364,3 +1364,62 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
 .family-effects li { margin: 0.15rem 0; }
 
 /* Los colores por ciudad, del menú y de Ajustes están en css/umbral.css. */
+
+/* Navegadores sin color-mix (WebView de Android antiguas): sin esto la tarjeta de clase
+   activa perdía el brillo y las barras de los minijuegos salían vacías. */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .class-card.active { box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2), 0 0 24px var(--c); }
+  .mg-track i { background: var(--c); }
+}
+
+/* ============ Historia, comunicador y ficha en móvil y tableta ============
+   La capa ocupa toda la pantalla, los personajes pasan a una fila arriba y, en la
+   historia, el diálogo y la caja de texto se llevan casi todo el alto. El escritorio
+   (ventanas anchas con ratón) no cambia. */
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1100px), (pointer: coarse) and (max-height: 560px) {
+  .overlay-panel.play-panel {
+    width: 100vw; height: 100vh; height: 100dvh; max-height: none; border-radius: 0;
+    padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+  }
+  .play-panel .play { display: flex; flex-direction: column; gap: 0.4rem; height: 100%; min-height: 0; }
+  .play-panel .contacts { flex: 0 0 auto; max-height: none; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.3rem 0.5rem; padding: 0.2rem 0.3rem; overflow: visible; }
+  .play-panel .contacts .me { padding: 0; border: 0; min-width: 0; }
+  .play-panel .contacts .me .avatar { width: 36px; height: 36px; }
+  .play-panel .contacts .me > div:last-child { display: none; }
+  .play-panel .tabs-v { flex-direction: row; gap: 0.25rem; overflow-x: auto; scrollbar-width: none; }
+  .play-panel .tabs-v .tab { flex: 1 1 auto; min-width: 0; padding: 0.5rem 0.45rem; min-height: 40px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.85rem; }
+  .play-panel .contacts > .btn { grid-column: 3; grid-row: 1; padding: 0.45rem 0.6rem; min-height: 40px; white-space: nowrap; font-size: 0.8rem; }
+  .play-panel .contact-list { grid-column: 1 / -1; flex-direction: row; overflow-x: auto; overflow-y: hidden; gap: 0.3rem; padding-bottom: 0.2rem; scrollbar-width: thin; }
+  .play-panel .contact-list h4 { display: none; }
+  .play-panel .contact { flex: 0 0 auto; padding: 0.3rem 0.5rem; min-height: 44px; }
+  .play-panel .contact .c-rel, .play-panel .contact .aff { display: none; }
+  .play-panel .play[data-tab="historia"] .contact-list { display: none; }
+  .play-panel .play-main { flex: 1 1 auto; min-height: 0; }
+  .play-main .scene-head { padding: 0.45rem 0.7rem; flex-wrap: nowrap; }
+  .play-main .scene-head > div:first-child { min-width: 0; }
+  .play-main .scene-head small { font-size: 0.7rem; }
+  .play-main .scene-head h2 { font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .play-main .scene-head .btn { min-height: 38px; }
+  .play-main .log { padding: 0.6rem 0.5rem; gap: 0.5rem; }
+  .play-main .msg { max-width: 94%; }
+  .play-main .msg.narr { max-width: 100%; }
+  .play-main .msg.narr .bubble { padding: 0.3rem 1.4rem; }
+  .play-main .msg.narr .bubble::before, .play-main .msg.narr .bubble::after { width: 1rem; }
+  .play-main .choices { padding: 0.5rem 0.6rem; max-height: 48%; overflow-y: auto; overscroll-behavior: contain; }
+  .play-main .choices .choice { min-height: 44px; }
+  .play-main .ai-send { min-width: 48px; min-height: 48px; }
+  /* Los desenfoques sobre un fondo animado cuestan mucho en móvil y hacían que el texto apareciera a tirones. */
+  .play-main .scene-head, .play-main .choices, .play-main .msg .bubble { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .play-main .msg.pop { animation-name: pop; animation-duration: 0.25s; }
+  .play-main .msg.me.pop { animation-name: pop; }
+}
+/* Móvil en horizontal: muy poco alto, así que fuera lo que no es diálogo. */
+@media (pointer: coarse) and (max-height: 560px), (max-height: 480px) {
+  .play-panel .contacts .me { display: none; }
+  .play-panel .contacts { grid-template-columns: 1fr auto; }
+  .play-panel .contacts > .btn { grid-column: 2; }
+  .play-main .scene-head small, .play-main .ai-note { display: none; }
+  .play-main .scene-head { padding: 0.3rem 0.6rem; }
+  .play-main .choices { max-height: 55%; }
+  .play-main .ai-input { min-height: 2.6rem; }
+}

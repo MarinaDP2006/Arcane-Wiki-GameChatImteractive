@@ -12,7 +12,7 @@ Aventura narrativa original de fantasía industrial. Creas un personaje de **Aur
 | Creador | Origen, identidad, clase, habilidades Q/W/E/R, aptitudes, retrato, familia, aficiones y ficha. |
 | Mapa | Aurelia y Nácar en 3D (Three.js) con vista 2D alternativa; 10 lugares con su ilustración. |
 | Personajes | 10 personajes con relaciones (amistad, mejor amistad, pareja, familia elegida, hermandad) y charla. |
-| Conversación | Historia libre con IA (escribes lo que dices o haces y la escena responde y avanza) y chats libres con los personajes. Sin IA, o con «Ajustes → Juego → Cómo hablas en la historia → Opciones escritas», salen los diálogos escritos. |
+| Conversación | Historia libre con IA (KoboldCpp, la única IA del juego: escribes lo que dices o haces y la escena responde y avanza) y chats libres con los personajes. Sin IA, o con «Ajustes → Juego → Cómo hablas en la historia → Opciones escritas», salen los diálogos escritos. En móvil y tableta la historia ocupa toda la pantalla y los personajes pasan a una fila arriba. |
 | Minijuegos | Combate, tejados, planeador de vapor, tiro, circuito, secuencia del Archivo, regateo, persecución, mira del Observatorio y cápsulas de vapor. |
 | Música | Tres pistas MP3 propias (inicio, Aurelia, Nácar) con respaldo generado en tiempo real. |
 
@@ -60,7 +60,7 @@ Cada capítulo de `STORY.chapters` tiene nodos con `bg` (un lugar de `scenes.js`
 
 ## 6. IA
 
-En **Ajustes → IA** se elige el servicio. La opción recomendada es **Ollama Cloud**: el modelo corre en el servidor (`server/index.js`, endpoint `/api/roleplay`) con la clave `OLLAMA_API_KEY` guardada como secreto del alojamiento, nunca en el repositorio. También funcionan Ollama o LM Studio en el propio ordenador (ver [GUIA-LM-STUDIO.md](GUIA-LM-STUDIO.md)). Sin IA, los diálogos escritos siguen funcionando.
+La única IA del juego es **KoboldCpp**. No hay otros servicios ni claves. En **Ajustes → IA de la historia y los chats** se elige **KoboldCpp** (en el PC, `http://localhost:5001`; en la tablet o el móvil, la IP del PC en la misma wifi, por ejemplo `192.168.1.40`). Los pasos están en [GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md). Viene **desactivada** de fábrica: hasta que la actives, la historia usa las opciones escritas. Si KoboldCpp no contesta en una escena, esa escena vuelve a las opciones escritas. La web (`server/index.js`, endpoint `/api/roleplay`) reenvía a KoboldCpp en `KOBOLDCPP_URL`.
 
 ## 7. Guardados
 
@@ -114,7 +114,7 @@ Una etiqueta `v*` debe coincidir con la versión de `package.json`; si no, las c
 - [Pendientes](PENDIENTES.md)
 - [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
 - [Prompts de modelos 3D](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
-- [Hoja de ruta 3D y avatares](docs/HOJA_DE_RUTA_3D_LM_STUDIO_Y_AVATARES.md)
+- [Hoja de ruta 3D y avatares](docs/HOJA_DE_RUTA_3D_KOBOLDCPP_Y_AVATARES.md)
 - [Exportar el repositorio](docs/GUIA-EXPORTAR-REPOSITORIO.md)
 - [Privacidad](PRIVACIDAD.md)
 

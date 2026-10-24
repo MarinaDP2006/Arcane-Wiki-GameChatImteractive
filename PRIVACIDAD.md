@@ -8,15 +8,12 @@ Juego gratuito creado por MarinaDP2006. No tiene cuentas, anuncios, analíticas 
 
 - Tus partidas y ajustes se guardan **solo en tu dispositivo**. En Android se borran si desinstalas la app.
 - Si eliges «Subir mi foto» en el creador, la imagen se guarda solo dentro de tu partida, en tu dispositivo.
-- **IA para los chats (opcional).** Si activas un servicio de IA en Ajustes, lo que escribes en el comunicador, los últimos mensajes de esa conversación y el contexto del personaje (nombre de tu personaje, ciudad, afinidad y relación) se envían a ese servicio para generar la respuesta:
-  - **Ollama Cloud** (recomendado): pasa por el servidor del juego, que reenvía la conversación a Ollama Cloud con la clave del servidor. Se aplica la política de privacidad de Ollama.
-  - **Ollama o LM Studio en tu ordenador**: la conversación no sale de tu equipo (o de tu red local, si lo configuras así).
-  - **Otro servidor compatible**: se aplica la política de ese servicio. Tu clave se guarda solo en tu dispositivo.
+- **IA (opcional): solo KoboldCpp.** Es la única IA del juego. Si la activas en Ajustes, lo que escribes en la historia y en el comunicador, los últimos mensajes y el contexto del personaje (nombre de tu personaje, ciudad, afinidad y relación) se envían a tu KoboldCpp para generar la respuesta. KoboldCpp corre en tu ordenador: la conversación no sale de tu equipo ni de tu red de casa. No hay claves ni servicios en la nube.
 - No escribas datos personales reales en el chat.
 
 ## Demo web
 
-La demo de rol libre de la web guarda tu partida en el almacenamiento local de tu navegador. Si el servidor de IA está activo, tus mensajes se envían a `/api/roleplay` en el mismo dominio para generar la respuesta; el servidor limita el número de mensajes por hora y no guarda las conversaciones.
+La demo de rol libre de la web guarda tu partida en el almacenamiento local de tu navegador. Si el servidor tiene KoboldCpp configurado, tus mensajes se envían a `/api/roleplay` en el mismo dominio, que los reenvía a KoboldCpp para generar la respuesta; el servidor limita el número de mensajes por hora y no guarda las conversaciones.
 
 ## Permisos de la app de Android
 

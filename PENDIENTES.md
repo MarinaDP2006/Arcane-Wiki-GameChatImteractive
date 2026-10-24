@@ -4,7 +4,7 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 
 ## Necesita a Nina
 
-- [ ] **Clave de Ollama Cloud en el servidor publicado.** Poner `OLLAMA_API_KEY` como secreto en Render (nunca en el repositorio). Sin ella, la demo web y el chat con IA usan el narrador local de respaldo.
+- [ ] **KoboldCpp para la demo web publicada.** El servidor reenvía a `KOBOLDCPP_URL`. En Render no hay KoboldCpp, así que la demo usa el narrador local hasta que se apunte a un KoboldCpp accesible y protegido.
 - [ ] **Separar el repositorio.** Descargar esta rama y crear el repositorio propio del mundo nuevo (ver [docs/GUIA-EXPORTAR-REPOSITORIO.md](docs/GUIA-EXPORTAR-REPOSITORIO.md)).
 - [ ] **Probar en dispositivos reales**: instalador de Windows, app de Android y la web en el móvil.
 
@@ -23,7 +23,7 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 - [ ] **Ampliar la campaña**: hay 6 capítulos (3 por ciudad), 24 escenas y un solo final. Faltan más escenas por capítulo, finales según las decisiones y una posible Parte II.
 - [ ] **Atlas completo**: el Atlas solo tiene Aurelia, Nácar y la Red de Resonancia. Añadir los diez lugares con su posición en `src/img/umbral/mapa.svg`.
 - [ ] **Más diálogo escrito** por personaje en el comunicador (ahora hay 6 opciones por personaje) para cuando no hay IA.
-- [ ] **Probar la historia libre con una IA de verdad** (KoboldCpp, LM Studio u Ollama Cloud): una partida por cada ciudad, para ajustar cuántos turnos dura una escena (ahora como máximo 4 o 6) y revisar que el camino que elige la IA encaja.
+- [ ] **Probar la historia libre con una IA de verdad** (KoboldCpp, la única IA del juego): una partida por cada ciudad, para ajustar cuántos turnos dura una escena (ahora como máximo 4 o 6) y revisar que el camino que elige la IA encaja.
 - [ ] **Escenas de minijuego dentro de la historia**: los minijuegos funcionan desde el mapa, pero ningún capítulo los usa todavía como parte de una decisión.
 
 ## Música y sonido
@@ -35,4 +35,5 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 - [x] Primera release del mundo nuevo: v1.28.0 (Windows, Mac y Android).
 - [x] v1.29.0: IA local con KoboldCpp, escala de avatares 3D y compilación unificada en Actions.
 - [x] v1.30.0: historia libre con IA en el mundo nuevo y tarjeta de KoboldAI descargable.
+- [x] v1.31.0: vista de historia, animaciones y colores arreglados en móvil y tableta; KoboldCpp como única IA.
 - [ ] Revisar el rendimiento del mapa 3D en móviles modestos.
