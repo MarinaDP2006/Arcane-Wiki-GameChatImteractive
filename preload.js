@@ -26,7 +26,7 @@ contextBridge.exposeInMainWorld('umbral', {
     status: () => ipcRenderer.invoke('model:status'),
   },
   ai: (url, headers, body) => ipcRenderer.invoke('ai:chat', url, headers, body),
-  aiGet: (url) => ipcRenderer.invoke('ai:get', url),
+  aiGet: (url, headers) => ipcRenderer.invoke('ai:get', url, headers),
   lanIps: () => ipcRenderer.invoke('net:ips'),
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
