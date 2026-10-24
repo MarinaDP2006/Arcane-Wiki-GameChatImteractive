@@ -318,6 +318,136 @@
     return { text: text || '(Se queda un momento en silencio antes de responder.)', aff, choiceIndex };
   }
 
+  // ---------- Director de escena: la historia sin opciones ----------
+  // El jugador escribe lo que dice o hace. La IA interpreta a quienes están en la escena
+  // (pueden contestar, preguntar o actuar entre ellos) y decide en secreto si la escena
+  // sigue o si la intención del jugador encaja ya con uno de los caminos escritos, que
+  // es lo que mantiene la partida dentro de la historia de las ciudades del Umbral.
+  const nameOf = (id) => window.WIKI.personajes.find((x) => x.id === id)?.name || id;
+
+  function castBrief(G, id) {
+    const info = Relations.info(id);
+    const v = window.AI_VOICES?.[id] || {};
+    const lore = window.WORLD_LORE?.[id] || {};
+    const aff = G.aff[id] ?? 0;
+    return [
+      `■ ${nameOf(id)} (id: ${id}) · afinidad con el protagonista ${aff}/10${Relations.status(G, id) ? ` · ${U.tpl(Relations.label(G, id), G.player)}` : ''}`,
+      info?.persona ? `  Quién es: ${info.persona}` : '',
+      v.habla ? `  Cómo habla: ${v.habla}` : '',
+      v.contigo ? `  Cómo trata al protagonista: ${v.contigo}` : '',
+      lore.motivaciones ? `  Motivos y miedos: ${lore.motivaciones}` : '',
+      v.nunca ? `  Nunca: ${v.nunca}` : '',
+    ].filter(Boolean).join('\n');
+  }
+
+  function playerBrief(G) {
+    const p = G.player;
+    const C = window.CREATION;
+    return [
+      `${p.name}, ${C.genders.find((g) => g.id === p.gender)?.label.toLowerCase() || ''}, ${p.age} años`,
+      `de ${C.origins[p.origin]?.label} (${p.district})`,
+      U.tpl(p.jobLabel || '', p),
+      p.familyLabel && p.family !== 'ninguna' ? U.tpl(p.familyLabel, p) : '',
+      p.hobbyLabels?.length ? `aficiones: ${p.hobbyLabels.join(', ')}` : '',
+      p.bio ? `biografía: ${p.bio}` : '',
+    ].filter(Boolean).join('; ');
+  }
+
+  // scene: { chapter, intro, cast: [ids], beat: [líneas del guion], paths: [{ t }], turn, mustMove }
+  async function direct(G, scene, userText) {
+    const p = G.player;
+    const name = (s) => (s === 'yo' ? p.name : s === 'narrador' || s === 'sistema' ? 'Narración' : nameOf(s));
+    const log = (G.log || []).filter((m) => m.s !== 'sistema').slice(-24)
+      .map((m) => `${name(m.s)}: ${String(m.t).slice(0, 320)}`).join('\n');
+    const part = G.progress.season === 2 ? 2 : 1;
+    const gone = (G.fallen || []).map(nameOf);
+    const saved = Object.entries(window.STORY?.rescues || {}).filter(([, f]) => G.flags?.[f]).map(([id]) => nameOf(id));
+    const paths = scene.paths.map((c, i) => `[${i + 1}] ${U.tpl(c.t, p)}`).join('\n');
+    const sys = [
+      `Eres el director de escena de Las ciudades del Umbral (Aurelia y Nácar), un juego de rol narrativo. Escribes en ${LANG[window.I18N?.lang] || LANG.es}.`,
+      `COHERENCIA DEL MUNDO: Aurelia es la ciudad elevada (observatorios, gremios, ascensores de contrapesos) y Nácar la ciudad bajo la piedra (canales de vapor, galerías geotérmicas, redes vecinales). Las une la Resonancia, energía que se extrae de vibraciones geológicas y que puede agotarse. Respeta personalidades, cronología, quién conoce a quién, lugares y tono. No inventes poderes, ciudades ni parentescos que no encajen y no menciones otras obras ni universos. El protagonista puede cambiar cosas solo mediante lo que ocurre en esta partida.`,
+      `Estamos en la parte ${part} (${part === 1 ? 'El inicio' : 'Las consecuencias'}), ${scene.chapter}. ${scene.intro || ''}`,
+      gone.length ? `Ya no están (no pueden hablar): ${gone.join(', ')}.` : '',
+      saved.length ? `Siguen vivos gracias al protagonista: ${saved.join(', ')}.` : '',
+      `PROTAGONISTA (lo controla el jugador): ${playerBrief(G)}.`,
+      `PERSONAJES EN ESCENA:\n${scene.cast.map((id) => castBrief(G, id)).join('\n') || '(nadie del reparto; usa solo la narración y figurantes descritos por el narrador)'}`,
+      `LO QUE ACABA DE PASAR EN EL GUION DE ESTA ESCENA:\n${scene.beat.join('\n')}`,
+      `CAMINOS POSIBLES (secretos, nunca los enseñes ni los conviertas en menú):\n${paths || '(ninguno: la escena sigue)'}`,
+      `CÓMO RESPONDER:
+- El jugador escribe lo que su personaje dice o hace, con total libertad. Reacciona a eso de verdad: los personajes contestan, preguntan, discuten, mienten por sus motivos, se callan o actúan.
+- Nunca escribas palabras, pensamientos ni decisiones de ${p.name}. Si el jugador intenta algo imposible o fuera del lore, la escena reacciona con naturalidad (alguien le frena, no funciona…) sin romper la cuarta pared.
+- Cada personaje solo sabe lo que ha presenciado. No adelantes muertes, identidades ocultas ni giros futuros.
+- Formato: de 1 a 4 líneas, cada una empieza por el id del hablante y dos puntos. Usa «narrador:» para acciones y ambiente (breve, en segunda persona). Ejemplo:
+narrador: Vi aprieta los puños.
+vi: ¿Y tú quién demonios eres?
+- Solo pueden hablar los personajes en escena o el narrador. Frases cortas y vivas, sin sermones ni tono de asistente. Romance no explícito, sin violencia gráfica.
+- Al final, en líneas aparte:
+[[camino:N]] si lo que ha hecho o dicho el jugador ya lleva claramente a uno de los caminos (N es su número), o [[camino:0]] si la escena sigue y hay que esperar al siguiente mensaje.${scene.mustMove ? `\n  La escena ya ha durado bastante: esta vez elige OBLIGATORIAMENTE el camino que mejor encaje (no uses 0) y haz que tu respuesta lleve a él.` : ''}
+[[afinidad:id:+1]] o [[afinidad:id:-1]] por cada personaje al que el jugador haya agradado o molestado de verdad (omítelo si no cambia nada).`,
+    ].filter(Boolean).join('\n\n');
+    const messages = [
+      { role: 'system', content: sys },
+      { role: 'user', content: `Historial reciente:\n${log}\n\nTurno ${scene.turn + 1} de esta escena. ${p.name} (el jugador) escribe:\n«${String(userText).slice(0, 800)}»` },
+    ];
+    const raw = await complete(messages, { max: 420, temperature: 0.85, stop: [`\n${p.name}:`, '\nyo:'] });
+    return parseDirection(raw, scene, p);
+  }
+
+  // Al cambiar de escena después de un turno libre, el guion escrito se adapta a lo que el
+  // jugador ha dicho de verdad: mismos hechos y mismo desenlace del guion, pero con diálogos
+  // que reaccionan a sus palabras y sin poner frases en su boca.
+  async function adapt(G, scene) {
+    const p = G.player;
+    const name = (s) => (s === 'yo' ? p.name : s === 'narrador' || s === 'sistema' ? 'Narración' : nameOf(s));
+    const log = (G.log || []).filter((m) => m.s !== 'sistema').slice(-14)
+      .map((m) => `${name(m.s)}: ${String(m.t).slice(0, 300)}`).join('\n');
+    const sys = [
+      `Eres el guionista de Las ciudades del Umbral (Aurelia y Nácar), un juego de rol narrativo. Escribes en ${LANG[window.I18N?.lang] || LANG.es}. Todo debe respetar las reglas de ese mundo y la Resonancia.`,
+      `Estamos en ${scene.chapter}. El protagonista es ${playerBrief(G)}; lo controla el jugador.`,
+      `PERSONAJES EN ESCENA:\n${scene.cast.map((id) => castBrief(G, id)).join('\n') || '(solo narración)'}`,
+      `GUION ORIGINAL DE LA ESCENA QUE EMPIEZA AHORA:\n${scene.beat.join('\n')}`,
+      `TAREA: reescribe esta escena para que encaje con lo que el jugador acaba de decir y hacer (está en el historial). Conserva los mismos hechos, lugares, personajes, información importante y el mismo final de la escena; cambia solo las palabras para que los personajes reaccionen a lo que ha dicho el jugador.
+- Nunca escribas frases, pensamientos ni decisiones de ${p.name}: las líneas del guion original que eran suyas se convierten en reacciones de otros o se quitan.
+- Mismo formato que el guion: una línea por intervención, empezando por el id del hablante y dos puntos («narrador:» para acciones). Entre 2 y ${Math.max(3, Math.min(8, scene.beat.length))} líneas.
+- Solo hablan los personajes en escena o el narrador. Nada de comentarios fuera del guion.`,
+    ].join('\n\n');
+    const raw = await complete([{ role: 'system', content: sys }, { role: 'user', content: `Historial reciente:\n${log}\n\nEscribe la escena adaptada.` }],
+      { max: 520, temperature: 0.75, stop: [`\n${p.name}:`, '\nyo:'] });
+    return parseDirection(raw, { cast: scene.cast, paths: [] }, p).lines;
+  }
+
+  function parseDirection(raw, scene, p) {
+    const allowed = new Set([...scene.cast, 'narrador']);
+    const byName = new Map(scene.cast.map((id) => [nameOf(id).toLowerCase(), id]));
+    scene.cast.forEach((id) => byName.set(nameOf(id).split(' ')[0].toLowerCase(), id));
+    const cm = raw.match(/\[\[\s*camino\s*:\s*(\d+)\s*\]\]/i);
+    let path = cm ? Number(cm[1]) - 1 : -1;
+    if (path >= scene.paths.length) path = -1;
+    const aff = {};
+    for (const m of raw.matchAll(/\[\[\s*afinidad\s*:\s*([a-z]+)\s*:\s*([+-]?\d)\s*\]\]/gi)) {
+      const id = m[1].toLowerCase();
+      if (scene.cast.includes(id)) aff[id] = Math.max(-1, Math.min(1, Number(m[2])));
+    }
+    const lines = [];
+    for (let row of raw.replace(/\[\[[^\]]*\]\]/g, '').split('\n')) {
+      row = row.replace(/^[\s*_-]+/, '').replace(/\*\*/g, '').trim();
+      if (!row) continue;
+      const m = row.match(/^([A-Za-zÁÉÍÓÚáéíóúñÑ' ]{2,24}):\s*(.+)$/);
+      let s = 'narrador';
+      let t = row;
+      if (m) {
+        const k = m[1].trim().toLowerCase();
+        const id = allowed.has(k) ? k : byName.get(k) || (/narra/.test(k) ? 'narrador' : null);
+        // Si la IA escribe por el protagonista, se descarta esa línea.
+        if (k === p.name.toLowerCase() || k === 'yo') continue;
+        if (id) { s = id; t = m[2]; }
+      }
+      lines.push({ s, t: t.trim() });
+    }
+    if (!lines.length) lines.push({ s: 'narrador', t: 'Un silencio tenso llena la escena.' });
+    return { lines: lines.slice(0, 6), path, aff };
+  }
+
   // Prueba la conexión y mide cuánto tarda (la primera vez incluye cargar el modelo).
   async function test() {
     const t0 = performance.now();
@@ -325,5 +455,5 @@
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 
-  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, storyTurn, test, warm, models, ollamaModels, lmstudioModels };
+  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, storyTurn, direct, adapt, test, warm, models, ollamaModels, lmstudioModels };
 })();

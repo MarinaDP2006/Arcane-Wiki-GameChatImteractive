@@ -12,7 +12,7 @@ Aventura narrativa original de fantasía industrial. Creas un personaje de **Aur
 | Creador | Origen, identidad, clase, habilidades Q/W/E/R, aptitudes, retrato, familia, aficiones y ficha. |
 | Mapa | Aurelia y Nácar en 3D (Three.js) con vista 2D alternativa; 10 lugares con su ilustración. |
 | Personajes | 10 personajes con relaciones (amistad, mejor amistad, pareja, familia elegida, hermandad) y charla. |
-| Conversación | Diálogos escritos y, si se activa, rol libre con IA. |
+| Conversación | Historia libre con IA (escribes lo que dices o haces y la escena responde y avanza) y chats libres con los personajes. Sin IA, o con «Ajustes → Juego → Cómo hablas en la historia → Opciones escritas», salen los diálogos escritos. |
 | Minijuegos | Combate, tejados, planeador de vapor, tiro, circuito, secuencia del Archivo, regateo, persecución, mira del Observatorio y cápsulas de vapor. |
 | Música | Tres pistas MP3 propias (inicio, Aurelia, Nácar) con respaldo generado en tiempo real. |
 
