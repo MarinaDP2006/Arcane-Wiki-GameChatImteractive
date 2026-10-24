@@ -5,10 +5,10 @@
 (function () {
   const PROVIDERS = {
     off: { label: 'Desactivada' },
-    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://localhost:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil (o si KoboldCpp está en otro PC de casa) escribe la IP de ese PC, por ejemplo 192.168.1.139: el puerto 5001 y la ruta se ponen solos. La IP la ves en el PC con «ipconfig» (Dirección IPv4). Los pasos están en GUIA-KOBOLDCPP.md.' },
+    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://192.168.1.139:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil (o si KoboldCpp está en otro PC de casa) escribe la IP de ese PC, por ejemplo 192.168.1.139: el puerto 5001 y la ruta se ponen solos. La IP la ves en el PC con «ipconfig» (Dirección IPv4). Los pasos están en GUIA-KOBOLDCPP.md.' },
   };
 
-  // KoboldCpp corre en tu PC (o en otro de tu red): no pide clave y no sale a internet.
+  // KoboldCpp corre en tu PC o en la red de casa; la contraseña es opcional si configuraste Password.
   const LOCAL = new Set(['koboldcpp']);
 
   // Basta con escribir «192.168.1.139» o «http://192.168.1.139:5001»: se completa el puerto
@@ -32,7 +32,7 @@
   // Ajustes de versiones anteriores con otros servicios (ya no existen) quedan desactivados.
   function cfg() {
     const a = window.App?.settings?.ai || {};
-    const p = PROVIDERS[a.provider] ? a.provider : 'off';
+    const p = a.provider === 'off' ? 'off' : 'koboldcpp';
     const d = PROVIDERS[p];
     return { provider: p, url: p === 'koboldcpp' ? fullUrl(p, a.url || d.url) : '', model: a.model || d.model || '', password: p === 'koboldcpp' ? String(a.password || '') : '' };
   }
