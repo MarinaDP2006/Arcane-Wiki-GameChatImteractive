@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Nácar, ciudad bajo la piedra</title>
+<desc id="desc">Panorama original de una ciudad subterránea de talleres, canales y puentes bajo una bóveda rocosa, iluminada por lámparas ámbar y cristales de Resonancia verde azulado.</desc>
+<defs>
+ <linearGradient id="cave" x2="0" y2="1"><stop stop-color="#07151d"/><stop offset=".35" stop-color="#12313a"/><stop offset=".7" stop-color="#0e2526"/><stop offset="1" stop-color="#030c12"/></linearGradient>
+ <linearGradient id="rock" x2=".3" y2="1"><stop stop-color="#34484b"/><stop offset=".42" stop-color="#17282b"/><stop offset="1" stop-color="#070e13"/></linearGradient>
+ <linearGradient id="metal" x2="0" y2="1"><stop stop-color="#9d8a60"/><stop offset=".35" stop-color="#4f584b"/><stop offset="1" stop-color="#111c1b"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#79e5d7" stop-opacity=".7"/><stop offset=".22" stop-color="#164d55"/><stop offset="1" stop-color="#06151d"/></linearGradient>
+ <linearGradient id="crystal" x2="0" y2="1"><stop stop-color="#c1fff2"/><stop offset=".35" stop-color="#54e6d0"/><stop offset="1" stop-color="#1c6b82"/></linearGradient>
+ <radialGradient id="caveglow"><stop stop-color="#48e3d0" stop-opacity=".52"/><stop offset="1" stop-color="#48e3d0" stop-opacity="0"/></radialGradient>
+ <radialGradient id="lamp"><stop stop-color="#fff2b9"/><stop offset=".18" stop-color="#ffc16b" stop-opacity=".9"/><stop offset="1" stop-color="#ff8e3a" stop-opacity="0"/></radialGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="15"/></filter>
+ <filter id="shine"><feGaussianBlur stdDeviation="5"/></filter>
+ <pattern id="windows" width="30" height="34" patternUnits="userSpaceOnUse"><rect x="10" y="8" width="7" height="12" rx="2" fill="#ffd18a" opacity=".9"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#cave)"/>
+<ellipse cx="820" cy="340" rx="620" ry="340" fill="url(#caveglow)"/>
+<!-- bóveda de roca -->
+<path d="M0 0H1600V145L1530 188 1480 122 1425 175 1366 106 1300 160 1235 92 1178 143 1110 68 1040 128 980 63 920 131 850 71 795 129 726 59 660 135 592 66 530 146 466 78 394 155 330 98 263 174 205 120 145 192 80 140 0 188Z" fill="#050d16"/>
+<path d="M0 175L90 208 162 158 228 224 296 186 362 247 430 204 495 252 560 202 625 254 694 192 755 240 818 190 888 237 960 170 1022 223 1094 164 1161 211 1228 151 1298 198 1360 144 1425 190 1491 135 1600 176V270Q1300 245 1100 300T700 280T300 310T0 290Z" fill="#1d3038" opacity=".86"/>
+<g fill="#03080e"><path d="M0 0H155L110 190 55 250 0 217Z"/><path d="M310 0H390L365 188 320 260 280 200Z"/><path d="M750 0H820L806 192 760 245 720 190Z"/><path d="M1250 0H1310L1275 175 1220 230 1190 184Z"/><path d="M1510 0H1600V250L1540 198Z"/></g>
+<!-- cristales colgantes -->
+<g fill="url(#crystal)" stroke="#9cfff0" stroke-opacity=".55" stroke-width="3">
+ <path d="M185 142L210 202 194 272 168 224Z"/><path d="M230 133L258 208 241 243 215 198Z"/>
+ <path d="M590 112L620 175 605 245 577 181Z"/><path d="M650 144L676 196 660 260 635 205Z"/>
+ <path d="M1000 113L1030 173 1012 251 986 187Z"/><path d="M1060 136L1083 187 1070 235 1048 192Z"/>
+ <path d="M1400 102L1430 164 1410 230 1382 171Z"/><path d="M1460 142L1484 189 1471 249 1448 198Z"/>
+</g>
+<g fill="#53ead2" filter="url(#shine)" opacity=".55"><ellipse cx="210" cy="213" rx="56" ry="94"/><ellipse cx="630" cy="186" rx="54" ry="90"/><ellipse cx="1020" cy="180" rx="57" ry="94"/><ellipse cx="1410" cy="180" rx="55" ry="85"/></g>
+<!-- ciudad en distintos niveles -->
+<path d="M0 430L106 390 210 420 330 355 445 411 560 330 675 388 785 320 920 393 1030 328 1140 390 1252 330 1380 404 1500 344 1600 378V680H0Z" fill="#17292e"/>
+<!-- torres de fondo -->
+<g fill="#40514b" stroke="#6b7b64" stroke-width="3">
+ <path d="M55 590V398H94V365H122V398H160V590Z"/><path d="M175 600V434H212V395H234V434H268V600Z"/>
+ <path d="M335 590V378H376V343H399V378H434V590Z"/><path d="M480 602V420H520V383H544V420H579V602Z"/>
+ <path d="M635 595V362H678V324H702V362H739V595Z"/><path d="M806 603V400H850V362H875V400H916V603Z"/>
+ <path d="M990 598V370H1030V332H1056V370H1092V598Z"/><path d="M1180 600V420H1214V383H1237V420H1274V600Z"/>
+ <path d="M1360 610V390H1404V350H1428V390H1465V610Z"/>
+</g>
+<!-- estructuras de cobre y vidrio -->
+<g fill="url(#metal)" stroke="#b3a174" stroke-width="4">
+ <path d="M0 652V490H150V450H202V490H262V652Z"/><path d="M235 677V525H360V490H415V525H480V677Z"/>
+ <path d="M395 650V458H518V420H570V458H625V650Z"/><path d="M605 677V510H732V470H790V510H853V677Z"/>
+ <path d="M850 680V486H974V452H1022V486H1088V680Z"/><path d="M1070 670V526H1194V490H1248V526H1312V670Z"/>
+ <path d="M1295 654V470H1420V432H1472V470H1540V654Z"/>
+</g>
+<g fill="url(#windows)" opacity=".88">
+ <path d="M10 507H250V645H10ZM246 542H467V665H246ZM408 478H615V640H408ZM620 527H842V665H620ZM865 506H1075V670H865ZM1086 544H1300V660H1086ZM1310 490H1530V645H1310Z"/>
+</g>
+<!-- canal en el centro -->
+<path d="M0 670Q210 615 395 668T790 650T1160 665T1600 625V900H0Z" fill="#030a11"/>
+<path d="M0 682Q210 630 395 682T790 664T1160 679T1600 640V900H0Z" fill="url(#water)"/>
+<path d="M0 712Q230 675 430 716T810 692T1200 706T1600 674" fill="none" stroke="#4de5d2" stroke-opacity=".52" stroke-width="4"/>
+<g fill="none" stroke="#8df3de" stroke-width="4" stroke-opacity=".5"><path d="M35 746L270 735M120 792L340 782M520 740L760 750M840 783L1020 770M1160 735L1410 748M1300 815L1540 801"/></g>
+<!-- puentes y tuberías -->
+<g fill="none" stroke-linecap="round">
+ <path d="M0 616Q360 550 680 615T1250 604T1600 581" stroke="#080f14" stroke-width="24"/><path d="M0 607Q360 541 680 606T1250 595T1600 572" stroke="#b69a62" stroke-width="5"/>
+ <path d="M120 593V628M220 578V615M330 575V608M450 574V608M560 585V612M700 602V629M830 600V624M970 594V620M1100 592V616M1250 586V614M1390 578V609M1510 574V600" stroke="#7b704e" stroke-width="4"/>
+ <path d="M70 480Q120 520 165 489T265 488M870 445Q930 475 980 449T1080 448M1225 410Q1300 450 1360 413T1470 415" stroke="#d1b477" stroke-width="10"/>
+ <path d="M70 480Q120 520 165 489T265 488M870 445Q930 475 980 449T1080 448M1225 410Q1300 450 1360 413T1470 415" stroke="#263d3a" stroke-width="4"/>
+</g>
+<!-- pasarelas delanteras -->
+<path d="M0 775L135 754 268 784 398 754 540 785 680 750 826 785 967 754 1100 789 1240 751 1372 780 1505 742 1600 760V900H0Z" fill="#101d21" stroke="#4a5d52" stroke-width="4"/>
+<g fill="url(#lamp)" opacity=".8"><circle cx="132" cy="704" r="58"/><circle cx="392" cy="715" r="55"/><circle cx="795" cy="700" r="63"/><circle cx="1177" cy="716" r="54"/><circle cx="1470" cy="681" r="62"/></g>
+<g fill="#ffc56e"><circle cx="132" cy="704" r="7"/><circle cx="392" cy="715" r="6"/><circle cx="795" cy="700" r="7"/><circle cx="1177" cy="716" r="6"/><circle cx="1470" cy="681" r="7"/></g>
+<!-- maquinaria de válvulas y ruedas -->
+<g transform="translate(250 812)" fill="none" stroke="#bc9b5e" stroke-width="8"><circle r="49"/><circle r="28" stroke="#5a7966" stroke-width="9"/><path d="M-65 0H65M0-65V65M-46-46L46 46M-46 46L46-46"/></g>
+<g transform="translate(1325 800)" fill="none" stroke="#9e8b58" stroke-width="8"><circle r="58"/><circle r="32" stroke="#4b7769" stroke-width="10"/><path d="M-76 0H76M0-76V76M-54-54L54 54M-54 54L54-54"/></g>
+<g fill="#67ebda" filter="url(#shine)" opacity=".75"><circle cx="250" cy="812" r="10"/><circle cx="1325" cy="800" r="10"/></g>
+<!-- pequeñas ventanas del paseo -->
+<g fill="#ffd28a"><rect x="30" y="792" width="9" height="25"/><rect x="70" y="789" width="9" height="25"/><rect x="470" y="786" width="9" height="24"/><rect x="520" y="787" width="9" height="24"/><rect x="910" y="785" width="9" height="25"/><rect x="960" y="780" width="9" height="25"/><rect x="1450" y="776" width="9" height="25"/><rect x="1510" y="770" width="9" height="25"/></g>
+<rect width="1600" height="900" fill="none" stroke="#69d9cb" stroke-opacity=".4" stroke-width="8"/>
+</svg>
