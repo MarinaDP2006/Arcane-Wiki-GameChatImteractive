@@ -5,14 +5,15 @@
 (function () {
   const PROVIDERS = {
     off: { label: 'Desactivada' },
-    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://localhost:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil escribe la dirección de tu PC, por ejemplo http://192.168.1.40:5001. Los pasos están en GUIA-KOBOLDCPP.md.' },
+    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://localhost:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil (o si KoboldCpp está en otro PC de casa) escribe la IP de ese PC, por ejemplo 192.168.1.139: el puerto 5001 y la ruta se ponen solos. La IP la ves en el PC con «ipconfig» (Dirección IPv4). Los pasos están en GUIA-KOBOLDCPP.md.' },
   };
 
   // KoboldCpp corre en tu PC (o en otro de tu red): no pide clave y no sale a internet.
   const LOCAL = new Set(['koboldcpp']);
 
-  // Basta con escribir «192.168.1.40» o «http://192.168.1.40:5001»: se completa el puerto
-  // y la ruta de /v1/chat/completions.
+  // Basta con escribir «192.168.1.139» o «http://192.168.1.139:5001»: se completa el puerto
+  // y la ruta de /v1/chat/completions. También vale pegar la dirección de KoboldAI Lite
+  // («http://192.168.1.139:5001/#») o la de su API propia («…/api»).
   const PORTS = { koboldcpp: '5001' };
   function fullUrl(p, url) {
     url = String(url || '').trim();
@@ -21,7 +22,9 @@
     try {
       const u = new URL(url);
       if (!u.port && u.protocol === 'http:') u.port = PORTS[p];
-      if (!/\/chat\/completions$/.test(u.pathname)) u.pathname = `${u.pathname.replace(/\/(v1\/?)?$/, '').replace(/\/+$/, '')}/v1/chat/completions`;
+      u.hash = '';
+      u.search = '';
+      if (!/\/chat\/completions$/.test(u.pathname)) u.pathname = `${u.pathname.replace(/\/(api|v1)(\/.*)?$/, '').replace(/\/+$/, '')}/v1/chat/completions`;
       return u.toString();
     } catch { return url; }
   }
@@ -39,6 +42,22 @@
     return c.provider !== 'off' && Boolean(c.url && c.model);
   }
 
+  // «localhost» en una dirección de KoboldCpp.
+  const isLoopback = (url) => { try { return /^(localhost|127\.\d+\.\d+\.\d+|\[::1\])$/i.test(new URL(url).hostname); } catch { return false; } };
+  const native = () => (window.Capacitor?.isNativePlatform?.() && window.Capacitor?.Plugins?.CapacitorHttp) || null;
+  // En el móvil o la tablet «localhost» es el propio aparato, no el PC con KoboldCpp.
+  const remoteDevice = () => !window.umbral && (Boolean(native()) || Boolean(window.U?.touch));
+
+  // Explica por qué no se llega a KoboldCpp (en escritorio lo hace el proceso principal).
+  function netError(err, url) {
+    if (err?.name === 'AbortError') return new Error('KoboldCpp ha tardado demasiado en responder. Prueba con un modelo más pequeño o más «GPU Layers».');
+    let where = url;
+    try { const u = new URL(url); where = u.host; } catch { /* dirección rara: se muestra tal cual */ }
+    if (isLoopback(url) && remoteDevice()) return new Error('En el móvil o la tablet «localhost» es el propio aparato. Escribe la IP de tu PC con KoboldCpp, por ejemplo 192.168.1.139 (la ves en el PC con «ipconfig»).');
+    if (location.protocol === 'https:' && /^http:/i.test(url) && !native()) return new Error('Esta página va por https y el navegador no deja hablar con KoboldCpp por http. Usa el juego de escritorio o la app de Android.');
+    return new Error(`No se llega a KoboldCpp en ${where}. Comprueba que está abierto con el modelo cargado, que el PC y este aparato están en la misma wifi y que el cortafuegos de Windows deja pasar el puerto 5001.`);
+  }
+
   // Envía la petición por el camino que no tenga problemas de CORS: el proceso
   // principal en escritorio, el HTTP nativo en Android y fetch en el navegador.
   async function post(url, headers, body) {
@@ -47,9 +66,12 @@
       if (r.error) throw new Error(r.error);
       return r;
     }
-    const native = window.Capacitor?.Plugins?.CapacitorHttp;
-    if (native && window.Capacitor.isNativePlatform?.()) {
-      const r = await native.request({ url, method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, data: body, connectTimeout: 20000, readTimeout: 90000 });
+    const http = native();
+    if (http) {
+      let r;
+      try {
+        r = await http.request({ url, method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, data: body, connectTimeout: 20000, readTimeout: 90000 });
+      } catch (err) { throw netError(err, url); }
       return { status: r.status, data: typeof r.data === 'string' ? JSON.parse(r.data || '{}') : r.data };
     }
     const ctl = new AbortController();
@@ -57,6 +79,8 @@
     try {
       const res = await fetch(url, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal });
       return { status: res.status, data: await res.json().catch(() => ({})) };
+    } catch (err) {
+      throw netError(err, url);
     } finally {
       clearTimeout(timer);
     }
@@ -69,12 +93,14 @@
       if (r.error) throw new Error(r.error);
       return r.data;
     }
-    const native = window.Capacitor?.Plugins?.CapacitorHttp;
-    if (native && window.Capacitor.isNativePlatform?.()) {
-      const r = await native.request({ url, method: 'GET', connectTimeout: 8000, readTimeout: 8000 });
-      return typeof r.data === 'string' ? JSON.parse(r.data || '{}') : r.data;
-    }
-    return fetch(url).then((r) => r.json());
+    const http = native();
+    try {
+      if (http) {
+        const r = await http.request({ url, method: 'GET', connectTimeout: 8000, readTimeout: 8000 });
+        return typeof r.data === 'string' ? JSON.parse(r.data || '{}') : r.data;
+      }
+      return await fetch(url).then((r) => r.json());
+    } catch (err) { throw netError(err, url); }
   }
 
   // Modelos que razonan antes de hablar (Qwen 3, DeepSeek R1…): necesitan más margen.
@@ -382,5 +408,5 @@ vi: ¿Y tú quién demonios eres?
     return { text: text.trim(), secs: (performance.now() - t0) / 1000 };
   }
 
-  window.AI = { PROVIDERS, LOCAL, cfg, ready, reply, storyTurn, direct, adapt, test, warm, models };
+  window.AI = { PROVIDERS, LOCAL, cfg, ready, isLoopback, remoteDevice, reply, storyTurn, direct, adapt, test, warm, models };
 })();

@@ -60,7 +60,7 @@ Cada capítulo de `STORY.chapters` tiene nodos con `bg` (un lugar de `scenes.js`
 
 ## 6. IA
 
-La única IA del juego es **KoboldCpp**. No hay otros servicios ni claves. En **Ajustes → IA de la historia y los chats** se elige **KoboldCpp** (en el PC, `http://localhost:5001`; en la tablet o el móvil, la IP del PC en la misma wifi, por ejemplo `192.168.1.40`). Los pasos están en [GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md). Viene **desactivada** de fábrica: hasta que la actives, la historia usa las opciones escritas. Si KoboldCpp no contesta en una escena, esa escena vuelve a las opciones escritas. La web (`server/index.js`, endpoint `/api/roleplay`) reenvía a KoboldCpp en `KOBOLDCPP_URL`.
+La única IA del juego es **KoboldCpp**. No hay otros servicios ni claves. En **Ajustes → IA de la historia y los chats** se elige **KoboldCpp** (en el PC, `http://localhost:5001`; en la tablet, el móvil u otro PC, la IP del PC con KoboldCpp en la misma wifi, por ejemplo `192.168.1.139`: el puerto 5001 y la ruta se completan solos). Los pasos están en [GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md). Viene **desactivada** de fábrica: hasta que la actives, la historia usa las opciones escritas. Si KoboldCpp no contesta en una escena, esa escena vuelve a las opciones escritas. La web (`server/index.js`, endpoint `/api/roleplay`) reenvía a KoboldCpp en `KOBOLDCPP_URL`.
 
 ## 7. Guardados
 
