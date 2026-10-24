@@ -5,7 +5,7 @@
 (function () {
   const PROVIDERS = {
     off: { label: 'Desactivada' },
-    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://localhost:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil (o si KoboldCpp está en otro PC de casa) escribe la IP de ese PC, por ejemplo 192.168.1.139: el puerto 5001 y la ruta se ponen solos. La IP la ves en el PC con «ipconfig» (Dirección IPv4). Los pasos están en GUIA-KOBOLDCPP.md.' },
+    koboldcpp: { label: 'KoboldCpp (en tu PC o por la red de casa)', url: 'http://192.168.1.139:5001/v1/chat/completions', model: 'koboldcpp', key: false, help: 'Abre KoboldCpp (koboldcpp.exe o koboldcpp-oldpc.exe en PCs antiguos), elige tu modelo .gguf en «Model» y pulsa «Launch». Cuando diga que está listo en el puerto 5001, deja la dirección como está y pulsa «Probar conexión». Para jugar desde la tablet o el móvil (o si KoboldCpp está en otro PC de casa) escribe la IP de ese PC, por ejemplo 192.168.1.139: el puerto 5001 y la ruta se ponen solos. La IP la ves en el PC con «ipconfig» (Dirección IPv4). Los pasos están en GUIA-KOBOLDCPP.md.' },
   };
 
   // KoboldCpp corre en tu PC (o en otro de tu red): no pide clave y no sale a internet.
@@ -32,7 +32,7 @@
   // Ajustes de versiones anteriores con otros servicios (ya no existen) quedan desactivados.
   function cfg() {
     const a = window.App?.settings?.ai || {};
-    const p = PROVIDERS[a.provider] ? a.provider : 'off';
+    const p = a.provider === 'off' ? 'off' : (PROVIDERS[a.provider] ? a.provider : 'koboldcpp');
     const d = PROVIDERS[p];
     return { provider: p, url: p === 'koboldcpp' ? fullUrl(p, a.url || d.url) : '', model: a.model || d.model || '', password: p === 'koboldcpp' ? String(a.password || '') : '' };
   }
@@ -87,7 +87,7 @@
   }
 
   // GET corto (lista de modelos), por el mismo camino que post().
-  async function get(url) {
+  async function get(url, headers = {}) {
     if (window.umbral?.aiGet) {
       const r = await window.umbral.aiGet(url);
       if (r.error) throw new Error(r.error);
@@ -96,10 +96,10 @@
     const http = native();
     try {
       if (http) {
-        const r = await http.request({ url, method: 'GET', connectTimeout: 8000, readTimeout: 8000 });
+        const r = await http.request({ url, method: 'GET', headers, connectTimeout: 8000, readTimeout: 8000 });
         return typeof r.data === 'string' ? JSON.parse(r.data || '{}') : r.data;
       }
-      return await fetch(url).then((r) => r.json());
+      return await fetch(url, { headers }).then((r) => r.json());
     } catch (err) { throw netError(err, url); }
   }
 
@@ -108,7 +108,8 @@
 
   // KoboldCpp sirve un solo modelo a la vez: el que se eligió al abrirlo.
   async function models() {
-    const data = await get(`${cfg().url.replace(/\/v1\/chat\/completions$/, '')}/v1/models`);
+    const c = cfg();
+    const data = await get(`${c.url.replace(/\/v1\/chat\/completions$/, '')}/v1/models`, c.password ? { Authorization: `Bearer ${c.password}` } : {});
     return (data?.data || []).map((m) => ({ name: m.id, loaded: true, quant: '' }));
   }
 
