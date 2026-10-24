@@ -1,0 +1,251 @@
+# Compila Las ciudades del Umbral para Windows, macOS y Android.
+# Sustituye a build.yml (escritorio) y android.yml (móvil): un solo workflow, sin duplicados.
+# 1. «comprobar» valida datos y sintaxis del juego; si falla, no se compila nada.
+# 2. Cada sistema se compila en su propio job y sube un artefacto descargable:
+#    ciudades-del-umbral-<versión>-<plataforma>-<arquitectura>.
+# 3. Nunca publica una Release por sí solo: solo con Run workflow → «publicar» marcado.
+name: Compilar juego (Windows, macOS y Android)
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      plataformas:
+        description: "Qué compilar"
+        type: choice
+        options: [todas, windows, macos, android]
+        default: todas
+      retencion:
+        description: "Días que se guardan los artefactos (1-90)"
+        type: number
+        default: 14
+      publicar:
+        description: "Publicar la Release v<versión de package.json> (requiere «todas»)"
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: compilar-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PROYECTO: ciudades-del-umbral
+  # Fuera de una ejecución manual el valor de entrada no existe y se usan 14 días.
+  RETENCION: ${{ inputs.retencion || 14 }}
+
+jobs:
+  comprobar:
+    name: Comprobaciones del proyecto
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # Sin scripts: las comprobaciones no necesitan el binario de Electron.
+      - name: Instalar dependencias (package-lock.json)
+        run: npm ci --ignore-scripts
+      - name: Comprobar datos y recursos del juego
+        run: npm run check
+      - name: Verificar sintaxis del motor
+        run: |
+          for f in main.js modelos.js preload.js scripts/*.js server/*.js \
+                   src/js/world3d.js src/js/world.js src/js/avatars3d.js src/js/game.js \
+                   src/js/app.js src/js/util.js src/data/original-world.js src/data/relations.js; do
+            node --check "$f"
+          done
+      - name: Versión y parámetros
+        id: ver
+        env:
+          EVENTO: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          PLATAFORMAS: ${{ inputs.plataformas }}
+          PUBLICAR: ${{ inputs.publicar }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          if [ "$REF_TYPE" = tag ] && [ "$REF_NAME" != "v$v" ]; then
+            echo "::error::La etiqueta $REF_NAME no coincide con la versión de package.json (v$v)."
+            exit 1
+          fi
+          if ! [[ "$RETENCION" =~ ^[0-9]+$ ]] || [ "$RETENCION" -lt 1 ] || [ "$RETENCION" -gt 90 ]; then
+            echo "::error::La retención debe ser un número de días entre 1 y 90 (recibido: $RETENCION)."
+            exit 1
+          fi
+          if [ "$EVENTO" = workflow_dispatch ] && [ "$PUBLICAR" = true ] && [ "$PLATAFORMAS" != todas ]; then
+            echo "::error::Para publicar la Release hay que compilar «todas» las plataformas."
+            exit 1
+          fi
+          echo "Versión $v · retención $RETENCION días"
+
+  windows:
+    name: Windows x64
+    needs: comprobar
+    if: github.event_name != 'workflow_dispatch' || inputs.plataformas == 'todas' || inputs.plataformas == 'windows'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar dependencias (package-lock.json)
+        run: npm ci
+      # Sin certificado de firma de Windows: el instalador sale sin firmar.
+      - name: Compilar instalador y portable de Windows
+        run: npm run dist:win -- --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Comprobar que existen ejecutables
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem dist -Filter '*.exe')
+          if ($files.Count -lt 2) { throw 'No se han generado el instalador y el portable de Windows' }
+          $files | ForEach-Object { Write-Host $_.Name $_.Length }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROYECTO }}-${{ needs.comprobar.outputs.version }}-windows-x64
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: ${{ env.RETENCION }}
+
+  macos:
+    name: macOS ${{ matrix.arch }}
+    needs: comprobar
+    if: github.event_name != 'workflow_dispatch' || inputs.plataformas == 'todas' || inputs.plataformas == 'macos'
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Instalar dependencias (package-lock.json)
+        run: npm ci
+      # Sin certificado de Apple: la app sale sin firmar. La primera vez en el Mac hay que
+      # abrirla con clic derecho → Abrir (lo explica el README).
+      - name: Compilar DMG y ZIP de Mac (${{ matrix.arch }})
+        run: npx electron-builder --mac dmg zip --${{ matrix.arch }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Comprobar que existen el DMG y el ZIP
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          ls -la dist
+          test -n "$(ls dist/*-mac-"$ARCH".dmg)"
+          test -n "$(ls dist/*-mac-"$ARCH".zip)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROYECTO }}-${{ needs.comprobar.outputs.version }}-macos-${{ matrix.arch }}
+          path: |
+            dist/*-mac-${{ matrix.arch }}.dmg
+            dist/*-mac-${{ matrix.arch }}.zip
+          if-no-files-found: error
+          retention-days: ${{ env.RETENCION }}
+
+  android:
+    name: Android (universal)
+    needs: comprobar
+    if: github.event_name != 'workflow_dispatch' || inputs.plataformas == 'todas' || inputs.plataformas == 'android'
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.comprobar.outputs.version }}
+      # Solo se usa para decidir si se firma; GitHub enmascara su valor en los logs.
+      KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # Capacitor 8 y el Android Gradle Plugin 8.13 (Gradle 8.14) necesitan JDK 21.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      # compileSdk/targetSdk 36 en android/variables.gradle.
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools platforms;android-36 build-tools;35.0.0
+      - name: Instalar dependencias (sin descargar Electron)
+        run: npm ci --ignore-scripts
+      - name: Copiar el juego al proyecto Android
+        run: npm run android:sync
+      - name: Compilar APK de prueba (debug)
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+          mkdir -p ../apk
+          cp app/build/outputs/apk/debug/app-debug.apk "../apk/$PROYECTO-$VERSION-tablet.apk"
+      # Solo con los secretos reales configurados en el repositorio; nunca en pull requests.
+      - name: Compilar APK firmado y AAB (si hay llave)
+        if: env.KEYSTORE != '' && github.event_name != 'pull_request'
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        working-directory: android
+        run: |
+          printf '%s' "$KEYSTORE" | base64 -d > "$ANDROID_KEYSTORE_FILE"
+          ./gradlew assembleRelease bundleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk "../apk/$PROYECTO-$VERSION-firmado.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "../apk/$PROYECTO-$VERSION.aab"
+      - name: Borrar la llave del runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.keystore"
+      - name: Comprobar que existe el APK
+        run: ls -la apk && test -n "$(ls apk/*.apk)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROYECTO }}-${{ env.VERSION }}-android-universal
+          path: apk/*
+          if-no-files-found: error
+          retention-days: ${{ env.RETENCION }}
+
+  # Solo manual: Run workflow con «publicar» marcado y «todas» las plataformas.
+  release:
+    name: Publicar Release (manual)
+    if: github.event_name == 'workflow_dispatch' && inputs.publicar && inputs.plataformas == 'todas'
+    needs: [comprobar, windows, macos, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ${{ env.PROYECTO }}-${{ needs.comprobar.outputs.version }}-*
+          path: dist
+          merge-multiple: true
+      # Sin etiqueta previa, la Release crea la etiqueta v<versión> en este commit.
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.comprobar.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Las ciudades del Umbral v${{ needs.comprobar.outputs.version }}
+          body: |
+            Instaladores de Las ciudades del Umbral (Rifts & Gears).
+            - Windows: `Ciudades-del-Umbral-Setup-*.exe` (instalador) o `*-portable.exe` (sin instalar).
+            - Mac: `*-mac-arm64.dmg` (Apple Silicon) o `*-mac-x64.dmg` (Intel). Sin firmar: la primera vez, clic derecho → Abrir.
+            - Android: `ciudades-del-umbral-*-tablet.apk`.
+          files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.apk
+            dist/*.aab
+          fail_on_unmatched_files: false

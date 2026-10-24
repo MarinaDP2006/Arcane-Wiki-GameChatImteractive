@@ -88,13 +88,19 @@ npm run dist:mac     # macOS
 npm run android:sync # copia src/ y la música a www/ y sincroniza Capacitor
 ```
 
-La app de Android es `com.marinadp2006.ciudadesdelumbral`. GitHub Actions compila Windows, macOS y Android en cada push a main. Para publicar una Release:
+La app de Android es `com.marinadp2006.ciudadesdelumbral`. El workflow `.github/workflows/compilar.yml` («Compilar juego (Windows, macOS y Android)») se lanza en cada push a main, en cada pull request a main, con etiquetas `v*` y a mano:
 
-1. Sube la versión en `package.json` (por ejemplo 1.29.0).
-2. En GitHub → Actions → «Compilar escritorio (Windows y Mac)» → Run workflow, marca **Publicar** y ejecútalo. Crea la etiqueta `v<versión>` y la Release con los instaladores.
-3. Cuando termine, haz lo mismo en «Compilar móvil (Android)» para añadir el APK.
+1. **Comprobaciones** (`npm run check` y sintaxis del motor). Si fallan, no se compila nada.
+2. Un job por sistema: Windows x64, macOS x64, macOS arm64 y Android (APK universal). Las dependencias se instalan con `npm ci` desde `package-lock.json`; Android usa JDK 21 (Temurin) y Android SDK 36.
+3. Cada job sube un artefacto `ciudades-del-umbral-<versión>-<plataforma>-<arquitectura>`, que se descarga desde la página de la ejecución (Actions → la ejecución → Artifacts). Se guarda 14 días por defecto.
 
-También vale crear y subir una etiqueta `v*`: lanza los dos workflows y publica sola.
+Ejecución manual: GitHub → Actions → «Compilar juego (Windows, macOS y Android)» → **Run workflow**. Opciones:
+
+- **Qué compilar**: `todas`, `windows`, `macos` o `android`.
+- **Días que se guardan los artefactos**: de 1 a 90.
+- **Publicar la Release**: desmarcado por defecto. Solo si lo marcas (y eliges `todas`) se crea la etiqueta `v<versión>` y la Release con los instaladores y el APK. Ni los push ni las etiquetas publican nada solos.
+
+Una etiqueta `v*` debe coincidir con la versión de `package.json`; si no, las comprobaciones fallan. El APK firmado y el AAB solo se generan si están configurados los secretos `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` y `ANDROID_KEY_PASSWORD` (nunca en pull requests); sin ellos sale el APK de prueba.
 
 ## 11. Antes de publicar
 
