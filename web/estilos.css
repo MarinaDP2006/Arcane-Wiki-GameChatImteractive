@@ -502,14 +502,14 @@ html[data-tema="nacar"] body { background: radial-gradient(900px 640px at 100% 1
 .dj-form > *, .dj-centro > * { position: relative; }
 .dj-ciudades { gap: .9rem; }
 .dj-ciudad { min-height: 175px; align-items: flex-end; position: relative; overflow: hidden; border-radius: 3px; background-size: cover; background-position: center; }
-.dj-ciudad-aurelia { background-image: linear-gradient(0deg, rgba(2,8,13,.95), rgba(2,8,13,.06)), url("arte-propio/umbral-scenes.svg"); background-size: cover, 200% 200%; background-position: center, 0% 0%; }
-.dj-ciudad-nacar { background-image: linear-gradient(0deg, rgba(2,8,13,.95), rgba(2,8,13,.06)), url("arte-propio/umbral-scenes.svg"); background-size: cover, 200% 200%; background-position: center, 0% 100%; }
+.dj-ciudad-aurelia { background-image: linear-gradient(0deg, rgba(2,8,13,.95), rgba(2,8,13,.06)), url("arte-propio/aurelia-industrial.svg"); background-size: cover; background-position: center; }
+.dj-ciudad-nacar { background-image: linear-gradient(0deg, rgba(2,8,13,.95), rgba(2,8,13,.06)), url("arte-propio/nacar-canal.svg"); background-size: cover; background-position: center; }
 .dj-ciudad > span { position: relative; z-index: 1; }
 .dj-ciudad strong { text-shadow: 0 2px 14px #000; }
 .dj-ciudad:has(input:checked) { box-shadow: inset 0 0 0 2px var(--accent), 0 0 28px var(--accent-glow); }
 .dj-escena { min-height: 190px; padding: clamp(1.2rem, 3vw, 2.3rem); border-color: rgba(125,202,172,.24); background-size: cover; background-position: center; }
-.dj-escena-aurelia { background-image: linear-gradient(90deg, rgba(2,8,13,.92), rgba(2,8,13,.3)), url("arte-propio/umbral-scenes.svg"); background-size: cover, 200% 200%; background-position: center, 100% 0%; }
-.dj-escena-nacar { background-image: linear-gradient(90deg, rgba(2,8,13,.92), rgba(2,8,13,.3)), url("arte-propio/umbral-scenes.svg"); background-size: cover, 200% 200%; background-position: center, 100% 100%; }
+.dj-escena-aurelia { background-image: linear-gradient(90deg, rgba(2,8,13,.92), rgba(2,8,13,.3)), url("arte-propio/archivo-ciudad.svg"); background-size: cover; background-position: center; }
+.dj-escena-nacar { background-image: linear-gradient(90deg, rgba(2,8,13,.92), rgba(2,8,13,.3)), url("arte-propio/ascensor-industrial.svg"); background-size: cover; background-position: center; }
 .dj-msg { box-shadow: 0 5px 22px rgba(0,0,0,.18); }
 .dj-entrada textarea { border-radius: 3px; background: rgba(3,10,14,.92); }
 @media (max-width: 700px) {
@@ -520,8 +520,5 @@ html[data-tema="nacar"] body { background: radial-gradient(900px 640px at 100% 1
  .dj-ciudad { min-height: 145px; }
 }
 
-/* Solo las escenas nuevas recortan el mosaico; las demás diapositivas conservan sus fondos. */
-.home-art .scene-aurelia { background-size: 200% 200% !important; background-position: 0% 0% !important; }
-.home-art .scene-aurelia-alt { background-size: 200% 200% !important; background-position: 100% 0% !important; }
-.home-art .scene-nacar { background-size: 200% 200% !important; background-position: 0% 100% !important; }
-.home-art .scene-nacar-alt { background-size: 200% 200% !important; background-position: 100% 100% !important; }
+/* Las escenas nuevas usan archivos independientes; el resto de diapositivas conserva sus fondos originales. */
+.home-art .scene-aurelia, .home-art .scene-aurelia-alt, .home-art .scene-nacar, .home-art .scene-nacar-alt { background-size: cover !important; background-position: center !important; }
