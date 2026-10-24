@@ -1425,3 +1425,107 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
   .play-main .choices { max-height: 55%; }
   .play-main .ai-input { min-height: 2.6rem; }
 }
+
+
+/* ---------- Direccion artistica del Umbral: panoramas, metal y Resonancia ---------- */
+#view-home .home { isolation: isolate; background: #03080e; }
+#view-home .home-slide { background-size: cover; background-position: center; filter: saturate(1.12) contrast(1.08); }
+#view-home .home-art.aurelia .home-art-in::before,
+#view-home .home-art.nacar .home-art-in::before {
+ content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+ background: linear-gradient(180deg, rgba(3,8,14,.1), transparent 40%, rgba(3,8,14,.34));
+}
+#view-home .home-panel { max-width: min(740px, 62vw); }
+#view-home .home-menu { gap: .38rem; margin-top: clamp(1.4rem, 3vh, 3rem); }
+#view-home .home-btn {
+ min-height: 48px; padding: .72rem .9rem; border: 1px solid rgba(190,205,220,.12);
+ background: linear-gradient(90deg, rgba(5,12,18,.4), rgba(5,12,18,0));
+ backdrop-filter: blur(4px); letter-spacing: .16em;
+}
+#view-home .home-btn.primary {
+ border-color: rgba(228,194,126,.4);
+ background: linear-gradient(90deg, rgba(228,194,126,.19), rgba(5,12,18,.1) 74%);
+}
+#view-home .home-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+#view-home .home-hint { text-shadow: 0 2px 12px #000; }
+
+#view-creator { isolation: isolate; background: #03090f; }
+#view-creator .creator-bg {
+ filter: blur(2px) brightness(.5) saturate(1.2) contrast(1.08);
+ transform: scale(1.06);
+}
+#view-creator .creator-bg::after {
+ content: ""; position: absolute; inset: 0;
+ background:
+  radial-gradient(ellipse at 76% 26%, rgba(85,231,170,.13), transparent 35%),
+  linear-gradient(90deg, rgba(3,8,14,.76), rgba(3,8,14,.12) 66%, rgba(3,8,14,.46)),
+  linear-gradient(0deg, rgba(3,8,14,.68), transparent 54%);
+ pointer-events: none;
+}
+#view-creator .creator { padding: clamp(.5rem, 2vw, 1.4rem); }
+#view-creator .creator-body {
+ background: linear-gradient(145deg, rgba(8,18,27,.95), rgba(3,10,16,.9));
+ border: 1px solid rgba(125,202,172,.24);
+ box-shadow: inset 0 1px rgba(255,255,255,.04), 0 22px 60px rgba(0,0,0,.46);
+ backdrop-filter: blur(14px);
+}
+#view-creator .creator-body h2 { color: #ecf4e8; text-shadow: 0 0 22px rgba(85,231,170,.12); }
+#view-creator .creator-side .splash { border-radius: 3px; box-shadow: 0 0 0 1px rgba(125,202,172,.55), 0 22px 58px rgba(0,0,0,.62); }
+#view-creator .origin-card { border-radius: 3px; }
+#view-creator .origin-card::after {
+ content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+ background: linear-gradient(180deg, rgba(2,7,12,.03) 25%, rgba(2,7,12,.84));
+ box-shadow: inset 0 0 0 1px rgba(255,255,255,.07);
+}
+#view-creator .origin-info { z-index: 2; background: none; }
+#view-creator .origin-card.origin-aurelia { border-color: rgba(228,194,126,.28); }
+#view-creator .origin-card.origin-nacar { border-color: rgba(85,231,170,.28); }
+#view-creator .origin-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 34px var(--accent-glow); }
+#view-creator .steps li.active span { box-shadow: 0 0 20px var(--accent-glow); }
+
+#view-game .chat-stage { gap: clamp(.7rem, 1.6vw, 1.2rem); }
+#view-game .chat-portrait, #view-game .chat-convo {
+ border: 1px solid rgba(125,202,172,.22); box-shadow: 0 20px 52px rgba(0,0,0,.3);
+}
+#view-game .chat-portrait { background: linear-gradient(165deg, rgba(10,29,29,.95), rgba(4,12,16,.98)); }
+#view-game .cp-frame { border-radius: 3px; overflow: hidden; }
+#view-game .cp-frame img { filter: saturate(1.08) contrast(1.04); }
+#view-game .cp-plate { border-top: 1px solid rgba(85,231,170,.25); }
+#view-game .chat-convo { background: linear-gradient(160deg, rgba(6,20,24,.96), rgba(3,9,14,.98)); }
+#view-game .chat-head { background: linear-gradient(90deg, rgba(85,231,170,.08), transparent 75%); border-bottom: 1px solid rgba(125,202,172,.2); }
+#view-game #chat-log { background: radial-gradient(ellipse at 12% 5%, rgba(85,231,170,.065), transparent 48%); }
+#view-game .msg.them .bubble {
+ background: linear-gradient(145deg, rgba(19,42,42,.96), rgba(7,20,24,.97));
+ border-color: rgba(125,202,172,.2); border-radius: 3px 12px 12px 12px;
+}
+#view-game .msg.me .bubble {
+ background: linear-gradient(135deg, #e4c27e, #9c7541);
+ box-shadow: 0 6px 24px rgba(85,231,170,.09); border-radius: 12px 3px 12px 12px;
+}
+#view-game .choices { background: rgba(3,10,14,.94); border-top-color: rgba(125,202,172,.22); }
+#view-game .choice { border-radius: 3px; border-color: rgba(125,202,172,.18); background: rgba(255,255,255,.035); }
+#view-game .choice:hover:not(.locked) { border-color: var(--accent); background: rgba(85,231,170,.09); }
+
+@media (max-width: 900px) {
+ #view-home .home-panel { max-width: 84vw; padding-left: clamp(1.1rem, 5vw, 3rem); }
+ #view-creator .creator-grid { grid-template-columns: minmax(0,1fr) minmax(260px,.8fr); }
+ #view-game .chat-stage { grid-template-columns: minmax(160px,.7fr) minmax(0,1.3fr); }
+}
+@media (max-width: 650px) {
+ #view-home .home-panel { max-width: 100%; padding: 1rem; justify-content: flex-end; padding-bottom: 4.6rem; }
+ #view-home .home-title { white-space: normal; font-size: clamp(2rem, 10vw, 3.6rem); }
+ #view-home .home-menu { width: min(390px,92vw); }
+ #view-creator .creator { padding: .4rem; }
+ #view-creator .creator-grid { grid-template-columns: minmax(0,1fr); }
+ #view-creator .creator-body { max-height: none; }
+ #view-creator .creator-stage { position: relative; order: -1; width: min(100%,460px); margin: 0 auto .8rem; }
+ #view-creator #stage-splash .splash { max-height: 48vh; }
+ #view-game .chat-stage { display: flex; flex-direction: column; }
+ #view-game .chat-portrait { width: 100%; display: grid; grid-template-columns: 86px 1fr; align-items: center; gap: .6rem; }
+ #view-game .cp-frame { grid-row: span 3; width: 86px; height: 108px; }
+ #view-game .cp-plate { border: 0; }
+ #view-game .chat-convo { min-height: 60vh; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+ #view-home .home-slide, #view-creator *, #view-game .chat-stage * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
