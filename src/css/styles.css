@@ -1529,3 +1529,22 @@ body.reduce-motion .scene2d-spot span, body.reduce-motion .scene2d-spot::before 
 @media (prefers-reduced-motion: reduce) {
  #view-home .home-slide, #view-creator *, #view-game .chat-stage * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+
+/* Minijuegos táctiles: botones cómodos y acción de regateo siempre legible. */
+@media (pointer: coarse), (max-width: 720px) {
+  .mg-pad { z-index: 20; gap: 0.55rem; }
+  .mg-pad-btn {
+    min-width: 64px;
+    min-height: 58px;
+    padding: 0.65rem 0.8rem;
+    font-size: 1rem;
+    line-height: 1.2;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mg-regateo .mg-pad-btn { min-width: 76px; min-height: 64px; font-weight: 700; }
+  .mg-regateo .mg-pad-btn span { white-space: nowrap; }
+  .place-acts { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .place-act { width: 100%; touch-action: manipulation; }
+}

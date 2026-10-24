@@ -318,7 +318,7 @@
       const stat = S().stats[a.stat].label;
       const tag = a.game ? 'Minijuego' : 'Actividad';
       if (!done && !maxed) rows.push(act(tag, a.label, `Recompensa: +1 ${stat}`, () => doActivity(loc, key)));
-      else if (a.game) rows.push(act(tag, `${a.label} (práctica)`, done ? 'Ya ganaste la recompensa en este capítulo.' : `${stat} ya está al máximo.`, () => practice(a.game)));
+      else if (a.game) rows.push(act(tag, `${a.label} (práctica)`, done ? 'Ya ganaste la recompensa en este capítulo.' : `${stat} ya está al máximo.`, () => practice(a.game, loc.id)));
       else rows.push(act(tag, a.label, done ? 'Ya lo hiciste en este capítulo.' : `${stat} ya está al máximo.`, () => {}, { disabled: true }));
     }
 
@@ -349,9 +349,9 @@
   }
 
   /** Minijuego sin recompensa desde el menú de un lugar. */
-  async function practice(game) {
+  async function practice(game, place) {
     World.pause(true);
-    await Minigames.play(game, { bonus: mgBonus(game) });
+    await Minigames.play(game, { bonus: mgBonus(game), place });
     World.pause(false);
   }
 
