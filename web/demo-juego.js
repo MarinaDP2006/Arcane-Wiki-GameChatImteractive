@@ -309,6 +309,16 @@
   }
 
   panelConexion();
-  const comprobacion = comprobar();
+  // No solicites acceso a la LAN al cargar una página HTTPS: Chrome requiere un gesto del usuario
+  // cuando el permiso aún no está concedido. Si se guardó «Mi KoboldCpp», espera al clic en Probar.
+  let comprobacion = Promise.resolve();
+  if (cx.cfg.modo === 'servidor') {
+    comprobacion = comprobar();
+  } else {
+    cx.estado = 'local';
+    pintarEstado();
+    mensaje('aviso', 'Pulsa «Probar conexión» para conectar con tu KoboldCpp local. Si Chrome/Edge pregunta por acceso a la red local, pulsa «Permitir».');
+    if (panel) panel.open = true;
+  }
   render();
 })();
