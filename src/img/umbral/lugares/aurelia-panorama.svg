@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Aurelia al amanecer</title>
+<desc id="desc">Panorama original de una ciudad elevada de piedra clara y latón, con observatorios, puentes colgantes y ascensores de contrapesos sobre un mar de nubes.</desc>
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#172c53"/><stop offset=".42" stop-color="#e6a66d"/><stop offset=".68" stop-color="#f8d49b"/><stop offset="1" stop-color="#7e95ad"/></linearGradient>
+ <linearGradient id="stone" x2=".15" y2="1"><stop stop-color="#f4dfb0"/><stop offset=".55" stop-color="#bfa174"/><stop offset="1" stop-color="#594f4c"/></linearGradient>
+ <linearGradient id="shadowStone" x2="0" y2="1"><stop stop-color="#7f8eaa"/><stop offset="1" stop-color="#25334f"/></linearGradient>
+ <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff1b3"/><stop offset=".4" stop-color="#c89745"/><stop offset="1" stop-color="#684221"/></linearGradient>
+ <linearGradient id="clouds" x2="0" y2="1"><stop stop-color="#fff2ce" stop-opacity=".85"/><stop offset="1" stop-color="#b1c2d6" stop-opacity=".08"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#fff8db"/><stop offset=".24" stop-color="#ffe3aa" stop-opacity=".9"/><stop offset="1" stop-color="#ffd49a" stop-opacity="0"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
+ <pattern id="windows" width="28" height="34" patternUnits="userSpaceOnUse"><rect x="10" y="7" width="6" height="14" rx="2" fill="#ffe2a0" opacity=".85"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<circle cx="270" cy="230" r="230" fill="url(#sun)"/><circle cx="270" cy="230" r="105" fill="#fff0c7" opacity=".72"/>
+<g fill="#fff4dd" opacity=".26" filter="url(#soft)"><path d="M0 350 Q160 270 310 355T640 345T930 360T1220 320T1600 350V490H0Z"/><path d="M0 430Q220 380 420 440T850 420T1230 440T1600 405V530H0Z"/></g>
+<path d="M0 470L120 404 188 435 290 366 376 427 476 382 572 446 677 387 760 430 840 395 942 438 1025 390 1120 432 1216 368 1330 420 1420 350 1600 435V690H0Z" fill="#62758e" opacity=".62"/>
+<path d="M0 525L120 470 220 503 310 432 410 490 540 448 650 500 740 450 850 500 970 440 1090 487 1220 425 1360 490 1480 420 1600 475V750H0Z" fill="#53627b" opacity=".65"/>
+<!-- ciudad lejana -->
+<g fill="#d0b28a" opacity=".73">
+ <path d="M80 580V490H115V465H128V490H151V580Z"/><path d="M170 596V455H210V426H228V455H255V596Z"/>
+ <path d="M300 565V455H330V430H345V455H374V565Z"/><path d="M420 600V390H470V355H490V390H520V600Z"/>
+ <path d="M565 590V463H600V428H615V463H640V590Z"/><path d="M720 606V430H758V398H774V430H810V606Z"/>
+ <path d="M885 590V455H920V420H938V455H972V590Z"/><path d="M1050 580V405H1096V370H1116V405H1150V580Z"/>
+ <path d="M1255 590V452H1290V414H1310V452H1340V590Z"/><path d="M1430 600V420H1465V382H1483V420H1520V600Z"/>
+</g>
+<g stroke="#f0d7aa" stroke-width="5" fill="none" opacity=".9">
+ <path d="M85 590V505H145V590M180 602V469H246V602M428 604V407H510V604M728 610V446H802V610M1060 590V421H1140V590M1438 610V434H1512V610"/>
+ <path d="M200 468L213 442 227 468M450 408L469 375 489 408M748 447L764 420 783 447M1075 422L1100 384 1124 422"/>
+</g>
+<!-- puentes de altura -->
+<g fill="none" stroke-linecap="round"><path d="M0 582Q330 500 640 575T1190 545T1600 560" stroke="#3b4050" stroke-width="20"/><path d="M0 575Q330 493 640 568T1190 538T1600 553" stroke="#e0b66d" stroke-width="4"/><path d="M50 550L50 593M108 535L108 581M168 527L168 567M258 526L258 551M355 535L355 555M455 548L455 575M558 559L558 588M700 558L700 592M822 549L822 585M956 541L956 578M1100 536L1100 570M1240 537L1240 575M1395 543L1395 579M1530 547L1530 580" stroke="#b99153" stroke-width="3"/></g>
+<!-- acantilado y cimientos -->
+<path d="M0 650L115 620 214 646 300 615 390 650 486 622 568 650 655 620 744 655 845 625 932 656 1030 622 1125 660 1240 617 1334 662 1443 624 1600 655V900H0Z" fill="url(#shadowStone)"/>
+<!-- ciudad central, terrazas -->
+<path d="M330 650V554H402V509H468V479H510V454H562V479H616V510H660V554H730V650Z" fill="url(#stone)" stroke="#fff0bf" stroke-width="3"/>
+<path d="M390 554V505H452V480H488V505H535V480H584V505H642V554Z" fill="#9e7950" stroke="#e7c78a" stroke-width="4"/>
+<path d="M416 504L448 475 466 504M567 504L591 475 613 504" fill="none" stroke="#f8e5b5" stroke-width="6"/>
+<!-- gran cúpula -->
+<path d="M462 481Q464 365 540 326Q617 365 620 481Z" fill="url(#gold)" stroke="#fff0c4" stroke-width="5"/>
+<path d="M478 481Q480 385 540 350Q600 385 604 481Z" fill="#2f4566" stroke="#f4d99b" stroke-width="6"/>
+<path d="M540 350V480M490 388Q540 420 590 388M478 431Q540 456 604 431" stroke="#e7c16e" stroke-width="6" fill="none"/>
+<path d="M530 346L540 300 550 346Z" fill="#d6a85a" stroke="#fff0b3" stroke-width="3"/>
+<circle cx="540" cy="293" r="7" fill="#fff3bb"/>
+<!-- torres y pináculos -->
+<g fill="url(#stone)" stroke="#f9e6bb" stroke-width="3">
+ <path d="M355 650V514H380V482L393 462 406 482V514H426V650Z"/><path d="M655 650V514H676V482L690 462 704 482V514H724V650Z"/>
+ <path d="M468 650V560H490V530L505 508 520 530V560H534V650Z"/><path d="M574 650V560H588V530L603 508 618 530V560H640V650Z"/>
+</g>
+<g stroke="#fff0b5" stroke-width="4" fill="none"><path d="M368 515H413M668 515H712M480 562H524M588 562H632"/></g>
+<!-- edificios inferiores -->
+<g fill="#baa07d" stroke="#e6c995" stroke-width="3">
+ <path d="M120 720V605H188V578H244V605H292V720Z"/><path d="M240 745V633H308V602H360V633H408V745Z"/>
+ <path d="M690 720V625H752V590H808V625H860V720Z"/><path d="M840 745V610H904V577H956V610H1000V745Z"/>
+ <path d="M1110 725V610H1170V580H1226V610H1280V725Z"/><path d="M1270 745V640H1334V606H1392V640H1448V745Z"/>
+</g>
+<!-- ventanas y balcones -->
+<g fill="url(#windows)" opacity=".95">
+ <path d="M125 620H285V715H125ZM246 648H397V739H246ZM700 640H852V718H700ZM850 625H992V738H850ZM1120 625H1270V716H1120ZM1280 654H1440V739H1280Z"/>
+</g>
+<g fill="none" stroke="#e8ce96" stroke-width="4"><path d="M120 695H292M240 720H408M690 700H860M840 714H1000M1110 700H1280M1270 715H1448"/></g>
+<!-- terrazas delanteras -->
+<path d="M0 760Q210 727 382 766T770 760T1160 770T1600 742V900H0Z" fill="#29374f"/>
+<path d="M0 772Q210 739 382 778T770 772T1160 782T1600 754" fill="none" stroke="#deb567" stroke-width="9"/>
+<g stroke="#d8aa58" stroke-width="5" fill="none"><path d="M50 780V840M130 782V838M210 784V838M290 787V840M370 789V841M450 787V840M530 784V838M610 780V838M690 777V840M770 776V842M850 778V840M930 780V838M1010 782V836M1090 781V840M1170 780V838M1250 776V836M1330 774V836M1410 769V834M1490 764V830M1570 760V830"/></g>
+<!-- armilar mecánico -->
+<g transform="translate(1335 700)" fill="none" stroke="url(#gold)" stroke-width="10"><circle r="83"/><circle r="56" stroke-width="7"/><ellipse rx="28" ry="84" transform="rotate(38)"/><ellipse rx="28" ry="84" transform="rotate(-38)"/><path d="M-98 0H98M0-98V98M-65-65L65 65M-65 65L65-65"/></g>
+<circle cx="1335" cy="700" r="12" fill="#fff0b5"/>
+<!-- faroles -->
+<g fill="#ffeab1" filter="url(#glow)" opacity=".8"><circle cx="300" cy="746" r="16"/><circle cx="928" cy="745" r="13"/><circle cx="1160" cy="718" r="15"/><circle cx="1460" cy="739" r="16"/></g>
+<g fill="#fff1bc"><circle cx="300" cy="746" r="5"/><circle cx="928" cy="745" r="5"/><circle cx="1160" cy="718" r="5"/><circle cx="1460" cy="739" r="5"/></g>
+<rect width="1600" height="900" fill="none" stroke="#d8ba7b" stroke-opacity=".45" stroke-width="8"/>
+</svg>
