@@ -1,130 +1,105 @@
-# Guía completa: instalar KoboldCpp, cargar Qwen o Llama y conectar Las ciudades del Umbral
+# KoboldCpp 1.123.1 · Qwen/Llama en Windows, PC, móvil y tablet
 
-Esta guía sirve para reinstalar KoboldCpp en Windows desde cero y conectar tanto el juego como la demo web de Las ciudades del Umbral. KoboldCpp ejecuta el modelo en tu PC; el juego o la demo le envía sus propias instrucciones de Umbral. **Los Save Slots de KoboldAI Lite no configuran el universo del juego.**
+Esta configuración usa una instancia de KoboldCpp ejecutándose en tu PC y disponible solo en la red de casa. No requiere servicios de túnel, enlaces públicos ni Cloudflare.
 
-## 1. Preparar una instalación limpia
+## Dirección predeterminada de este PC
 
-KoboldCpp es portátil: normalmente no tiene un instalador tradicional, sino un archivo `.exe`.
+- IP del PC: **192.168.1.139**
+- Dirección base: `http://192.168.1.139:5001`
+- API OpenAI-compatible: `http://192.168.1.139:5001/v1`
+- Chat completions: `http://192.168.1.139:5001/v1/chat/completions`
+- Comprobar el modelo cargado: `http://192.168.1.139:5001/v1/models`
 
-1. Cierra KoboldCpp y cualquier ventana de KoboldAI Lite.
-2. Si quieres empezar desde cero, crea una carpeta como `C:\\Kobold` y otra para los modelos: `C:\\Kobold\\models`.
-3. Descarga KoboldCpp únicamente desde las [versiones oficiales de GitHub](https://github.com/LostRuins/koboldcpp/releases).
-4. En Windows, elige el ejecutable compatible con tu equipo:
-   - **NVIDIA moderna:** versión CUDA indicada en la página de versiones.
-   - **AMD, Intel o sin CUDA:** versión `nocuda`/Vulkan que corresponda.
-   - **CPU o equipo antiguo:** versión CPU/old CPU si las versiones actuales no funcionan.
-5. Guarda el ejecutable en `C:\\Kobold`.
+Si Windows asigna otra IP al PC, ejecuta `ipconfig` y cambia la dirección en Ajustes del juego o en el panel «Mi KoboldCpp». El código y la web usan la IP indicada arriba como valor inicial.
 
-KoboldCpp y los modelos son cosas separadas. Si conservas los archivos `.gguf`, no hace falta descargarlos de nuevo aunque sustituyas el ejecutable.
+## 1. Preparar KoboldCpp
 
-## 2. Descargar un modelo: Qwen o Llama
+KoboldCpp suele funcionar como aplicación portátil: se inicia desde un ejecutable.
 
-KoboldCpp necesita un modelo en formato **GGUF**. Para empezar, elige un solo archivo `.gguf` de cuantización **Q4_K_M**. Los modelos de 8B suelen ocupar alrededor de 5 GB y necesitan memoria adicional para funcionar.
+1. Descarga KoboldCpp desde sus [releases oficiales](https://github.com/LostRuins/koboldcpp/releases).
+2. Abre KoboldCpp 1.123.1.
+3. Selecciona **un solo archivo GGUF** en Model / Quick Launch.
+4. En **Network**, deja **Host** vacío y pon **Port: 5001**.
+5. Configura una contraseña en **Password** porque otros dispositivos podrán acceder desde la red de casa. No la guardes en documentación pública.
+6. Pulsa **Launch** y espera a que el modelo termine de cargar.
 
-### Opción recomendada para probar primero: Qwen3 8B
+No uses `127.0.0.1` como Host si quieres permitir conexiones desde móvil/tablet: esa dirección limita el servicio al mismo PC. No abras el puerto 5001 en el router ni publiques la dirección en Internet.
 
-- Repositorio: [Qwen/Qwen3-8B-GGUF en Hugging Face](https://huggingface.co/Qwen/Qwen3-8B-GGUF).
-- Busca el archivo **Q4_K_M** (suele llamarse `qwen3-8b-q4_k_m.gguf`).
-- Es una alternativa instruct multilingüe para probar narración y diálogo en español; la calidad de la interpretación también depende de las instrucciones del juego.
+## 2. Elegir Qwen o Llama
 
-### Alternativa: Llama 3.1 8B Instruct
+Empieza con un modelo cuantizado **Q4_K_M** y cárgalo de uno en uno:
 
-- Repositorio GGUF: [Meta-Llama-3.1-8B-Instruct-GGUF en Hugging Face](https://huggingface.co/gaianet/Meta-Llama-3.1-8B-Instruct-GGUF).
-- Elige el archivo **Q4_K_M** para empezar.
-- Puedes compararlo con Qwen cargando un modelo cada vez.
+- **Qwen3 8B GGUF:** [Qwen/Qwen3-8B-GGUF](https://huggingface.co/Qwen/Qwen3-8B-GGUF).
+- **Llama 3.1 8B Instruct GGUF:** [Meta-Llama-3.1-8B-Instruct-GGUF](https://huggingface.co/gaianet/Meta-Llama-3.1-8B-Instruct-GGUF).
 
-### Cómo descargarlo desde el propio KoboldCpp
+En KoboldCpp, usa **HF Search** para encontrar el repositorio y el archivo Q4_K_M, selecciona el archivo, pulsa **Confirm Selection** y después **Launch**. Si el modelo consume demasiada memoria, baja GPU Layers o usa uno más pequeño.
 
-1. Abre KoboldCpp.
-2. En **Quick Launch** o **Loaded Files**, localiza **HF Search** junto al campo del modelo.
-3. Busca el nombre del repositorio, por ejemplo `Qwen/Qwen3-8B-GGUF`, y pulsa **Search Huggingface**.
-4. Selecciona el repositorio correcto y el archivo `.gguf` que termine en **Q4_K_M**.
-5. Pulsa **Confirm Selection**.
-6. Pulsa **Launch** y espera a que termine la descarga y la carga. La consola debería mostrar que está listo y que escucha en el puerto local, normalmente **5001**.
+## 3. Conectar el juego instalado en el PC
 
-**No cargues Qwen y Llama a la vez.** Para cambiar, detén la sesión y abre KoboldCpp con el otro archivo seleccionado. Puedes conservar ambos modelos en `C:\\Kobold\\models`.
+1. Deja KoboldCpp funcionando con Qwen o Llama cargado.
+2. Abre Las ciudades del Umbral.
+3. Entra en **Ajustes → IA** y selecciona **KoboldCpp**.
+4. La dirección predeterminada es `http://192.168.1.139:5001/v1/chat/completions`.
+5. Escribe la contraseña de KoboldCpp en el campo **Contraseña de KoboldCpp**, si activaste Password.
+6. Pulsa **Buscar mi modelo** y **Probar conexión**.
 
-### Ajustes iniciales sugeridos
+La IA del juego usa el modelo que hayas cargado en KoboldCpp. Para cambiar de Qwen a Llama, detén/cambia el modelo en KoboldCpp y vuelve a probar la conexión.
 
-- **GPU Layers:** empieza en `-1`/automático. Si falla por falta de memoria, reduce la carga de GPU o prueba un modelo más pequeño.
-- **Context Size:** empieza con el valor predeterminado; un contexto mayor usa más memoria.
-- Mantén KoboldCpp abierto mientras juegas.
+## 4. Conectar desde móvil o tablet
 
-## 3. Crear un Remote Tunnel para la demo publicada
+1. Conecta móvil/tablet a la **misma Wi-Fi** que el PC.
+2. Abre el juego instalado o la demo de desarrollo.
+3. En Ajustes/Conexión con KoboldCpp, usa `http://192.168.1.139:5001`. El puerto 5001 y la ruta API se completan cuando corresponde.
+4. Si configuraste Password, introduce la misma contraseña.
+5. Pulsa **Probar conexión**.
 
-La demo publicada funciona por HTTPS y puede no poder llamar directamente a `http://localhost:5001` o a una IP local. El **Remote Tunnel** crea una dirección HTTPS temporal que permite a la demo llegar al KoboldCpp de tu PC.
+No uses `localhost` en móvil/tablet: allí apunta al propio dispositivo, no al PC.
 
-1. En KoboldCpp, abre la pestaña **Network** antes de pulsar **Launch**.
-2. Marca **Remote Tunnel** (en algunas versiones aparece en la pantalla principal).
-3. Pulsa **Launch** y espera a que el modelo termine de cargar.
-4. En la consola busca el mensaje de que el túnel está listo y copia la URL parecida a `https://algo.trycloudflare.com`.
-5. Copia solo la dirección HTTPS base: no añadas `/#`, `/v1/chat/completions` ni otras rutas.
-6. Usa la URL recién generada cada vez que reinicies KoboldCpp. El enlace puede cambiar entre sesiones; no reutilices uno antiguo.
+### Cortafuegos de Windows
 
-### Pegar el túnel en la demo web de Umbral
+Cuando Windows Firewall pregunte si KoboldCpp puede usar la red, permite el acceso en **redes privadas**. Si la pregunta ya no aparece, abre **Seguridad de Windows → Firewall y protección de red → Permitir una aplicación a través del firewall** y autoriza KoboldCpp en perfil Privado.
 
-1. Abre [la demo de Las ciudades del Umbral](https://las-ciudades-del-umbral.onrender.com/index.html).
-2. Abre el panel **Conexión con KoboldCpp**.
-3. Elige **Mi KoboldCpp**.
-4. Pega en el campo de dirección la URL HTTPS que acaba de mostrar la consola, sin rutas adicionales.
-5. Pulsa **Probar conexión**. Si el panel confirma que está conectado, prueba una conversación.
-6. Si reinicias KoboldCpp o creas otro túnel, vuelve a pegar la URL nueva y repite la prueba.
+En el PC, abre CMD y ejecuta:
 
-La opción **La del servidor de la web** es diferente: utiliza el endpoint configurado en el servidor de la demo y no tu túnel personal. Si quieres usar el modelo de tu propio PC, elige **Mi KoboldCpp**.
+```bat
+ipconfig
+```
 
-**No guardes el enlace temporal en el repositorio ni lo publiques.** La dirección que compartiste antes no debe considerarse permanente: al reinstalar, crea un túnel nuevo.
+Busca **Dirección IPv4** del adaptador Wi-Fi/Ethernet conectado. La dirección predeterminada actual es `192.168.1.139`; sustitúyela en el juego si cambia.
 
-### Seguridad
+## 5. Conectar desde la web publicada en Render (HTTPS)
 
-El túnel hace que tu KoboldCpp sea accesible desde Internet mientras esté activo. Cualquiera que obtenga la URL puede intentar usarlo y consumir recursos del PC. No lo publiques ni lo incluyas en commits, capturas públicas o documentación. Cierra KoboldCpp cuando termines y no abras el puerto 5001 en el router.
+La página de Render se abre mediante HTTPS, mientras que la dirección local predeterminada de KoboldCpp es HTTP. Chrome 142 o posterior incorpora un permiso **Acceso a la red local** para que una web segura pueda solicitar acceso a dispositivos de la red local.
 
-## 4. Conectar el juego descargado en el mismo PC o en la red de casa
+1. Abre la página en Chrome actualizado.
+2. En el panel de la demo de desarrollo, selecciona **Mi KoboldCpp**.
+3. Escribe `http://192.168.1.139:5001` y la contraseña, si configuraste una.
+4. Pulsa **Probar conexión** desde el propio panel.
+5. Si Chrome muestra una solicitud de **Acceso a la red local**, elige **Permitir**.
+6. Repite la concesión en cada dispositivo donde uses la web. Si el permiso ya se bloqueó, abre el icono de información del sitio → **Configuración de sitios** → **Acceso a la red local** → **Permitir**.
 
-### En el mismo PC
+**Límite de compatibilidad:** este método depende del navegador. No todos los navegadores ni todas las versiones permiten desde HTTPS conectarse a una IP privada por HTTP. Si el navegador sigue bloqueando la llamada, no hay un ajuste del juego que pueda saltarse esa restricción. Usa el juego instalado o sirve la web desde tu PC dentro de la red local. No abras el puerto 5001 en el router.
 
-1. Abre KoboldCpp, selecciona el modelo y pulsa **Launch**.
-2. En el juego abre **Ajustes → IA de la historia y los chats**.
-3. Activa/selecciona **KoboldCpp** y deja la dirección como `http://localhost:5001` (o el endpoint que indique el panel).
-4. Pulsa **Buscar mi modelo** si aparece y luego **Probar conexión**.
+## 6. Pruebas y solución de problemas
 
-### En otro dispositivo de la misma Wi-Fi
+Primero prueba la API desde el PC y luego desde móvil/tablet:
 
-1. En el PC con KoboldCpp, abre `cmd`, ejecuta `ipconfig` y apunta la **Dirección IPv4** de tu conexión.
-2. En KoboldCpp, en **Network**, deja **Host** vacío o pon `0.0.0.0`, y usa el puerto `5001`.
-3. Asegúrate de que el cortafuegos de Windows permite KoboldCpp en la red privada.
-4. En el juego del móvil/tablet, escribe la IP del PC en **Dirección**, por ejemplo `192.168.1.139`. No uses `localhost`: en el móvil, localhost es el propio móvil.
-5. Pulsa **Probar conexión**. No abras el puerto 5001 a Internet en el router.
+`http://192.168.1.139:5001/v1/models`
 
-## 5. Comprobar que la demo usa realmente la IA
+Deberías ver un JSON con el modelo cargado.
 
-La demo puede seguir contestando con el **narrador local** si KoboldCpp está apagado o la conexión falla. Que aparezca una respuesta no demuestra que el modelo esté conectado.
-
-1. Confirma que el modelo terminó de cargar y que KoboldCpp sigue abierto.
-2. En la demo pulsa **Probar conexión** y comprueba que el panel confirma la conexión.
-3. Haz una pregunta de prueba y revisa el estado del panel.
-4. Si muestra error, copia otra vez la URL actual del túnel en **Mi KoboldCpp** y vuelve a probar.
-5. Si está conectado pero la narración sigue mezclando personajes o universos, prueba Qwen y Llama por separado. La demo de Umbral envía su propio canon desde los archivos del juego; no necesita una tarjeta de personaje de KoboldAI Lite.
-
-## 6. Problemas frecuentes
-
-| Síntoma | Qué comprobar |
+| Síntoma | Qué revisar |
 |---|---|
-| `No Models Selected` | Selecciona un archivo GGUF y vuelve a pulsar **Launch**. |
-| La descarga no ha terminado | Espera a que llegue al 100 % y el modelo termine de cargar. |
-| La demo dice que KoboldCpp no conecta | Comprueba que el modelo está cargado y que pegaste la URL HTTPS del túnel actual en **Mi KoboldCpp**. |
-| La demo responde aunque esté desconectada | Puede estar usando el narrador local; fíate del estado de conexión, no solo de la respuesta. |
-| El túnel no aparece | Comprueba Internet y el cortafuegos; espera el mensaje de túnel listo y reinicia KoboldCpp si es necesario. |
-| Respuestas lentas o falta de memoria | Prueba Q4_K_M, GPU Layers automático o un modelo más pequeño. |
+| No abre `/v1/models` en el PC | Espera la carga del modelo y revisa el puerto 5001. |
+| Funciona en el PC, pero no en móvil/tablet | Misma Wi-Fi, Host vacío y cortafuegos de Windows permitido en perfil Privado. |
+| La demo de Render no conecta | Acepta **Acceso a la red local** en Chrome moderno. Si el navegador no lo admite, usa el juego instalado o sirve la web en LAN. |
+| Error de autenticación | Introduce la misma contraseña que está configurada en KoboldCpp. |
+| El narrador responde, pero no es la IA | Comprueba el estado de conexión; los mensajes del narrador local no demuestran que KoboldCpp esté conectado. |
+| Qwen/Llama responde muy lento | Prueba un GGUF Q4_K_M, ajusta GPU Layers o elige un modelo menor. |
 
-## Enlaces útiles
+## Enlaces
 
-- [Descargas oficiales de KoboldCpp](https://github.com/LostRuins/koboldcpp/releases)
-- [Documentación oficial de KoboldCpp](https://koboldcpp.net/docs/)
-- [Modelos GGUF de Qwen3 8B](https://huggingface.co/Qwen/Qwen3-8B-GGUF)
-- [Modelo GGUF de Llama 3.1 8B Instruct](https://huggingface.co/gaianet/Meta-Llama-3.1-8B-Instruct-GGUF)
-- [Demo web de Umbral](https://las-ciudades-del-umbral.onrender.com/index.html)
-- [Repositorio de Umbral](https://github.com/MarinaDP2006/RIFTS-GEARS)
-
-## Save Slots: importante
-
-Los Save Slots de KoboldAI Lite guardan sesiones de Lite; no separan ni configuran los universos de las demos. Umbral envía su propio canon e instrucciones. No necesitas cargar una tarjeta de personaje de Arcane ni de Umbral en Lite para que la demo funcione.
+- [Releases de Las ciudades del Umbral](https://github.com/MarinaDP2006/RIFTS-GEARS/releases)
+- [Problemas del proyecto](https://github.com/MarinaDP2006/RIFTS-GEARS/issues)
+- [Releases oficiales de KoboldCpp](https://github.com/LostRuins/koboldcpp/releases)
+- [Documentación oficial de acceso en red de KoboldCpp](https://koboldcpp.net/docs/api/remote-access/)
