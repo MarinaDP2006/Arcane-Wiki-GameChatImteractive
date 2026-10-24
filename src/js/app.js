@@ -171,6 +171,9 @@
         on ? el('p', { class: 'small ai-help' }, d.help) : null,
         on ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
           el('input', { class: 'input', value: a.url || d.url, placeholder: '192.168.1.139', inputmode: 'url', autocapitalize: 'off', spellcheck: 'false', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+        on ? el('label', { class: 'field' }, el('span', {}, 'Contraseña de KoboldCpp (opcional)'),
+          el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.password || '', placeholder: 'Déjala vacía si no configuraste Password', onchange: (e) => save({ password: e.target.value }) })) : null,
+        on ? el('p', { class: 'small ai-help' }, 'En Chrome/Edge sobre una web HTTPS, permite «Acceso a la red local» cuando conectes. Si usas Password en KoboldCpp, escribe aquí la misma contraseña.') : null,
         on ? el('small', { class: 'muted ai-url' }, `El juego usará: ${window.AI.cfg().url}`) : null,
         // En el móvil o la tablet «localhost» apunta al propio aparato, no al PC con KoboldCpp.
         on && window.AI.remoteDevice() && window.AI.isLoopback(window.AI.cfg().url)
@@ -240,7 +243,7 @@
   async function exportData() {
     const slots = {};
     for (const s of await store.listSlots()) if (!s.empty) slots[s.slot] = await store.load(s.slot);
-    const settings = { ...App.settings, ai: App.settings.ai ? { ...App.settings.ai, key: '' } : undefined };
+    const settings = { ...App.settings, ai: App.settings.ai ? { ...App.settings.ai, key: '', password: '' } : undefined };
     const blob = new Blob([JSON.stringify({ game: 'grietas-and-gears', version: 1, date: new Date().toISOString(), slots, settings }, null, 2)], { type: 'application/json' });
     const a = el('a', { href: URL.createObjectURL(blob), download: `grietas-and-gears-copia-${new Date().toISOString().slice(0, 10)}.json` });
     document.body.append(a);
