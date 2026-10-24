@@ -170,7 +170,11 @@
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
         on ? el('p', { class: 'small ai-help' }, d.help) : null,
         on ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
-          el('input', { class: 'input', value: a.url || d.url, placeholder: 'http://192.168.1.40:5001', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+          el('input', { class: 'input', value: a.url || d.url, placeholder: '192.168.1.139', inputmode: 'url', autocapitalize: 'off', spellcheck: 'false', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+        on ? el('small', { class: 'muted ai-url' }, `El juego usará: ${window.AI.cfg().url}`) : null,
+        // En el móvil o la tablet «localhost» apunta al propio aparato, no al PC con KoboldCpp.
+        on && window.AI.remoteDevice() && window.AI.isLoopback(window.AI.cfg().url)
+          ? el('p', { class: 'small ai-help warn' }, '⚠ En este aparato «localhost» no llega a tu PC. Escribe la IP del PC donde está abierto KoboldCpp, por ejemplo 192.168.1.139.') : null,
         on ? lan : null,
         on ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
           el('input', { class: 'input', value: a.model || d.model, onchange: (e) => save({ model: e.target.value.trim() }) })) : null,

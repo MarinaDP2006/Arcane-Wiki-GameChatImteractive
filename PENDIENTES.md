@@ -36,4 +36,5 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 - [x] v1.29.0: IA local con KoboldCpp, escala de avatares 3D y compilación unificada en Actions.
 - [x] v1.30.0: historia libre con IA en el mundo nuevo y tarjeta de KoboldAI descargable.
 - [x] v1.31.0: vista de historia, animaciones y colores arreglados en móvil y tableta; KoboldCpp como única IA.
+- [x] v1.31.1: historia libre con KoboldCpp por la red de casa (IP del PC, p. ej. 192.168.1.139).
 - [ ] Revisar el rendimiento del mapa 3D en móviles modestos.

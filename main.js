@@ -323,7 +323,7 @@ ipcMain.handle('ai:chat', async (_e, url, headers, body) => {
 
 function aiNetError(err, slow) {
   const code = err?.cause?.code;
-  if (code === 'ECONNREFUSED') return 'No hay nada escuchando en esa dirección (¿está abierto KoboldCpp y ha terminado de cargar el modelo?)';
+  if (code === 'ECONNREFUSED') return 'No hay nada escuchando en esa dirección (¿está abierto KoboldCpp con el modelo cargado? Si está en otro PC, deja pasar el puerto 5001 en su cortafuegos)';
   if (code === 'EHOSTUNREACH' || code === 'ENETUNREACH' || code === 'UND_ERR_CONNECT_TIMEOUT') return 'No se llega a ese ordenador: revisa la IP y que estéis en la misma red wifi';
   if (err?.name === 'TimeoutError') return slow;
   return String(err?.message || err);
