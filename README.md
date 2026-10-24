@@ -1,8 +1,9 @@
 # Las ciudades del Umbral · Rifts & Gears
 
-Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Las dos dependen de la **Resonancia**, una energía que nace de la vibración de la piedra, y de un pacto antiguo que nadie ha leído entero. Creas a tu personaje y escribes lo que dice o hace. No hay botones de respuesta: los personajes te contestan, te preguntan y recuerdan lo que hiciste, dentro de las reglas del mundo.
+Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas, entre observatorios y ascensores de latón. Nácar respira bajo la roca, entre canales de vapor y talleres. Las dos dependen de la **Resonancia**, una energía que nace de la vibración de la piedra, y de un pacto antiguo que nadie ha leído entero. Creas a tu personaje y escribes lo que dice o hace; los personajes responden sin opciones prefabricadas.
 
-## La historia en cinco fechas
+## Historia
+
 | Año | Suceso |
 |---|---|
 | 0 | **El Hundimiento.** La meseta de Umbral se parte. Arriba nace Aurelia; abajo, Nácar. |
@@ -11,55 +12,62 @@ Aventura narrativa original de fantasía industrial. Aurelia vive en las alturas
 | 251 | **El Silencio de Cobre.** Un derrumbe en Nácar durante un pico de extracción. Los registros de esa noche desaparecen. |
 | 298 | **Registro 00:03.** Un ascensor se detiene y un medidor marca el mismo patrón borrado. Aquí empiezas tú. |
 
-La campaña tiene tres partes: *La ciudad bajo la piedra*, *El precio de la Resonancia* y *Un pacto que no se hereda*. Hay diez personajes principales, cinco de cada ciudad; sus fichas están en `src/data/original-world.js`.
+## Web y arte
 
-## Web y demo
-La carpeta `web/` contiene la web pública:
-- `index.html` + `portada.js`: portada con el mismo menú principal del juego (Aurelia y Nácar partidas por la grieta, con `src/js/title-fx.js`), la crónica, las ciudades, los lugares, la Resonancia, la campaña, el reparto, cómo se juega y la sección de KoboldCpp con su estado en vivo.
-- `demo.html` + `demo-juego.js`: demo de rol libre. Pregunta si conoces el mundo (si no, da una introducción breve), te deja crear el personaje y abre la primera escena en Aurelia o en Nácar con conversación libre. Arriba tiene el panel **Conexión con KoboldCpp**.
-- `koboldcpp.js`: conexión con KoboldCpp (la del servidor o la tuya) y sus mensajes de error.
-- `demo-base.json`: textos de la demo (introducción, reglas del mundo para la IA, escenas y giros).
-- `estilos.css`, `menu.js`, `privacidad.html` y el arte propio en `arte-propio/`.
+La web pública presenta la historia, las ciudades, el reparto, los lugares ilustrados y la guía de conexión. La portada ya no enlaza directamente a la demo jugable; las únicas acciones externas principales son **Releases** y **Problemas**.
 
-`npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, lugares, versión) y copiando sin cambios las fuentes, las ilustraciones de lugares y los emblemas del juego. La web no ofrece descargas.
+- `web/index.html` + `portada.js`: página pública, galerías de ciudad, crónica y guía de conexión.
+- `web/demo.html` + `demo-juego.js`: demo de desarrollo mantenida en el repositorio, no enlazada desde la portada pública.
+- `web/koboldcpp.js`: configuración de conexión con KoboldCpp.
+- `src/img/umbral/lugares/`: ilustraciones originales en SVG. Incluye dos panoramas nuevos, `aurelia-panorama.svg` y `nacar-panorama.svg`, para el menú y la web.
+- `web/arte-propio/`: SVG propios de la interfaz web.
 
-## IA: solo KoboldCpp
+`npm run web` genera `web-dist/`, incorpora las imágenes SVG del juego y reemplaza los marcadores de la plantilla con los datos reales.
 
-La única IA del juego es **KoboldCpp** ( https://review-tonight-solaris-council.trycloudflare.com/lcpp/). No hay otros proveedores. En el juego se activa en **Ajustes → IA de la historia y los chats** ([GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md)); la tablet y el móvil usan el KoboldCpp del PC por la red de casa. La demo web puede usar el KoboldCpp del servidor (`server/index.js`, endpoint `/api/roleplay`, que reenvía a `KOBOLDCPP_URL`) o el tuyo directamente («Mi KoboldCpp», por ejemplo `192.168.1.139`). `/api/health` dice si el KoboldCpp del servidor está encendido. Si no hay KoboldCpp disponible, la demo cambia a un narrador local sencillo para no quedarse muda. Desde la web en `https://`, el navegador suele bloquear un KoboldCpp de la red de casa por `http://`; la web explica las alternativas (ver [GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md)).
+## KoboldCpp, Qwen y Llama
 
-Variables del servidor (ver `.env.example`):
-- `KOBOLDCPP_URL`: dirección del KoboldCpp (por defecto `http://127.0.0.1:5001`).
-- `KOBOLDCPP_MODEL`: nombre que se envía como modelo (por defecto `koboldcpp`).
-- `ROLEPLAY_MAX_PER_HOUR`: límite de mensajes por hora y visitante.
+La dirección LAN predeterminada de esta instalación es:
 
-`render.yaml` despliega la web y la API juntas: `npm ci && npm run web` y después `node server/index.js`.
+- Base: `http://192.168.1.139:5001`
+- API OpenAI-compatible: `http://192.168.1.139:5001/v1`
+- Chat completions: `http://192.168.1.139:5001/v1/chat/completions`
+
+Para usar el modelo local, abre KoboldCpp 1.123.1, carga un GGUF Q4_K_M de Qwen o Llama, deja Host vacío, usa el puerto 5001 y pulsa Launch. Se recomienda establecer Password si otros dispositivos se conectan. La IP puede cambiar si Windows renueva la dirección DHCP: usa `ipconfig` y actualiza Ajustes → IA cuando sea necesario.
+
+La página pública se sirve por HTTPS. Chrome 142 o posterior puede solicitar el permiso **Acceso a la red local** al conectar con una IP privada HTTP. Si el navegador no admite esta conexión, usa el juego instalado o sirve la web desde tu red local. Esta configuración no requiere enlaces públicos ni túneles.
+
+Pasos completos en [GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md).
 
 ## Desarrollo
 
 ```bash
 npm ci
-npm run check      # comprobaciones de datos y scripts
-npm start          # versión de escritorio (Electron)
-npm run web        # genera la web en web-dist/
-npm run serve:web  # sirve web-dist/ y la API en http://localhost:10000
+npm run check
+npm start
+npm run web
+npm run serve:web
 ```
 
 ## Estilo y música
-- **Aurelia:** oro envejecido y beige. **Nácar:** negro y verde de vapor. **Inicio y ajustes:** azul neutro. Los colores están en `src/css/umbral.css`.
-- Cada lugar tiene su ilustración propia en `src/img/umbral/lugares/`, además del mapa y los símbolos de las dos ciudades.
-- Tres pistas propias en `assets/music/`: `menu-theme.mp3` (inicio), `aurelia-theme.mp3` y `nacar-theme.mp3`.
 
-## Estado
-- **Hecho:** universo, dos ciudades, Resonancia, tres partes por ruta y un final, diez personajes con relaciones, creador, mapa 3D y 2D, minijuegos, colores por ciudad y música.
-- **Prototipo:** modelos 3D low-poly en `src/models/` (sin rig ni animaciones finales).
-- Lo que falta está en [PENDIENTES.md](PENDIENTES.md).
+- **Aurelia:** oro envejecido, piedra clara y luz cálida.
+- **Nácar:** roca, canales de cobre, talleres y cristales verdes de Resonancia.
+- Los lugares originales están en `src/img/umbral/lugares/`; los emblemas en `src/img/umbral/simbolos/`.
+- La música está en `assets/music/`.
 
 ## Guías
+
 - [Guía del juego y del código](GUIA.md)
 - [Pendientes](PENDIENTES.md)
-- [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
-- [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
-- [KoboldCpp](GUIA-KOBOLDCPP.md) · [Web en Render](GUIA-WEB-RENDER.md) · [Privacidad](PRIVACIDAD.md)
+- [KoboldCpp para PC, móvil y tablet](GUIA-KOBOLDCPP.md)
+- [Web en Render](GUIA-WEB-RENDER.md)
+- [Privacidad](PRIVACIDAD.md)
+
+## Enlaces
+
+- [Releases](https://github.com/MarinaDP2006/RIFTS-GEARS/releases)
+- [Problemas / Issues](https://github.com/MarinaDP2006/RIFTS-GEARS/issues)
 
 ## Licencia
+
 Código bajo licencia MIT. El universo, sus nombres, su historia, su arte y su música son originales de MarinaDP2006.
