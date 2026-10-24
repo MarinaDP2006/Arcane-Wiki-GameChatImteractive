@@ -1416,6 +1416,79 @@
     },
   };
 
+  // ---------- Clasificación de reliquias y materiales ----------
+  GAMES.reliquias = {
+    title: 'Clasificación de reliquias', icon: '', scene: 'archivo', grade: 'aurelia',
+    backdrops: ['archivo', 'observatorio', 'cristal', 'mercado-nacar', 'nacar'],
+    desc: 'El archivo necesita separar artefactos de Resonancia, piezas artesanales y residuos inestables. Identifica cada hallazgo y deposítalo en el receptáculo correcto.',
+    controls: 'Pulsa 1, 2 o 3, o haz clic en el receptáculo correspondiente.',
+    touchControls: 'Toca el receptáculo correcto para clasificar cada objeto.',
+    touchKeys: [['1', 'Resonancia'], ['2', 'Artesanía'], ['3', 'Inestable']], touchLayout: 'column',
+    goal: 'Clasifica 7 objetos y comete como máximo 2 errores.',
+    winText: 'La archivista sella el inventario y te recompensa por el trabajo preciso.',
+    loseText: 'Un artefacto queda mal catalogado. La archivista suspende la clasificación.',
+    create(w, h, o = {}) {
+      const types = [
+        { name: 'Resonancia', color: '#6fd8ff', key: '1', x: 0.18 },
+        { name: 'Artesanía', color: '#e5c17b', key: '2', x: 0.5 },
+        { name: 'Inestable', color: '#df8b9b', key: '3', x: 0.82 },
+      ];
+      const target = 7, maxErrors = 2 + Math.max(0, o.bonus || 0);
+      let current = Math.floor(Math.random() * types.length), sorted = 0, errors = 0;
+      let feedback = 'Examina el objeto y clasifícalo', feedbackT = 0, result = null;
+      const choose = (idx) => {
+        if (result != null) return;
+        if (idx === current) {
+          sorted++;
+          feedback = ['Resonancia estable: registrada.', 'Pieza artesanal: inventario actualizado.', 'Material inestable: aislado correctamente.'][idx];
+          FX.burst(w * types[idx].x, h * 0.62, 12, { color: [types[idx].color, '#fff3c0'], kind: 'shard', speed: 170, size: 3, life: 0.5 });
+        } else { errors++; feedback = 'Clasificación incorrecta. Revisa las señales del material.'; FX.shake(5); }
+        feedbackT = 1.1;
+        if (sorted >= target) result = true;
+        else if (errors >= maxErrors) result = false;
+        else current = Math.floor(Math.random() * types.length);
+      };
+      return {
+        result,
+        update(dt, inp) {
+          feedbackT = Math.max(0, feedbackT - dt);
+          for (const k of inp.pressed) { const i = types.findIndex((t) => t.key === k); if (i >= 0) choose(i); }
+          for (const p of inp.mouse.clicks) {
+            const i = types.findIndex((t) => p.x >= w * (t.x - 0.14) && p.x <= w * (t.x + 0.14) && p.y >= h * 0.48 && p.y <= h * 0.86);
+            if (i >= 0) choose(i);
+          }
+          this.result = result;
+        },
+        draw(ctx, t) {
+          stageLight(ctx, w, h, t, { center: 0.5, ray: '100,190,220', fog: '90,120,170' });
+          glowText(ctx, 'ARCHIVO DE MATERIALES', w / 2, h * 0.12, Math.min(22, w * 0.035), '#e5c17b');
+          const item = types[current];
+          ctx.save(); ctx.translate(w / 2, h * 0.32); ctx.rotate(Math.sin(t * 1.8) * 0.05);
+          ctx.shadowColor = item.color; ctx.shadowBlur = 22; ctx.fillStyle = item.color;
+          if (current === 0) {
+            hexPath(ctx, 0, 0, 35, t * 0.45); ctx.fill();
+            ctx.fillStyle = '#effbff'; ctx.beginPath(); ctx.arc(0, 0, 9, 0, TAU); ctx.fill();
+          } else if (current === 1) {
+            ctx.fillRect(-35, -25, 70, 50); ctx.fillStyle = '#6b4d30'; ctx.fillRect(-22, -12, 44, 24);
+          } else {
+            ctx.beginPath(); ctx.moveTo(-30, -28); ctx.lineTo(25, -20); ctx.lineTo(36, 17); ctx.lineTo(-18, 30); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = '#fff0f0'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-12, -15); ctx.lineTo(14, 16); ctx.stroke();
+          }
+          ctx.restore();
+          types.forEach((type, i) => {
+            const x = w * type.x, y = h * 0.66, bw = Math.min(160, w * 0.29), bh = Math.min(104, h * 0.21);
+            plate(ctx, x - bw / 2, y - bh / 2, bw, bh, { top: '#35313a', bot: '#14121a', edge: type.color, cut: 10, lw: 2 });
+            glowText(ctx, type.name, x, y - 4, Math.min(17, w * 0.033), type.color, 'system-ui, sans-serif');
+            glowText(ctx, String(i + 1), x, y + bh * 0.28, 13, '#f4efe6', 'system-ui, sans-serif');
+          });
+          plate(ctx, w * 0.07, h * 0.83, w * 0.86, 44, { top: 'rgba(18,15,22,.95)', bot: 'rgba(8,8,12,.95)', edge: 'rgba(229,193,123,.45)' });
+          glowText(ctx, feedbackT > 0 ? feedback : 'Observa el brillo, la forma y la estabilidad', w / 2, h * 0.83 + 22, Math.min(15, w * 0.029), '#f4efe6', 'system-ui, sans-serif');
+        },
+        hud() { return bar('Clasificados', sorted, target, '#6fd8ff') + bar('Errores', errors, maxErrors, '#df8b9b') + '<span class="mg-num">' + sorted + '/' + target + '</span>'; },
+      };
+    },
+  };
+
   // ---------- 6. Regateo en el mercado ----------
   GAMES.regateo = {
     title: 'Regateo en el mercado', icon: '', scene: 'mercado-nacar', grade: 'nacar', backdrops: ['mercado-nacar', 'nacar', 'canal-cobre'],
@@ -1596,9 +1669,9 @@
   // Qué minijuegos se pueden jugar en cada lugar del mapa (el primero es el principal).
   // El menú de cada ubicación usa Minigames.forPlace(id) y Minigames.play(id, { place }).
   const PLACE_GAMES = {
-    archivo: ['runas', 'circuito'], observatorio: ['francotiradora', 'runas'], gremios: ['circuito', 'tiro'],
+    archivo: ['runas', 'circuito', 'reliquias'], observatorio: ['francotiradora', 'runas', 'reliquias'], gremios: ['circuito', 'tiro'],
     'ascensor-central': ['persecucion', 'francotiradora'], cristal: ['regateo', 'francotiradora'], aurelia: ['tiro', 'regateo'],
-    'mercado-nacar': ['regateo', 'tejados'], galerias: ['foso', 'chompers'], 'jardin-musgo': ['aerotabla', 'runas'],
+    'mercado-nacar': ['regateo', 'tejados', 'reliquias'], galerias: ['foso', 'chompers'], 'jardin-musgo': ['aerotabla', 'runas'],
     clinica: ['circuito', 'regateo'], 'canal-cobre': ['persecucion', 'aerotabla'], nacar: ['tejados', 'foso'],
   };
   // Lista de minijuegos con lo necesario para pintar un botón o una tarjeta.
