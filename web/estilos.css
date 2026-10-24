@@ -471,3 +471,51 @@ html[data-tema="nacar"] body { background: radial-gradient(900px 640px at 100% 1
   .home-fx { display: none; }
   .js .revelar { opacity: 1; transform: none; }
 }
+
+
+/* ---------- Paisaje original y atmósfera de Resonancia ---------- */
+.home { isolation: isolate; }
+.home-art { background: #03080e; }
+.home-slide { filter: saturate(1.08) contrast(1.08); }
+.home-art.aurelia .home-slide { filter: saturate(1.04) contrast(1.06) sepia(.07); }
+.home-art.nacar .home-slide { filter: saturate(1.2) contrast(1.1); }
+.home-panel { text-shadow: 0 3px 18px rgba(0,0,0,.45); }
+.home-menu .home-btn { border: 1px solid rgba(150,178,220,.1); backdrop-filter: blur(4px); }
+.home-menu .home-btn.primary { border-color: rgba(228,194,126,.38); }
+.home-cities { gap: 1.1rem; }
+.home-city { padding: .6rem .35rem; }
+.home-hint { text-shadow: 0 2px 12px #000; }
+.ciudad { border-radius: 3px; background: linear-gradient(160deg, rgba(12,21,32,.98), rgba(3,9,14,.98)); }
+.ciudad > img { aspect-ratio: 16/10; min-height: 250px; object-fit: cover; }
+.lugar { border-radius: 3px; }
+.lugar img { filter: saturate(1.08) contrast(1.06); }
+.ficha { border-radius: 3px; }
+.ficha:hover { border-color: rgba(85,231,170,.32); }
+.dj-card, .dj-escena, .dj-msg { border-radius: 3px; }
+.dj-card {
+ position: relative; overflow: hidden;
+ background: linear-gradient(145deg, rgba(10,24,32,.96), rgba(3,9,14,.98));
+ border-color: rgba(125,202,172,.24);
+ box-shadow: 0 22px 58px rgba(0,0,0,.36);
+}
+.dj-card::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 100% 0%, rgba(85,231,170,.1), transparent 48%); }
+.dj-form > *, .dj-centro > * { position: relative; }
+.dj-ciudades { gap: .9rem; }
+.dj-ciudad { min-height: 175px; align-items: flex-end; position: relative; overflow: hidden; border-radius: 3px; background-size: cover; background-position: center; }
+.dj-ciudad-aurelia { background-image: linear-gradient(0deg, rgba(2,8,13,.95), rgba(2,8,13,.06)), url("arte-propio/aurelia-portada.svg"); }
+.dj-ciudad-nacar { background-image: linear-gradient(0deg, rgba(2,8,13,.95), rgba(2,8,13,.06)), url("arte-propio/nacar-portada.svg"); }
+.dj-ciudad > span { position: relative; z-index: 1; }
+.dj-ciudad strong { text-shadow: 0 2px 14px #000; }
+.dj-ciudad:has(input:checked) { box-shadow: inset 0 0 0 2px var(--accent), 0 0 28px var(--accent-glow); }
+.dj-escena { min-height: 190px; padding: clamp(1.2rem, 3vw, 2.3rem); border-color: rgba(125,202,172,.24); background-size: cover; background-position: center; }
+.dj-escena-aurelia { background-image: linear-gradient(90deg, rgba(2,8,13,.92), rgba(2,8,13,.3)), url("arte-propio/aurelia-portada.svg"); }
+.dj-escena-nacar { background-image: linear-gradient(90deg, rgba(2,8,13,.92), rgba(2,8,13,.3)), url("arte-propio/nacar-portada.svg"); }
+.dj-msg { box-shadow: 0 5px 22px rgba(0,0,0,.18); }
+.dj-entrada textarea { border-radius: 3px; background: rgba(3,10,14,.92); }
+@media (max-width: 700px) {
+ .home { min-height: 620px; }
+ .home-panel { padding-inline: 1.2rem; }
+ .home-title { white-space: normal; }
+ .dj-ciudades { grid-template-columns: 1fr; }
+ .dj-ciudad { min-height: 145px; }
+}
