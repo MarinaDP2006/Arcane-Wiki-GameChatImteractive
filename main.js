@@ -331,11 +331,11 @@ function aiNetError(err, slow) {
 
 // Modelo abierto en KoboldCpp: solo servidores de este ordenador o de la red de casa.
 const LAN_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[\w-]+\.local)$/i;
-ipcMain.handle('ai:get', async (_e, url) => {
+ipcMain.handle('ai:get', async (_e, url, headers = {}) => {
   try {
     const u = new URL(String(url));
     if (!LAN_HOST.test(u.hostname)) return { error: 'Solo se pueden mirar servidores de este ordenador o de tu red de casa' };
-    const res = await fetch(u, { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(u, { headers, signal: AbortSignal.timeout(8000) });
     return { status: res.status, data: await res.json() };
   } catch (err) {
     return { error: aiNetError(err, 'El servidor no contesta') };
