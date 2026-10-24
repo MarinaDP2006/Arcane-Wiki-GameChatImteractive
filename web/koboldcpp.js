@@ -33,7 +33,7 @@
   function cargar() {
     let c = {};
     try { c = JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch { /* sin almacenamiento */ }
-    return { modo: c.modo === 'mio' ? 'mio' : 'servidor', url: typeof c.url === 'string' ? c.url : '', password: typeof c.password === 'string' ? c.password : '' };
+    return { modo: c.modo === 'servidor' ? 'servidor' : 'mio', url: typeof c.url === 'string' && c.url.trim() ? c.url : 'http://192.168.1.139:5001', password: typeof c.password === 'string' ? c.password : '' };
   }
   function guardar(c) { try { localStorage.setItem(CLAVE, JSON.stringify({ modo: c.modo, url: c.url, password: c.password || '' })); } catch { /* sin almacenamiento */ } }
 
@@ -80,10 +80,10 @@
   }
 
   // Comprueba tu KoboldCpp y devuelve el modelo que tiene abierto.
-  async function probarMio(url) {
+  async function probarMio(url, password = '') {
     const full = normalizar(url);
     if (!full) throw fallo('vacia', 'Escribe la dirección de tu KoboldCpp, por ejemplo 192.168.1.139 o http://localhost:5001.');
-    const r = await directo(base(full) + '/v1/models', { cache: 'no-store' }, 8000);
+    const r = await directo(base(full) + '/v1/models', { cache: 'no-store', headers: password ? { Authorization: `Bearer ${password}` } : {} }, 8000);
     if (!r.ok) throw fallo('api', `${hostDe(full)} responde, pero no como la API de KoboldCpp (HTTP ${r.status}). Revisa el puerto (5001) y que el modelo haya terminado de cargar.`);
     const j = await r.json().catch(() => ({}));
     const id = j && j.data && j.data[0] && j.data[0].id;
