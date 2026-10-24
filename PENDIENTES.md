@@ -32,4 +32,5 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 ## Técnico
 
 - [x] Primera release del mundo nuevo: v1.28.0 (Windows, Mac y Android).
+- [x] v1.29.0: IA local con KoboldCpp, escala de avatares 3D y compilación unificada en Actions.
 - [ ] Revisar el rendimiento del mapa 3D en móviles modestos.
