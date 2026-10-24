@@ -78,3 +78,9 @@ El mensaje de bienvenida («You are using the models…», «Instruct Mode Selec
 5. En un móvil o tablet, sustituye `localhost` por la IP LAN del ordenador (por ejemplo, `192.168.1.139`), como se explica arriba en «Por la red de casa». No abras el puerto a Internet pública; limita el acceso a tu red local.
 
 Las tarjetas y escenarios que cargues dentro de KoboldAI Lite no se importan automáticamente al juego. El juego sigue enviando su propio contexto de mundo, personaje e historial por la API.
+
+## Importante: Save Slots y separación de juegos
+
+Los **Save Slots de KoboldAI Lite no configuran las demos**. La demo de Las ciudades del Umbral envía sus propias instrucciones desde `web/demo-base.json` y `web/demo-juego.js`; el juego descargable define además sus prompts por personaje en `src/js/ai.js`. No cargues la tarjeta de Arcane para intentar arreglar Umbral ni al revés: ambas demos pueden conectarse al mismo endpoint de KoboldCpp, pero cada una debe enviar su propio canon y su propio reparto. Si ves respuestas genéricas, comprueba que el estado de conexión diga que está conectado y no «narrador local». Llama 3.1 8B Instruct puede seguir mal instrucciones complejas; un modelo de rol/instrucciones con buen español puede mejorar la fidelidad, pero ningún prompt garantiza una imitación perfecta.
+
+**Seguridad:** el enlace `trycloudflare.com` funciona como una puerta pública temporal mientras el túnel esté activo. No lo publiques ni lo compartas; si ya lo has compartido públicamente, cierra el túnel y genera otro.
