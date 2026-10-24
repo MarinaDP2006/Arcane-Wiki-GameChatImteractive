@@ -107,7 +107,7 @@
     const credits = () => {
       const box = el('div', { class: 'home-credits panel', role: 'dialog', 'aria-label': 'Créditos' },
         el('h2', {}, 'Créditos'),
-        el('p', {}, el('strong', {}, 'Rifts & Gears · Las ciudades del Umbral')),
+        el('p', {}, el('strong', {}, 'RIFTS-GEARS · Las ciudades del Umbral')),
         el('p', { class: 'muted' }, 'Idea, mundo y dirección: MarinaDP2006.'),
         el('p', { class: 'muted' }, 'Historia, personajes, ciudades, arte y música propios del proyecto. Programado con ayuda de Claude.'),
         el('p', { class: 'muted' }, 'Tecnología: Three.js, Electron y Capacitor, cada una con su licencia.'),
@@ -125,7 +125,7 @@
       el('div', { class: 'home-shade' }),
       el('div', { class: 'home-panel' },
         el('div', { class: 'home-logo' },
-          el('h1', { class: 'home-title', 'aria-label': 'Rifts & Gears' }, el('span', { class: 'home-word' }, ...letters('RIFTS', 0)), amp, el('span', { class: 'home-word' }, ...letters('GEARS', 6))),
+          el('h1', { class: 'home-title', 'aria-label': 'RIFTS-GEARS' }, el('span', { class: 'home-word' }, ...letters('RIFTS', 0)), el('span', { class: 'home-amp', style: '--i:5' }, el('span', { class: 'home-gear', html: window.TitleFX.GEAR_SVG }), el('b', {}, '-')), el('span', { class: 'home-word' }, ...letters('GEARS', 6))),
           el('div', { class: 'home-cities' }, city('aurelia', 'Aurelia'), el('b', {}), city('nacar', 'Nácar'))),
         menu,
         el('p', { class: 'home-motto' }, 'Dos ciudades. Un mismo pacto.')),
