@@ -280,14 +280,15 @@
     if (K && cx.estado === 'listo') {
       try {
         const historial = st.log.slice(-16).map(m => ({ role: m.role, content: m.content }));
-        return await K.chat(cx.cfg, [{ role: 'system', content: sistema() }, ...historial], { temperature: 0.85, max: 380 });
+        return await K.chat(cx.cfg, [{ role: 'system', content: sistema() }, ...historial], { temperature: 0.65, max: 420 });
       } catch (err) {
         cx.estado = 'local'; cx.error = err.message; pintarEstado();
-        mensaje('error', err.message + ' Mientras tanto responde el narrador local.', err.tipo === 'https' ? ALTERNATIVAS : null);
+        mensaje('error', err.message + ' No se ha generado diálogo de sustitución.', err.tipo === 'https' ? ALTERNATIVAS : null);
         if (panel) panel.open = true;
+        return 'Narrador: [KoboldCpp no ha devuelto una respuesta. No se ha inventado diálogo. Revisa el panel «Conexión con KoboldCpp» y pulsa «Probar conexión».]';
       }
     }
-    return local(txt);
+    return 'Narrador: [La IA está desconectada; no se ha generado diálogo. Revisa el panel «Conexión con KoboldCpp» y pulsa «Probar conexión».]';
   }
 
   // Narrador local: no entiende como una IA, pero reacciona a lo que escribes y hace avanzar la escena.
