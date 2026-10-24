@@ -185,7 +185,7 @@
   function layout() {
     const root = $('#view-creator');
     root.innerHTML = '';
-    const city = draft.origin === 'aurelia' ? 'aurelia' : draft.origin === 'nacar' ? 'nacar' : 'ascensor-central';
+    const city = draft.origin === 'aurelia' ? 'aurelia-portada' : draft.origin === 'nacar' ? 'nacar-portada' : 'ascensor-central';
     const bgImg = window.CustomArt.image('lugares', city) || `img/umbral/lugares/${city}.svg`;
     const bg = el('div', { class: `creator-bg creator-bg-${draft.origin || 'none'}`, style: bgImg ? `background-image:url("${bgImg}")` : null });
     const side = el('div', { class: 'creator-stage' },
