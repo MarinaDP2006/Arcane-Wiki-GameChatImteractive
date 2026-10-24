@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Las ciudades del Umbral</string>
-    <string name="title_activity_main">Las ciudades del Umbral</string>
+    <string name="app_name">RIFTS-GEARS</string>
+    <string name="title_activity_main">RIFTS-GEARS</string>
     <string name="package_name">com.marinadp2006.ciudadesdelumbral</string>
     <string name="custom_url_scheme">com.marinadp2006.ciudadesdelumbral</string>
 </resources>
