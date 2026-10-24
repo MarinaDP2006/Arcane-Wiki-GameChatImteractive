@@ -65,7 +65,7 @@
     const boton = panel && panel.querySelector('[data-kc-probar]'); if (boton) boton.disabled = true;
     try {
       if (cx.cfg.modo === 'mio') {
-        const r = await K.probarMio(cx.cfg.url);
+        const r = await K.probarMio(cx.cfg.url, cx.cfg.password);
         cx.estado = 'listo'; cx.modelo = r.modelo;
         mensaje('ok', `Conectado con tu KoboldCpp${r.modelo ? ' (' + r.modelo + ')' : ''}. Los personajes ya responden con IA.`);
       } else {
