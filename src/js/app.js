@@ -62,8 +62,8 @@
   // Menú principal: Aurelia (cielo) y Nácar (caverna) pintadas a la vez, separadas por una grieta
   // de Resonancia que sigue al ratón o al dedo. Los efectos viven en js/title-fx.js.
   const TITLE_ART = {
-    aurelia: [['aurelia', '50% 40%'], ['observatorio', '50% 40%'], ['ascensor-central', '50% 40%'], ['aurelia-portada', '50% 50%']],
-    nacar: [['nacar', '50% 50%'], ['galerias', '50% 50%'], ['canal-cobre', '50% 50%'], ['nacar-portada', '50% 50%']],
+    aurelia: [['aurelia', '50% 40%'], ['observatorio', '50% 40%'], ['ascensor-central', '50% 40%'], ['aurelia-portada', '50% 50%'], ['aurelia-panorama', '50% 50%']],
+    nacar: [['nacar', '50% 50%'], ['galerias', '50% 50%'], ['canal-cobre', '50% 50%'], ['nacar-portada', '50% 50%'], ['nacar-panorama', '50% 50%']],
   };
   let stopTitleFx = null;
 
@@ -153,7 +153,7 @@
     const draw = () => {
       const P = window.AI.PROVIDERS;
       const saved = App.settings.ai || {};
-      const a = { ...saved, provider: P[saved.provider] ? saved.provider : 'off' };
+      const a = { ...saved, provider: P[saved.provider] ? saved.provider : 'koboldcpp' };
       const d = P[a.provider];
       const on = a.provider === 'koboldcpp';
       const save = (patch) => set({ ai: { ...a, ...patch } }).then(draw);
