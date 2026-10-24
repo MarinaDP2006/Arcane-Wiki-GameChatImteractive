@@ -56,7 +56,7 @@ Crear ilustraciones propias o usar recursos con licencia compatible documentada.
 
 Los tres MP3 convertidos todavía deben añadirse como binarios reales a assets/music. Ver assets/music/README.md para la ruta de integración y pruebas en Electron, web y Android. La música procedural debe seguir siendo fallback hasta que las pistas se prueben de verdad.
 
-Los modelos 3D completos y la animación de caminar/correr siguen pendientes. Primero preparar sprites de cuerpo entero idle/walk/run, luego un controlador de movimiento y después prototipos GLB/GLTF optimizados con fallback 2D. LM Studio es un servicio de inferencia opcional, no un motor gráfico; la desconexión o error no debe bloquear el juego.
+Los modelos 3D completos y la animación de caminar/correr siguen pendientes. Primero preparar sprites de cuerpo entero idle/walk/run, luego un controlador de movimiento y después prototipos GLB/GLTF optimizados con fallback 2D. KoboldCpp (la única IA del juego) es un servicio de inferencia opcional, no un motor gráfico; la desconexión o error no debe bloquear el juego.
 
 ## Criterios de aceptación
 

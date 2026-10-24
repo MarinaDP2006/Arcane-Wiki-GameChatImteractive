@@ -7,10 +7,8 @@ services:
     startCommand: node server/index.js
     autoDeployTrigger: commit
     envVars:
-      - key: OLLAMA_API_KEY
+      - key: KOBOLDCPP_URL
         sync: false
-      - key: OLLAMA_MODEL
-        value: gemma4:31b
       - key: ROLEPLAY_MAX_PER_HOUR
         value: "24"
       - key: NODE_VERSION

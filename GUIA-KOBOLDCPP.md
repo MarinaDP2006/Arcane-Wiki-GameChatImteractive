@@ -1,6 +1,6 @@
 # IA local con KoboldCpp
 
-Con KoboldCpp la historia libre y los chats funcionan con una IA en tu propio PC, sin internet y sin clave.
+KoboldCpp es la **única IA** de Las ciudades del Umbral: no hay otros servicios. Con ella la historia libre y los chats funcionan con una IA en tu propio PC, sin internet y sin clave. Viene desactivada de fábrica: actívala en Ajustes.
 
 ## En el PC
 
@@ -31,7 +31,7 @@ El mensaje de bienvenida («You are using the models…», «Instruct Mode Selec
 
 1. En el mismo ordenador donde está KoboldCpp, abre `http://localhost:5001`. Ahí puedes confirmar el modelo cargado y usar Instruct, JSON/Character Card o Quick Start Scenario.
 2. En KoboldCpp, selecciona tu archivo GGUF y pulsa **Launch**. En este ejemplo el modelo activo se muestra como `koboldcpp/Llama-3.1-8B-Instruct-Q4_K_M`; el nombre exacto depende del archivo que cargues.
-3. En el juego, abre **Ajustes → IA de la historia y los chats**, elige **KoboldCpp**, deja como endpoint de API `http://localhost:5001/v1/chat/completions`, pulsa **Buscar mis modelos**, selecciona el identificador devuelto por el servidor y después **Probar conexión**.
+3. En el juego, abre **Ajustes → IA de la historia y los chats**, elige **KoboldCpp**, deja como endpoint de API `http://localhost:5001/v1/chat/completions`, pulsa **Buscar mi modelo**, selecciona el identificador devuelto por el servidor y después **Probar conexión**.
 4. La interfaz Lite y la API son dos rutas del mismo servidor: `http://localhost:5001/` es la página web; `/v1/chat/completions` es la ruta que usa el juego para pedir respuestas.
 5. En un móvil o tablet, sustituye `localhost` por la IP LAN del ordenador (por ejemplo, `http://192.168.1.40:5001`). No abras el puerto a Internet pública; limita el acceso a tu red local.
 

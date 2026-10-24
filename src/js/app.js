@@ -47,7 +47,8 @@
       n.dataset.tilt = '1';
       n.classList.add('tilt3d');
       n.addEventListener('pointermove', (e) => {
-        if (App.settings.reduceMotion) return;
+        // Solo con ratón: con el dedo el panel se quedaba torcido al deslizar o hacer scroll.
+        if (App.settings.reduceMotion || e.pointerType !== 'mouse') return;
         const r = n.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5;
         const y = (e.clientY - r.top) / r.height - 0.5;
@@ -146,62 +147,59 @@
     });
   }
 
-  // IA opcional para el chat libre con los personajes.
+  // IA opcional para la historia libre y los chats. La única IA del juego es KoboldCpp.
   function aiSettings(set) {
     const box = el('div', { class: 'ai-settings' });
     const draw = () => {
-      const a = { provider: 'ollamaCloud', ...(App.settings.ai || {}) };
       const P = window.AI.PROVIDERS;
-      const d = P[a.provider] || P.off;
+      const saved = App.settings.ai || {};
+      const a = { ...saved, provider: P[saved.provider] ? saved.provider : 'off' };
+      const d = P[a.provider];
+      const on = a.provider === 'koboldcpp';
       const save = (patch) => set({ ai: { ...a, ...patch } }).then(draw);
       const status = el('small', { class: 'muted ai-status' });
-      // Modelos que ya tiene Ollama o LM Studio: se elige uno con un clic.
+      // Modelo que tiene abierto KoboldCpp: se elige con un clic.
       const models = el('div', { class: 'chips ai-models' });
-      const local = window.AI.LOCAL.has(a.provider);
       const lan = el('small', { class: 'muted ai-lan' });
       box.innerHTML = '';
       box.append(
         el('h3', {}, 'IA de la historia y los chats'),
-        el('p', { class: 'muted small' }, 'Roleplay libre en Las ciudades del Umbral: en la historia y en los chats escribes como tu personaje y el reparto te responde, te pregunta y la escena avanza según lo que hagas. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
-        el('label', { class: 'field' }, el('span', {}, 'Servicio'),
+        el('p', { class: 'muted small' }, 'Roleplay libre en Las ciudades del Umbral: en la historia y en los chats escribes como tu personaje y el reparto te responde, te pregunta y la escena avanza según lo que hagas. La única IA del juego es KoboldCpp: corre en tu ordenador, sin internet ni claves, y la tablet o el móvil pueden usarla por la red de casa. Sin IA salen los diálogos escritos de siempre.'),
+        el('label', { class: 'field' }, el('span', {}, 'IA'),
           el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
-        a.provider !== 'off' ? el('p', { class: 'small ai-help' }, d.help) : null,
-        d.key ? el('label', { class: 'field' }, el('span', {}, 'Clave (API key)'),
-          el('input', { class: 'input', type: 'password', autocomplete: 'off', value: a.key || '', placeholder: 'Pega aquí tu clave', onchange: (e) => save({ key: e.target.value.trim() }) })) : null,
-        (local || a.provider === 'custom' || a.provider === 'ollamaCloud') ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
-          el('input', { class: 'input', value: a.url || d.url, placeholder: a.provider === 'lmstudio' ? 'http://192.168.1.40:1234' : a.provider === 'koboldcpp' ? 'http://192.168.1.40:5001' : a.provider === 'ollamaCloud' ? 'https://tu-servicio.onrender.com/api/roleplay' : 'http://localhost:1234/v1/chat/completions', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
-        (a.provider === 'lmstudio' || a.provider === 'koboldcpp') ? lan : null,
-        a.provider !== 'off' ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
-          el('input', { class: 'input', value: a.model || d.model, placeholder: a.provider === 'lmstudio' ? 'Pulsa «Buscar mis modelos»' : '', onchange: (e) => save({ model: e.target.value.trim() }) })) : null,
-        local ? models : null,
-        a.provider !== 'off' ? el('div', { class: 'row gap' },
-          local ? el('button', { class: 'btn small', onclick: findModels }, 'Buscar mis modelos') : null,
+        on ? el('p', { class: 'small ai-help' }, d.help) : null,
+        on ? el('label', { class: 'field' }, el('span', {}, 'Dirección'),
+          el('input', { class: 'input', value: a.url || d.url, placeholder: 'http://192.168.1.40:5001', onchange: (e) => save({ url: e.target.value.trim() }) })) : null,
+        on ? lan : null,
+        on ? el('label', { class: 'field' }, el('span', {}, 'Modelo'),
+          el('input', { class: 'input', value: a.model || d.model, onchange: (e) => save({ model: e.target.value.trim() }) })) : null,
+        on ? models : null,
+        on ? el('div', { class: 'row gap' },
+          el('button', { class: 'btn small', onclick: findModels }, 'Buscar mi modelo'),
           el('button', { class: 'btn small', onclick: async () => {
             status.textContent = 'Probando…';
             try {
               const r = await window.AI.test();
-              status.textContent = `✓ Funciona en ${r.secs.toFixed(1)} s: «${r.text}»${local && r.secs > 15 ? ' · La primera vez tarda más porque carga el modelo. Prueba otra vez; si sigue lento, elige un modelo más pequeño.' : ''}`;
+              status.textContent = `✓ Funciona en ${r.secs.toFixed(1)} s: «${r.text}»${r.secs > 15 ? ' · La primera vez tarda más porque carga el modelo. Prueba otra vez; si sigue lento, elige un modelo más pequeño en KoboldCpp.' : ''}`;
             } catch (err) { status.textContent = `✗ ${err.message}`; }
           } }, 'Probar conexión'), status) : null);
-      // En el PC: la dirección que hay que escribir en la tablet para usar este LM Studio.
-      if ((a.provider === 'lmstudio' || a.provider === 'koboldcpp') && window.umbral?.lanIps) {
-        const port = a.provider === 'koboldcpp' ? 5001 : 1234;
+      // En el PC: la dirección que hay que escribir en la tablet para usar este KoboldCpp.
+      if (on && window.umbral?.lanIps) {
         window.umbral.lanIps().then((ips) => {
-          if (ips.length) lan.textContent = `En la tablet o el móvil escribe: ${ips.map((ip) => `http://${ip}:${port}`).join(' o ')}`;
+          if (ips.length) lan.textContent = `En la tablet o el móvil escribe: ${ips.map((ip) => `http://${ip}:5001`).join(' o ')}`;
         }).catch(() => {});
       }
-      /** Busca modelos de IA accesibles para el usuario. */
+      /** Pregunta a KoboldCpp qué modelo tiene abierto. */
       async function findModels() {
         status.textContent = 'Buscando…';
         try {
           const list = await window.AI.models();
-          const empty = a.provider === 'lmstudio' ? 'LM Studio no tiene ningún modelo. Descarga uno desde su buscador (por ejemplo Gemma 3 12B).' : a.provider === 'koboldcpp' ? 'KoboldCpp no tiene ningún modelo abierto. Ciérralo, elige un .gguf en «Model» y pulsa «Launch».' : 'Ollama no tiene ningún modelo. Abre una terminal y escribe «ollama pull gemma3:4b».';
-          status.textContent = list.length ? 'Elige uno (los pequeños responden antes).' : empty;
+          status.textContent = list.length ? 'Pulsa el modelo para usarlo.' : 'KoboldCpp no tiene ningún modelo abierto. Ciérralo, elige un .gguf en «Model» y pulsa «Launch».';
           models.replaceChildren(...list.map((m) => el('button', {
             class: `chip${m.name === (a.model || d.model) ? ' active' : ''}`,
             onclick: () => save({ model: m.name }),
-          }, m.gb != null ? `${m.name} · ${m.gb.toFixed(1)} GB` : `${m.name}${m.quant ? ` · ${m.quant}` : ''}${m.loaded ? ' · cargado' : ''}`)));
+          }, `${m.name}${m.loaded ? ' · cargado' : ''}`)));
         } catch (err) { status.textContent = `✗ ${err.message}`; }
       }
     };
@@ -217,6 +215,7 @@
     h.classList.toggle('dim', (s.brightness ?? 1) !== 1);
     h.style.setProperty('--brightness', String(s.brightness ?? 1));
     b.classList.toggle('reduce-motion', Boolean(s.reduceMotion));
+    b.classList.toggle('touch', Boolean(U.touch));
     b.classList.toggle('high-contrast', Boolean(s.highContrast));
     b.classList.toggle('readable-font', Boolean(s.readableFont));
     b.classList.toggle('no-minimap', s.minimap === false);
@@ -417,8 +416,8 @@
       arte: () => [artSettings(root, onBack)],
       acerca: () => [
         el('h3', {}, 'Acerca de'),
-        el('p', { class: 'muted small' }, 'Las ciudades del Umbral es un mundo original de Rifts & Gears: historia, personajes, lugares, arte y música propios. Es gratuito, sin anuncios ni compras. Todas las imágenes, datos y pistas de música vienen dentro del juego: no necesita internet (solo el chat libre con IA, si lo activas con un servicio en línea).'),
-        el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo. Si activas la IA para los chats, lo que escribes en el comunicador (y el contexto del personaje) se envía al servicio que elijas, con tu propia clave; con Ollama no sale de tu ordenador.'),
+        el('p', { class: 'muted small' }, 'Las ciudades del Umbral es un mundo original de Rifts & Gears: historia, personajes, lugares, arte y música propios. Es gratuito, sin anuncios ni compras. Todas las imágenes, datos y pistas de música vienen dentro del juego: no necesita internet. La IA opcional es KoboldCpp, que corre en tu propio ordenador.'),
+        el('p', { class: 'muted small' }, 'Privacidad: el juego no recoge ni envía datos personales. Tus partidas y ajustes se guardan solo en tu dispositivo. Si activas la IA (KoboldCpp, la única que usa el juego), lo que escribes en la historia y en el comunicador se envía a tu KoboldCpp, en tu ordenador o en tu red de casa: no sale a internet.'),
       ],
     };
 

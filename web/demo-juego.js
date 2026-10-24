@@ -1,6 +1,6 @@
 // Demo de rol libre en el navegador. Sin opciones fijas: escribes lo que tu personaje dice o
 // hace y el narrador y los personajes te contestan. Los datos del mundo vienen de window.DEMO
-// (demo-datos.js). La IA corre en el servidor (/api/roleplay, Ollama Cloud): no hay que instalar
+// (demo-datos.js). La IA es KoboldCpp, a través del servidor (/api/roleplay): no hay que instalar
 // nada. Si el servidor no responde, un narrador local mantiene la escena para que la demo no se
 // quede muda.
 (() => {

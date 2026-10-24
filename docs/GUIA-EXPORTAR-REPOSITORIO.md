@@ -63,7 +63,7 @@ No subas partidas, claves, tokens, certificados/keystores, modelos privados sin 
 - Web generada y rutas revisadas.
 - Guardado/carga/exportación/importación probados.
 - PC y móvil/tableta probados.
-- LM Studio apagado no bloquea la partida.
+- KoboldCpp apagado no bloquea la partida.
 - Audio y volumen comprobados.
 - Licencias de modelos y recursos revisadas.
 - Artefactos versionados, instalados desde cero y probados.
@@ -72,5 +72,5 @@ No subas partidas, claves, tokens, certificados/keystores, modelos privados sin 
 - [Repositorio](https://github.com/MarinaDP2006/RIFTS-GEARS)
 - `GUIA-WEB-RENDER.md`
 - `GUIA.md`
-- `GUIA-LM-STUDIO.md`
+- `GUIA-KOBOLDCPP.md`
 - `PENDIENTES.md`

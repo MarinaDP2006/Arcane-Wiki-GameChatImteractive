@@ -29,14 +29,14 @@ La carpeta `web/` contiene la web pública:
 
 `npm run web` genera `web-dist/` rellenando la web con los datos reales del juego (reparto, ciudades, versión). La web no ofrece descargas.
 
-## IA en el servidor, sin instalar nada
+## IA: solo KoboldCpp
 
-El diálogo libre usa un modelo de Ollama alojado en el servidor (`server/index.js`, endpoint `/api/roleplay`), así que nadie tiene que instalar Ollama en su equipo. Si el servidor no está disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
+La única IA del juego es **KoboldCpp**. No hay otros proveedores. En el juego se activa en **Ajustes → IA de la historia y los chats** ([GUIA-KOBOLDCPP.md](GUIA-KOBOLDCPP.md)); la tablet y el móvil usan el KoboldCpp del PC por la red de casa. La demo web pasa por el servidor (`server/index.js`, endpoint `/api/roleplay`), que reenvía a KoboldCpp. Si no hay KoboldCpp disponible, la demo cambia a un narrador local sencillo para no quedarse muda.
 
-Variables del servidor (ver `.env.example`); se configuran como secretos en el alojamiento, nunca en el repositorio:
+Variables del servidor (ver `.env.example`):
 
-- `OLLAMA_API_KEY`: clave de Ollama Cloud.
-- `OLLAMA_MODEL`: modelo de chat (por defecto `gemma4:31b`).
+- `KOBOLDCPP_URL`: dirección del KoboldCpp (por defecto `http://127.0.0.1:5001`).
+- `KOBOLDCPP_MODEL`: nombre que se envía como modelo (por defecto `koboldcpp`).
 - `ROLEPLAY_MAX_PER_HOUR`: límite de mensajes por hora y visitante.
 
 `render.yaml` despliega la web y la API juntas: `npm ci && npm run web` y después `node server/index.js`.
@@ -69,7 +69,7 @@ npm run serve:web  # sirve web-dist/ y la API en http://localhost:10000
 - [Pendientes](PENDIENTES.md)
 - [Plan del universo original](docs/PLAN-UNIVERSO-ORIGINAL.md)
 - [Prompts de modelos 3D del universo original](docs/PROMPTS-MODELOS-3D-UNIVERSO-ORIGINAL.md)
-- [LM Studio](GUIA-LM-STUDIO.md) · [Web en Render](GUIA-WEB-RENDER.md) · [Privacidad](PRIVACIDAD.md)
+- [KoboldCpp](GUIA-KOBOLDCPP.md) · [Web en Render](GUIA-WEB-RENDER.md) · [Privacidad](PRIVACIDAD.md)
 
 ## Licencia
 

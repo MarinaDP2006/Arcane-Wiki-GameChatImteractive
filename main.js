@@ -301,7 +301,7 @@ ipcMain.handle('map:images', (_e, region) => {
 });
 
 // ---------- IA para los chats (opcional) ----------
-// La petición sale desde aquí para no chocar con CORS (Ollama local, Gemini, Groq…).
+// La petición a KoboldCpp sale desde aquí para no chocar con CORS.
 ipcMain.handle('ai:chat', async (_e, url, headers, body) => {
   try {
     const u = new URL(String(url));
@@ -323,13 +323,13 @@ ipcMain.handle('ai:chat', async (_e, url, headers, body) => {
 
 function aiNetError(err, slow) {
   const code = err?.cause?.code;
-  if (code === 'ECONNREFUSED') return 'No hay nada escuchando en esa dirección (¿está abierto Ollama o el servidor de LM Studio?)';
+  if (code === 'ECONNREFUSED') return 'No hay nada escuchando en esa dirección (¿está abierto KoboldCpp y ha terminado de cargar el modelo?)';
   if (code === 'EHOSTUNREACH' || code === 'ENETUNREACH' || code === 'UND_ERR_CONNECT_TIMEOUT') return 'No se llega a ese ordenador: revisa la IP y que estéis en la misma red wifi';
   if (err?.name === 'TimeoutError') return slow;
   return String(err?.message || err);
 }
 
-// Lista de modelos de Ollama o LM Studio: solo servidores de este ordenador o de la red de casa.
+// Modelo abierto en KoboldCpp: solo servidores de este ordenador o de la red de casa.
 const LAN_HOST = /^(localhost|127\.0\.0\.1|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|[\w-]+\.local)$/i;
 ipcMain.handle('ai:get', async (_e, url) => {
   try {
@@ -342,7 +342,7 @@ ipcMain.handle('ai:get', async (_e, url) => {
   }
 });
 
-// IP de este PC en la red de casa, para escribirla en la tablet (LM Studio en red local).
+// IP de este PC en la red de casa, para escribirla en la tablet (KoboldCpp en red local).
 ipcMain.handle('net:ips', () => Object.values(os.networkInterfaces()).flat()
   .filter((n) => n && n.family === 'IPv4' && !n.internal && LAN_HOST.test(n.address)).map((n) => n.address));
 
