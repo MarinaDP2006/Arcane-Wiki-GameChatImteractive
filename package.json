@@ -1,6 +1,6 @@
 {
-  "name": "rifts-gears-umbral",
-  "productName": "Las ciudades del Umbral",
+  "name": "rifts-gears",
+  "productName": "RIFTS-GEARS",
   "version": "1.31.2",
   "description": "Aventura narrativa original de fantasía industrial, Resonancia y dos ciudades conectadas por una red de ascensores.",
   "main": "main.js",
@@ -29,7 +29,7 @@
   },
   "build": {
     "appId": "com.marinadp2006.ciudadesdelumbral",
-    "productName": "Las ciudades del Umbral",
+    "productName": "RIFTS-GEARS",
     "files": [
       "main.js",
       "modelos.js",
@@ -64,11 +64,11 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Las ciudades del Umbral",
-      "artifactName": "Ciudades-del-Umbral-Setup-${version}.${ext}"
+      "shortcutName": "RIFTS-GEARS",
+      "artifactName": "RIFTS-GEARS-Setup-${version}.${ext}"
     },
     "portable": {
-      "artifactName": "Ciudades-del-Umbral-${version}-portable.${ext}"
+      "artifactName": "RIFTS-GEARS-${version}-portable.${ext}"
     },
     "mac": {
       "category": "public.app-category.role-playing-games",
@@ -90,11 +90,11 @@
       ],
       "icon": "build/icon.png",
       "identity": null,
-      "artifactName": "Ciudades-del-Umbral-${version}-mac-${arch}.${ext}"
+      "artifactName": "RIFTS-GEARS-${version}-mac-${arch}.${ext}"
     },
     "dmg": {
-      "title": "Las ciudades del Umbral ${version}"
+      "title": "RIFTS-GEARS ${version}"
     },
-    "artifactName": "Ciudades-del-Umbral-Setup-${version}.${ext}"
+    "artifactName": "RIFTS-GEARS-Setup-${version}.${ext}"
   }
 }
