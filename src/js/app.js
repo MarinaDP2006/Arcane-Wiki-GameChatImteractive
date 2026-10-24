@@ -161,8 +161,8 @@
       const lan = el('small', { class: 'muted ai-lan' });
       box.innerHTML = '';
       box.append(
-        el('h3', {}, 'IA para los chats (opcional)'),
-        el('p', { class: 'muted small' }, 'Roleplay libre en Las ciudades del Umbral: escribe como tu personaje y deja que el reparto responda y pregunte. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
+        el('h3', {}, 'IA de la historia y los chats'),
+        el('p', { class: 'muted small' }, 'Roleplay libre en Las ciudades del Umbral: en la historia y en los chats escribes como tu personaje y el reparto te responde, te pregunta y la escena avanza según lo que hagas. La opción recomendada es Ollama Cloud, alojada, sin instalar modelos. El servicio necesita una clave privada en el backend y puede tener límites o costes; los diálogos escritos siguen disponibles como respaldo.'),
         el('label', { class: 'field' }, el('span', {}, 'Servicio'),
           el('select', { class: 'input', onchange: (e) => save({ provider: e.target.value, model: '', url: '' }) },
             Object.entries(P).map(([id, p]) => el('option', { value: id, selected: id === a.provider }, p.label)))),
@@ -367,6 +367,8 @@
       ],
       juego: () => [
         el('h3', {}, 'Partida'),
+        select('storyMode', 'Cómo hablas en la historia', 'Libre: escribes lo que dice o hace tu personaje y la escena te responde con la IA, dentro de las reglas de Aurelia y Nácar. Opciones: los diálogos escritos de siempre.',
+          [['libre', 'Libre (escribes tú, con IA)'], ['opciones', 'Opciones escritas']]),
         select('difficulty', 'Dificultad de los minijuegos', 'Fácil te da una ventaja extra; Difícil te la quita.',
           [['facil', 'Fácil'], ['normal', 'Normal'], ['dificil', 'Difícil']]),
         toggle('objectiveArrow', 'Flecha hacia el objetivo', 'Señala en el mapa a dónde tienes que ir.'),

@@ -23,6 +23,7 @@ Lo que falta en esta rama, que es solo del mundo nuevo. Lo de Arcane va en su pr
 - [ ] **Ampliar la campaña**: hay 6 capítulos (3 por ciudad), 24 escenas y un solo final. Faltan más escenas por capítulo, finales según las decisiones y una posible Parte II.
 - [ ] **Atlas completo**: el Atlas solo tiene Aurelia, Nácar y la Red de Resonancia. Añadir los diez lugares con su posición en `src/img/umbral/mapa.svg`.
 - [ ] **Más diálogo escrito** por personaje en el comunicador (ahora hay 6 opciones por personaje) para cuando no hay IA.
+- [ ] **Probar la historia libre con una IA de verdad** (KoboldCpp, LM Studio u Ollama Cloud): una partida por cada ciudad, para ajustar cuántos turnos dura una escena (ahora como máximo 4 o 6) y revisar que el camino que elige la IA encaja.
 - [ ] **Escenas de minijuego dentro de la historia**: los minijuegos funcionan desde el mapa, pero ningún capítulo los usa todavía como parte de una decisión.
 
 ## Música y sonido
